@@ -7,6 +7,231 @@
   --r-progress-color: #ffb347;
 }
 
+body:not(.reveal-viewport) {
+  background:
+    radial-gradient(circle at top left, rgba(65, 116, 153, 0.12), transparent 34rem),
+    #f5f7fd;
+}
+
+body:not(.reveal-viewport) .navbar {
+  background: #2b435b;
+}
+
+body:not(.reveal-viewport) .quarto-title-block,
+body:not(.reveal-viewport) main.content {
+  max-width: 1180px;
+}
+
+body:not(.reveal-viewport) .quarto-title-block {
+  margin: 0 auto;
+  padding-top: 1.5rem;
+}
+
+body:not(.reveal-viewport) main.content {
+  margin: 0 auto;
+  padding-bottom: 4rem;
+}
+
+.course-index {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 2.2rem 1rem 4rem;
+  color: #25313a;
+}
+
+.course-profile {
+  display: flex;
+  gap: 1.35rem;
+  align-items: center;
+  padding: 0 0 1.8rem;
+  border-bottom: 1px solid rgba(43, 67, 91, 0.17);
+}
+
+.course-profile-photo {
+  width: 132px;
+  height: 132px;
+  flex: 0 0 132px;
+  border: 3px solid #ffffff;
+  border-radius: 50%;
+  object-fit: cover;
+  object-position: center 18%;
+  box-shadow: 0 8px 24px rgba(43, 67, 91, 0.18);
+}
+
+.course-profile-copy h1 {
+  margin: 0.1rem 0 0.45rem;
+  color: #25313a;
+  font-size: clamp(1.7rem, 4vw, 2.55rem);
+  line-height: 1.08;
+}
+
+.course-profile-copy p {
+  max-width: 760px;
+  margin: 0;
+  color: #53616f;
+  line-height: 1.55;
+}
+
+.course-kicker {
+  color: #1f6f8b !important;
+  font-size: 0.78rem;
+  font-weight: 750;
+  text-transform: uppercase;
+}
+
+.course-profile-links,
+.lecture-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.48rem;
+  margin-top: 0.85rem;
+}
+
+.course-profile-links a,
+.lecture-links a,
+.lecture-link-pending,
+.exercise-back-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.15rem;
+  padding: 0.38rem 0.68rem;
+  border: 1px solid #bdcad4;
+  border-radius: 7px;
+  background: rgba(255, 255, 255, 0.82);
+  color: #27475d;
+  font-size: 0.9rem;
+  font-weight: 680;
+  text-decoration: none;
+}
+
+.course-profile-links a:hover,
+.lecture-links a:hover,
+.exercise-back-link:hover {
+  border-color: #1f6f8b;
+  background: #ffffff;
+  color: #175873;
+  text-decoration: none;
+}
+
+.course-intro {
+  padding: 2rem 0 1rem;
+}
+
+.course-intro h2 {
+  margin: 0 0 0.5rem;
+  color: #25313a;
+}
+
+.course-intro p {
+  max-width: 760px;
+  margin: 0;
+  color: #53616f;
+  line-height: 1.55;
+}
+
+.lecture-accordion {
+  display: grid;
+  gap: 0.72rem;
+  margin-top: 0.55rem;
+}
+
+.lecture-row {
+  border: 1px solid rgba(43, 67, 91, 0.16);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.88);
+  box-shadow: 0 10px 26px rgba(43, 67, 91, 0.06);
+  overflow: hidden;
+}
+
+.lecture-row summary {
+  display: flex;
+  gap: 0.85rem;
+  align-items: center;
+  min-height: 4.3rem;
+  padding: 0.82rem 3rem 0.82rem 1rem;
+  color: #25313a;
+  cursor: pointer;
+  font-size: 1.12rem;
+  font-weight: 740;
+  list-style: none;
+  position: relative;
+}
+
+.lecture-row summary::-webkit-details-marker {
+  display: none;
+}
+
+.lecture-row summary::after {
+  content: "+";
+  position: absolute;
+  right: 1rem;
+  color: #1f6f8b;
+  font-size: 1.55rem;
+  font-weight: 450;
+  line-height: 1;
+}
+
+.lecture-row[open] summary::after {
+  content: "−";
+}
+
+.lecture-index {
+  color: #1f6f8b;
+  font-size: 0.83rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.lecture-row-body {
+  padding: 0 1rem 1rem 2.95rem;
+  border-top: 1px solid rgba(43, 67, 91, 0.10);
+}
+
+.lecture-row-body p {
+  margin: 0.82rem 0 0;
+  color: #53616f;
+  line-height: 1.48;
+}
+
+.lecture-link-pending {
+  border-style: dashed;
+  background: rgba(238, 244, 249, 0.7);
+  color: #7b8995;
+  font-weight: 560;
+}
+
+.exercise-page {
+  max-width: 880px;
+  margin: 0 auto;
+}
+
+.exercise-back-link {
+  margin-bottom: 1rem;
+}
+
+@media (max-width: 620px) {
+  .course-index {
+    padding-top: 1.25rem;
+  }
+
+  .course-profile {
+    align-items: flex-start;
+  }
+
+  .course-profile-photo {
+    width: 88px;
+    height: 88px;
+    flex-basis: 88px;
+  }
+
+  .lecture-row summary {
+    font-size: 1rem;
+  }
+
+  .lecture-row-body {
+    padding-left: 1rem;
+  }
+}
+
 .reveal {
   font-size: 32px;
 }
@@ -264,65 +489,75 @@
   background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="rgb(255, 191, 97)" class="bi bi-list" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5z"/></svg>') !important;
 }
 
-
-.reveal .taskbox {
-  margin-top: 0.6em;
-  padding: 0.9em 1.2em;
-  border-radius: 18px;
-  border: 2px solid rgba(255, 215, 120, 0.78);
-  background: rgba(255, 215, 120, 0.10);
-  box-shadow: 0 0 0 1px rgba(255,255,255,0.04) inset;
-  color: #f5f1e8 !important;
+.reveal .compat-widget {
+  width: 100%;
+  padding: 0.55em;
+  border: 1px solid rgba(142, 197, 255, 0.30);
+  border-radius: 8px;
+  background: rgba(12, 20, 30, 0.78);
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.22);
+  color: #f5f7fd;
+  font-size: 0.54em;
 }
 
-/* весь обычный текст внутри */
-.reveal .taskbox,
-.reveal .taskbox p,
-.reveal .taskbox li,
-.reveal .taskbox ul,
-.reveal .taskbox ol,
-.reveal .taskbox strong,
-.reveal .taskbox em,
-.reveal .taskbox small,
-.reveal .taskbox span,
-.reveal .taskbox div {
-  color: #f5f1e8 !important;
+.reveal .compat-controls {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.55em;
+  margin-bottom: 0.5em;
 }
 
-/* заголовок задачи */
-.reveal .taskbox h3,
-.reveal .taskbox h4 {
-  margin-top: 0;
-  margin-bottom: 0.45em;
-  color: #ffd67a !important;
-}
-
-/* подсказка */
-.reveal .taskbox .hint {
-  margin-top: 0.8em;
-  font-size: 0.88em;
-  color: #e8dcc0 !important;
-  opacity: 1;
-}
-
-/* формулы */
-.reveal .taskbox .math,
-.reveal .taskbox .MathJax,
-.reveal .taskbox mjx-container {
-  color: #f5f1e8 !important;
-}
-
-/* если MathJax рисует SVG */
-.reveal .taskbox mjx-container svg {
-  fill: currentColor !important;
-}
-
-/* номер задачи */
-.reveal .taskbox .tasknum {
+.reveal .compat-control {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 0.45em;
+  color: #dbe7f7;
   font-weight: 700;
-  letter-spacing: 0.02em;
-  color: #ffd67a !important;
 }
+
+.reveal .compat-control input[type="range"] {
+  width: 100%;
+  accent-color: #ffb347;
+}
+
+.reveal .compat-control output {
+  min-width: 3.4em;
+  color: #ffcc80;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.reveal .compat-plot {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.reveal .compat-summary {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.35em;
+  margin-top: 0.45em;
+}
+
+.reveal .compat-summary span {
+  min-height: 1.8em;
+  padding: 0.22em 0.35em;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #dbe7f7;
+  font-variant-numeric: tabular-nums;
+}
+
+.reveal .compat-summary .compat-decision-ok {
+  color: #83f2c1;
+}
+
+.reveal .compat-summary .compat-decision-bad {
+  color: #ffb4a8;
+}
+
 
 .reveal .slides section {
   text-align: left !important;
@@ -344,6 +579,57 @@
 .reveal ol,
 .reveal li {
   text-align: left !important;
+}
+
+.reveal .bayes-figure {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+}
+
+.reveal .bayes-figure p {
+  margin: 0;
+}
+
+.reveal .bayes-figure img {
+  max-width: 100%;
+  max-height: 68vh;
+  border: none;
+  box-shadow: none;
+  background: transparent;
+}
+
+.reveal .centered-figure {
+  --figure-width: 80%;
+  --figure-max-height: 72vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.reveal .centered-figure p {
+  position: relative;
+  width: 100%;
+  margin: 0;
+  text-align: center !important;
+  overflow: visible;
+}
+
+.reveal .centered-figure img {
+  display: block;
+  position: relative;
+  left: 50%;
+  transform: translateX(-50%);
+  width: var(--figure-width) !important;
+  margin: 0 !important;
+  max-width: none;
+  max-height: var(--figure-max-height);
+  border: none;
+  box-shadow: none;
+  background: transparent;
 }
 
 /* temporary debug background */

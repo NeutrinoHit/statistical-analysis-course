@@ -5,8 +5,6 @@ author: "Dmitry V. Naumov (JINR)"
 format:
   revealjs:
     theme: black
-    width: 1024
-    height: 768
     slide-number: true
     preview-links: auto
     chalkboard:

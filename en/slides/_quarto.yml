@@ -3,6 +3,7 @@ project:
   output-dir: _site
   resources:
     - shared/figures/**
+    - shared/reveal/**
   render:
     - index.qmd
     - lecture-01-introduction.qmd
@@ -72,3 +73,13 @@ format:
   html:
     theme: flatly
     toc: true
+  revealjs:
+    width: 1600
+    height: 900
+    margin: 0.03
+    toc: true
+    toc-depth: 1
+    toc-title: "Lecture Plan"
+    include-after-body:
+      text: |
+        <script data-external="1" data-context-home="index.html" data-context-home-label="Course home page" src="shared/reveal/neutrinohit-reveal-footer.js"></script>

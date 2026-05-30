@@ -1,30 +1,93 @@
 ---
 title: "Статистический анализ данных"
-subtitle: "Практический курс для физики высоких энергий и астрофизики"
-author: "Дмитрий В. Наумов (ОИЯИ)"
-
+subtitle: "Курс лекций"
+author: "Дмитрий В. Наумов"
 format:
   html:
     toc: false
+    page-layout: full
 ---
 
-# Слайды лекций
+```{=html}
+<style>
+  .quarto-title-block {
+    display: none;
+  }
+</style>
 
-- [Лекция 1. Мотивация и обзор курса](lecture-01-introduction.qmd)
-- [Лекция 2. Случайные величины, распределения, моменты](lecture-02-random-distributions.qmd)
-- [Лекция 3. Центральная предельная теорема](lecture-03-central-limit-theorem.qmd)
-- [Лекция 2. Вероятность II](lecture-02-probability-II.qmd)
-- [Лекция 3. Случайные величины и плотности вероятности](lecture-03-random-variables-and-densities.qmd)
-- [Лекция 4. Математическое ожидание и распространение ошибок](lecture-04-expectation-and-error-propagation.qmd)
-- [Лекция 5. Основные распределения вероятностей](lecture-05-common-probability-distributions.qmd)
-- [Лекция 6. Метод Монте-Карло](lecture-06-monte-carlo-method.qmd)
-- [Лекция 7. Статистические тесты: общие понятия](lecture-07-statistical-tests-basics.qmd)
-- [Лекция 8. Статистики тестов и многомерные методы](lecture-08-test-statistics-and-multivariate-methods.qmd)
-- [Лекция 9. Проверка согласия, p-value, значимость, открытие и исключение](lecture-09-goodness-of-fit-and-significance.qmd)
-- [Лекция 10. Фельдман-Казинс, CLs и родственные методы](lecture-10-feldman-cousins-and-cls.qmd)
-- [Лекция 11. Оценивание параметров и метод максимального правдоподобия](lecture-11-parameter-estimation-and-maximum-likelihood.qmd)
-- [Лекция 12. Метод наименьших квадратов](lecture-12-method-of-least-squares.qmd)
-- [Лекция 13. Интервальные оценки и установление ограничений](lecture-13-interval-estimation-and-limits.qmd)
-- [Лекция 14. Nuisance-параметры и систематические неопределенности](lecture-14-nuisance-parameters-and-systematics.qmd)
-- [Лекция 15. Примеры байесовского подхода](lecture-15-bayesian-examples.qmd)
+<div class="course-index">
+  <header class="course-profile">
+    <img class="course-profile-photo" src="shared/figures/naumov-portrait.jpg" alt="Дмитрий Вадимович Наумов">
+    <div class="course-profile-copy">
+      <p class="course-kicker">Статистический анализ данных</p>
+      <h1>Дмитрий Вадимович Наумов</h1>
+      <p>
+        Физик, д. ф.-м. н., преподаватель и автор материалов по статистическому анализу,
+        нейтринной физике и квантовой теории поля.
+      </p>
+      <nav class="course-profile-links" aria-label="Ссылки автора">
+        <a href="https://neutrinohit.github.io/">NeutrinoHit</a>
+        <a href="https://naumov.jinr.ru/">Профиль JINR</a>
+        <a href="https://teach-in.ru/lecturer/naumov-dv">Teach-in</a>
+        <a href="https://www.youtube.com/@dmitrynaumov6099/">YouTube</a>
+        <a href="https://t.me/NeutrinoHit">Telegram</a>
+      </nav>
+    </div>
+  </header>
 
+  <section class="course-intro">
+    <h2>Курс лекций</h2>
+    <p>
+      Практический курс для физики высоких энергий, астрофизики и анализа
+      экспериментальных данных. Материалы добавляются по мере готовности.
+    </p>
+  </section>
+
+  <section class="lecture-accordion" aria-label="Лекции курса">
+    <details class="lecture-row" open>
+      <summary>
+        <span class="lecture-index">01</span>
+        <span>Мотивация и обзор курса</span>
+      </summary>
+      <div class="lecture-row-body">
+        <p>Зачем физику статистика и какие вопросы решает курс.</p>
+        <div class="lecture-links">
+          <a href="introduction.html">Открыть лекцию</a>
+          <a href="exercises/introduction.html">Задачи</a>
+          <span class="lecture-link-pending">Видео появится позже</span>
+        </div>
+      </div>
+    </details>
+
+    <details class="lecture-row">
+      <summary>
+        <span class="lecture-index">02</span>
+        <span>Случайные величины, распределения, моменты</span>
+      </summary>
+      <div class="lecture-row-body">
+        <p>Вероятности, плотности, кумулятивная функция распределения и моменты.</p>
+        <div class="lecture-links">
+          <a href="random-distributions.html">Открыть лекцию</a>
+          <a href="exercises/random-distributions.html">Задачи</a>
+          <span class="lecture-link-pending">Видео появится позже</span>
+        </div>
+      </div>
+    </details>
+
+    <details class="lecture-row">
+      <summary>
+        <span class="lecture-index">03</span>
+        <span>Центральная предельная теорема и нормальное распределение</span>
+      </summary>
+      <div class="lecture-row-body">
+        <p>Почему возникает гаусс, как читать квантили и как проверять совместимость измерений.</p>
+        <div class="lecture-links">
+          <a href="central-limit-theorem.html">Открыть лекцию</a>
+          <a href="exercises/central-limit-theorem.html">Задачи</a>
+          <span class="lecture-link-pending">Видео появится позже</span>
+        </div>
+      </div>
+    </details>
+  </section>
+</div>
+```

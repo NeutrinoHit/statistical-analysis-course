@@ -3,75 +3,33 @@ project:
   output-dir: _site
   resources:
     - shared/figures/**
+    - shared/reveal/**
   render:
     - index.qmd
-    - lecture-01-introduction.qmd
-    - lecture-02-probability-I.qmd
-    - lecture-02-probability-II.qmd
-    - lecture-03-random-variables-and-densities.qmd
-    - lecture-04-expectation-and-error-propagation.qmd
-    - lecture-05-common-probability-distributions.qmd
-    - lecture-06-monte-carlo-method.qmd
-    - lecture-07-statistical-tests-basics.qmd
-    - lecture-08-test-statistics-and-multivariate-methods.qmd
-    - lecture-09-goodness-of-fit-and-significance.qmd
-    - lecture-10-feldman-cousins-and-cls.qmd
-    - lecture-11-parameter-estimation-and-maximum-likelihood.qmd
-    - lecture-12-method-of-least-squares.qmd
-    - lecture-13-interval-estimation-and-limits.qmd
-    - lecture-14-nuisance-parameters-and-systematics.qmd
-    - lecture-15-bayesian-examples.qmd
+    - introduction.qmd
+    - random-distributions.qmd
+    - central-limit-theorem.qmd
+    - exercises/index.qmd
+    - exercises/introduction.qmd
+    - exercises/random-distributions.qmd
+    - exercises/central-limit-theorem.qmd
 
 website:
   title: "Статистический анализ данных: слайды"
-  navbar:
-    left:
-      - href: index.qmd
-        text: Индекс курса
-  sidebar:
-    style: docked
-    collapse-level: 1
-    contents:
-      - section: "Курс"
-        contents:
-          - text: "Индекс"
-            href: index.qmd
-      - section: "Лекции"
-        contents:
-          - text: "Лекция 1. Мотивация"
-            href: lecture-01-introduction.qmd
-          - text: "Лекция 2. Вероятность I"
-            href: lecture-02-probability-I.qmd
-          - text: "Лекция 2. Вероятность II"
-            href: lecture-02-probability-II.qmd
-          - text: "Лекция 3. Случайные величины и плотности"
-            href: lecture-03-random-variables-and-densities.qmd
-          - text: "Лекция 4. Матожидание и распространение ошибок"
-            href: lecture-04-expectation-and-error-propagation.qmd
-          - text: "Лекция 5. Основные распределения"
-            href: lecture-05-common-probability-distributions.qmd
-          - text: "Лекция 6. Метод Монте-Карло"
-            href: lecture-06-monte-carlo-method.qmd
-          - text: "Лекция 7. Статистические тесты: основы"
-            href: lecture-07-statistical-tests-basics.qmd
-          - text: "Лекция 8. Статистики тестов и многомерные методы"
-            href: lecture-08-test-statistics-and-multivariate-methods.qmd
-          - text: "Лекция 9. Качество согласия и значимость"
-            href: lecture-09-goodness-of-fit-and-significance.qmd
-          - text: "Лекция 10. Фельдман-Казинс и CLs"
-            href: lecture-10-feldman-cousins-and-cls.qmd
-          - text: "Лекция 11. Оценивание параметров и правдоподобие"
-            href: lecture-11-parameter-estimation-and-maximum-likelihood.qmd
-          - text: "Лекция 12. Метод наименьших квадратов"
-            href: lecture-12-method-of-least-squares.qmd
-          - text: "Лекция 13. Интервальные оценки и пределы"
-            href: lecture-13-interval-estimation-and-limits.qmd
-          - text: "Лекция 14. Nuisance-параметры и систематические эффекты"
-            href: lecture-14-nuisance-parameters-and-systematics.qmd
-          - text: "Лекция 15. Примеры байесовского подхода"
-            href: lecture-15-bayesian-examples.qmd
 
 format:
   html:
     theme: flatly
+    css: styles.css
+    toc: false
+    page-layout: full
+  revealjs:
+    width: 1600
+    height: 900
+    margin: 0.03
     toc: true
+    toc-depth: 1
+    toc-title: "План лекции"
+    include-after-body:
+      text: |
+        <script data-external="1" data-context-home="index.html" data-context-home-label="Главная страница курса" src="shared/reveal/neutrinohit-reveal-footer.js"></script>

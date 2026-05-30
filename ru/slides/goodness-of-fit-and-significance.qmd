@@ -1,12 +1,10 @@
 ---
-title: "Лекция 10. Фельдман-Казинс, CLs и родственные методы"
+title: "Лекция 9. Проверка согласия и статистическая значимость"
 subtitle: "Статистический анализ данных"
 author: "Дмитрий В. Наумов (ОИЯИ)"
 format:
   revealjs:
     theme: black
-    width: 1024
-    height: 768
     slide-number: true
     preview-links: auto
     chalkboard:
@@ -19,9 +17,9 @@ format:
 
 ## Черновой план
 
-- TODO: построение Неймана и правила упорядочивания
-- TODO: интервалы Фельдмана-Казинса
-- TODO: метод CLs для ограничений
+- TODO: метрики goodness-of-fit и p-value
+- TODO: локальная/глобальная значимость и look-elsewhere effect
+- TODO: критерии открытия и исключения
 
 ---
 
