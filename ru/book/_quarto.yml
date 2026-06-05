@@ -38,6 +38,7 @@ format:
     css: ../../shared/styles/book.css
     include-in-header:
       - ../../shared/html/mathjax.html
+    include-after-body: analytics/cloudflare-web-analytics.html
     theme:
       light: flatly
       dark: darkly

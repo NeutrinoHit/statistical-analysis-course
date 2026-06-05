@@ -8,11 +8,15 @@ project:
     - index.qmd
     - introduction.qmd
     - random-distributions.qmd
+    - characteristic-functions.qmd
     - central-limit-theorem.qmd
+    - non_gaussian_clt_violations.qmd
     - exercises/index.qmd
-    - exercises/introduction.qmd
-    - exercises/random-distributions.qmd
-    - exercises/central-limit-theorem.qmd
+    - exercises/introduction_exercises.qmd
+    - exercises/random-distributions_exercises.qmd
+    - exercises/characteristic-functions_exercises.qmd
+    - exercises/central-limit-theorem_exercises.qmd
+    - exercises/non_gaussian_clt_violations_exercises.qmd
 
 website:
   title: "Статистический анализ данных: слайды"
@@ -23,6 +27,7 @@ format:
     css: styles.css
     toc: false
     page-layout: full
+    include-after-body: analytics/cloudflare-web-analytics.html
   revealjs:
     width: 1600
     height: 900
@@ -31,5 +36,6 @@ format:
     toc-depth: 1
     toc-title: "План лекции"
     include-after-body:
-      text: |
-        <script data-external="1" data-context-home="index.html" data-context-home-label="Главная страница курса" src="shared/reveal/neutrinohit-reveal-footer.js"></script>
+      - text: |
+          <script data-external="1" data-context-home="index.html" data-context-home-label="Главная страница курса" src="shared/reveal/neutrinohit-reveal-footer.js"></script>
+      - analytics/cloudflare-web-analytics.html

@@ -16,31 +16,17 @@ format:
 </style>
 
 <div class="course-index">
-  <header class="course-profile">
-    <img class="course-profile-photo" src="shared/figures/naumov-portrait.jpg" alt="Дмитрий Вадимович Наумов">
-    <div class="course-profile-copy">
-      <p class="course-kicker">Статистический анализ данных</p>
-      <h1>Дмитрий Вадимович Наумов</h1>
-      <p>
-        Физик, д. ф.-м. н., преподаватель и автор материалов по статистическому анализу,
-        нейтринной физике и квантовой теории поля.
-      </p>
-      <nav class="course-profile-links" aria-label="Ссылки автора">
-        <a href="https://neutrinohit.github.io/">NeutrinoHit</a>
-        <a href="https://naumov.jinr.ru/">Профиль JINR</a>
-        <a href="https://teach-in.ru/lecturer/naumov-dv">Teach-in</a>
-        <a href="https://www.youtube.com/@dmitrynaumov6099/">YouTube</a>
-        <a href="https://t.me/NeutrinoHit">Telegram</a>
-      </nav>
-    </div>
-  </header>
-
-  <section class="course-intro">
-    <h2>Курс лекций</h2>
+  <section class="course-intro course-intro-primary">
+    <p class="course-kicker">Курс лекций</p>
+    <h1>Статистический анализ данных</h1>
     <p>
       Практический курс для физики высоких энергий, астрофизики и анализа
       экспериментальных данных. Материалы добавляются по мере готовности.
     </p>
+    <div class="lecture-links">
+      <a href="https://neutrinohit.github.io/lectures.html">Все курсы лекций</a>
+      <a href="exercises/index.html">Все задачи</a>
+    </div>
   </section>
 
   <section class="lecture-accordion" aria-label="Лекции курса">
@@ -53,7 +39,7 @@ format:
         <p>Зачем физику статистика и какие вопросы решает курс.</p>
         <div class="lecture-links">
           <a href="introduction.html">Открыть лекцию</a>
-          <a href="exercises/introduction.html">Задачи</a>
+          <a href="exercises/introduction_exercises.html">Задачи</a>
           <span class="lecture-link-pending">Видео появится позже</span>
         </div>
       </div>
@@ -68,7 +54,7 @@ format:
         <p>Вероятности, плотности, кумулятивная функция распределения и моменты.</p>
         <div class="lecture-links">
           <a href="random-distributions.html">Открыть лекцию</a>
-          <a href="exercises/random-distributions.html">Задачи</a>
+          <a href="exercises/random-distributions_exercises.html">Задачи</a>
           <span class="lecture-link-pending">Видео появится позже</span>
         </div>
       </div>
@@ -77,13 +63,43 @@ format:
     <details class="lecture-row">
       <summary>
         <span class="lecture-index">03</span>
+        <span>Характеристические функции и суммы случайных величин</span>
+      </summary>
+      <div class="lecture-row-body">
+        <p>Преобразование Фурье распределения, свёртки, независимые суммы, моменты, кумулянты и мост к ЦПТ.</p>
+        <div class="lecture-links">
+          <a href="characteristic-functions.html">Открыть лекцию</a>
+          <a href="exercises/characteristic-functions_exercises.html">Задачи</a>
+          <span class="lecture-link-pending">Видео появится позже</span>
+        </div>
+      </div>
+    </details>
+
+    <details class="lecture-row">
+      <summary>
+        <span class="lecture-index">04</span>
         <span>Центральная предельная теорема и нормальное распределение</span>
       </summary>
       <div class="lecture-row-body">
         <p>Почему возникает гаусс, как читать квантили и как проверять совместимость измерений.</p>
         <div class="lecture-links">
           <a href="central-limit-theorem.html">Открыть лекцию</a>
-          <a href="exercises/central-limit-theorem.html">Задачи</a>
+          <a href="exercises/central-limit-theorem_exercises.html">Задачи</a>
+          <span class="lecture-link-pending">Видео появится позже</span>
+        </div>
+      </div>
+    </details>
+
+    <details class="lecture-row">
+      <summary>
+        <span class="lecture-index">05</span>
+        <span>Когда гаусс не возникает</span>
+      </summary>
+      <div class="lecture-row-body">
+        <p>Границы применимости ЦПТ: тяжёлые хвосты, корреляции, смеси распределений, пороги и малые счёты.</p>
+        <div class="lecture-links">
+          <a href="non_gaussian_clt_violations.html">Открыть лекцию</a>
+          <a href="exercises/non_gaussian_clt_violations_exercises.html">Задачи</a>
           <span class="lecture-link-pending">Видео появится позже</span>
         </div>
       </div>

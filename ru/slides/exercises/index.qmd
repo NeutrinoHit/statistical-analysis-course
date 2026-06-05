@@ -11,6 +11,8 @@ format:
 
 Материалы к готовым лекциям:
 
-1. [Мотивация и обзор курса](introduction.html)
-2. [Случайные величины, распределения, моменты](random-distributions.html)
-3. [Центральная предельная теорема и нормальное распределение](central-limit-theorem.html)
+1. [Мотивация и обзор курса](introduction_exercises.html)
+2. [Случайные величины, распределения, моменты](random-distributions_exercises.html)
+3. [Характеристические функции и суммы случайных величин](characteristic-functions_exercises.html)
+4. [Центральная предельная теорема и нормальное распределение](central-limit-theorem_exercises.html)
+5. [Когда гаусс не возникает](non_gaussian_clt_violations_exercises.html)
