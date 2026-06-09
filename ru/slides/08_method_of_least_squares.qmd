@@ -1,0 +1,1212 @@
+---
+title: "Метод наименьших квадратов"
+subtitle: "Статистический анализ данных"
+author: "Дмитрий В. Наумов (ОИЯИ)"
+format:
+  revealjs:
+    theme: black
+    slide-number: true
+    preview-links: auto
+    chalkboard:
+      buttons: false
+    logo: shared/figures/dvnlogo.png
+    css: styles.css
+    transition: fade
+    center: true
+---
+
+# От измерений к кривой
+
+## Задача фита
+
+Имеются измерения
+$$
+(x_i,y_i),
+\qquad i=1,\ldots,N,
+$$
+и модель
+$$
+y=f(x;\boldsymbol\theta).
+$$
+
+Требуется:
+
+::: incremental
+- оценить параметры $\boldsymbol\theta$;
+- определить их неопределённости и корреляции;
+- проверить, согласуется ли модель с данными;
+- исследовать остатки и устойчивость результата.
+:::
+
+## Почему нельзя просто провести красивую кривую
+
+::: incremental
+- Точки имеют разные неопределённости.
+- Ошибки разных точек могут быть коррелированы.
+- Параметры модели также оказываются коррелированными.
+- Выброс или неверная модель могут сильно сместить результат.
+- Хорошая картинка не заменяет количественную проверку согласия.
+:::
+
+::: {.fragment .callout-note .thmbox appearance="simple"}
+Фит — это статистическая процедура, а не графический способ провести линию между точками.
+:::
+
+## Остатки
+
+Для выбранных параметров $\boldsymbol\theta$ остатки равны
+$$
+r_i(\boldsymbol\theta)
+=
+y_i-f(x_i;\boldsymbol\theta).
+$$
+
+Самая простая идея — выбрать параметры, минимизирующие сумму квадратов:
+$$
+\boxed{
+S(\boldsymbol\theta)
+=
+\sum_{i=1}^{N}r_i^2(\boldsymbol\theta).
+}
+$$
+
+Это **обычный метод наименьших квадратов**, OLS.
+
+## Почему именно квадраты
+
+::: incremental
+- Положительные и отрицательные остатки не сокращаются.
+- Большие отклонения получают больший штраф.
+- Квадратичная функция гладкая и удобна для оптимизации.
+- Для гауссовых ошибок минимизация квадратов следует из максимального правдоподобия.
+:::
+
+Последний пункт определяет статистический смысл метода.
+
+---
+
+# Связь с likelihood
+
+## Гауссова модель измерений
+
+Пусть $x_i$ известны точно, а измерения $y_i$ независимы:
+$$
+Y_i
+\sim
+\mathrm N\!\left(
+f(x_i;\boldsymbol\theta),
+\sigma_i^2
+\right).
+$$
+
+Тогда likelihood равен
+$$
+L(\boldsymbol\theta)
+=
+\prod_{i=1}^{N}
+\frac{1}{\sqrt{2\pi}\sigma_i}
+\exp\!\left[
+-\frac{
+[y_i-f(x_i;\boldsymbol\theta)]^2
+}{2\sigma_i^2}
+\right].
+$$
+
+## Взвешенная сумма квадратов
+
+Для известных $\sigma_i$, не зависящих от параметров:
+$$
+-2\ln L(\boldsymbol\theta)
+=
+\sum_{i=1}^{N}
+\frac{
+[y_i-f(x_i;\boldsymbol\theta)]^2
+}{\sigma_i^2}
++\mathrm{const}.
+$$
+
+Поэтому максимизация likelihood эквивалентна минимизации
+$$
+\boxed{
+\chi^2(\boldsymbol\theta)
+=
+\sum_{i=1}^{N}
+\frac{r_i^2(\boldsymbol\theta)}{\sigma_i^2}.
+}
+$$
+
+## Что означают веса
+
+Вклад одной точки:
+$$
+\chi_i^2
+=
+\frac{r_i^2}{\sigma_i^2}.
+$$
+
+::: incremental
+- Точка с малой $\sigma_i$ сильнее влияет на fit.
+- Точка с большой $\sigma_i$ допускает больший абсолютный остаток.
+- Вес равен обратной дисперсии:
+  $$
+  w_i=\frac{1}{\sigma_i^2}.
+  $$
+- Вес должен следовать из вероятностной модели, а не выбираться для получения желаемого результата.
+:::
+
+## Когда OLS является частным случаем
+
+Если все ошибки независимы и имеют одну неизвестную ширину:
+$$
+Y_i\sim\mathrm N(f_i,\sigma^2),
+$$
+то
+$$
+\chi^2
+=
+\frac{1}{\sigma^2}\sum_i r_i^2.
+$$
+
+Положение минимума не зависит от общего множителя $1/\sigma^2$, поэтому достаточно минимизировать
+$$
+\sum_i r_i^2.
+$$
+
+Но неизвестную $\sigma^2$ затем необходимо оценить по остаткам.
+
+## МНК не универсален
+
+Квадратичный критерий естественен при гауссовых ошибках. Он может быть неверным, если:
+
+::: incremental
+- наблюдаются малые пуассоновские счёты;
+- распределение имеет тяжёлые хвосты;
+- ошибки асимметричны;
+- имеются физические границы;
+- дисперсия зависит от параметров, но это проигнорировано;
+- неопределённости по оси $x$ существенны.
+:::
+
+---
+
+# Прямая по точкам
+
+## Линейная модель
+
+Рассмотрим
+$$
+y_i=a+b x_i+\varepsilon_i,
+\qquad
+\varepsilon_i\sim\mathrm N(0,\sigma_i^2).
+$$
+
+Минимизируем
+$$
+\chi^2(a,b)
+=
+\sum_i w_i(y_i-a-bx_i)^2,
+\qquad
+w_i=\frac1{\sigma_i^2}.
+$$
+
+Условия минимума:
+$$
+\frac{\partial\chi^2}{\partial a}=0,
+\qquad
+\frac{\partial\chi^2}{\partial b}=0.
+$$
+
+## Нормальные уравнения
+
+Введём суммы
+$$
+\begin{aligned}
+S&=\sum_iw_i,
+&
+S_x&=\sum_iw_ix_i,
+&
+S_y&=\sum_iw_iy_i,\\
+S_{xx}&=\sum_iw_ix_i^2,
+&
+S_{xy}&=\sum_iw_ix_iy_i.
+\end{aligned}
+$$
+
+Тогда
+$$
+\begin{pmatrix}
+S&S_x\\
+S_x&S_{xx}
+\end{pmatrix}
+\begin{pmatrix}a\\b\end{pmatrix}
+=
+\begin{pmatrix}S_y\\S_{xy}\end{pmatrix}.
+$$
+
+## Решение для прямой
+
+Обозначим
+$$
+\Delta=SS_{xx}-S_x^2.
+$$
+
+Тогда
+$$
+\boxed{
+\widehat a
+=
+\frac{S_{xx}S_y-S_xS_{xy}}{\Delta},
+\qquad
+\widehat b
+=
+\frac{SS_{xy}-S_xS_y}{\Delta}.
+}
+$$
+
+Ковариационная матрица параметров:
+$$
+\boxed{
+\operatorname{Cov}(\widehat a,\widehat b)
+=
+\frac1\Delta
+\begin{pmatrix}
+S_{xx}&-S_x\\
+-S_x&S
+\end{pmatrix}.
+}
+$$
+
+## Почему наклон и пересечение коррелированы
+
+Если увеличить наклон $b$, изменение пересечения $a$ может частично компенсировать сдвиг прямой в области данных.
+
+::: incremental
+- Чем дальше начало координат от центра данных, тем сильнее корреляция $a$ и $b$.
+- Удобная замена
+  $$
+  x_i'=x_i-\overline x_w,
+  \qquad
+  \overline x_w=\frac{\sum_iw_ix_i}{\sum_iw_i}
+  $$
+  уменьшает корреляцию.
+- Выбор параметризации влияет на численную устойчивость, но не меняет физическую модель.
+:::
+
+## Первый интерактив: что мы проверяем
+
+Аплет генерирует точки около прямой
+$$
+y=1+0.8x
+$$
+и выполняет взвешенный fit.
+
+::: incremental
+1. Изменяем статистическую ошибку точек.
+2. Добавляем управляемый выброс.
+3. Сравниваем fitted-прямую с истинной.
+4. Смотрим остатки и вклад выброса в $\chi^2$.
+5. Проверяем, что квадратичный критерий особенно чувствителен к большим отклонениям.
+:::
+
+## Интерактив: прямая, ошибки и выброс
+
+::: {.clt-widget}
+```{ojs}
+//| echo: false
+
+viewof lsSigma = Inputs.range([0.15, 1.5], {value: 0.55, step: 0.05, label: "типичная ошибка sigma"})
+viewof lsOutlier = Inputs.range([-4, 6], {value: 0, step: 0.25, label: "добавка к одной точке"})
+viewof regenerateLs = Inputs.button("Новые данные")
+
+randnLs = () => {
+  const u1 = Math.max(Math.random(), 1e-12);
+  const u2 = Math.random();
+  return Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
+}
+
+lsData = {
+  regenerateLs;
+  const data = [];
+  for (let i = 0; i < 16; ++i) {
+    const x = -4.5 + 9 * i / 15;
+    const sigma = lsSigma * (0.72 + 0.56 * (i % 4) / 3);
+    const y = 1 + 0.8 * x + sigma * randnLs() + (i === 12 ? lsOutlier : 0);
+    data.push({x, y, sigma, outlier: i === 12});
+  }
+  return data;
+}
+
+weightedLineFit = data => {
+  let S = 0, Sx = 0, Sy = 0, Sxx = 0, Sxy = 0;
+  for (const d of data) {
+    const w = 1 / (d.sigma * d.sigma);
+    S += w;
+    Sx += w * d.x;
+    Sy += w * d.y;
+    Sxx += w * d.x * d.x;
+    Sxy += w * d.x * d.y;
+  }
+  const delta = S * Sxx - Sx * Sx;
+  const a = (Sxx * Sy - Sx * Sxy) / delta;
+  const b = (S * Sxy - Sx * Sy) / delta;
+  const chi2 = data.reduce((sum, d) => sum + ((d.y - a - b * d.x) / d.sigma) ** 2, 0);
+  return {a, b, chi2, sigmaA: Math.sqrt(Sxx / delta), sigmaB: Math.sqrt(S / delta), covAB: -Sx / delta};
+}
+
+lsFit = weightedLineFit(lsData)
+lsFitLine = Array.from({length: 201}, (_, i) => {
+  const x = -5 + 10 * i / 200;
+  return {x, y: lsFit.a + lsFit.b * x};
+})
+lsTrueLine = Array.from({length: 201}, (_, i) => {
+  const x = -5 + 10 * i / 200;
+  return {x, y: 1 + 0.8 * x};
+})
+lsResiduals = lsData.map(d => ({
+  x: d.x,
+  pull: (d.y - lsFit.a - lsFit.b * d.x) / d.sigma,
+  outlier: d.outlier
+}))
+
+lsMainPlot = Plot.plot({
+  width: 720,
+  height: 460,
+  marginLeft: 65,
+  x: {label: "x", domain: [-5, 5], grid: true},
+  y: {label: "y", grid: true},
+  marks: [
+    Plot.ruleX(lsData, {x: "x", y1: d => d.y - d.sigma, y2: d => d.y + d.sigma, stroke: "#aaa"}),
+    Plot.dot(lsData, {x: "x", y: "y", r: 6, fill: d => d.outlier ? "#ff6b6b" : "#4ea1ff"}),
+    Plot.line(lsTrueLine, {x: "x", y: "y", stroke: "#999", strokeDasharray: "7,5", strokeWidth: 3}),
+    Plot.line(lsFitLine, {x: "x", y: "y", stroke: "#ffb347", strokeWidth: 4})
+  ]
+})
+
+lsResidualPlot = Plot.plot({
+  width: 520,
+  height: 460,
+  marginLeft: 65,
+  x: {label: "x", domain: [-5, 5], grid: true},
+  y: {label: "остаток / sigma", domain: [-6, 6], grid: true},
+  marks: [
+    Plot.ruleY([0], {stroke: "#f2f2f2"}),
+    Plot.ruleY([-2, 2], {stroke: "#999", strokeDasharray: "6,5"}),
+    Plot.dot(lsResiduals, {x: "x", y: "pull", r: 6, fill: d => d.outlier ? "#ff6b6b" : "#4ea1ff"})
+  ]
+})
+
+html`
+<div class="clt-panel">
+  <div style="display:flex; gap:0.7rem; justify-content:center; align-items:center;">
+    ${lsMainPlot}
+    ${lsResidualPlot}
+  </div>
+  <div class="clt-summary">
+    <span>a_hat = ${lsFit.a.toFixed(3)} ± ${lsFit.sigmaA.toFixed(3)}</span>
+    <span>b_hat = ${lsFit.b.toFixed(3)} ± ${lsFit.sigmaB.toFixed(3)}</span>
+    <span>chi² / ndf = ${lsFit.chi2.toFixed(1)} / ${lsData.length - 2}</span>
+  </div>
+</div>
+`
+```
+:::
+
+## Что видно в аплете
+
+::: incremental
+- Без выброса fitted-прямая флуктуирует около истинной.
+- Увеличение ошибок ослабляет ограничения на параметры.
+- Один далёкий выброс заметно сдвигает прямую и увеличивает $\chi^2$.
+- Остатки показывают структуру, которую легко пропустить на основном графике.
+- Обычный МНК не является устойчивым к выбросам методом.
+:::
+
+---
+
+# Матричная форма
+
+## Линейная по параметрам модель
+
+Модель называется линейной по параметрам, если
+$$
+\mathbf y=X\boldsymbol\beta+\boldsymbol\varepsilon,
+$$
+где:
+
+::: incremental
+- $\mathbf y$ — вектор из $N$ измерений;
+- $\boldsymbol\beta$ — вектор из $p$ неизвестных параметров;
+- $X$ — известная матрица дизайна размера $N\times p$;
+- $\boldsymbol\varepsilon$ — случайные ошибки.
+:::
+
+Например, для прямой строка матрицы дизайна равна $(1,x_i)$.
+
+## Обычный МНК в матричной форме
+
+При независимых ошибках с одинаковой дисперсией:
+$$
+S(\boldsymbol\beta)
+=
+(\mathbf y-X\boldsymbol\beta)^\mathsf T
+(\mathbf y-X\boldsymbol\beta).
+$$
+
+Условие минимума:
+$$
+X^\mathsf TX\widehat{\boldsymbol\beta}
+=
+X^\mathsf T\mathbf y.
+$$
+
+Если $X^\mathsf TX$ обратима:
+$$
+\boxed{
+\widehat{\boldsymbol\beta}
+=
+(X^\mathsf TX)^{-1}X^\mathsf T\mathbf y.
+}
+$$
+
+## Ковариация параметров
+
+Если
+$$
+\operatorname{Cov}(\boldsymbol\varepsilon)
+=
+\sigma^2 I,
+$$
+то
+$$
+\boxed{
+\operatorname{Cov}(\widehat{\boldsymbol\beta})
+=
+\sigma^2(X^\mathsf TX)^{-1}.
+}
+$$
+
+Если общая $\sigma^2$ неизвестна, её оценивают:
+$$
+\boxed{
+s^2
+=
+\frac{\mathrm{RSS}}{N-p},
+\qquad
+\mathrm{RSS}
+=
+\sum_i r_i^2.
+}
+$$
+
+## Взвешенный МНК
+
+Для независимых ошибок с различными известными дисперсиями:
+$$
+W
+=
+\operatorname{diag}
+\left(
+\frac1{\sigma_1^2},\ldots,\frac1{\sigma_N^2}
+\right).
+$$
+
+Тогда
+$$
+\chi^2
+=
+(\mathbf y-X\boldsymbol\beta)^\mathsf T
+W
+(\mathbf y-X\boldsymbol\beta),
+$$
+$$
+\boxed{
+\widehat{\boldsymbol\beta}
+=
+(X^\mathsf TWX)^{-1}X^\mathsf TW\mathbf y,
+\qquad
+\operatorname{Cov}(\widehat{\boldsymbol\beta})
+=
+(X^\mathsf TWX)^{-1}.
+}
+$$
+
+## Коррелированные измерения
+
+Если
+$$
+V=\operatorname{Cov}(\mathbf y)
+$$
+не диагональна, правильный критерий:
+$$
+\boxed{
+\chi^2
+=
+(\mathbf y-X\boldsymbol\beta)^\mathsf T
+V^{-1}
+(\mathbf y-X\boldsymbol\beta).
+}
+$$
+
+Решение обобщённого МНК:
+$$
+\boxed{
+\widehat{\boldsymbol\beta}
+=
+(X^\mathsf TV^{-1}X)^{-1}
+X^\mathsf TV^{-1}\mathbf y.
+}
+$$
+
+## Что делает $V^{-1}$
+
+::: incremental
+- Ковариационная матрица задаёт форму многомерного облака ошибок.
+- Умножение на $V^{-1}$ измеряет расстояние в единицах этого облака.
+- Согласованное общее смещение коррелированных точек может быть менее неожиданным, чем независимые сдвиги.
+- Игнорирование корреляций обычно даёт неверные ошибки параметров и неверный $\chi^2$.
+:::
+
+Геометрически это махаланобисово расстояние между данными и моделью.
+
+## Whitening
+
+Если
+$$
+V=LL^\mathsf T
+$$
+— разложение Холецкого, определим
+$$
+\widetilde{\mathbf y}=L^{-1}\mathbf y,
+\qquad
+\widetilde X=L^{-1}X.
+$$
+
+Тогда
+$$
+\chi^2
+=
+\|\widetilde{\mathbf y}
+-
+\widetilde X\boldsymbol\beta\|^2.
+$$
+
+::: {.fragment .callout-note .thmbox appearance="simple"}
+Обобщённый МНК превращается в обычный после преобразования, которое декоррелирует и нормирует ошибки.
+:::
+
+---
+
+# Качество согласия
+
+## Минимальный $\chi^2$
+
+После fit получаем
+$$
+\chi^2_{\min}
+=
+\chi^2(\widehat{\boldsymbol\theta}).
+$$
+
+Если:
+
+::: incremental
+- модель верна;
+- ошибки гауссовы и заданы правильно;
+- модель линейна по параметрам или линейное приближение достаточно;
+- параметры не находятся на границах;
+:::
+
+то приближённо
+$$
+\boxed{
+\chi^2_{\min}
+\sim
+\chi^2_\nu,
+\qquad
+\nu=N-p.
+}
+$$
+
+## Число степеней свободы
+
+До fit имеется $N$ независимых измерений. Fit использует данные для определения $p$ параметров.
+
+Остаётся
+$$
+\boxed{\nu=N-p}
+$$
+независимых комбинаций, проверяющих согласие модели.
+
+Для распределения $\chi^2_\nu$:
+$$
+\mathbb E[\chi^2_\nu]=\nu,
+\qquad
+\operatorname{Var}(\chi^2_\nu)=2\nu.
+$$
+
+## Приведённый $\chi^2$
+
+Определяют
+$$
+\boxed{
+\chi^2_{\rm red}
+=
+\frac{\chi^2_{\min}}{\nu}.
+}
+$$
+
+При корректной модели ожидается значение порядка единицы, но:
+
+::: incremental
+- точное отклонение от единицы зависит от $\nu$;
+- малое значение не доказывает правильность модели;
+- большое значение может означать неверную модель или заниженные ошибки;
+- $\chi^2_{\rm red}$ не заменяет $p$-value и анализ остатков.
+:::
+
+## Насколько должна флуктуировать величина $\chi^2/\nu$
+
+Стандартное отклонение:
+$$
+\sigma_{\chi^2/\nu}
+=
+\sqrt{\frac{2}{\nu}}.
+$$
+
+::::: {.columns}
+
+::: {.column width="50%"}
+
+При $\nu=5$:
+$$
+\sigma_{\chi^2/\nu}\approx0.63.
+$$
+
+:::
+
+::: {.column width="50%"}
+
+При $\nu=200$:
+$$
+\sigma_{\chi^2/\nu}=0.10.
+$$
+
+:::
+
+:::::
+
+Одинаковое значение $\chi^2/\nu$ может иметь разный смысл при разном числе степеней свободы.
+
+## Интерактив: ансамбль линейных fit
+
+Генерируем много наборов данных из правильной линейной модели, каждый раз выполняем fit двух параметров и строим распределение $\chi^2_{\min}$.
+
+::: {.clt-widget}
+```{ojs}
+//| echo: false
+
+viewof chiFitN = Inputs.range([4, 40], {value: 12, step: 1, label: "число точек N"})
+viewof chiFitToys = Inputs.range([500, 8000], {value: 3000, step: 500, label: "число псевдоэкспериментов"})
+viewof regenerateChiFit = Inputs.button("Новый ансамбль")
+
+randnChiFit = () => {
+  const u1 = Math.max(Math.random(), 1e-12);
+  const u2 = Math.random();
+  return Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
+}
+
+olsChi2 = values => {
+  const n = values.length;
+  let sx = 0, sy = 0, sxx = 0, sxy = 0;
+  for (const d of values) {
+    sx += d.x; sy += d.y; sxx += d.x * d.x; sxy += d.x * d.y;
+  }
+  const delta = n * sxx - sx * sx;
+  const a = (sxx * sy - sx * sxy) / delta;
+  const b = (n * sxy - sx * sy) / delta;
+  return values.reduce((sum, d) => sum + (d.y - a - b * d.x) ** 2, 0);
+}
+
+chiFitValues = {
+  regenerateChiFit;
+  const values = [];
+  for (let t = 0; t < chiFitToys; ++t) {
+    const sample = Array.from({length: chiFitN}, (_, i) => {
+      const x = -2 + 4 * i / (chiFitN - 1);
+      return {x, y: 0.5 + 1.2 * x + randnChiFit()};
+    });
+    values.push(olsChi2(sample));
+  }
+  return values;
+}
+
+chiFitNu = chiFitN - 2
+chiFitMean = chiFitValues.reduce((a, b) => a + b, 0) / chiFitValues.length
+chiFitVar = chiFitValues.reduce((s, x) => s + (x - chiFitMean) ** 2, 0) / chiFitValues.length
+
+chiFitPlot = Plot.plot({
+  width: 940,
+  height: 450,
+  marginLeft: 70,
+  x: {label: "chi²_min", domain: [0, Math.max(15, 2.3 * chiFitNu)], grid: true},
+  y: {label: "плотность", grid: true},
+  marks: [
+    Plot.rectY(chiFitValues, Plot.binX({y: "density"}, {x: d => d, thresholds: 50, fill: "#4ea1ff", fillOpacity: 0.72})),
+    Plot.ruleX([chiFitNu], {stroke: "#ffb347", strokeWidth: 4})
+  ]
+})
+
+html`
+<div class="clt-panel">
+  ${chiFitPlot}
+  <div class="clt-summary">
+    <span>ndf = N - 2 = ${chiFitNu}</span>
+    <span>среднее chi² = ${chiFitMean.toFixed(2)}, ожидается ${chiFitNu}</span>
+    <span>дисперсия = ${chiFitVar.toFixed(2)}, ожидается ${2 * chiFitNu}</span>
+  </div>
+</div>
+`
+```
+:::
+
+## Остатки важнее одного числа
+
+Одинаковый $\chi^2_{\min}$ может соответствовать разным проблемам:
+
+::: incremental
+- случайному разбросу без структуры;
+- систематическому изгибу;
+- одному сильному выбросу;
+- неверной зависимости дисперсии от $x$;
+- коррелированным последовательностям остатков.
+:::
+
+Поэтому после fit всегда следует строить остатки как функцию независимых переменных.
+
+## Pull и leverage
+
+Для OLS:
+$$
+\widehat{\mathbf y}=H\mathbf y,
+\qquad
+H=X(X^\mathsf TX)^{-1}X^\mathsf T.
+$$
+
+Матрица $H$ называется hat matrix. Её диагональный элемент $h_{ii}$ показывает **leverage** точки.
+
+При одинаковой дисперсии:
+$$
+\operatorname{Var}(r_i)
+=
+\sigma^2(1-h_{ii}).
+$$
+
+Стандартизованный остаток:
+$$
+\boxed{
+t_i
+=
+\frac{r_i}{s\sqrt{1-h_{ii}}}.
+}
+$$
+
+## Влиятельная точка
+
+::: incremental
+- Большой остаток означает, что точка плохо описывается fitted-моделью.
+- Большой leverage означает, что точка способна сильно изменить параметры.
+- Точка может иметь малый остаток именно потому, что притянула fit к себе.
+- Для диагностики полезно исследовать одновременно остаток и leverage.
+:::
+
+::: {.fragment .callout-important .remarkbox appearance="simple"}
+Удалять неудобную точку только потому, что она меняет результат, нельзя. Необходимо физическое или экспериментальное обоснование.
+:::
+
+---
+
+# Неопределённости параметров
+
+## Эллипс параметров
+
+Около минимума
+$$
+\chi^2(\boldsymbol\theta)
+\approx
+\chi^2_{\min}
++
+(\boldsymbol\theta-\widehat{\boldsymbol\theta})^\mathsf T
+C_\theta^{-1}
+(\boldsymbol\theta-\widehat{\boldsymbol\theta}).
+$$
+
+Линии постоянного
+$$
+\Delta\chi^2
+=
+\chi^2-\chi^2_{\min}
+$$
+образуют эллипсы в пространстве параметров.
+
+Диагональные элементы $C_\theta$ задают дисперсии, внедиагональные — корреляции.
+
+## Ошибка fitted-кривой
+
+Для линейной модели
+$$
+f(x;\boldsymbol\beta)
+=
+\mathbf h^\mathsf T(x)\boldsymbol\beta
+$$
+дисперсия оценки среднего значения модели:
+$$
+\boxed{
+\operatorname{Var}[\widehat f(x)]
+=
+\mathbf h^\mathsf T(x)
+C_\beta
+\mathbf h(x).
+}
+$$
+
+Для прямой $\mathbf h^\mathsf T(x)=(1,x)$.
+
+::: incremental
+- Это неопределённость среднего положения fitted-кривой.
+- Она не равна разбросу нового отдельного наблюдения.
+:::
+
+## Доверительная полоса и предиктивная полоса
+
+::::: {.columns}
+
+::: {.column width="50%"}
+
+**Полоса среднего**
+
+Показывает неопределённость fitted-среднего:
+$$
+\operatorname{Var}[\widehat f(x)].
+$$
+
+:::
+
+::: {.column width="50%"}
+
+**Предиктивная полоса**
+
+Для нового наблюдения дополнительно включает его собственный шум:
+$$
+\operatorname{Var}[Y_{\rm new}-\widehat f(x)]
+\approx
+\sigma^2+\operatorname{Var}[\widehat f(x)].
+$$
+
+:::
+
+:::::
+
+Предиктивная полоса всегда шире.
+
+## Нелинейная модель
+
+Если $f(x;\boldsymbol\theta)$ нелинейна по параметрам, аналитического решения обычно нет.
+
+Минимизатор итерационно ищет
+$$
+\widehat{\boldsymbol\theta}
+=
+\underset{\boldsymbol\theta}{\operatorname{arg\,min}}\,
+\chi^2(\boldsymbol\theta).
+$$
+
+Около текущей точки модель линеаризуют:
+$$
+f_i(\boldsymbol\theta+\delta\boldsymbol\theta)
+\approx
+f_i(\boldsymbol\theta)
++
+J_{i\alpha}\delta\theta_\alpha,
+$$
+где $J$ — якобиан модели.
+
+## Локальная ковариация нелинейного fit
+
+В квадратичном приближении:
+$$
+\boxed{
+C_\theta
+\approx
+(J^\mathsf TV^{-1}J)^{-1}.
+}
+$$
+
+::: incremental
+- Формула описывает только локальную кривизну около найденного минимума.
+- Она может быть неверна при асимметрии, границах и нескольких минимумах.
+- В таких случаях нужны сканы $\chi^2$, профильный likelihood или псевдоэксперименты.
+:::
+
+## Численная устойчивость
+
+Нормальные уравнения используют матрицу
+$$
+X^\mathsf TWX,
+$$
+которая может быть плохо обусловлена.
+
+::: incremental
+- Похожие столбцы $X$ означают почти неразличимые параметры.
+- Разные масштабы параметров ухудшают работу минимизатора.
+- Явное вычисление обратной матрицы часто численно хуже решения линейной системы.
+- Практически используют QR- или SVD-разложение.
+- Центрирование и масштабирование переменных улучшают устойчивость.
+:::
+
+---
+
+# Границы применимости
+
+## Ошибки по оси $x$
+
+Обычный МНК предполагает, что $x_i$ известны точно. Если это неверно:
+
+::: incremental
+- ошибка $x$ переносится на предсказание $f(x)$;
+- вертикальные остатки больше не описывают полную дистанцию до модели;
+- fitted-наклон обычно смещается к нулю — regression dilution.
+:::
+
+Для малых независимых ошибок можно приближённо использовать
+$$
+\sigma_{{\rm eff},i}^2
+\approx
+\sigma_{y,i}^2
++
+\left[
+\frac{\partial f}{\partial x}(x_i)
+\right]^2
+\sigma_{x,i}^2.
+$$
+
+## Что делать при ошибках по обеим координатам
+
+::: incremental
+- Построить полный likelihood для истинных скрытых координат.
+- Использовать orthogonal distance regression при подходящей геометрической модели ошибок.
+- Учесть корреляцию ошибок $x$ и $y$.
+- Не подставлять параметр-зависимую эффективную дисперсию в $\chi^2$ без полного нормировочного члена likelihood.
+:::
+
+::: {.fragment .callout-note .thmbox appearance="simple"}
+Если дисперсия зависит от fitted-параметров, минимизация только суммы нормированных квадратов может не совпадать с MLE.
+:::
+
+## Пуассоновские данные в бинах
+
+Для малых счётов
+$$
+n_i\sim\operatorname{Pois}(\nu_i)
+$$
+гауссово приближение может быть плохим.
+
+Часто встречаются критерии:
+$$
+\chi^2_{\rm Pearson}
+=
+\sum_i\frac{(n_i-\nu_i)^2}{\nu_i},
+$$
+$$
+\chi^2_{\rm Neyman}
+=
+\sum_i\frac{(n_i-\nu_i)^2}{n_i}.
+$$
+
+Второй критерий неопределён при пустых бинах, оба могут давать смещённые оценки при малых счётах.
+
+## Пуассоновский deviance
+
+Из отношения likelihood модели к насыщенной модели получается
+$$
+\boxed{
+D
+=
+2\sum_i
+\left[
+\nu_i-n_i+n_i\ln\frac{n_i}{\nu_i}
+\right],
+}
+$$
+где член $n_i\ln(n_i/\nu_i)$ принимается равным нулю при $n_i=0$.
+
+::: incremental
+- Минимизация $D$ эквивалентна максимизации пуассоновского likelihood.
+- Пустые бины обрабатываются корректно.
+- При больших счётах $D$ приближается к квадратичному критерию.
+:::
+
+## Интерактив: гауссов $\chi^2$ или пуассоновский likelihood
+
+Сравниваем fit среднего $\mu$ для нескольких пуассоновских наблюдений. Истинная MLE равна выборочному среднему; приближённые критерии могут её смещать.
+
+::: {.clt-widget}
+```{ojs}
+//| echo: false
+
+viewof countMu = Inputs.range([0.3, 20], {value: 2, step: 0.1, label: "истинное среднее mu"})
+viewof countBins = Inputs.range([3, 40], {value: 8, step: 1, label: "число наблюдений"})
+viewof regenerateCounts = Inputs.button("Новые счёты")
+
+poissonLs = lambda => {
+  const limit = Math.exp(-lambda);
+  let p = 1, k = 0;
+  do {
+    ++k;
+    p *= Math.random();
+  } while (p > limit);
+  return k - 1;
+}
+
+countData = {
+  regenerateCounts;
+  return Array.from({length: countBins}, () => poissonLs(countMu));
+}
+
+countMean = countData.reduce((a, b) => a + b, 0) / countData.length
+countPearsonHat = Math.sqrt(countData.reduce((s, n) => s + n * n, 0) / countData.length)
+countPositive = countData.filter(n => n > 0)
+countNeymanHat = countPositive.length === 0
+  ? 0
+  : countPositive.length / countPositive.reduce((s, n) => s + 1 / n, 0)
+countMax = Math.max(5, ...countData)
+countGrid = Array.from({length: 400}, (_, i) => 0.03 + (Math.max(25, 2.2 * countMax) - 0.03) * i / 399)
+countCriteria = countGrid.map(mu => {
+  const deviance = 2 * countData.reduce((s, n) => s + mu - n + (n > 0 ? n * Math.log(n / mu) : 0), 0);
+  const pearson = countData.reduce((s, n) => s + (n - mu) ** 2 / mu, 0);
+  const neyman = countData.reduce((s, n) => s + (n > 0 ? (n - mu) ** 2 / n : 0), 0);
+  return {mu, deviance, pearson, neyman};
+})
+
+countPlot = Plot.plot({
+  width: 940,
+  height: 440,
+  marginLeft: 70,
+  x: {label: "fitted mu", domain: [0, Math.min(Math.max(8, 2.2 * countMax), 25)], grid: true},
+  y: {label: "критерий - минимум", domain: [0, 25], grid: true},
+  color: {domain: ["Poisson deviance", "Pearson", "Neyman без пустых бинов"], range: ["#ffb347", "#4ea1ff", "#b388ff"], legend: true},
+  marks: [
+    Plot.line(countCriteria, {x: "mu", y: d => d.deviance - Math.min(...countCriteria.map(v => v.deviance)), stroke: "#ffb347", strokeWidth: 4}),
+    Plot.line(countCriteria, {x: "mu", y: d => d.pearson - Math.min(...countCriteria.map(v => v.pearson)), stroke: "#4ea1ff", strokeWidth: 3}),
+    Plot.line(countCriteria, {x: "mu", y: d => d.neyman - Math.min(...countCriteria.map(v => v.neyman)), stroke: "#b388ff", strokeWidth: 3}),
+    Plot.ruleX([countMu], {stroke: "#999", strokeDasharray: "6,5"})
+  ]
+})
+
+html`
+<div class="clt-panel">
+  ${countPlot}
+  <div class="clt-summary">
+    <span>данные: ${countData.join(", ")}</span>
+    <span>Poisson MLE = ${countMean.toFixed(2)}</span>
+    <span>Pearson minimum = ${countPearsonHat.toFixed(2)}</span>
+    <span>Neyman minimum ≈ ${countNeymanHat.toFixed(2)}</span>
+  </div>
+</div>
+`
+```
+:::
+
+## Робастные альтернативы
+
+Квадрат остатка быстро растёт:
+$$
+\rho(r)=r^2.
+$$
+
+Поэтому один выброс может доминировать в fit. Робастные функции потерь растут медленнее:
+
+::: incremental
+- абсолютные отклонения $|r|$;
+- Huber loss: квадрат для малых остатков и линейный рост для больших;
+- Student-$t$ likelihood для тяжёлых хвостов;
+- специальные модели выбросов или смеси распределений.
+:::
+
+Выбор робастного метода также должен соответствовать вероятностной модели задачи.
+
+---
+
+# Практический fit
+
+## Рабочий алгоритм
+
+::: incremental
+1. Определить, какие величины случайны и как распределены их ошибки.
+2. Построить likelihood или обоснованный критерий $\chi^2$.
+3. Учесть неодинаковые ошибки и полную ковариационную матрицу.
+4. Найти минимум и проверить численную устойчивость.
+5. Построить остатки, pulls и сканы параметров.
+6. Проверить качество согласия.
+7. Исследовать выбросы, leverage и альтернативные модели.
+8. Проверить процедуру на псевдоэкспериментах.
+:::
+
+## Что сообщать вместе с результатом
+
+::: incremental
+- fitted-параметры и их единицы;
+- полную ковариационную или корреляционную матрицу;
+- использованный статистический критерий;
+- $\chi^2_{\min}$, число степеней свободы и способ оценки согласия;
+- график данных, fitted-модели и остатков;
+- обработку систематических неопределённостей;
+- проверки устойчивости результата.
+:::
+
+## Частые ошибки
+
+| Ошибка | Последствие |
+|---|---|
+| все точки получают одинаковый вес | неэффективная или смещённая оценка |
+| корреляции игнорируются | неверная ошибка и качество согласия |
+| ошибки масштабируются до $\chi^2/\nu=1$ автоматически | скрывается несогласие модели |
+| используется $\chi^2$ для малых пуассоновских счётов | смещение fit |
+| анализируется только $\chi^2_{\min}$ | пропускается структура остатков |
+| ковариация берётся только из локальной кривизны | неверная ошибка при нелинейности |
+
+## Когда МНК особенно хорош
+
+::: incremental
+- Ошибки близки к гауссовым.
+- Ковариационная матрица измерений известна.
+- Модель линейна по параметрам или почти линейна около минимума.
+- Нет сильных выбросов и физических границ рядом с минимумом.
+- Требуется прозрачное аналитическое решение или быстрый fit.
+:::
+
+## Когда лучше сразу писать likelihood
+
+::: incremental
+- Малые пуассоновские счёты и пустые бины.
+- Событийный анализ без биннирования.
+- Ошибки зависят от параметров.
+- Есть существенные ошибки по нескольким координатам.
+- Распределения асимметричны или ограничены.
+- Требуется корректное включение nuisance-параметров.
+:::
+
+---
+
+# Что важно запомнить
+
+## Резюме
+
+::: incremental
+- МНК минимизирует квадратичные остатки; статистический смысл возникает из гауссова likelihood.
+- Веса равны обратным дисперсиям, а корреляции учитываются через полную матрицу $V^{-1}$.
+- Для линейной модели параметры и их ковариация вычисляются аналитически.
+- $\chi^2_{\min}$ проверяет согласие только при выполнении условий применимости.
+- Остатки, pulls и leverage необходимы для диагностики fit.
+- Локальная ковариация нелинейного fit может не описывать асимметрии и границы.
+- Для малых пуассоновских счётов следует использовать пуассоновский likelihood, а не навязывать гауссов $\chi^2$.
+:::

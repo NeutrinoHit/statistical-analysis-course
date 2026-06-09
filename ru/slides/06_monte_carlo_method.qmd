@@ -1,0 +1,967 @@
+---
+title: "Метод Монте-Карло и псевдоэксперименты"
+subtitle: "Статистический анализ данных"
+author: "Дмитрий В. Наумов (ОИЯИ)"
+format:
+  revealjs:
+    theme: black
+    slide-number: true
+    preview-links: auto
+    chalkboard:
+      buttons: false
+    logo: shared/figures/dvnlogo.png
+    css: styles.css
+    transition: fade
+    center: true
+---
+
+# Зачем нужен Монте-Карло
+
+## Когда аналитики недостаточно
+
+::: incremental
+- Распределение результата может быть неизвестно в замкнутой форме.
+- Преобразование измеряемых величин может быть сильно нелинейным.
+- Модель может включать пороги, отборы и физические границы.
+- Экспериментальная установка может иметь сложный многомерный отклик.
+- Интеграл может иметь большую размерность.
+:::
+
+::: {.fragment .callout-note .thmbox appearance="simple"}
+Метод Монте-Карло заменяет сложное аналитическое вычисление статистикой большого числа искусственно сгенерированных реализаций.
+:::
+
+## Основная идея
+
+Пусть требуется узнать свойства случайной величины
+$$
+Y=g(X),
+\qquad
+X\sim f_X(x).
+$$
+
+Алгоритм Монте-Карло:
+
+::: incremental
+1. Сгенерировать независимые значения
+   $$
+   X_1,\ldots,X_N\sim f_X.
+   $$
+2. Для каждого вычислить
+   $$
+   Y_k=g(X_k).
+   $$
+3. Использовать выборку $Y_1,\ldots,Y_N$ для оценки распределения, среднего, дисперсии или вероятности события.
+:::
+
+## Три применения одного метода
+
+::::: {.columns}
+
+::: {.column width="33%"}
+
+**Численное интегрирование**
+
+$$
+\int h(x)f(x)\,dx
+=
+\mathbb E[h(X)].
+$$
+
+:::
+
+::: {.column width="33%"}
+
+**Распространение ошибок**
+
+$$
+\mathbf X\sim f(\mathbf x)
+\quad\Longrightarrow\quad
+Y=g(\mathbf X).
+$$
+
+:::
+
+::: {.column width="34%"}
+
+**Псевдоэксперименты**
+
+Повторить весь эксперимент много раз и изучить распределение результата.
+
+:::
+
+:::::
+
+## Что Монте-Карло не делает
+
+::: incremental
+- Не исправляет неверную физическую или статистическую модель.
+- Не устраняет систематические неопределённости автоматически.
+- Не превращает малую реальную выборку в большую.
+- Не даёт точного ответа при конечном числе симуляций.
+- Не заменяет проверку аналитических предельных случаев.
+:::
+
+::: {.fragment .callout-important .remarkbox appearance="simple"}
+Монте-Карло точно решает ту задачу, которую мы запрограммировали, а не обязательно ту задачу, которую хотели решить.
+:::
+
+---
+
+# Генерация случайных величин
+
+## Псевдослучайные числа
+
+Компьютерный генератор создаёт детерминированную последовательность
+$$
+U_1,U_2,\ldots,
+\qquad
+U_k\in[0,1),
+$$
+которая статистически похожа на независимую равномерную выборку.
+
+::: incremental
+- Начальное состояние генератора задаётся **seed**.
+- Одинаковый seed воспроизводит ту же последовательность.
+- Разные вычислительные потоки должны использовать независимые последовательности.
+- Для научной воспроизводимости seed и алгоритм генератора необходимо сохранять.
+:::
+
+## Равномерное распределение как исходный материал
+
+Большинство генераторов непосредственно создаёт
+$$
+U\sim\mathrm U(0,1).
+$$
+
+Из равномерных чисел можно получить другие распределения:
+
+::: incremental
+- преобразованием через обратную CDF;
+- методом отбора;
+- специальными алгоритмами;
+- выбором из многомерного распределения;
+- моделированием последовательности физических процессов.
+:::
+
+## Метод обратной функции распределения
+
+Пусть
+$$
+U\sim\mathrm U(0,1),
+$$
+а $F_X(x)$ — CDF требуемого распределения.
+
+Тогда
+$$
+\boxed{
+X=F_X^{-1}(U)
+}
+$$
+имеет распределение $F_X$.
+
+Действительно,
+$$
+P(X\le x)
+=
+P(F_X^{-1}(U)\le x)
+=
+P(U\le F_X(x))
+=
+F_X(x).
+$$
+
+## Пример: экспоненциальное распределение
+
+Для
+$$
+f_X(x)=\lambda e^{-\lambda x},
+\qquad x\ge0,
+$$
+функция распределения равна
+$$
+F_X(x)=1-e^{-\lambda x}.
+$$
+
+Следовательно,
+$$
+\boxed{
+X
+=
+-\frac{1}{\lambda}\ln(1-U).
+}
+$$
+
+Поскольку $1-U$ также равномерно, часто используют $X=-\ln U/\lambda$.
+
+## Метод отбора
+
+Пусть требуется генерировать плотность $f(x)$, для которой
+$$
+f(x)\le M g(x),
+$$
+а из $g(x)$ генерировать легко.
+
+::: incremental
+1. Сгенерировать кандидата $X\sim g(x)$.
+2. Сгенерировать $U\sim\mathrm U(0,1)$.
+3. Принять $X$, если
+   $$
+   U\le\frac{f(X)}{Mg(X)}.
+   $$
+4. Иначе повторить попытку.
+:::
+
+Средняя доля принятых событий равна $1/M$, если $f$ и $g$ нормированы.
+
+## Интерактив: метод отбора
+
+Генерируем распределение
+$$
+f(x)=6x(1-x),
+\qquad 0\le x\le1,
+$$
+из равномерных точек под прямоугольником высоты $M=1.5$.
+
+::: {.clt-widget}
+```{ojs}
+//| echo: false
+
+viewof rejectN = Inputs.range([100, 6000], {value: 1200, step: 100, label: "число кандидатов"})
+viewof regenerateReject = Inputs.button("Новые кандидаты")
+
+rejectPoints = {
+  regenerateReject;
+  const values = [];
+  for (let i = 0; i < rejectN; ++i) {
+    const x = Math.random();
+    const y = 1.5 * Math.random();
+    values.push({x, y, accepted: y <= 6 * x * (1 - x)});
+  }
+  return values;
+}
+
+rejectCurve = Array.from({length: 301}, (_, i) => {
+  const x = i / 300;
+  return {x, y: 6 * x * (1 - x)};
+})
+
+acceptedReject = rejectPoints.filter(d => d.accepted)
+rejectRate = acceptedReject.length / rejectPoints.length
+
+rejectPlot = Plot.plot({
+  width: 900,
+  height: 470,
+  marginLeft: 65,
+  x: {label: "x", domain: [0, 1], grid: true},
+  y: {label: "y", domain: [0, 1.55], grid: true},
+  marks: [
+    Plot.dot(rejectPoints.filter(d => !d.accepted), {x: "x", y: "y", r: 2.2, fill: "#777", fillOpacity: 0.35}),
+    Plot.dot(acceptedReject, {x: "x", y: "y", r: 2.5, fill: "#4ea1ff", fillOpacity: 0.65}),
+    Plot.line(rejectCurve, {x: "x", y: "y", stroke: "#ffb347", strokeWidth: 4})
+  ]
+})
+
+html`
+<div class="clt-panel">
+  ${rejectPlot}
+  <div class="clt-summary">
+    <span>принято: ${acceptedReject.length} из ${rejectPoints.length}</span>
+    <span>эффективность = ${(100 * rejectRate).toFixed(1)}%</span>
+    <span>теоретическая эффективность = 66.7%</span>
+  </div>
+</div>
+`
+```
+:::
+
+## Выбор метода генерации
+
+| Метод | Преимущество | Ограничение |
+|---|---|---|
+| Обратная CDF | каждое число используется | нужна вычислимая $F^{-1}$ |
+| Отбор | простой и универсальный | может быть неэффективным |
+| Специальный алгоритм | высокая скорость | отдельная реализация для каждого семейства |
+| Марковские цепи | сложные многомерные плотности | коррелированные выборки и диагностика сходимости |
+
+---
+
+# Интегрирование методом Монте-Карло
+
+## Интеграл как математическое ожидание
+
+Пусть
+$$
+I=\int_a^b h(x)\,dx.
+$$
+
+Для $U\sim\mathrm U(a,b)$:
+$$
+\mathbb E[h(U)]
+=
+\frac{1}{b-a}
+\int_a^b h(x)\,dx.
+$$
+
+Поэтому
+$$
+\boxed{
+\widehat I_N
+=
+\frac{b-a}{N}
+\sum_{k=1}^{N}h(U_k).
+}
+$$
+
+## Ошибка интеграла Монте-Карло
+
+Если
+$$
+\operatorname{Var}[h(U)]=\sigma_h^2,
+$$
+то
+$$
+\operatorname{Var}(\widehat I_N)
+=
+\frac{(b-a)^2\sigma_h^2}{N}.
+$$
+
+Следовательно,
+$$
+\boxed{
+\sigma_{\widehat I_N}
+\propto
+\frac{1}{\sqrt N}.
+}
+$$
+
+::: incremental
+- Чтобы уменьшить ошибку в 10 раз, требуется в 100 раз больше точек.
+- Сходимость медленная, но почти не зависит от размерности интеграла.
+:::
+
+## Пример: площадь четверти круга
+
+Равномерно генерируем точки в единичном квадрате:
+$$
+(X,Y)\sim\mathrm U([0,1]^2).
+$$
+
+Вероятность попасть внутрь четверти круга:
+$$
+p=P(X^2+Y^2\le1)=\frac{\pi}{4}.
+$$
+
+Если $N_{\rm in}$ точек попали внутрь, то
+$$
+\boxed{
+\widehat\pi
+=
+4\frac{N_{\rm in}}{N}.
+}
+$$
+
+## Интерактив: оценка числа $\pi$
+
+::: {.clt-widget}
+```{ojs}
+//| echo: false
+
+viewof piN = Inputs.range([100, 12000], {value: 1200, step: 100, label: "число точек N"})
+viewof regeneratePi = Inputs.button("Новая выборка")
+
+piPoints = {
+  regeneratePi;
+  const values = [];
+  for (let i = 0; i < piN; ++i) {
+    const x = Math.random();
+    const y = Math.random();
+    values.push({x, y, inside: x * x + y * y <= 1});
+  }
+  return values;
+}
+
+piInside = piPoints.filter(d => d.inside)
+piEstimate = 4 * piInside.length / piPoints.length
+piSe = 4 * Math.sqrt((piInside.length / piPoints.length) * (1 - piInside.length / piPoints.length) / piPoints.length)
+quarterCircle = Array.from({length: 301}, (_, i) => {
+  const x = i / 300;
+  return {x, y: Math.sqrt(1 - x * x)};
+})
+
+piPlot = Plot.plot({
+  width: 620,
+  height: 560,
+  marginLeft: 55,
+  x: {label: "x", domain: [0, 1], grid: true},
+  y: {label: "y", domain: [0, 1], grid: true},
+  marks: [
+    Plot.dot(piPoints.filter(d => !d.inside), {x: "x", y: "y", r: 2, fill: "#ff6b6b", fillOpacity: 0.45}),
+    Plot.dot(piInside, {x: "x", y: "y", r: 2, fill: "#4ea1ff", fillOpacity: 0.50}),
+    Plot.line(quarterCircle, {x: "x", y: "y", stroke: "#ffb347", strokeWidth: 4})
+  ]
+})
+
+html`
+<div class="clt-panel">
+  ${piPlot}
+  <div class="clt-summary">
+    <span>pi_MC = ${piEstimate.toFixed(5)}</span>
+    <span>статистическая ошибка ≈ ${piSe.toFixed(5)}</span>
+    <span>отклонение от pi = ${(piEstimate - Math.PI).toFixed(5)}</span>
+  </div>
+</div>
+`
+```
+:::
+
+## Почему Монте-Карло полезен в большой размерности
+
+Для регулярной сетки с $m$ точками по каждой координате число вычислений равно
+$$
+N_{\rm grid}=m^d.
+$$
+
+В Монте-Карло статистическая ошибка обычно ведёт себя как
+$$
+\sigma_{\widehat I}\propto N^{-1/2},
+$$
+почти независимо от размерности $d$.
+
+::: {.fragment .callout-note .thmbox appearance="simple"}
+Монте-Карло особенно полезен для многомерных интегралов, где регулярная сетка страдает от «проклятия размерности».
+:::
+
+## Не все точки одинаково полезны
+
+Если основной вклад в интеграл приходит из малой области, равномерная генерация тратит большинство точек впустую.
+
+Вместо
+$$
+I=\int h(x)f(x)\,dx
+$$
+можно генерировать $X\sim q(x)$:
+$$
+\boxed{
+I
+=
+\mathbb E_q\!\left[
+h(X)\frac{f(X)}{q(X)}
+\right].
+}
+$$
+
+Это называется **выборкой по важности**.
+
+## Веса событий
+
+При выборке по важности каждое событие получает вес
+$$
+w_k=\frac{f(X_k)}{q(X_k)}.
+$$
+
+Оценка интеграла:
+$$
+\widehat I
+=
+\frac1N\sum_{k=1}^Nw_kh(X_k).
+$$
+
+::: incremental
+- Хорошая $q(x)$ чаще генерирует важные области.
+- Сильно различающиеся веса увеличивают дисперсию.
+- Вес не превращает одно событие в большое число независимых событий.
+:::
+
+---
+
+# Псевдоэксперименты
+
+## Что такое псевдоэксперимент
+
+Псевдоэксперимент — одна искусственная реализация полного измерения:
+
+::: incremental
+1. Сгенерировать истинные физические события.
+2. Смоделировать отклик детектора.
+3. Применить реконструкцию и отбор.
+4. Выполнить тот же анализ, что и для данных.
+5. Сохранить итоговую статистику или оценку параметра.
+:::
+
+Повторение этой процедуры строит распределение возможных результатов эксперимента.
+
+## Зачем нужны псевдоэксперименты
+
+::: incremental
+- Проверить смещение и дисперсию оценки параметра.
+- Проверить покрытие доверительного интервала.
+- Найти распределение статистики теста.
+- Оценить ожидаемую чувствительность эксперимента.
+- Проверить устойчивость фита.
+- Исследовать влияние систематических неопределённостей.
+:::
+
+## Пример: счётный эксперимент
+
+Пусть ожидается
+$$
+N\sim\operatorname{Pois}(s+b),
+$$
+где $s$ — сигнал, а $b$ — известный фон.
+
+Простейшая оценка сигнала:
+$$
+\widehat s=N-b.
+$$
+
+Она несмещённая:
+$$
+\mathbb E[\widehat s]=s,
+$$
+но отдельный эксперимент может дать даже $\widehat s<0$.
+
+## Интерактив: ансамбль счётных экспериментов
+
+::: {.clt-widget}
+```{ojs}
+//| echo: false
+
+viewof toySignal = Inputs.range([0, 20], {value: 5, step: 0.5, label: "ожидаемый сигнал s"})
+viewof toyBackground = Inputs.range([0.5, 30], {value: 10, step: 0.5, label: "ожидаемый фон b"})
+viewof toyN = Inputs.range([500, 20000], {value: 6000, step: 500, label: "псевдоэксперименты"})
+viewof regenerateToys = Inputs.button("Новый ансамбль")
+
+poissonToy = lambda => {
+  const limit = Math.exp(-lambda);
+  let p = 1;
+  let k = 0;
+  do {
+    k += 1;
+    p *= Math.random();
+  } while (p > limit);
+  return k - 1;
+}
+
+toyEstimates = {
+  regenerateToys;
+  return Array.from({length: toyN}, () => poissonToy(toySignal + toyBackground) - toyBackground);
+}
+
+toyMin = Math.floor(Math.min(...toyEstimates)) - 0.5
+toyMax = Math.ceil(Math.max(...toyEstimates)) + 0.5
+toyBins = {
+  const counts = new Map();
+  for (const value of toyEstimates) counts.set(value, (counts.get(value) || 0) + 1);
+  return Array.from(counts, ([value, count]) => ({value, probability: count / toyEstimates.length}));
+}
+toyMean = toyEstimates.reduce((a, b) => a + b, 0) / toyEstimates.length
+toySigma = Math.sqrt(toyEstimates.reduce((a, x) => a + (x - toyMean) ** 2, 0) / toyEstimates.length)
+toyNegative = toyEstimates.filter(x => x < 0).length / toyEstimates.length
+
+toyPlot = Plot.plot({
+  width: 900,
+  height: 430,
+  marginLeft: 70,
+  x: {label: "оценка сигнала ŝ = N - b", domain: [toyMin, toyMax], grid: true},
+  y: {label: "вероятность", grid: true},
+  marks: [
+    Plot.barY(toyBins, {x: "value", y: "probability", fill: "#4ea1ff", inset: 1}),
+    Plot.ruleX([toySignal], {stroke: "#ffb347", strokeWidth: 4})
+  ]
+})
+
+html`
+<div class="clt-panel">
+  ${toyPlot}
+  <div class="clt-summary">
+    <span>истинный сигнал s = ${toySignal.toFixed(1)}</span>
+    <span>среднее ŝ = ${toyMean.toFixed(2)}</span>
+    <span>sigma(ŝ) = ${toySigma.toFixed(2)}</span>
+    <span>P(ŝ < 0) = ${(100 * toyNegative).toFixed(1)}%</span>
+  </div>
+</div>
+`
+```
+:::
+
+## Ансамбль и реальные данные
+
+::: incremental
+- Реальный эксперимент даёт одну точку из распределения возможных результатов.
+- Псевдоэксперименты строят это распределение при заданной модели.
+- Они позволяют ответить: «что обычно произошло бы, если повторить эксперимент?»
+- Но ответ всегда условен относительно выбранной модели и её параметров.
+:::
+
+::: {.fragment .callout-important .remarkbox appearance="simple"}
+Нельзя выбирать модель псевдоэкспериментов после просмотра результата так, чтобы получить желаемый вывод.
+:::
+
+---
+
+# Распространение неопределённостей
+
+## Численный алгоритм
+
+Пусть известна совместная модель входных величин
+$$
+\mathbf X\sim f(\mathbf x),
+$$
+а результат равен
+$$
+Y=g(\mathbf X).
+$$
+
+::: incremental
+1. Генерировать $\mathbf X_k$ из полной совместной модели, включая корреляции.
+2. Вычислять $Y_k=g(\mathbf X_k)$.
+3. Построить распределение $Y$.
+4. Сообщить подходящие характеристики: среднее, медиану, стандартное отклонение или квантильный интервал.
+:::
+
+## Почему недостаточно генерировать каждую ошибку отдельно
+
+Если входные величины коррелированы, независимая генерация разрушает совместную модель.
+
+Для двумерного гаусса можно использовать
+$$
+\begin{aligned}
+X&=\mu_X+\sigma_XZ_1,\\
+Y&=\mu_Y+\sigma_Y\left(\rho Z_1+\sqrt{1-\rho^2}Z_2\right),
+\end{aligned}
+$$
+где
+$$
+Z_1,Z_2\sim\mathrm N(0,1)
+$$
+независимы.
+
+Тогда автоматически
+$$
+\operatorname{Corr}(X,Y)=\rho.
+$$
+
+## Стандартное отклонение или квантили?
+
+Для почти симметричного распределения удобно сообщать
+$$
+\widehat Y\pm\sigma_Y.
+$$
+
+Для асимметричного распределения полезнее:
+$$
+\boxed{
+\text{медиана},
+\qquad
+[q_{0.16},q_{0.84}].
+}
+$$
+
+::: incremental
+- Квантильный интервал содержит центральные $68\%$ распределения.
+- Он не предполагает гауссову форму.
+- Верхняя и нижняя ошибки могут различаться.
+:::
+
+## Интерактив: нелинейное отношение
+
+Рассмотрим коррелированные гауссовы величины
+$$
+X\sim\mathrm N(10,\sigma_X^2),
+\qquad
+Y\sim\mathrm N(5,\sigma_Y^2),
+$$
+и производную величину
+$$
+R=\frac{X}{Y}.
+$$
+
+::: {.clt-widget}
+```{ojs}
+//| echo: false
+
+viewof ratioSigmaX = Inputs.range([0.1, 2.5], {value: 0.8, step: 0.1, label: "sigma_X"})
+viewof ratioSigmaY = Inputs.range([0.1, 1.8], {value: 0.6, step: 0.1, label: "sigma_Y"})
+viewof ratioRho = Inputs.range([-0.95, 0.95], {value: 0.4, step: 0.05, label: "rho"})
+viewof regenerateRatioMc = Inputs.button("Новая выборка")
+
+randnRatioMc = () => {
+  const u1 = Math.max(Math.random(), 1e-12);
+  const u2 = Math.random();
+  return Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
+}
+
+ratioMcValues = {
+  regenerateRatioMc;
+  const values = [];
+  const corrScale = Math.sqrt(1 - ratioRho * ratioRho);
+  for (let i = 0; i < 24000; ++i) {
+    const z1 = randnRatioMc();
+    const z2 = randnRatioMc();
+    const x = 10 + ratioSigmaX * z1;
+    const y = 5 + ratioSigmaY * (ratioRho * z1 + corrScale * z2);
+    values.push(x / y);
+  }
+  return values;
+}
+
+ratioSorted = ratioMcValues.slice().sort((a, b) => a - b)
+ratioQuantile = p => {
+  const h = (ratioSorted.length - 1) * p;
+  const i = Math.floor(h);
+  const f = h - i;
+  return ratioSorted[i] * (1 - f) + ratioSorted[Math.min(i + 1, ratioSorted.length - 1)] * f;
+}
+ratioLo = ratioQuantile(0.005)
+ratioHi = ratioQuantile(0.995)
+ratioQ16 = ratioQuantile(0.16)
+ratioMedian = ratioQuantile(0.5)
+ratioQ84 = ratioQuantile(0.84)
+ratioMeanMc = ratioMcValues.reduce((a, b) => a + b, 0) / ratioMcValues.length
+ratioSigmaMc = Math.sqrt(ratioMcValues.reduce((s, r) => s + (r - ratioMeanMc) ** 2, 0) / ratioMcValues.length)
+ratioLinearSigma = 2 * Math.sqrt(
+  (ratioSigmaX / 10) ** 2
+  + (ratioSigmaY / 5) ** 2
+  - 2 * ratioRho * (ratioSigmaX / 10) * (ratioSigmaY / 5)
+)
+
+ratioHist = {
+  const bins = 90;
+  const width = (ratioHi - ratioLo) / bins;
+  const counts = Array(bins).fill(0);
+  for (const r of ratioMcValues) {
+    if (r < ratioLo || r > ratioHi) continue;
+    const j = Math.min(bins - 1, Math.max(0, Math.floor((r - ratioLo) / width)));
+    counts[j] += 1;
+  }
+  return counts.map((count, j) => ({
+    x0: ratioLo + j * width,
+    x1: ratioLo + (j + 1) * width,
+    density: count / (ratioMcValues.length * width)
+  }));
+}
+
+ratioNormal = Array.from({length: 401}, (_, i) => {
+  const r = ratioLo + (ratioHi - ratioLo) * i / 400;
+  const z = (r - 2) / ratioLinearSigma;
+  return {r, density: Math.exp(-0.5 * z * z) / (ratioLinearSigma * Math.sqrt(2 * Math.PI))};
+})
+
+ratioMcPlot = Plot.plot({
+  width: 900,
+  height: 430,
+  marginLeft: 70,
+  x: {label: "R = X/Y", domain: [ratioLo, ratioHi], grid: true},
+  y: {label: "плотность", grid: true},
+  marks: [
+    Plot.rectY(ratioHist, {x1: "x0", x2: "x1", y: "density", fill: "#4ea1ff", fillOpacity: 0.72}),
+    Plot.line(ratioNormal, {x: "r", y: "density", stroke: "#ffb347", strokeWidth: 3}),
+    Plot.ruleX([ratioMedian], {stroke: "#b388ff", strokeWidth: 3})
+  ]
+})
+
+html`
+<div class="clt-panel">
+  ${ratioMcPlot}
+  <div class="clt-summary">
+    <span>линейно: R = 2.000 ± ${ratioLinearSigma.toFixed(3)}</span>
+    <span>MC: median = ${ratioMedian.toFixed(3)}</span>
+    <span>центральные 68%: [${ratioQ16.toFixed(3)}, ${ratioQ84.toFixed(3)}]</span>
+    <span>MC sigma = ${ratioSigmaMc.toFixed(3)}</span>
+  </div>
+</div>
+`
+```
+:::
+
+## Что показывает пример с отношением
+
+::: incremental
+- При малых ошибках синяя гистограмма близка к линейному гауссову приближению.
+- Рост ошибки знаменателя создаёт правый хвост и асимметрию.
+- Корреляция существенно меняет ширину распределения отношения.
+- Симметричная запись $R\pm\sigma_R$ перестаёт хорошо описывать результат.
+- Квантильный интервал остаётся осмысленным.
+:::
+
+---
+
+# Моделирование эксперимента
+
+## Цепочка моделирования
+
+В физическом анализе Монте-Карло часто проходит несколько уровней:
+
+::: incremental
+1. **Генерация процесса:** истинные частицы и кинематика.
+2. **Взаимодействие с веществом:** каскады, потери энергии, вторичные частицы.
+3. **Отклик детектора:** сигналы сенсоров и электроники.
+4. **Реконструкция:** восстановленные объекты и параметры.
+5. **Отбор:** триггеры, критерии качества и анализ.
+:::
+
+На каждом уровне модель может вносить систематическую неопределённость.
+
+## Эффективность отбора
+
+Если из $N_{\rm gen}$ сгенерированных событий прошло отбор $N_{\rm sel}$, то
+$$
+\widehat\varepsilon
+=
+\frac{N_{\rm sel}}{N_{\rm gen}}.
+$$
+
+При независимых событиях
+$$
+N_{\rm sel}\sim\operatorname{Bin}(N_{\rm gen},\varepsilon),
+$$
+поэтому
+$$
+\boxed{
+\sigma_{\widehat\varepsilon}
+\approx
+\sqrt{
+\frac{\widehat\varepsilon(1-\widehat\varepsilon)}
+{N_{\rm gen}}
+}.
+}
+$$
+
+## Матрица отклика
+
+Истинное значение может быть восстановлено в другом бине:
+$$
+R_{ji}
+=
+P(\text{reco bin }j\mid\text{true bin }i).
+$$
+
+Если истинный спектр равен $\mathbf t$, то ожидаемый восстановленный спектр:
+$$
+\boxed{
+\mathbf r=R\mathbf t.
+}
+$$
+
+::: incremental
+- Диагональные элементы описывают правильную реконструкцию.
+- Внедиагональные элементы описывают миграции.
+- Потери эффективности уменьшают сумму элементов столбца.
+- Матрица отклика оценивается по Монте-Карло.
+:::
+
+## Ограниченная статистика моделирования
+
+Монте-Карло имеет собственные статистические флуктуации.
+
+Для взвешенной выборки эффективный размер:
+$$
+\boxed{
+N_{\rm eff}
+=
+\frac{\left(\sum_k w_k\right)^2}
+{\sum_k w_k^2}.
+}
+$$
+
+::: incremental
+- Если все веса равны, $N_{\rm eff}=N$.
+- Несколько больших весов могут сделать $N_{\rm eff}\ll N$.
+- Большое число сгенерированных событий не гарантирует малую ошибку после отбора и перевзвешивания.
+:::
+
+---
+
+# Как доверять Монте-Карло
+
+## Проверка генератора и реализации
+
+::: incremental
+- Сравнить простые распределения с аналитическими результатами.
+- Проверить средние, дисперсии, корреляции и нормировку.
+- Проверить предельные случаи параметров.
+- Сравнить несколько независимых реализаций.
+- Зафиксировать seed для воспроизведения ошибки.
+- Отдельно проверить каждый этап цепочки моделирования.
+:::
+
+## Проверка сходимости
+
+Результат необходимо изучить как функцию числа симуляций $N$.
+
+::: incremental
+- Статистическая ошибка должна убывать примерно как $1/\sqrt N$.
+- Независимые запуски должны быть совместимы в пределах ожидаемой ошибки.
+- Редкие области распределения требуют существенно большей статистики.
+- Для взвешенных событий следует контролировать $N_{\rm eff}$.
+:::
+
+## Смещение и дисперсия оценки
+
+Для оценки $\widehat\theta$ псевдоэксперименты позволяют вычислить
+$$
+\operatorname{bias}(\widehat\theta)
+=
+\mathbb E[\widehat\theta]-\theta,
+$$
+$$
+\operatorname{Var}(\widehat\theta)
+=
+\mathbb E\!\left[
+(\widehat\theta-\mathbb E[\widehat\theta])^2
+\right].
+$$
+
+::: {.fragment .callout-note .thmbox appearance="simple"}
+Хороший анализ должен показывать, что процедура восстановления параметра работает на псевдоэкспериментах с известной истиной.
+:::
+
+## Разделять два источника ошибки
+
+::: incremental
+- **Физическая статистическая неопределённость:** разброс возможных результатов реального эксперимента.
+- **Численная ошибка Монте-Карло:** неточность оценки этого разброса из-за конечного числа симуляций.
+:::
+
+Например, увеличение числа псевдоэкспериментов точнее определяет распределение $\widehat\theta$, но не уменьшает ожидаемую ошибку одного реального измерения.
+
+## Воспроизводимый рабочий процесс
+
+::: incremental
+1. Явно записать вероятностную модель.
+2. Сохранить конфигурацию и версии программ.
+3. Сохранить seed или правило формирования независимых seed.
+4. Проверить реализацию на задачах с известным ответом.
+5. Оценить численную ошибку Монте-Карло.
+6. Проверить устойчивость к увеличению статистики.
+7. Сравнить моделирование с контрольными данными.
+8. Документировать веса, отборы и систематические вариации.
+:::
+
+## Когда нужен другой инструмент
+
+::: incremental
+- Для простого аналитического результата Монте-Карло может скрыть понимание.
+- Для крайне редких событий наивная генерация неэффективна.
+- Для сложного posterior могут потребоваться MCMC или nested sampling.
+- Для обратных задач нужны методы регуляризации и unfolding.
+- Для дорогостоящего моделирования могут понадобиться суррогатные модели.
+:::
+
+---
+
+# Что важно запомнить
+
+## Резюме
+
+::: incremental
+- Монте-Карло строит численный ансамбль возможных реализаций модели.
+- Равномерные псевдослучайные числа преобразуются в требуемые распределения.
+- Интеграл можно представить как математическое ожидание.
+- Статистическая ошибка обычного Монте-Карло убывает как $1/\sqrt N$.
+- Псевдоэксперименты проверяют всю статистическую процедуру.
+- Численное распространение ошибок сохраняет нелинейность, корреляции и асимметрию.
+- Моделирование имеет собственную конечную статистику и систематические неопределённости.
+- Результату Монте-Карло можно доверять только после проверок сходимости и воспроизводимости.
+:::

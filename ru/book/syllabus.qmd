@@ -1,13 +1,56 @@
-# Силлабус
+---
+number-sections: false
+---
 
-| Глава | Что внутри | Ноутбук |
+# Маршрут книги {.unnumbered}
+
+Книга строится не как энциклопедия формул, а как последовательный путь от
+физического вопроса к статистическому выводу.
+
+```{=html}
+<div class="book-roadmap">
+  <section>
+    <span>I</span>
+    <div>
+      <h3>Язык данных</h3>
+      <p>Вероятность, случайные величины, распределения, моменты и первые модели.</p>
+    </div>
+  </section>
+  <section>
+    <span>II</span>
+    <div>
+      <h3>Оценивание и подгонка</h3>
+      <p>Правдоподобие, оценки параметров, метод наименьших квадратов и диагностика фита.</p>
+    </div>
+  </section>
+  <section>
+    <span>III</span>
+    <div>
+      <h3>Статистический вывод</h3>
+      <p>Проверка гипотез, значимость, доверительные интервалы и ограничения.</p>
+    </div>
+  </section>
+  <section>
+    <span>IV</span>
+    <div>
+      <h3>Реальный анализ</h3>
+      <p>Систематические неопределённости, корреляции и законченные физические кейсы.</p>
+    </div>
+  </section>
+</div>
+```
+
+## Главы и вычислительные материалы
+
+| Тема | Основной результат | Практика |
 |---|---|---|
-| Вероятность и моменты | Ожидание, дисперсия, выборочные моменты | [probability_demo](notebooks/probability_demo.qmd) |
-| Пуассон и гаусс | Счётные модели и приближения | [poisson_gaussian_demo](notebooks/poisson_gaussian_demo.qmd) |
-| Likelihood | Логика правдоподобия | [likelihood_demo](notebooks/likelihood_demo.qmd) |
-| Fitting | Подгонка параметров | [fitting_demo](notebooks/fitting_demo.qmd) |
-| Интервалы | Confidence intervals и coverage | [intervals_demo](notebooks/intervals_demo.qmd) |
-| Feldman-Cousins | Unified intervals | [feldman_cousins_demo](notebooks/feldman_cousins_demo.qmd) |
-| Проверка гипотез | p-values, power, test statistics | [hypothesis_tests_demo](notebooks/hypothesis_tests_demo.qmd) |
-| Систематики | Nuisance parameters и covariance | [systematics_demo](notebooks/systematics_demo.qmd) |
-| Нейтринные кейсы | Toy analyses в стиле oscillation fits | [neutrino_cases_demo](notebooks/neutrino_cases_demo.qmd) |
+| [Зачем физику статистика](chapters/why_statistics.qmd) | Язык физических результатов и первый фит | Интерактивный фит |
+| [Вероятность и моменты](chapters/probability.qmd) | Ожидание, дисперсия, выборочные моменты | [Ноутбук](notebooks/probability_demo.qmd) |
+| [Пуассон и гаусс](chapters/poisson_gaussian.qmd) | Счётные модели и приближения | [Ноутбук](notebooks/poisson_gaussian_demo.qmd) |
+| [Правдоподобие](chapters/likelihood.qmd) | Логика likelihood | [Ноутбук](notebooks/likelihood_demo.qmd) |
+| [Подгонка моделей](chapters/fitting.qmd) | Оценка параметров модели | [Ноутбук](notebooks/fitting_demo.qmd) |
+| [Интервальные оценки](chapters/intervals.qmd) | Интервалы и coverage | [Ноутбук](notebooks/intervals_demo.qmd) |
+| [Интервалы Фельдмана—Казинса](chapters/feldman_cousins.qmd) | Unified construction | [Ноутбук](notebooks/feldman_cousins_demo.qmd) |
+| [Проверка гипотез](chapters/hypothesis_tests.qmd) | $p$-value, мощность, статистики теста | [Ноутбук](notebooks/hypothesis_tests_demo.qmd) |
+| [Систематические неопределённости](chapters/systematics.qmd) | Nuisance-параметры и ковариации | [Ноутбук](notebooks/systematics_demo.qmd) |
+| [Нейтринные кейсы](chapters/neutrino_cases.qmd) | Полный анализ на физических примерах | [Ноутбук](notebooks/neutrino_cases_demo.qmd) |

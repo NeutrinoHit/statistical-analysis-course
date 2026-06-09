@@ -1,7 +1,7 @@
 .DEFAULT_GOAL := help
 
 QUARTO ?= quarto
-PYTHON ?= python3
+PYTHON ?= $(shell pyenv which python 2>/dev/null || command -v python3)
 QUARTO_PYTHON ?= $(PYTHON)
 MPLCONFIGDIR ?= $(CURDIR)/.make-tmp/mpl
 QUARTO_HOME ?= $(CURDIR)/.make-tmp/quarto-home

@@ -32,13 +32,13 @@ format:
   <section class="lecture-accordion" aria-label="Лекции курса">
     <details class="lecture-row" open>
       <summary>
-        <span class="lecture-index">01</span>
+        <span class="lecture-index">00</span>
         <span>Мотивация и обзор курса</span>
       </summary>
       <div class="lecture-row-body">
         <p>Зачем физику статистика и какие вопросы решает курс.</p>
         <div class="lecture-links">
-          <a href="introduction.html">Открыть лекцию</a>
+          <a href="00_introduction.html">Открыть лекцию</a>
           <a href="exercises/introduction_exercises.html">Задачи</a>
           <span class="lecture-link-pending">Видео появится позже</span>
         </div>
@@ -47,13 +47,13 @@ format:
 
     <details class="lecture-row">
       <summary>
-        <span class="lecture-index">02</span>
+        <span class="lecture-index">01</span>
         <span>Случайные величины, распределения, моменты</span>
       </summary>
       <div class="lecture-row-body">
         <p>Вероятности, плотности, кумулятивная функция распределения и моменты.</p>
         <div class="lecture-links">
-          <a href="random-distributions.html">Открыть лекцию</a>
+          <a href="01_random_distributions.html">Открыть лекцию</a>
           <a href="exercises/random-distributions_exercises.html">Задачи</a>
           <span class="lecture-link-pending">Видео появится позже</span>
         </div>
@@ -62,13 +62,13 @@ format:
 
     <details class="lecture-row">
       <summary>
-        <span class="lecture-index">03</span>
+        <span class="lecture-index">02</span>
         <span>Характеристические функции и суммы случайных величин</span>
       </summary>
       <div class="lecture-row-body">
         <p>Преобразование Фурье распределения, свёртки, независимые суммы, моменты, кумулянты и мост к ЦПТ.</p>
         <div class="lecture-links">
-          <a href="characteristic-functions.html">Открыть лекцию</a>
+          <a href="02_characteristic_functions.html">Открыть лекцию</a>
           <a href="exercises/characteristic-functions_exercises.html">Задачи</a>
           <span class="lecture-link-pending">Видео появится позже</span>
         </div>
@@ -77,13 +77,13 @@ format:
 
     <details class="lecture-row">
       <summary>
-        <span class="lecture-index">04</span>
+        <span class="lecture-index">03</span>
         <span>Центральная предельная теорема и нормальное распределение</span>
       </summary>
       <div class="lecture-row-body">
         <p>Почему возникает гаусс, как читать квантили и как проверять совместимость измерений.</p>
         <div class="lecture-links">
-          <a href="central-limit-theorem.html">Открыть лекцию</a>
+          <a href="03_central_limit_theorem.html">Открыть лекцию</a>
           <a href="exercises/central-limit-theorem_exercises.html">Задачи</a>
           <span class="lecture-link-pending">Видео появится позже</span>
         </div>
@@ -92,14 +92,179 @@ format:
 
     <details class="lecture-row">
       <summary>
-        <span class="lecture-index">05</span>
+        <span class="lecture-index">04</span>
         <span>Когда гаусс не возникает</span>
       </summary>
       <div class="lecture-row-body">
         <p>Границы применимости ЦПТ: тяжёлые хвосты, корреляции, смеси распределений, пороги и малые счёты.</p>
         <div class="lecture-links">
-          <a href="non_gaussian_clt_violations.html">Открыть лекцию</a>
+          <a href="04_non_gaussian_clt_violations.html">Открыть лекцию</a>
           <a href="exercises/non_gaussian_clt_violations_exercises.html">Задачи</a>
+          <span class="lecture-link-pending">Видео появится позже</span>
+        </div>
+      </div>
+    </details>
+
+    <details class="lecture-row">
+      <summary>
+        <span class="lecture-index">05</span>
+        <span>Распространение ошибок, ковариации и многомерный гаусс</span>
+      </summary>
+      <div class="lecture-row-body">
+        <p>Линейное распространение ошибок, корреляции, ковариационные матрицы, двумерный гаусс и вероятностные эллипсы.</p>
+        <div class="lecture-links">
+          <a href="05_error_propagation_and_covariance.html">Открыть лекцию</a>
+          <a href="exercises/error-propagation-and-covariance_exercises.html">Задачи</a>
+          <span class="lecture-link-pending">Видео появится позже</span>
+        </div>
+      </div>
+    </details>
+
+    <details class="lecture-row">
+      <summary>
+        <span class="lecture-index">06</span>
+        <span>Метод Монте-Карло и псевдоэксперименты</span>
+      </summary>
+      <div class="lecture-row-body">
+        <p>Генерация распределений, численное интегрирование, псевдоэксперименты, распространение неопределённостей и моделирование детектора.</p>
+        <div class="lecture-links">
+          <a href="06_monte_carlo_method.html">Открыть лекцию</a>
+          <a href="exercises/monte-carlo-method_exercises.html">Задачи</a>
+          <span class="lecture-link-pending">Видео появится позже</span>
+        </div>
+      </div>
+    </details>
+
+    <details class="lecture-row">
+      <summary>
+        <span class="lecture-index">07</span>
+        <span>Оценивание параметров и метод максимального правдоподобия</span>
+      </summary>
+      <div class="lecture-row-body">
+        <p>Функция правдоподобия, MLE, свойства оценок, информация Фишера, профильное правдоподобие и практическая диагностика fit.</p>
+        <div class="lecture-links">
+          <a href="07_parameter_estimation_and_maximum_likelihood.html">Открыть лекцию</a>
+          <a href="exercises/parameter-estimation-and-maximum-likelihood_exercises.html">Задачи</a>
+          <span class="lecture-link-pending">Видео появится позже</span>
+        </div>
+      </div>
+    </details>
+
+    <details class="lecture-row">
+      <summary>
+        <span class="lecture-index">08</span>
+        <span>Метод наименьших квадратов</span>
+      </summary>
+      <div class="lecture-row-body">
+        <p>Связь МНК с гауссовым likelihood, линейные и нелинейные fit, коррелированные ошибки, остатки и проверка качества согласия.</p>
+        <div class="lecture-links">
+          <a href="08_method_of_least_squares.html">Открыть лекцию</a>
+          <a href="exercises/method-of-least-squares_exercises.html">Задачи</a>
+          <span class="lecture-link-pending">Видео появится позже</span>
+        </div>
+      </div>
+    </details>
+
+    <details class="lecture-row">
+      <summary>
+        <span class="lecture-index">09</span>
+        <span>Статистические тесты: общие понятия</span>
+      </summary>
+      <div class="lecture-row-body">
+        <p>Нулевая и альтернативная гипотезы, ошибки I и II рода, мощность, критические области, p-value и оптимальные тесты.</p>
+        <div class="lecture-links">
+          <a href="09_statistical_tests_basics.html">Открыть лекцию</a>
+          <a href="exercises/statistical-tests-basics_exercises.html">Задачи</a>
+          <span class="lecture-link-pending">Видео появится позже</span>
+        </div>
+      </div>
+    </details>
+
+    <details class="lecture-row">
+      <summary>
+        <span class="lecture-index">10</span>
+        <span>Статистики тестов и многомерные методы</span>
+      </summary>
+      <div class="lecture-row-body">
+        <p>Likelihood-ratio, профильные статистики, асимптотика, многомерные дискриминанты, ROC, переобучение, калибровка и валидация.</p>
+        <div class="lecture-links">
+          <a href="10_test_statistics_and_multivariate_methods.html">Открыть лекцию</a>
+          <a href="exercises/test-statistics-and-multivariate-methods_exercises.html">Задачи</a>
+          <span class="lecture-link-pending">Видео появится позже</span>
+        </div>
+      </div>
+    </details>
+
+    <details class="lecture-row">
+      <summary>
+        <span class="lecture-index">11</span>
+        <span>Проверка согласия и статистическая значимость</span>
+      </summary>
+      <div class="lecture-row-body">
+        <p>Goodness-of-fit, остатки, Pearson и deviance, небинированные тесты, калибровка p-value, значимость поиска и look-elsewhere effect.</p>
+        <div class="lecture-links">
+          <a href="11_goodness_of_fit_and_significance.html">Открыть лекцию</a>
+          <a href="exercises/goodness-of-fit-and-significance_exercises.html">Задачи</a>
+          <span class="lecture-link-pending">Видео появится позже</span>
+        </div>
+      </div>
+    </details>
+
+    <details class="lecture-row">
+      <summary>
+        <span class="lecture-index">12</span>
+        <span>Фельдман–Казинс, CLs и родственные методы</span>
+      </summary>
+      <div class="lecture-row-body">
+        <p>Построение Неймана, покрытие, правила упорядочивания, unified intervals Фельдмана–Казинса, CLs, ожидаемые пределы и защита при слабой чувствительности.</p>
+        <div class="lecture-links">
+          <a href="12_feldman_cousins_and_cls.html">Открыть лекцию</a>
+          <a href="exercises/feldman-cousins-and-cls_exercises.html">Задачи</a>
+          <span class="lecture-link-pending">Видео появится позже</span>
+        </div>
+      </div>
+    </details>
+
+    <details class="lecture-row">
+      <summary>
+        <span class="lecture-index">13</span>
+        <span>Интервальные оценки и установление ограничений</span>
+      </summary>
+      <div class="lecture-row-body">
+        <p>Pivotal quantities, Wald и Wilson intervals, profile likelihood, многомерные контуры, bootstrap, односторонние ограничения и проверка покрытия.</p>
+        <div class="lecture-links">
+          <a href="13_interval_estimation_and_limits.html">Открыть лекцию</a>
+          <a href="exercises/interval-estimation-and-limits_exercises.html">Задачи</a>
+          <span class="lecture-link-pending">Видео появится позже</span>
+        </div>
+      </div>
+    </details>
+
+    <details class="lecture-row">
+      <summary>
+        <span class="lecture-index">14</span>
+        <span>Nuisance-параметры и систематические неопределённости</span>
+      </summary>
+      <div class="lecture-row-body">
+        <p>Constraints, auxiliary measurements, профилирование систематик, корреляции, norm/shape uncertainties, pulls, impacts, MC-stat и контрольные области.</p>
+        <div class="lecture-links">
+          <a href="14_nuisance_parameters_and_systematics.html">Открыть лекцию</a>
+          <a href="exercises/nuisance-parameters-and-systematics_exercises.html">Задачи</a>
+          <span class="lecture-link-pending">Видео появится позже</span>
+        </div>
+      </div>
+    </details>
+
+    <details class="lecture-row">
+      <summary>
+        <span class="lecture-index">15</span>
+        <span>Байесовский вывод и практические примеры</span>
+      </summary>
+      <div class="lecture-row-body">
+        <p>Prior, posterior, credible intervals, posterior predictive checks, маргинализация nuisance-параметров, иерархические модели и Bayes factors.</p>
+        <div class="lecture-links">
+          <a href="15_bayesian_examples.html">Открыть лекцию</a>
+          <a href="exercises/bayesian-examples_exercises.html">Задачи</a>
           <span class="lecture-link-pending">Видео появится позже</span>
         </div>
       </div>

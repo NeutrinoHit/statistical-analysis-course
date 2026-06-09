@@ -1,0 +1,1009 @@
+---
+title: "Характеристические функции и суммы случайных величин"
+subtitle: "Статистический анализ данных"
+author: "Дмитрий В. Наумов (ОИЯИ)"
+format:
+  revealjs:
+    theme: black
+    slide-number: true
+    preview-links: auto
+    chalkboard:
+      buttons: false
+    logo: shared/figures/dvnlogo.png
+    css: styles.css
+    transition: fade
+    center: true
+---
+
+# Мотивация
+
+## Распределение суммы двух независимых величин $X$ и $Y$
+
+::: incremental
+- Пусть известны плотности независимых величин $X$ и $Y$. Требуется найти плотность суммы $S=X+Y$.
+- Значение $S=s$ возникает для всех пар $(x,s-x)$. Независимость позволяет перемножить их плотности, после чего нужно просуммировать вклады:
+$$
+\boxed{
+f_S(s)
+=
+\int_{-\infty}^{+\infty}f_X(x)f_Y(s-x)\,dx.
+}
+$$
+- Этот интеграл называется **свёрткой**: $f_S\equiv f_X*f_Y$.
+- Для суммы многих величин придётся последовательно вычислять всё новые свёртки.
+- Например, для $S_n=X_1+\dots+X_n$ нужно вычислить $f_{S_n}=f_{X_1}*f_{X_2}*\cdots *f_{X_n}$:
+$$
+f_{S_n}(s)  = f_{X_1}*f_{X_2}*\cdots *f_{X_n} = \int_{-\infty}^{+\infty}\cdots\int_{-\infty}^{+\infty}f_{X_1}(x_1)f_{X_2}(x_2)\cdots f_{X_n}(s-x_1-\cdots -x_{n-1})\,dx_1\cdots dx_{n-1}.
+$$
+:::
+
+## Пример: Распределение Коши
+
+::: {.incremental}
+- Распределение Коши ($\mathrm{Cauchy}(x_0,\gamma)$):
+$$
+f_X(x;x_0,\gamma)=\frac{1}{\pi\gamma\left[1+\left(\frac{x-x_0}{\gamma}\right)^2\right]}.
+$$
+- В физике распределение Коши известно как распределение Лоренца и Брейта-Вигнера. Оно описывает резонансы и спектры излучения.
+- Стандартное распределение Коши: $x_0=0$, $\gamma=1$ ($\mathrm{Cauchy}(0,1)$):
+$$
+f_X(x)=\frac{1}{\pi(1+x^2)}.
+$$
+:::
+
+## Пример: сумма двух величин Коши
+
+::::: {.columns}
+
+::: {.column width="58%" .incremental}
+
+- Пусть $X,Y\sim\mathrm{Cauchy}(0,1)$ независимы:
+$$
+f_X(x)=f_Y(x)=\frac{1}{\pi(1+x^2)}.
+$$
+
+- Для суммы $S=X+Y$ прямая свёртка имеет вид
+$$
+\boxed{
+f_S(s)
+=
+\frac{1}{\pi^2}
+\int_{-\infty}^{+\infty}
+\frac{dx}
+{(1+x^2)\left[1+(s-x)^2\right]}.
+}
+$$
+
+:::
+
+::: {.column width="42%" .incremental}
+
+- Знаменатель — многочлен четвёртой степени по $x$.
+- Чтобы взять интеграл напрямую, придётся использовать разложение на простые дроби или комплексные вычеты.
+- После интегрирования результат ещё потребуется существенно упростить.
+
+::: {.fragment .callout-note .thmbox appearance="simple"}
+Простая постановка задачи привела к громоздкому интегралу.
+:::
+
+:::
+
+:::::
+
+## Новый язык: характеристическая функция
+
+::::: {.columns}
+
+::: {.column width="52%"}
+
+Характеристическая функция — преобразование Фурье распределения:
+
+$$
+\boxed{
+\varphi_X(t)
+=
+\mathbb E\!\left[e^{itX}\right].
+}
+$$
+
+Для непрерывной величины:
+
+$$
+\varphi_X(t)
+=
+\int_{-\infty}^{+\infty}
+e^{itx}f_X(x)\,dx.
+$$
+
+:::
+
+::: {.column width="48%" .incremental}
+
+- Если плотность существует, её можно восстановить:
+$$
+f_X(x)
+=
+\frac{1}{2\pi}
+\int_{-\infty}^{+\infty}
+e^{-itx}\varphi_X(t)\,dt.
+$$
+- Характеристическая функция содержит ту же информацию, что и исходное распределение.
+- Главное преимущество: для независимой суммы свёртка превращается в обычное произведение.
+
+:::
+
+:::::
+
+## Тот же пример: через Фурье
+
+::::: {.columns}
+
+::: {.column width="58%" .incremental}
+
+- Для стандартного распределения Коши Фурье-образ имеет вид:
+$$
+\varphi_X(t)=e^{-|t|}.
+$$
+
+- Независимость превращает сумму в произведение:
+$$
+\begin{aligned}
+\varphi_S(t)
+&=
+\mathbb E\!\left[e^{it(X+Y)}\right]
+=
+\mathbb E\!\left[e^{itX}e^{itY}\right]
+\\
+&=
+\mathbb E\!\left[e^{itX}\right]
+\mathbb E\!\left[e^{itY}\right]
+=
+\varphi_X(t)\varphi_Y(t)
+\\
+&=
+e^{-|t|}e^{-|t|}
+=
+e^{-2|t|}.
+\end{aligned}
+$$
+
+- Функция $e^{-2|t|}$ — характеристическая функция распределения $\mathrm{Cauchy}(0,2)$.
+
+:::
+
+::: {.column width="42%" .incremental}
+
+- Ответ получаем без вычисления свёртки:
+$$
+\boxed{
+\begin{aligned}
+S & =X+Y\sim\mathrm{Cauchy}(0,2),\\
+f_S(s)&=\frac{2}{\pi(s^2+4)}.
+\end{aligned}
+}
+$$
+
+::: {.fragment .ojs-plot-center}
+```{ojs}
+//| echo: false
+
+cauchyData = Array.from({length: 501}, (_, i) => {
+  const x = -8 + 16 * i / 500;
+  return {
+    x,
+    original: 1 / (Math.PI * (1 + x * x)),
+    sum: 2 / (Math.PI * (4 + x * x))
+  };
+})
+
+cauchySumPlot = Plot.plot({
+  width: 410,
+  height: 300,
+  marginLeft: 85,
+  marginBottom: 68,
+  x: {
+    label: "x",
+    domain: [-8, 8],
+    grid: true
+  },
+  y: {
+    label: "плотность",
+    domain: [0, 0.35],
+    grid: true
+  },
+  marks: [
+    Plot.ruleY([0], {stroke: "#888"}),
+    Plot.line(cauchyData, {x: "x", y: "original", stroke: "#ffb347", strokeWidth: 3}),
+    Plot.line(cauchyData, {x: "x", y: "sum", stroke: "#4ea1ff", strokeWidth: 3}),
+    Plot.text(
+      [
+        {x: 2.5, y: 0.12, label: "X"},
+        {x: 4.5, y: 0.07, label: "X + Y"}
+      ],
+      {x: "x", y: "y", text: "label", fill: d => d.label === "X" ? "#ffb347" : "#4ea1ff"}
+    )
+  ]
+})
+```
+:::
+
+:::
+
+:::::
+
+## Алгоритм: сумма двух величин через Фурье
+
+Пусть независимые величины $X$ и $Y$ имеют плотности $f_X(x)$ и $f_Y(y)$, а
+$$
+S=X+Y.
+$$
+
+::: incremental
+1. **Преобразовать обе плотности:**
+   $$
+   \varphi_X(t)
+   =
+   \int_{-\infty}^{+\infty}e^{itx}f_X(x)\,dx,
+   \qquad
+   \varphi_Y(t)
+   =
+   \int_{-\infty}^{+\infty}e^{ity}f_Y(y)\,dy.
+   $$
+2. **Заменить сумму произведением:**
+   $$
+   \varphi_S(t)
+   =
+   \varphi_X(t)\varphi_Y(t).
+   $$
+3. **Вернуться к плотности:** и вычислить последний интеграл
+   $$
+   f_S(s)
+   =
+   \frac{1}{2\pi}
+   \int_{-\infty}^{+\infty}e^{-its}\varphi_S(t)\,dt.
+   $$
+:::
+
+
+# Свойства характеристической функции
+
+## Дискретный случай
+
+Если случайная величина принимает значения $x_k$ с вероятностями $p_k$, то
+$$
+P(X=x_k)=p_k,
+\qquad
+\sum_k p_k=1,
+$$
+и
+$$
+\boxed{
+\varphi_X(t)
+=
+\sum_k p_k e^{itx_k}.
+}
+$$
+
+::: incremental
+- Интеграл заменяется суммой.
+- Никакой новой вероятностной конструкции не возникает.
+- Мы просто кодируем распределение в удобной для сложения форме.
+:::
+
+## Почему характеристическая функция всегда существует
+
+Поскольку
+$$
+\left|e^{itX}\right|=1,
+$$
+то
+$$
+\left|\varphi_X(t)\right|
+=
+\left|\mathbb{E}\!\left[e^{itX}\right]\right|
+\le
+\mathbb{E}\!\left[\left|e^{itX}\right|\right]
+=1.
+$$
+
+::: {.callout-important .thmbox appearance="simple"}
+## Важное преимущество
+
+Характеристическая функция существует для любого распределения, даже если среднее или дисперсия не существуют.
+:::
+
+## Базовые свойства
+
+Для любой случайной величины $X$:
+$$
+\varphi_X(0)=1,
+\qquad
+\left|\varphi_X(t)\right|\le 1,
+\qquad
+\varphi_X(-t)=\varphi^*_X(t).
+$$
+
+::: incremental
+- Значение при $t=0$ выражает нормировку вероятности:
+$$
+\varphi_X(0) = \mathbb{E}[1] = 1.
+$$
+- Для симметричного распределения относительно нуля $\varphi_X(t)$ вещественна и чётна.
+- Характеристическая функция однозначно задаёт распределение.
+:::
+
+## Сдвиг и масштаб
+
+Пусть
+$$
+Y=aX+b.
+$$
+
+Тогда
+$$
+\begin{aligned}
+\varphi_Y(t)
+&=
+\mathbb{E}\!\left[e^{it(aX+b)}\right]
+\\
+&=
+e^{itb}\,
+\mathbb{E}\!\left[e^{i(at)X}\right].
+\end{aligned}
+$$
+
+Следовательно,
+$$
+\boxed{
+\varphi_{aX+b}(t)
+=
+e^{itb}\varphi_X(at).
+}
+$$
+
+---
+
+# Независимые суммы
+
+## Сумма многих независимых величин
+
+В примере с распределением Коши мы доказали, что для двух независимых величин
+$$
+\varphi_{X+Y}(t)=\varphi_X(t)\varphi_Y(t).
+$$
+
+Последовательно применяя это равенство к
+$$
+S_n=X_1+\dots+X_n,
+$$
+получаем
+$$
+\boxed{
+\varphi_{S_n}(t)
+=
+\prod_{k=1}^n\varphi_{X_k}(t).
+}
+$$
+
+Для одинаково распределённых величин:
+$$
+\boxed{
+\varphi_{S_n}(t)
+=
+\left[\varphi_X(t)\right]^n.
+}
+$$
+
+---
+
+# Примеры характеристических функций
+
+## Распределение Бернулли 
+
+::: incremental
+- Распределение Бернулли: 
+$$
+P(X=x)=p^x(1-p)^{1-x}, \quad x = 0,1.
+$$
+- Пусть
+$$
+P(X=0)=1-p,
+\qquad
+P(X=1)=p.
+$$
+
+- Тогда
+$$
+\boxed{
+\varphi_X(t)
+=
+(1-p)e^{0}+pe^{it\cdot 1}
+=
+(1-p)+pe^{it}.
+}
+$$
+
+- Для суммы $n$ независимых величин Бернулли:
+$$
+\varphi_{S_n}(t)
+=
+\left[(1-p)+pe^{it}\right]^n.
+$$
+
+- Это характеристическая функция биномиального распределения.
+
+::: 
+
+## Распределение Пуассона
+
+::: incremental
+
+- Для $N\sim\mathrm{Pois}(\lambda)$:
+$$
+P(N=k)
+=
+e^{-\lambda}\frac{\lambda^k}{k!}.
+$$
+
+- Тогда
+$$
+\begin{aligned}
+\varphi_N(t)
+&=
+\sum_{k=0}^{\infty}
+e^{itk}e^{-\lambda}\frac{\lambda^k}{k!}
+\\
+&=
+e^{-\lambda}
+\sum_{k=0}^{\infty}
+\frac{\left(\lambda e^{it}\right)^k}{k!}=
+e^{-\lambda}e^{\lambda e^{it}}\\
+&=
+\boxed{e^{\lambda\left(e^{it}-1\right)}.}
+\end{aligned}
+$$
+:::
+
+## Сумма пуассоновских величин
+::: incremental
+- Характеристическая функция суммы 
+$$
+S_n=\sum_{k=1}^n N_k
+$$
+пуассоновских величин:
+$$
+\varphi_{S_n}(t)
+=
+\prod_{k=1}^n\varphi_{N_k}(t) = \prod_{k=1}^n e^{\lambda_k\left(e^{it}-1\right)}=e^{\lambda\left(e^{it}-1\right)},
+$$
+где 
+$$
+\lambda=\sum_k\lambda_k.
+$$
+- Сумма независимых пуассоновских величин снова имеет распределение Пуассона.
+- Их параметры $\lambda$ складываются.
+:::
+
+## Распределение Гаусса
+::: incremental
+
+- Для
+$$
+X\sim \mathrm{N}(\mu,\sigma^2)
+$$
+- Характеристическая функция равна
+$$
+\boxed{
+\varphi_X(t)
+=
+\exp\!\left(
+i\mu t-\frac{\sigma^2t^2}{2}
+\right).
+}
+$$
+- Вывод:
+$$
+\begin{aligned}
+\varphi_X(t)
+&=
+\int_{-\infty}^{+\infty}
+e^{itx}\frac{1}{\sqrt{2\pi\sigma^2}}e^{-\frac{(x-\mu)^2}{2\sigma^2}}\,dx
+\\
+&=
+e^{i\mu t}\int_{-\infty}^{+\infty}
+\frac{1}{\sqrt{2\pi\sigma^2}}e^{-\frac{(x-\mu)^2}{2\sigma^2}+it(x-\mu)}\,dx
+\\
+&=
+e^{i\mu t-\frac{\sigma^2t^2}{2}}\int_{-\infty}^{+\infty}  \frac{1}{\sqrt{2\pi\sigma^2}}e^{-\frac{(x-\mu-it\sigma)^2}{2\sigma^2}}\,dx = e^{i\mu t-\frac{\sigma^2t^2}{2}}.
+\end{aligned}
+$$
+:::
+
+## Суммы гауссовых величин
+::: incremental
+- Пусть независимые величины распределены как
+$$
+X_k\sim \mathrm{N}(\mu_k,\sigma_k^2).
+$$
+
+- Тогда характеристическая функция суммы $S_n=\sum_{k=1}^n X_k$ равна 
+$$
+\begin{aligned}
+\varphi_{S_n}(t)
+&=
+\prod_{k=1}^n
+\exp\!\left(
+i\mu_k t-\frac{\sigma_k^2t^2}{2}
+\right)
+\\
+&=
+\exp\!\left[
+i t\sum_k\mu_k
+-\frac{t^2}{2}\sum_k\sigma_k^2
+\right].
+\end{aligned}
+$$
+- Сумма независимых гауссовых величин распределена по гауссу:
+$$
+\boxed{
+S_n
+\sim
+\mathrm{N}\!\left(
+\sum_k\mu_k,
+\sum_k\sigma_k^2
+\right).
+}
+$$
+
+:::
+
+
+## Распределение Коши
+
+::: incremental
+- Для независимых $X_k\sim\mathrm{Cauchy}(0,1)$:
+$$
+\varphi_{S_n}(t)
+=
+\left(e^{-|t|}\right)^n
+=
+e^{-n|t|}.
+$$
+
+- Поэтому
+$$
+S_n\sim\mathrm{Cauchy}(0,n),
+\qquad
+\frac{S_n}{n}\sim\mathrm{Cauchy}(0,1).
+$$
+
+- Эта формула понадобится в лекции [о нарушениях условий ЦПТ](04_non_gaussian_clt_violations.qmd).
+
+:::
+
+
+# Моменты и кумулянты
+
+## Моменты как производные
+
+Если соответствующие моменты существуют, то
+$$
+\varphi_X(t)
+=
+\mathbb{E}\!\left[e^{itX}\right]
+=
+\mathbb{E}\!\left[
+\sum_{n=0}^{\infty}
+\frac{(itX)^n}{n!}
+\right].
+$$
+
+Формально:
+$$
+\varphi_X(t)
+=
+\sum_{n=0}^{\infty}
+\frac{(it)^n}{n!}
+\mathbb{E}[X^n].
+$$
+
+## Производные в нуле
+
+Следовательно,
+$$
+\boxed{
+\varphi_X^{(n)}(0)
+=
+i^n\mathbb{E}[X^n].
+}
+$$
+
+В частности:
+$$
+\mathbb{E}[X]
+=
+\frac{\varphi_X'(0)}{i},
+\qquad
+\mathbb{E}[X^2]
+=
+-\varphi_X''(0).
+$$
+
+::: incremental
+- Характеристическая функция существует всегда.
+- Но её производные нужного порядка могут не существовать.
+- У распределения Коши функция $e^{-|t|}$ не дифференцируема в нуле.
+:::
+
+## Производящая функция моментов
+
+Иногда используют
+$$
+M_X(t)
+=
+\mathbb{E}\!\left[e^{tX}\right].
+$$
+
+::: incremental
+- Это производящая функция моментов.
+- Она связана с характеристической функцией формальной заменой $t\to -it$.
+- В отличие от $\varphi_X(t)$, функция $M_X(t)$ может не существовать при $t\ne0$.
+- Для общих рассуждений характеристическая функция надёжнее.
+:::
+
+## Кумулянты
+
+Определим
+$$
+\boxed{
+K_X(t)
+=
+\ln\varphi_X(t).
+}
+$$
+
+Разложение около нуля:
+$$
+K_X(t)
+=
+\sum_{n=1}^{\infty}
+\kappa_n\frac{(it)^n}{n!}.
+$$
+
+Коэффициенты $\kappa_n$ называются кумулянтами.
+
+Из коэффициентов ряда их можно извлечь производными:
+$$
+\boxed{
+\kappa_n
+=
+\frac{1}{i^n}
+\left.
+\frac{d^n}{dt^n}\ln\varphi_X(t)
+\right|_{t=0}.
+}
+$$
+
+## Вывод первых двух кумулянтов
+
+Поскольку $\varphi_X(0)=1$, то
+$$
+\begin{aligned}
+K_X'(0)
+&=
+\frac{\varphi_X'(0)}{\varphi_X(0)}
+=i\mathbb E[X],
+\\[2mm]
+K_X''(0)
+&=
+\frac{\varphi_X''(0)}{\varphi_X(0)}
+-
+\left(\frac{\varphi_X'(0)}{\varphi_X(0)}\right)^2
+\\
+&=
+-\mathbb E[X^2]+\mathbb E[X]^2
+=-\operatorname{Var}(X).
+\end{aligned}
+$$
+
+Делим на соответствующие степени $i$:
+$$
+\boxed{
+\kappa_1=\mathbb E[X]=\mu,
+\qquad
+\kappa_2=\operatorname{Var}(X)=\sigma^2.
+}
+$$
+
+## Вывод следующих кумулянтов
+
+Для центрированной величины $Y=X-\mu$ обозначим
+$$
+m_r=\mathbb E[Y^r],
+\qquad
+m_2=\sigma^2.
+$$
+Поскольку $K_Y(t)=K_X(t)-i\mu t$, центрирование изменяет только первую кумулянту.
+
+Её характеристическая функция около нуля:
+$$
+\varphi_Y(t)
+=
+1-\frac{m_2t^2}{2}
+-i\frac{m_3t^3}{6}
++\frac{m_4t^4}{24}
++O(t^5).
+$$
+
+Используя $\ln(1+u)=u-u^2/2+\cdots$, получаем
+$$
+K_Y(t)
+=
+-\frac{m_2t^2}{2}
+-i\frac{m_3t^3}{6}
++\frac{(m_4-3m_2^2)t^4}{24}
++O(t^5).
+$$
+
+## Первые четыре кумулянта
+
+Сравнивая коэффициенты при степенях $it$, находим
+$$
+\boxed{
+\begin{aligned}
+\kappa_1&=\mu,\\
+\kappa_2&=\sigma^2,\\
+\kappa_3&=\mathbb E[(X-\mu)^3],\\
+\kappa_4&=\mathbb E[(X-\mu)^4]-3\sigma^4.
+\end{aligned}
+}
+$$
+
+## Почему кумулянты удобны
+
+Для независимых $X$ и $Y$:
+$$
+\varphi_{X+Y}(t)
+=
+\varphi_X(t)\varphi_Y(t).
+$$
+
+Поэтому
+$$
+\begin{aligned}
+K_{X+Y}(t)
+&=
+\ln\varphi_{X+Y}(t)
+\\
+&=
+\ln\varphi_X(t)
++
+\ln\varphi_Y(t).
+\end{aligned}
+$$
+
+Следовательно,
+$$
+\boxed{
+\kappa_n(X+Y)
+=
+\kappa_n(X)+\kappa_n(Y).
+}
+$$
+
+::: incremental
+- Моменты суммы содержат множество смешанных членов; кумулянты независимой суммы просто складываются.
+- Для масштаба $a$ выполняется $\kappa_n(aX)=a^n\kappa_n(X)$.
+- Поэтому у нормированной суммы кумулянты порядков $n>2$ исчезают, что непосредственно ведёт к ЦПТ.
+:::
+
+---
+
+# Мост к центральной предельной теореме
+
+## Нормированная сумма
+
+Пусть одинаково распределённые независимые величины имеют
+$$
+\mathbb{E}[X_i]=\mu,
+\qquad
+\mathrm{Var}(X_i)=\sigma^2<\infty.
+$$
+
+Рассмотрим
+$$
+Z_n
+=
+\frac{1}{\sigma\sqrt n}
+\sum_{k=1}^n(X_k-\mu).
+$$
+
+## Характеристическая функция нормированной суммы
+
+Обозначим
+$$
+Y_k=\frac{X_k-\mu}{\sigma}.
+$$
+
+Тогда
+$$
+\mathbb{E}[Y_k]=0,
+\qquad
+\mathrm{Var}(Y_k)=1,
+$$
+и
+$$
+Z_n
+=
+\frac{Y_1+\dots+Y_n}{\sqrt n}.
+$$
+
+Поэтому
+$$
+\boxed{
+\varphi_{Z_n}(t)
+=
+\left[
+\varphi_Y\!\left(\frac{t}{\sqrt n}\right)
+\right]^n.
+}
+$$
+
+## Разложение около нуля
+
+Если среднее равно нулю, а дисперсия равна единице, то при малых $u$
+$$
+\varphi_Y(u)
+=
+1-\frac{u^2}{2}+o(u^2).
+$$
+
+Подставим
+$$
+u=\frac{t}{\sqrt n}.
+$$
+
+Тогда
+$$
+\varphi_Y\!\left(\frac{t}{\sqrt n}\right)
+=
+1-\frac{t^2}{2n}
++o\!\left(\frac{1}{n}\right).
+$$
+
+## Предел
+
+Следовательно,
+$$
+\begin{aligned}
+\varphi_{Z_n}(t)
+&=
+\left[
+1-\frac{t^2}{2n}
++o\!\left(\frac{1}{n}\right)
+\right]^n
+\\
+&\longrightarrow
+e^{-t^2/2}.
+\end{aligned}
+$$
+
+Но
+$$
+e^{-t^2/2}
+$$
+— характеристическая функция стандартного гауссова распределения.
+
+## Смысл результата
+
+::: {.callout-important .thmbox appearance="simple"}
+## Почему возникает гаусс
+
+После центрирования и нормировки высшие детали распределения отдельных вкладов постепенно исчезают.
+
+В пределе остаётся универсальная квадратичная зависимость
+$$
+\ln\varphi(t)\simeq-\frac{t^2}{2}.
+$$
+:::
+
+## Кумулянты нормированной суммы
+
+Для
+$$
+Z_n
+=
+\frac{1}{\sigma\sqrt n}
+\sum_{k=1}^n(X_k-\mu)
+$$
+нормированные кумулянты ведут себя как
+$$
+\kappa_r(Z_n)
+\propto
+n^{1-r/2}.
+$$
+
+::: incremental
+- При $r=2$ дисперсия остаётся равной единице.
+- При $r=3$ асимметрия убывает как $1/\sqrt n$.
+- При $r=4$ эксцесс убывает как $1/n$.
+- При $r>2$ все высшие кумулянты исчезают при $n\to\infty$.
+:::
+
+## Интерактив: приближение к гауссу в Фурье-пространстве
+
+Пусть
+$$
+X_k\sim U(-\sqrt3,\sqrt3),
+$$
+так что
+$$
+\mathbb{E}[X_k]=0,
+\qquad
+\mathrm{Var}(X_k)=1.
+$$
+
+::: {.clt-widget}
+```{ojs}
+//| echo: false
+
+viewof nFourier = Inputs.range([1, 100], {
+  value: 1,
+  step: 1,
+  label: "число слагаемых n"
+})
+
+sincFourier = (x) => Math.abs(x) < 1e-12 ? 1 : Math.sin(x) / x
+
+fourierData = Array.from({length: 601}, (_, i) => {
+  const t = -8 + 16 * i / 600;
+  const u = Math.sqrt(3) * t / Math.sqrt(nFourier);
+  return {
+    t,
+    sum: Math.pow(sincFourier(u), nFourier),
+    gauss: Math.exp(-0.5 * t * t)
+  };
+})
+
+fourierPlot = Plot.plot({
+  width: 820,
+  height: 390,
+  marginLeft: 55,
+  x: {label: "t", domain: [-8, 8]},
+  y: {label: "Re φ(t)", domain: [-0.25, 1.05]},
+  grid: true,
+  marks: [
+    Plot.ruleY([0], {stroke: "#888"}),
+    Plot.line(fourierData, {x: "t", y: "sum", stroke: "#4ea1ff", strokeWidth: 3}),
+    Plot.line(fourierData, {x: "t", y: "gauss", stroke: "#ffb347", strokeWidth: 2.6})
+  ]
+})
+
+html`
+<div class="clt-panel">
+  ${fourierPlot}
+  <div class="clt-summary">
+    <span>синий: нормированная сумма равномерных величин</span>
+    <span>оранжевый: exp(-t²/2)</span>
+    <span>n = ${nFourier}</span>
+  </div>
+</div>
+`
+```
+:::
+
+---
+
+# Что важно запомнить
+
+## Резюме
+
+::: incremental
+- Характеристическая функция — преобразование Фурье распределения.
+- Она существует для любого распределения.
+- Для суммы независимых величин характеристические функции перемножаются.
+- Моменты связаны с производными в нуле.
+- Кумулянты складываются.
+- ЦПТ естественно возникает из квадратичного члена разложения $\ln\varphi(t)$.
+- Распределение Коши показывает, почему условие конечной дисперсии принципиально.
+:::

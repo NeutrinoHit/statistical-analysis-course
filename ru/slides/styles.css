@@ -651,6 +651,13 @@ body:not(.reveal-viewport) main.content {
   background: transparent;
 }
 
+.reveal .ojs-plot-center,
+.reveal .ojs-plot-center .observablehq {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
 /* temporary debug background */
 /* debug: границы области слайда */
 /*:root {

@@ -1,0 +1,1118 @@
+---
+title: "Статистики тестов и многомерные методы"
+subtitle: "Статистический анализ данных"
+author: "Дмитрий В. Наумов (ОИЯИ)"
+format:
+  revealjs:
+    theme: black
+    slide-number: true
+    preview-links: auto
+    chalkboard:
+      buttons: false
+    logo: shared/figures/dvnlogo.png
+    css: styles.css
+    transition: fade
+    center: true
+---
+
+# Как выбрать статистику теста
+
+## От общего правила к практической статистике
+
+В предыдущей лекции тест был задан абстрактно:
+$$
+T=T(X),
+\qquad
+T_{\rm obs}\in\mathcal C
+\Longrightarrow
+H_0\ \text{отвергается}.
+$$
+
+Теперь требуется выбрать $T$, которая:
+
+::: incremental
+- хорошо различает интересующие гипотезы;
+- использует доступную информацию;
+- допускает надёжную калибровку;
+- устойчива к nuisance-параметрам;
+- не переобучена на конкретной выборке.
+:::
+
+## Сжатие данных
+
+Исходные данные могут быть многомерными:
+$$
+\mathbf X=(X_1,\ldots,X_d).
+$$
+
+Тест обычно сжимает их до одного числа:
+$$
+\boxed{
+\mathbf X
+\longrightarrow
+T(\mathbf X).
+}
+$$
+
+::: incremental
+- Хорошая статистика сохраняет различия между $H_0$ и $H_1$.
+- Плохое сжатие необратимо теряет мощность.
+- Полный likelihood задаёт естественный способ такого сжатия.
+:::
+
+## Редкость и различимость — разные задачи
+
+Статистика goodness-of-fit спрашивает:
+
+> Насколько данные необычны при одной модели?
+
+Дискриминирующая статистика спрашивает:
+
+> Какая из двух моделей лучше объясняет данные?
+
+::: {.fragment .callout-note .thmbox appearance="simple"}
+Данные могут быть редкими при обеих гипотезах, но всё же сильнее поддерживать одну из них. И наоборот, типичные при $H_0$ данные могут почти не различать $H_0$ и $H_1$.
+:::
+
+## Желаемые свойства
+
+::: incremental
+- **Мощность:** часто отвергает $H_0$, когда релевантная $H_1$ верна.
+- **Калибруемость:** распределение при $H_0$ известно или воспроизводимо.
+- **Робастность:** умеренные ошибки модели не разрушают вывод.
+- **Интерпретируемость:** понятно, какие данные приводят к решению.
+- **Воспроизводимость:** правило полностью фиксировано до применения к данным.
+:::
+
+---
+
+# Статистики на основе likelihood
+
+## Отношение правдоподобия
+
+Для двух простых гипотез:
+$$
+H_0:\boldsymbol\theta=\boldsymbol\theta_0,
+\qquad
+H_1:\boldsymbol\theta=\boldsymbol\theta_1.
+$$
+
+Естественная статистика:
+$$
+\boxed{
+\Lambda
+=
+\frac{L(\boldsymbol\theta_1)}
+{L(\boldsymbol\theta_0)}.
+}
+$$
+
+По лемме Неймана — Пирсона порог по $\Lambda$ даёт наиболее мощный тест заданного размера.
+
+## Почему используем логарифм
+
+Монотонное преобразование не меняет ранжирование данных:
+$$
+\Lambda
+\quad\Longleftrightarrow\quad
+\ln\Lambda
+\quad\Longleftrightarrow\quad
+-2\ln\frac{L(\boldsymbol\theta_0)}
+{L(\boldsymbol\theta_1)}.
+$$
+
+::: incremental
+- Логарифм превращает произведение likelihood в сумму.
+- Вычисления становятся численно устойчивее.
+- Независимые наборы данных добавляют свои вклады.
+- Знак и множитель выбирают для удобства интерпретации.
+:::
+
+## Составная альтернатива
+
+Если альтернатива разрешает любые параметры модели, сравниваем $H_0$ с глобальным максимумом:
+$$
+\boxed{
+\lambda(\boldsymbol\theta_0)
+=
+\frac{
+L(\boldsymbol\theta_0)
+}{
+L(\widehat{\boldsymbol\theta})
+},
+\qquad
+q(\boldsymbol\theta_0)
+=
+-2\ln\lambda(\boldsymbol\theta_0).
+}
+$$
+
+Чем больше $q$, тем сильнее данные предпочитают fitted-модель относительно проверяемой точки.
+
+## Nuisance-параметры
+
+Пусть $\mu$ — параметр интереса, а $\boldsymbol\eta$ — nuisance-параметры.
+
+Профильное отношение правдоподобия:
+$$
+\boxed{
+\lambda(\mu)
+=
+\frac{
+L\!\left(\mu,\widehat{\widehat{\boldsymbol\eta}}(\mu)\right)
+}{
+L(\widehat\mu,\widehat{\boldsymbol\eta})
+}.
+}
+$$
+
+В числителе nuisance-параметры оптимизируются при фиксированном $\mu$; в знаменателе оптимизируются все параметры.
+
+## Что делает профилирование
+
+::: incremental
+- Для каждого проверяемого $\mu$ nuisance-параметры выбираются максимально благоприятно.
+- Тест не отвергает $\mu$ только потому, что nuisance-параметры были зафиксированы неудачно.
+- Корреляции обычно делают профиль шире.
+- Но частотные свойства статистики всё равно требуют проверки.
+:::
+
+## Три классические статистики
+
+Для проверки
+$$
+H_0:\theta=\theta_0
+$$
+часто используют:
+
+$$
+\boxed{
+q_{\rm LR}
+=
+-2\ln\frac{L(\theta_0)}{L(\widehat\theta)}
+}
+$$
+
+$$
+\boxed{
+q_{\rm Wald}
+=
+\frac{(\widehat\theta-\theta_0)^2}
+{\widehat{\operatorname{Var}}(\widehat\theta)}
+}
+$$
+
+$$
+\boxed{
+q_{\rm score}
+=
+\frac{
+U^2(\theta_0)
+}{
+I(\theta_0)
+},
+\qquad
+U=\frac{\partial\ell}{\partial\theta}.
+}
+$$
+
+## Чем отличаются LR, Wald и score
+
+| Статистика | Что требуется вычислить | Локальная информация |
+|---|---|---|
+| likelihood-ratio | fit при $H_0$ и полный fit | весь путь между $\theta_0$ и $\widehat\theta$ |
+| Wald | полный fit и его ошибка | кривизна около $\widehat\theta$ |
+| score | только fit при $H_0$ | наклон и кривизна около $\theta_0$ |
+
+Асимптотически они часто эквивалентны, но при малых выборках, границах и асимметрии могут существенно различаться.
+
+## Биномиальный пример
+
+Для
+$$
+K\sim\operatorname{Bin}(N,p),
+\qquad
+H_0:p=p_0,
+$$
+MLE равна
+$$
+\widehat p=\frac{k}{N}.
+$$
+
+Тогда
+$$
+q_{\rm LR}
+=
+2\left[
+k\ln\frac{\widehat p}{p_0}
++
+(N-k)\ln\frac{1-\widehat p}{1-p_0}
+\right].
+$$
+
+## Wald и score для биномиальной модели
+
+Wald использует дисперсию в fitted-точке:
+$$
+\boxed{
+q_{\rm Wald}
+=
+\frac{N(\widehat p-p_0)^2}
+{\widehat p(1-\widehat p)}.
+}
+$$
+
+Score использует информацию при $H_0$:
+$$
+\boxed{
+q_{\rm score}
+=
+\frac{N(\widehat p-p_0)^2}
+{p_0(1-p_0)}.
+}
+$$
+
+При $\widehat p=0$ или $1$ Wald-статистика становится проблематичной.
+
+## Интерактив: три статистики при конечном $N$
+
+::: {.clt-widget}
+```{ojs}
+//| echo: false
+
+viewof statN = Inputs.range([2, 200], {value: 12, step: 1, label: "число испытаний N"})
+viewof statP0 = Inputs.range([0.02, 0.98], {value: 0.30, step: 0.01, label: "проверяемое p0"})
+viewof statK = Inputs.range([0, statN], {value: Math.round(0.55 * statN), step: 1, label: "наблюдённое k"})
+
+statPhat = statK / statN
+safeXlog = (x, ratio) => x === 0 ? 0 : x * Math.log(ratio)
+statLR = 2 * (
+  safeXlog(statK, statPhat / statP0)
+  + safeXlog(statN - statK, (1 - statPhat) / (1 - statP0))
+)
+statWald = statPhat > 0 && statPhat < 1
+  ? statN * (statPhat - statP0) ** 2 / (statPhat * (1 - statPhat))
+  : Infinity
+statScore = statN * (statPhat - statP0) ** 2 / (statP0 * (1 - statP0))
+
+statGrid = Array.from({length: 399}, (_, i) => 0.0025 + 0.995 * i / 398)
+statCurve = statGrid.map(p => {
+  const lr = 2 * (
+    safeXlog(statK, statPhat / p)
+    + safeXlog(statN - statK, (1 - statPhat) / (1 - p))
+  );
+  const wald = statPhat > 0 && statPhat < 1
+    ? statN * (statPhat - p) ** 2 / (statPhat * (1 - statPhat))
+    : NaN;
+  const score = statN * (statPhat - p) ** 2 / (p * (1 - p));
+  return {p, lr, wald, score};
+})
+
+statPlot = Plot.plot({
+  width: 960,
+  height: 450,
+  marginLeft: 70,
+  x: {label: "проверяемое p", domain: [0, 1], grid: true},
+  y: {label: "статистика теста", domain: [0, 16], grid: true},
+  color: {domain: ["LR", "Wald", "score"], range: ["#ffb347", "#4ea1ff", "#b388ff"], legend: true},
+  marks: [
+    Plot.line(statCurve, {x: "p", y: "lr", stroke: "#ffb347", strokeWidth: 4}),
+    Plot.line(statCurve, {x: "p", y: "wald", stroke: "#4ea1ff", strokeWidth: 3}),
+    Plot.line(statCurve, {x: "p", y: "score", stroke: "#b388ff", strokeWidth: 3}),
+    Plot.ruleX([statP0], {stroke: "#f2f2f2", strokeWidth: 3})
+  ]
+})
+
+html`
+<div class="clt-panel">
+  ${statPlot}
+  <div class="clt-summary">
+    <span>p_hat = ${statPhat.toFixed(3)}</span>
+    <span>q_LR = ${statLR.toFixed(3)}</span>
+    <span>q_Wald = ${Number.isFinite(statWald) ? statWald.toFixed(3) : "не определена"}</span>
+    <span>q_score = ${statScore.toFixed(3)}</span>
+  </div>
+</div>
+`
+```
+:::
+
+## Что показывает сравнение статистик
+
+::: incremental
+1. Все статистики равны нулю в fitted-точке $\widehat p$.
+2. При больших $N$ и вблизи $\widehat p$ кривые становятся похожими.
+3. Вдали от максимума LR учитывает реальную несимметричную форму likelihood.
+4. Wald использует одну локальную ширину и плохо ведёт себя на границах.
+5. Score использует локальную информацию около каждой проверяемой точки.
+:::
+
+## Асимптотика Вилкса
+
+При выполнении условий регулярности и верной $H_0$:
+$$
+\boxed{
+q(\boldsymbol\theta_0)
+=
+-2\ln\lambda(\boldsymbol\theta_0)
+\xrightarrow[N\to\infty]{d}
+\chi^2_r,
+}
+$$
+где $r$ — число проверяемых ограничений.
+
+Это позволяет вычислять приближённые $p$-value без большого ансамбля псевдоэкспериментов.
+
+## Когда теорема Вилкса может не работать
+
+::: incremental
+- малая выборка;
+- параметр находится на физической границе;
+- параметр не идентифицируем при $H_0$;
+- несколько локальных максимумов;
+- негладкая модель;
+- слишком слабые ограничения nuisance-параметров.
+:::
+
+В этих случаях распределение статистики следует проверять псевдоэкспериментами.
+
+## Односторонняя статистика поиска
+
+При поиске неотрицательного сигнала $\mu\ge0$ данные с $\widehat\mu<0$ не являются свидетельством в пользу сигнала.
+
+Используют
+$$
+\boxed{
+q_0
+=
+\begin{cases}
+-2\ln\lambda(0), & \widehat\mu\ge0,\\
+0, & \widehat\mu<0.
+\end{cases}
+}
+$$
+
+Направление теста встроено в определение статистики. Её распределение на границе уже не является обычным $\chi^2_1$.
+
+---
+
+# Многомерные наблюдаемые
+
+## Зачем объединять переменные
+
+Сигнал и фон могут плохо различаться по каждой переменной отдельно, но хорошо — по их комбинации:
+$$
+\mathbf x=(x_1,\ldots,x_d).
+$$
+
+Примеры:
+
+::: incremental
+- энергия, угол и топология события;
+- параметры качества реконструкции;
+- времена и амплитуды сигналов;
+- несколько коррелированных оценок одной физической величины.
+:::
+
+## Оптимальный дискриминант
+
+Если известны многомерные плотности сигнала и фона:
+$$
+f_s(\mathbf x),
+\qquad
+f_b(\mathbf x),
+$$
+то оптимальное ранжирование задаёт likelihood ratio:
+$$
+\boxed{
+\Lambda(\mathbf x)
+=
+\frac{f_s(\mathbf x)}
+{f_b(\mathbf x)}.
+}
+$$
+
+Любое монотонное преобразование, например
+$$
+D(\mathbf x)
+=
+\frac{f_s(\mathbf x)}
+{f_s(\mathbf x)+f_b(\mathbf x)},
+$$
+даёт то же ранжирование.
+
+## Наивное произведение одномерных плотностей
+
+Простой дискриминант:
+$$
+\Lambda_{\rm naive}(\mathbf x)
+=
+\prod_j
+\frac{f_s(x_j)}
+{f_b(x_j)}.
+$$
+
+Он оптимален только если переменные независимы внутри каждого класса.
+
+::: incremental
+- Корреляции могут содержать важную информацию.
+- Игнорирование корреляций может снизить мощность.
+- Иногда корреляции плохо моделируются и делают сложный метод менее робастным.
+:::
+
+## Линейный дискриминант Фишера
+
+Ищем линейную статистику
+$$
+t=\mathbf w^\mathsf T\mathbf x
+$$
+с большим разделением средних классов относительно внутриклассового разброса.
+
+При общих ковариациях:
+$$
+\boxed{
+\mathbf w
+\propto
+\Sigma^{-1}
+(\boldsymbol\mu_s-\boldsymbol\mu_b).
+}
+$$
+
+Это направление, вдоль которого два многомерных гауссовых облака различаются лучше всего.
+
+## Геометрия линейного дискриминанта
+
+::: incremental
+- Разность средних задаёт направление от фона к сигналу.
+- Матрица $\Sigma^{-1}$ уменьшает вес шумных направлений.
+- Корреляции поворачивают оптимальную ось.
+- Порог по $t=\mathbf w^\mathsf T\mathbf x$ создаёт линейную границу решения.
+:::
+
+## Интерактив: двумерный линейный дискриминант
+
+::: {.clt-widget}
+```{ojs}
+//| echo: false
+
+viewof ldaSeparation = Inputs.range([0.5, 4], {value: 2.0, step: 0.1, label: "разделение средних"})
+viewof ldaRho = Inputs.range([-0.9, 0.9], {value: 0.65, step: 0.05, label: "корреляция rho"})
+viewof ldaThreshold = Inputs.range([-4, 4], {value: 0, step: 0.1, label: "порог дискриминанта"})
+viewof regenerateLda = Inputs.button("Новая выборка")
+
+randnLda = () => {
+  const u1 = Math.max(Math.random(), 1e-12);
+  const u2 = Math.random();
+  return Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
+}
+
+ldaW = {
+  const det = 1 - ldaRho * ldaRho;
+  const dx = ldaSeparation, dy = 0.7 * ldaSeparation;
+  return {
+    x: (dx - ldaRho * dy) / det,
+    y: (dy - ldaRho * dx) / det
+  };
+}
+ldaNorm = Math.sqrt(ldaW.x * ldaW.x + ldaW.y * ldaW.y)
+ldaData = {
+  regenerateLda;
+  const values = [];
+  const corr = Math.sqrt(1 - ldaRho * ldaRho);
+  for (const cls of ["фон", "сигнал"]) {
+    const sign = cls === "сигнал" ? 0.5 : -0.5;
+    for (let i = 0; i < 450; ++i) {
+      const z1 = randnLda(), z2 = randnLda();
+      const x = sign * ldaSeparation + z1;
+      const y = sign * 0.7 * ldaSeparation + ldaRho * z1 + corr * z2;
+      const score = (ldaW.x * x + ldaW.y * y) / ldaNorm;
+      values.push({x, y, score, cls, selected: score >= ldaThreshold});
+    }
+  }
+  return values;
+}
+ldaSignal = ldaData.filter(d => d.cls === "сигнал")
+ldaBackground = ldaData.filter(d => d.cls === "фон")
+ldaEffS = ldaSignal.filter(d => d.selected).length / ldaSignal.length
+ldaEffB = ldaBackground.filter(d => d.selected).length / ldaBackground.length
+ldaBoundary = Math.abs(ldaW.y) > 1e-8
+  ? Array.from({length: 101}, (_, i) => {
+      const x = -5 + 10 * i / 100;
+      return {x, y: (ldaThreshold * ldaNorm - ldaW.x * x) / ldaW.y};
+    })
+  : []
+
+ldaScatter = Plot.plot({
+  width: 740,
+  height: 500,
+  marginLeft: 65,
+  x: {label: "x1", domain: [-5, 5], grid: true},
+  y: {label: "x2", domain: [-5, 5], grid: true},
+  color: {domain: ["фон", "сигнал"], range: ["#4ea1ff", "#ffb347"], legend: true},
+  marks: [
+    Plot.dot(ldaData, {x: "x", y: "y", fill: "cls", r: d => d.selected ? 4 : 2.2, fillOpacity: d => d.selected ? 0.75 : 0.25}),
+    Plot.line(ldaBoundary, {x: "x", y: "y", stroke: "#f2f2f2", strokeWidth: 4})
+  ]
+})
+ldaScores = Plot.plot({
+  width: 520,
+  height: 500,
+  marginLeft: 65,
+  x: {label: "линейный дискриминант", domain: [-5, 5], grid: true},
+  y: {label: "плотность", grid: true},
+  color: {domain: ["фон", "сигнал"], range: ["#4ea1ff", "#ffb347"], legend: true},
+  marks: [
+    Plot.rectY(ldaData, Plot.binX({y: "density"}, {x: "score", fill: "cls", thresholds: 40, fillOpacity: 0.45})),
+    Plot.ruleX([ldaThreshold], {stroke: "#f2f2f2", strokeWidth: 4})
+  ]
+})
+
+html`
+<div class="clt-panel">
+  <div style="display:flex; gap:0.7rem; justify-content:center; align-items:center;">
+    ${ldaScatter}
+    ${ldaScores}
+  </div>
+  <div class="clt-summary">
+    <span>эффективность сигнала = ${(100 * ldaEffS).toFixed(1)}%</span>
+    <span>эффективность фона = ${(100 * ldaEffB).toFixed(1)}%</span>
+    <span>корреляция поворачивает оптимальную границу</span>
+  </div>
+</div>
+`
+```
+:::
+
+## Что показывает линейный дискриминант
+
+::: incremental
+1. Две координаты сжимаются в один линейный score.
+2. Белая линия соответствует выбранному порогу.
+3. Перемещение порога меняет эффективность сигнала и пропускание фона.
+4. Корреляция поворачивает оптимальное направление.
+5. При сложной нелинейной геометрии линейного дискриминанта будет недостаточно.
+:::
+
+---
+
+# Классификатор как статистика теста
+
+## От дискриминанта к классификатору
+
+Классификатор строит функцию
+$$
+s(\mathbf x)
+$$
+с большими значениями для сигнала и малыми для фона.
+
+Возможные методы:
+
+::: incremental
+- деревья решений и boosted decision trees;
+- логистическая регрессия;
+- нейронные сети;
+- методы ближайших соседей;
+- явная оценка отношения плотностей;
+- физически мотивированные аналитические переменные.
+:::
+
+## Что должен аппроксимировать идеальный классификатор
+
+При обучении по cross-entropy с долями классов $\pi_s,\pi_b$ идеальный выход:
+$$
+s^\star(\mathbf x)
+=
+P(s\mid\mathbf x)
+=
+\frac{
+\pi_s f_s(\mathbf x)
+}{
+\pi_s f_s(\mathbf x)+\pi_b f_b(\mathbf x)
+}.
+$$
+
+Отсюда
+$$
+\boxed{
+\frac{f_s(\mathbf x)}{f_b(\mathbf x)}
+=
+\frac{\pi_b}{\pi_s}
+\frac{s^\star(\mathbf x)}
+{1-s^\star(\mathbf x)}.
+}
+$$
+
+Монотонный классификатор может сохранять оптимальное ранжирование likelihood ratio.
+
+## Ранжирование и вероятность — не одно и то же
+
+Классификатор может хорошо ранжировать события, но его выход не обязан быть корректной вероятностью.
+
+::: incremental
+- ROC зависит только от порядка score.
+- Любое монотонное преобразование сохраняет ROC.
+- Калибровка требует, чтобы среди событий с прогнозом $0.7$ доля сигнала была около $70\%$.
+- Изменение долей классов между обучением и применением меняет вероятностную интерпретацию.
+:::
+
+## ROC-кривая
+
+Для порога $c$:
+$$
+\varepsilon_s(c)
+=
+P_s(s>c),
+\qquad
+\varepsilon_b(c)
+=
+P_b(s>c).
+$$
+
+ROC-кривая строится как
+$$
+\bigl(\varepsilon_b(c),\varepsilon_s(c)\bigr).
+$$
+
+::: incremental
+- AUC измеряет среднюю способность ранжирования.
+- AUC не выбирает рабочий порог.
+- В физическом анализе важна нужная область малой $\varepsilon_b$, а не только полная AUC.
+:::
+
+## Значимость отбора
+
+Простейшая эвристика для выбора порога:
+$$
+\frac{S}{\sqrt B}.
+$$
+
+После отбора:
+$$
+S(c)=S_0\varepsilon_s(c),
+\qquad
+B(c)=B_0\varepsilon_b(c).
+$$
+
+Но $S/\sqrt B$:
+
+::: incremental
+- является лишь асимптотическим приближением;
+- плохо работает при малом $B$;
+- игнорирует систематические неопределённости;
+- не заменяет полный likelihood-анализ.
+:::
+
+## Cut-based или shape-анализ
+
+**Cut-based анализ** оставляет события с
+$$
+s(\mathbf x)>c
+$$
+и использует их число.
+
+**Shape-анализ** использует распределение score по бинам:
+$$
+L(\mu,\boldsymbol\eta)
+=
+\prod_j
+\operatorname{Pois}
+\left(
+n_j\mid
+\mu s_j(\boldsymbol\eta)+b_j(\boldsymbol\eta)
+\right).
+$$
+
+Shape-анализ обычно сохраняет больше информации, но сильнее зависит от моделирования формы.
+
+---
+
+# Обучение и проверка
+
+## Почему нельзя оценивать метод на обучающей выборке
+
+Алгоритм подбирает параметры так, чтобы хорошо описать обучающие данные.
+
+::: incremental
+- Он изучает полезную структуру.
+- Но также может запомнить случайные флуктуации.
+- Качество на обучении систематически оптимистично.
+- Для честной оценки нужны независимые данные.
+:::
+
+Это относится и к сложной нейронной сети, и к ручному подбору cuts.
+
+## Разделение данных
+
+Типичная схема:
+
+::::: {.columns}
+
+::: {.column width="33%"}
+
+**Train**
+
+Настройка параметров модели.
+
+:::
+
+::: {.column width="33%"}
+
+**Validation**
+
+Выбор архитектуры, гиперпараметров и порога.
+
+:::
+
+::: {.column width="34%"}
+
+**Test**
+
+Одна финальная независимая оценка качества.
+
+:::
+
+:::::
+
+Повторное использование test-набора превращает его в validation.
+
+## Переобучение
+
+Переобученная модель:
+
+::: incremental
+- очень хорошо описывает train-набор;
+- использует случайные детали конкретной выборки;
+- хуже работает на независимых данных;
+- часто становится нестабильной к малым изменениям входов;
+- может создавать искусственные структуры в физическом распределении.
+:::
+
+## Интерактив: сложность и переобучение
+
+Строим одномерный histogram-классификатор. В каждом бине score равен доле сигнала в train-наборе. Число бинов управляет сложностью модели.
+
+::: {.clt-widget}
+```{ojs}
+//| echo: false
+
+viewof overfitBins = Inputs.range([2, 80], {value: 10, step: 1, label: "число бинов модели"})
+viewof overfitTrainN = Inputs.range([40, 1000], {value: 160, step: 20, label: "событий каждого класса в train"})
+viewof regenerateOverfit = Inputs.button("Новые train/test")
+
+randnOverfit = () => {
+  const u1 = Math.max(Math.random(), 1e-12);
+  const u2 = Math.random();
+  return Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
+}
+overfitGenerate = (n, cls) => Array.from({length: n}, () => {
+  const signal = cls === "сигнал";
+  const mixture = Math.random() < (signal ? 0.30 : 0.20);
+  const x = signal
+    ? (mixture ? 2.4 + 0.45 * randnOverfit() : 0.7 + 1.05 * randnOverfit())
+    : (mixture ? -2.2 + 0.55 * randnOverfit() : -0.5 + 1.15 * randnOverfit());
+  return {x: Math.max(-4, Math.min(4, x)), cls};
+})
+overfitRaw = {
+  regenerateOverfit;
+  return {
+    train: [...overfitGenerate(overfitTrainN, "сигнал"), ...overfitGenerate(overfitTrainN, "фон")],
+    test: [...overfitGenerate(2500, "сигнал"), ...overfitGenerate(2500, "фон")]
+  };
+}
+overfitBinIndex = x => Math.min(overfitBins - 1, Math.max(0, Math.floor((x + 4) / 8 * overfitBins)))
+overfitModel = {
+  const s = Array(overfitBins).fill(0), b = Array(overfitBins).fill(0);
+  for (const d of overfitRaw.train) {
+    const j = overfitBinIndex(d.x);
+    if (d.cls === "сигнал") s[j]++; else b[j]++;
+  }
+  return s.map((count, j) => (count + 1) / (count + b[j] + 2));
+}
+overfitScore = data => data.map(d => ({...d, score: overfitModel[overfitBinIndex(d.x)]}))
+overfitTrain = overfitScore(overfitRaw.train)
+overfitTest = overfitScore(overfitRaw.test)
+aucFromScores = data => {
+  const sorted = data.slice().sort((a, b) => a.score - b.score);
+  let rankSum = 0, i = 0;
+  while (i < sorted.length) {
+    let j = i + 1;
+    while (j < sorted.length && sorted[j].score === sorted[i].score) j++;
+    const avgRank = 0.5 * ((i + 1) + j);
+    for (let k = i; k < j; ++k) if (sorted[k].cls === "сигнал") rankSum += avgRank;
+    i = j;
+  }
+  const ns = data.filter(d => d.cls === "сигнал").length;
+  const nb = data.length - ns;
+  return (rankSum - ns * (ns + 1) / 2) / (ns * nb);
+}
+overfitTrainAuc = aucFromScores(overfitTrain)
+overfitTestAuc = aucFromScores(overfitTest)
+overfitCurve = Array.from({length: overfitBins}, (_, j) => ({
+  x: -4 + 8 * (j + 0.5) / overfitBins,
+  score: overfitModel[j]
+}))
+
+overfitPlot = Plot.plot({
+  width: 940,
+  height: 450,
+  marginLeft: 70,
+  x: {label: "входная переменная x", domain: [-4, 4], grid: true},
+  y: {label: "score модели", domain: [0, 1], grid: true},
+  color: {domain: ["фон", "сигнал"], range: ["#4ea1ff", "#ffb347"], legend: true},
+  marks: [
+    Plot.dot(overfitTrain, {x: "x", y: "score", fill: "cls", r: 4, fillOpacity: 0.42}),
+    Plot.line(overfitCurve, {x: "x", y: "score", curve: "step", stroke: "#f2f2f2", strokeWidth: 4})
+  ]
+})
+
+html`
+<div class="clt-panel">
+  ${overfitPlot}
+  <div class="clt-summary">
+    <span>AUC train = ${overfitTrainAuc.toFixed(3)}</span>
+    <span>AUC test = ${overfitTestAuc.toFixed(3)}</span>
+    <span>слишком много бинов запоминает флуктуации train</span>
+  </div>
+</div>
+`
+```
+:::
+
+## Что показывает переобучение
+
+::: incremental
+1. Малое число бинов может не уловить реальную структуру — underfitting.
+2. Умеренная сложность хорошо переносится на test-набор.
+3. При большом числе бинов train AUC остаётся высокой.
+4. Test AUC начинает ухудшаться и сильнее флуктуировать.
+5. Увеличение train-выборки позволяет безопасно использовать более сложную модель.
+:::
+
+## Cross-validation
+
+При ограниченной выборке данные делят на $K$ частей.
+
+::: incremental
+1. Обучить модель на $K-1$ частях.
+2. Оценить её на оставшейся части.
+3. Повторить для всех частей.
+4. Объединить независимые прогнозы.
+:::
+
+Cross-validation эффективнее использует данные, но выбор гиперпараметров и финальная оценка требуют аккуратной вложенной схемы.
+
+## Data leakage
+
+Утечка информации возникает, если в обучение попадает информация, недоступная при реальном применении.
+
+Примеры:
+
+::: incremental
+- нормировка переменных вычислена по всему набору до разделения;
+- test-набор использован для выбора признаков;
+- события одного физического источника попали и в train, и в test;
+- переменная напрямую кодирует метку или особенности симуляции;
+- систематические вариации не разделены согласованно.
+:::
+
+---
+
+# Калибровка и физическая валидация
+
+## Калибровка score
+
+Классификатор калиброван, если
+$$
+\boxed{
+P(Y=1\mid s(\mathbf X)=p)
+=
+p.
+}
+$$
+
+Проверка:
+
+::: incremental
+- разбить прогнозы на интервалы score;
+- сравнить средний прогноз с фактической долей сигнала;
+- построить reliability diagram;
+- вычислить Brier score или log loss;
+- при необходимости применить отдельную калибровку.
+:::
+
+## Калибровка не улучшает ранжирование
+
+Монотонная перекалибровка
+$$
+s\longrightarrow g(s)
+$$
+не меняет порядок событий.
+
+Следовательно:
+
+::: incremental
+- ROC и AUC остаются прежними;
+- вероятностная интерпретация может улучшиться;
+- выбранный численный порог изменится;
+- для fit формы score перекалибровка меняет биннирование и шаблоны.
+:::
+
+## Симуляция и реальные данные
+
+Классификатор часто обучается на моделировании, но применяется к данным.
+
+Необходимо проверить:
+
+::: incremental
+- согласие входных переменных в контрольных областях;
+- согласие корреляций, а не только одномерных распределений;
+- устойчивость score к систематическим вариациям;
+- отсутствие переменных, моделируемых ненадёжно;
+- переносимость эффективности отбора на данные.
+:::
+
+## Контрольная область
+
+Контрольная область должна:
+
+::: incremental
+- быть обогащена известным процессом;
+- быть близка к сигнальной области по важным свойствам;
+- почти не содержать искомого сигнала;
+- проверять те компоненты модели, от которых зависит вывод.
+:::
+
+Хорошее согласие в одной контрольной области не гарантирует корректность во всём пространстве признаков.
+
+## Sculpting
+
+Отбор по классификатору может искусственно изменить распределение физической переменной $m$:
+$$
+f(m)
+\longrightarrow
+f(m\mid s>c).
+$$
+
+::: incremental
+- Фоновое распределение может приобрести искусственный пик.
+- Sideband-методы могут перестать работать.
+- Небольшая ошибка моделирования score может стать большой ошибкой формы после жёсткого отбора.
+- Иногда требуется декоррелировать классификатор от $m$.
+:::
+
+## Классификатор внутри likelihood
+
+Корректный конечный анализ часто использует score как наблюдаемую:
+$$
+L(\mu,\boldsymbol\eta)
+=
+\prod_j
+\operatorname{Pois}
+\left[
+n_j
+\mid
+\mu s_j(\boldsymbol\eta)
++
+b_j(\boldsymbol\eta)
+\right]
+L_{\rm aux}(\boldsymbol\eta).
+$$
+
+::: incremental
+- Классификатор сжимает многомерные признаки.
+- Likelihood выполняет статистический вывод.
+- Nuisance-параметры описывают неопределённости формы и нормировки.
+- Финальная статистика теста строится уже из полного likelihood.
+:::
+
+## Проверка полной процедуры
+
+На псевдоэкспериментах необходимо проверять:
+
+::: incremental
+- распределение статистики при $H_0$;
+- фактический размер теста;
+- мощность против релевантных альтернатив;
+- смещение fitted-параметров;
+- покрытие интервалов;
+- влияние ограниченной статистики train и шаблонов;
+- устойчивость к систематическим вариациям.
+:::
+
+---
+
+# Практический выбор статистики
+
+## Если известен полный likelihood
+
+::: incremental
+- Для простых гипотез используйте likelihood ratio.
+- Для составных гипотез — профильное отношение правдоподобия.
+- Проверяйте применимость асимптотики.
+- При границах и малой статистике калибруйте тест псевдоэкспериментами.
+:::
+
+## Если likelihood слишком сложен
+
+::: incremental
+- Постройте физически мотивированный дискриминант.
+- Используйте классификатор для приближения отношения плотностей.
+- Сохраняйте shape score, если моделирование надёжно.
+- Проверяйте качество на независимых данных.
+- Включайте результат в явную вероятностную модель конечного анализа.
+:::
+
+## Не оптимизировать только одну метрику
+
+Высокая AUC недостаточна, если:
+
+::: incremental
+- модель плохо работает в нужной области малой фоновой эффективности;
+- score плохо моделируется в данных;
+- классификатор создаёт нежелательный sculpting;
+- систематические неопределённости уничтожают выигрыш;
+- результат нестабилен к выбору train-набора.
+:::
+
+Оптимизируется чувствительность полного анализа, а не абстрактное качество классификации.
+
+## Частые ошибки
+
+| Ошибка | Последствие |
+|---|---|
+| асимптотика используется без проверки | неверный размер теста |
+| Wald-ошибка применяется на границе | неверная значимость и интервалы |
+| AUC измерена на train | завышенная оценка качества |
+| test используется для настройки | скрытое переобучение |
+| score интерпретируется как вероятность без калибровки | неверные вероятностные выводы |
+| проверены только одномерные входы | пропущены ошибки корреляций |
+| классификатор отделён от конечного likelihood | не учтены систематики и форма |
+
+## Рабочий процесс
+
+::: incremental
+1. Сформулировать $H_0$, $H_1$ и физически важные альтернативы.
+2. Определить доступную вероятностную модель.
+3. Выбрать likelihood-ratio или мотивированный дискриминант.
+4. Разделить train, validation и test.
+5. Проверить ROC в релевантной рабочей области.
+6. Проверить калибровку и согласие моделирования с данными.
+7. Включить score в конечный likelihood.
+8. Проверить всю процедуру псевдоэкспериментами.
+:::
+
+---
+
+# Что важно запомнить
+
+## Резюме
+
+::: incremental
+- Статистика теста сжимает данные, и её выбор определяет мощность.
+- Likelihood ratio оптимален для двух простых гипотез и служит основой практических профильных статистик.
+- LR, Wald и score асимптотически близки, но могут различаться при малой статистике и границах.
+- Многомерный дискриминант стремится сохранить отношение плотностей сигнала и фона.
+- ROC оценивает ранжирование, но не калибровку и не полную чувствительность анализа.
+- Независимый test-набор необходим для честной оценки качества.
+- Классификатор должен быть проверен на данных и включён в явный конечный likelihood.
+:::

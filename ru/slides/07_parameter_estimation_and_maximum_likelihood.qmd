@@ -1,0 +1,1010 @@
+---
+title: "Оценивание параметров и метод максимального правдоподобия"
+subtitle: "Статистический анализ данных"
+author: "Дмитрий В. Наумов (ОИЯИ)"
+format:
+  revealjs:
+    theme: black
+    slide-number: true
+    preview-links: auto
+    chalkboard:
+      buttons: false
+    logo: shared/figures/dvnlogo.png
+    css: styles.css
+    transition: fade
+    center: true
+---
+
+# От данных к параметрам
+
+## Что требуется определить
+
+Вероятностная модель связывает наблюдаемые данные $X$ с неизвестными параметрами $\boldsymbol\theta$:
+$$
+X\sim f(x\mid\boldsymbol\theta).
+$$
+
+::: incremental
+- Параметр $\boldsymbol\theta$ считается фиксированным, но неизвестным.
+- Данные $X$ случайны до проведения эксперимента.
+- По наблюдённым данным $x_{\rm obs}$ строится оценка параметра.
+:::
+
+Примеры параметров: среднее, ширина распределения, интенсивность сигнала, сечение процесса, эффективность регистрации.
+
+## Оценка и оценённое значение
+
+**Оценка** — правило, применяемое к случайным данным:
+$$
+\widehat\theta=T(X_1,\ldots,X_N).
+$$
+
+**Оценённое значение** — результат применения правила к конкретной выборке:
+$$
+\widehat\theta_{\rm obs}=T(x_1,\ldots,x_N).
+$$
+
+::: {.fragment .callout-note .thmbox appearance="simple"}
+До эксперимента $\widehat\theta$ является случайной величиной. После эксперимента $\widehat\theta_{\rm obs}$ — число.
+:::
+
+## Один параметр — разные оценки
+
+Пусть
+$$
+X_1,\ldots,X_N\sim\mathrm N(\mu,\sigma^2).
+$$
+
+Параметр $\mu$ можно оценивать по-разному:
+$$
+\overline X,
+\qquad
+\operatorname{median}(X_1,\ldots,X_N),
+\qquad
+\frac{X_1+X_N}{2}.
+$$
+
+::: incremental
+- Все три правила используют те же данные.
+- Они имеют разные смещение, дисперсию и устойчивость к выбросам.
+- Необходимо выбрать правило и проверить его свойства.
+:::
+
+## Точечное и интервальное оценивание
+
+::::: {.columns}
+
+::: {.column width="48%"}
+
+**Точечная оценка**
+
+Одно наиболее предпочтительное значение:
+$$
+\widehat\theta_{\rm obs}.
+$$
+
+:::
+
+::: {.column width="52%"}
+
+**Интервальная оценка**
+
+Набор значений параметра, совместимых с данными по выбранному правилу:
+$$
+[\theta_{\rm low},\theta_{\rm high}].
+$$
+
+:::
+
+:::::
+
+В этой лекции строим точечные оценки и изучаем форму функции правдоподобия. Строгое построение интервалов рассмотрим отдельно.
+
+---
+
+# Функция правдоподобия
+
+## Та же модель, другой вопрос
+
+Плотность или вероятность
+$$
+f(x\mid\theta)
+$$
+отвечает на вопрос:
+
+> Насколько вероятны разные данные $x$, если параметр $\theta$ известен?
+
+После наблюдения $x_{\rm obs}$ рассматриваем ту же функцию как функцию параметра:
+$$
+\boxed{
+L(\theta;x_{\rm obs})=f(x_{\rm obs}\mid\theta).
+}
+$$
+
+Она отвечает на вопрос: какие значения $\theta$ лучше объясняют наблюдённые данные?
+
+## Likelihood не является вероятностью параметра
+
+::: incremental
+- В частотном подходе параметр $\theta$ не считается случайной величиной.
+- Поэтому $L(\theta;x)$ не обязана нормироваться по $\theta$:
+  $$
+  \int L(\theta;x)\,d\theta\ne1.
+  $$
+- Правдоподобие сравнивает разные значения параметра при одних и тех же данных.
+- Умножение $L$ на положительную константу, не зависящую от $\theta$, не меняет выводов.
+:::
+
+::: {.fragment .callout-important .remarkbox appearance="simple"}
+Вероятность описывает возможные данные при заданном параметре. Правдоподобие сравнивает параметры после наблюдения данных.
+:::
+
+## Независимая выборка
+
+Для независимых наблюдений
+$$
+X_i\sim f(x_i\mid\theta)
+$$
+совместное правдоподобие равно
+$$
+\boxed{
+L(\theta)
+=
+\prod_{i=1}^{N}f(x_i\mid\theta).
+}
+$$
+
+Логарифм превращает произведение в сумму:
+$$
+\boxed{
+\ell(\theta)
+=
+\ln L(\theta)
+=
+\sum_{i=1}^{N}\ln f(x_i\mid\theta).
+}
+$$
+
+## Почему работаем с log-likelihood
+
+::: incremental
+- Произведение многих малых вероятностей быстро вызывает численное переполнение вниз.
+- Сумму логарифмов вычислять устойчивее.
+- Максимумы $L(\theta)$ и $\ell(\theta)$ находятся в одной точке.
+- Производные суммы проще производных произведения.
+- Независимые наборы данных добавляют свои log-likelihood:
+  $$
+  \ell_{\rm total}=\ell_1+\ell_2+\cdots.
+  $$
+:::
+
+---
+
+# Метод максимального правдоподобия
+
+## Определение
+
+Оценка максимального правдоподобия — значение параметра, при котором наблюдённые данные наиболее правдоподобны:
+$$
+\boxed{
+\widehat\theta_{\rm ML}
+=
+\underset{\theta}{\operatorname{arg\,max}}\ L(\theta)
+=
+\underset{\theta}{\operatorname{arg\,max}}\ \ell(\theta).
+}
+$$
+
+Для внутреннего гладкого максимума:
+$$
+\left.
+\frac{\partial\ell}{\partial\theta}
+\right|_{\theta=\widehat\theta_{\rm ML}}
+=0,
+\qquad
+\left.
+\frac{\partial^2\ell}{\partial\theta^2}
+\right|_{\theta=\widehat\theta_{\rm ML}}
+<0.
+$$
+
+## Пример: Бернулли
+
+Пусть в $N$ независимых испытаниях наблюдается $k$ успехов:
+$$
+K\sim\operatorname{Bin}(N,p).
+$$
+
+С точностью до множителя, не зависящего от $p$:
+$$
+L(p)\propto p^k(1-p)^{N-k}.
+$$
+
+Поэтому
+$$
+\ell(p)=k\ln p+(N-k)\ln(1-p)+\mathrm{const}.
+$$
+
+## Оценка вероятности успеха
+
+Условие максимума:
+$$
+\frac{d\ell}{dp}
+=
+\frac{k}{p}
+-
+\frac{N-k}{1-p}
+=0.
+$$
+
+Отсюда
+$$
+\boxed{
+\widehat p_{\rm ML}
+=
+\frac{k}{N}.
+}
+$$
+
+::: incremental
+- Результат совпадает с интуитивной частотой успехов.
+- При увеличении $N$ максимум становится уже.
+- При $k=0$ или $k=N$ максимум находится на физической границе.
+:::
+
+## Интерактив: биномиальное правдоподобие
+
+::: {.clt-widget}
+```{ojs}
+//| echo: false
+
+viewof likeN = Inputs.range([1, 200], {value: 20, step: 1, label: "число испытаний N"})
+viewof likeK = Inputs.range([0, likeN], {value: Math.round(0.35 * likeN), step: 1, label: "число успехов k"})
+
+likePGrid = Array.from({length: 499}, (_, i) => 0.002 + 0.996 * i / 498)
+likePhat = likeK / likeN
+likeLog = p => likeK * Math.log(p) + (likeN - likeK) * Math.log(1 - p)
+likeLogMax = likeK === 0
+  ? 0
+  : likeK === likeN
+    ? 0
+    : likeLog(likePhat)
+likeCurve = likePGrid.map(p => ({
+  p,
+  relative: Math.exp(likeLog(p) - likeLogMax),
+  q: -2 * (likeLog(p) - likeLogMax)
+}))
+
+likePlot = Plot.plot({
+  width: 940,
+  height: 430,
+  marginLeft: 70,
+  x: {label: "p", domain: [0, 1], grid: true},
+  y: {label: "L(p) / L(p_hat)", domain: [0, 1.05], grid: true},
+  marks: [
+    Plot.line(likeCurve, {x: "p", y: "relative", stroke: "#4ea1ff", strokeWidth: 4}),
+    Plot.ruleX([likePhat], {stroke: "#ffb347", strokeWidth: 4}),
+    Plot.ruleY([Math.exp(-0.5)], {stroke: "#999", strokeDasharray: "6,5"})
+  ]
+})
+
+html`
+<div class="clt-panel">
+  ${likePlot}
+  <div class="clt-summary">
+    <span>p_hat = k/N = ${likePhat.toFixed(3)}</span>
+    <span>стандартная ошибка ≈ ${Math.sqrt(likePhat * (1 - likePhat) / likeN).toFixed(3)}</span>
+    <span>увеличение N сужает максимум</span>
+  </div>
+</div>
+`
+```
+:::
+
+## Пример: пуассоновский счёт
+
+Пусть наблюдаем одно число событий:
+$$
+N\sim\operatorname{Pois}(\mu).
+$$
+
+Правдоподобие:
+$$
+L(\mu)
+=
+\frac{\mu^n e^{-\mu}}{n!}.
+$$
+
+Тогда
+$$
+\ell(\mu)=n\ln\mu-\mu-\ln n!,
+\qquad
+\frac{d\ell}{d\mu}=\frac n\mu-1.
+$$
+
+Следовательно,
+$$
+\boxed{\widehat\mu_{\rm ML}=n.}
+$$
+
+## Пример: среднее гаусса
+
+Пусть
+$$
+X_i\sim\mathrm N(\mu,\sigma^2),
+$$
+где $\sigma$ известна.
+
+Тогда
+$$
+\ell(\mu)
+=
+-\frac{1}{2\sigma^2}
+\sum_{i=1}^{N}(x_i-\mu)^2
++\mathrm{const}.
+$$
+
+Максимизация $\ell$ эквивалентна минимизации суммы квадратов:
+$$
+\boxed{
+\widehat\mu_{\rm ML}
+=
+\overline x.
+}
+$$
+
+## Неизвестные среднее и дисперсия
+
+Если неизвестны и $\mu$, и $\sigma^2$, то
+$$
+\boxed{
+\widehat\mu_{\rm ML}=\overline x,
+\qquad
+\widehat{\sigma^2}_{\rm ML}
+=
+\frac1N\sum_{i=1}^{N}(x_i-\overline x)^2.
+}
+$$
+
+Но
+$$
+\mathbb E[\widehat{\sigma^2}_{\rm ML}]
+=
+\frac{N-1}{N}\sigma^2.
+$$
+
+Несмещённая оценка использует делитель $N-1$:
+$$
+s^2
+=
+\frac1{N-1}\sum_{i=1}^{N}(x_i-\overline x)^2.
+$$
+
+---
+
+# Свойства оценок
+
+## Смещение, дисперсия и MSE
+
+Смещение:
+$$
+\operatorname{bias}(\widehat\theta)
+=
+\mathbb E[\widehat\theta]-\theta.
+$$
+
+Среднеквадратичная ошибка:
+$$
+\operatorname{MSE}(\widehat\theta)
+=
+\mathbb E[(\widehat\theta-\theta)^2].
+$$
+
+Она раскладывается как
+$$
+\boxed{
+\operatorname{MSE}(\widehat\theta)
+=
+\operatorname{Var}(\widehat\theta)
++
+\operatorname{bias}^2(\widehat\theta).
+}
+$$
+
+## Несмещённость не гарантирует оптимальность
+
+::::: {.columns}
+
+::: {.column width="50%"}
+
+Оценка может быть несмещённой, но иметь большую дисперсию:
+$$
+\mathbb E[\widehat\theta]=\theta,
+\qquad
+\operatorname{Var}(\widehat\theta)\ \text{велика}.
+$$
+
+:::
+
+::: {.column width="50%"}
+
+Небольшое смещение иногда уменьшает общий MSE:
+$$
+\operatorname{MSE}
+=
+\operatorname{Var}
++
+\operatorname{bias}^2.
+$$
+
+:::
+
+:::::
+
+::: {.fragment .callout-note .thmbox appearance="simple"}
+Свойства процедуры необходимо оценивать вместе, а не выбирать оценку только по одному критерию.
+:::
+
+## Интерактив: делитель $N$ или $N-1$?
+
+Генерируем гауссовы выборки с истинной дисперсией $\sigma^2=1$ и сравниваем две оценки:
+$$
+\widehat{\sigma^2}_{\rm ML}
+=
+\frac1N\sum_i(X_i-\overline X)^2,
+\qquad
+s^2
+=
+\frac1{N-1}\sum_i(X_i-\overline X)^2.
+$$
+
+::: {.clt-widget}
+```{ojs}
+//| echo: false
+
+viewof varianceN = Inputs.range([2, 50], {value: 6, step: 1, label: "размер выборки N"})
+viewof regenerateVariance = Inputs.button("Новый ансамбль")
+
+randnVariance = () => {
+  const u1 = Math.max(Math.random(), 1e-12);
+  const u2 = Math.random();
+  return Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
+}
+
+varianceToys = {
+  regenerateVariance;
+  const toys = [];
+  for (let t = 0; t < 6000; ++t) {
+    const sample = Array.from({length: varianceN}, randnVariance);
+    const mean = sample.reduce((a, b) => a + b, 0) / varianceN;
+    const sumsq = sample.reduce((s, x) => s + (x - mean) ** 2, 0);
+    toys.push({ml: sumsq / varianceN, unbiased: sumsq / (varianceN - 1)});
+  }
+  return toys;
+}
+
+varianceMeanMl = varianceToys.reduce((s, d) => s + d.ml, 0) / varianceToys.length
+varianceMeanUnb = varianceToys.reduce((s, d) => s + d.unbiased, 0) / varianceToys.length
+varianceMseMl = varianceToys.reduce((s, d) => s + (d.ml - 1) ** 2, 0) / varianceToys.length
+varianceMseUnb = varianceToys.reduce((s, d) => s + (d.unbiased - 1) ** 2, 0) / varianceToys.length
+varianceLong = varianceToys.flatMap(d => [
+  {value: d.ml, estimator: "MLE: делитель N"},
+  {value: d.unbiased, estimator: "несмещённая: N - 1"}
+])
+
+variancePlot = Plot.plot({
+  width: 940,
+  height: 410,
+  marginLeft: 70,
+  x: {label: "оценка дисперсии", domain: [0, 3], grid: true},
+  y: {label: "плотность", grid: true},
+  color: {domain: ["MLE: делитель N", "несмещённая: N - 1"], range: ["#4ea1ff", "#ffb347"], legend: true},
+  marks: [
+    Plot.rectY(
+      varianceLong,
+      Plot.binX(
+        {y: "density"},
+        {x: "value", fill: "estimator", thresholds: 55, fillOpacity: 0.48}
+      )
+    ),
+    Plot.ruleX([1], {stroke: "#f2f2f2", strokeWidth: 3})
+  ]
+})
+
+html`
+<div class="clt-panel">
+  ${variancePlot}
+  <div class="clt-summary">
+    <span>E[var_ML] ≈ ${varianceMeanMl.toFixed(3)}</span>
+    <span>E[s²] ≈ ${varianceMeanUnb.toFixed(3)}</span>
+    <span>MSE_ML ≈ ${varianceMseMl.toFixed(3)}</span>
+    <span>MSE_unbiased ≈ ${varianceMseUnb.toFixed(3)}</span>
+  </div>
+</div>
+`
+```
+:::
+
+## Состоятельность
+
+Оценка называется состоятельной, если при росте выборки она сходится к истинному параметру:
+$$
+\boxed{
+\widehat\theta_N
+\xrightarrow[N\to\infty]{P}
+\theta.
+}
+$$
+
+::: incremental
+- Смещение должно исчезать или становиться пренебрежимо малым.
+- Дисперсия должна стремиться к нулю.
+- Состоятельность — асимптотическое свойство.
+- Для конечной выборки оценка всё ещё может быть смещённой и иметь большую ошибку.
+:::
+
+## Эффективность и граница Крамера — Рао
+
+Score-функция:
+$$
+U(\theta)
+=
+\frac{\partial\ell(\theta)}{\partial\theta}.
+$$
+
+Информация Фишера:
+$$
+\boxed{
+I(\theta)
+=
+\mathbb E\!\left[U^2(\theta)\right]
+=
+-\mathbb E\!\left[
+\frac{\partial^2\ell}{\partial\theta^2}
+\right].
+}
+$$
+
+При выполнении условий регулярности для несмещённой оценки:
+$$
+\boxed{
+\operatorname{Var}(\widehat\theta)
+\ge
+\frac{1}{I(\theta)}.
+}
+$$
+
+## Как читать информацию Фишера
+
+::: incremental
+- Чем сильнее меняется распределение при изменении $\theta$, тем больше информации о параметре содержат данные.
+- Чем острее максимум log-likelihood, тем точнее определяется параметр.
+- Для независимых наблюдений информация складывается:
+  $$
+  I_N(\theta)=N I_1(\theta).
+  $$
+- Поэтому типичная ошибка оценки уменьшается как
+  $$
+  \sigma_{\widehat\theta}\propto N^{-1/2}.
+  $$
+:::
+
+---
+
+# Форма правдоподобия
+
+## Кривизна около максимума
+
+Разложим log-likelihood около максимума:
+$$
+\ell(\theta)
+\approx
+\ell(\widehat\theta)
+-
+\frac12
+(\theta-\widehat\theta)^2
+\left[
+-\ell''(\widehat\theta)
+\right].
+$$
+
+Отсюда локальная оценка дисперсии:
+$$
+\boxed{
+\sigma_{\widehat\theta}^2
+\approx
+\left[
+-\frac{\partial^2\ell}{\partial\theta^2}
+\bigg|_{\widehat\theta}
+\right]^{-1}.
+}
+$$
+
+Это гауссово приближение: оно может нарушаться для малых выборок, границ и асимметричных likelihood.
+
+## Относительное правдоподобие
+
+Абсолютная нормировка $L$ не важна. Удобно сравнивать с максимумом:
+$$
+\lambda(\theta)
+=
+\frac{L(\theta)}{L(\widehat\theta)}.
+$$
+
+Часто используют
+$$
+\boxed{
+q(\theta)
+=
+-2\ln\lambda(\theta)
+=
+-2\left[\ell(\theta)-\ell(\widehat\theta)\right].
+}
+$$
+
+::: incremental
+- В максимуме $q(\widehat\theta)=0$.
+- Чем хуже параметр описывает данные, тем больше $q(\theta)$.
+- Для локально гауссова likelihood:
+  $$
+  q(\theta)\approx\frac{(\theta-\widehat\theta)^2}{\sigma_{\widehat\theta}^2}.
+  $$
+:::
+
+## Квадратичный профиль среднего гаусса
+
+Для $N$ наблюдений с известной $\sigma$:
+$$
+\widehat\mu=\overline x,
+\qquad
+\sigma_{\widehat\mu}=\frac{\sigma}{\sqrt N}.
+$$
+
+Профиль относительного правдоподобия точно квадратичен:
+$$
+\boxed{
+q(\mu)
+=
+\frac{(\mu-\overline x)^2}
+{\sigma^2/N}.
+}
+$$
+
+Точки $q=1$ расположены на расстоянии одной стандартной ошибки от максимума. Интерпретация таких порогов вне гауссова случая требует отдельного обоснования.
+
+## Границы и малые выборки
+
+Для пуассоновского наблюдения $n$:
+$$
+q(\mu)
+=
+2\left[
+\mu-n+n\ln\frac n\mu
+\right],
+$$
+где при $n=0$ последний член принимается равным нулю.
+
+::: incremental
+- Форма не симметрична относительно $\widehat\mu=n$.
+- При $n=0$ максимум находится на границе $\widehat\mu=0$.
+- Кривизна около максимума может плохо описывать дальние области.
+- Симметричная запись $\widehat\mu\pm\sigma$ может быть физически бессмысленной.
+:::
+
+---
+
+# Несколько параметров
+
+## Параметры интереса и nuisance-параметры
+
+Пусть модель зависит от
+$$
+L(\theta,\boldsymbol\eta),
+$$
+где:
+
+::: incremental
+- $\theta$ — параметр интереса, который хотим измерить;
+- $\boldsymbol\eta$ — nuisance-параметры: фон, эффективность, калибровка, разрешение;
+- все параметры влияют на форму likelihood;
+- игнорирование неопределённости nuisance-параметров обычно занижает ошибку $\theta$.
+:::
+
+## Совместный максимум
+
+Полный fit находит
+$$
+(\widehat\theta,\widehat{\boldsymbol\eta})
+=
+\underset{\theta,\boldsymbol\eta}
+{\operatorname{arg\,max}}\,
+L(\theta,\boldsymbol\eta).
+$$
+
+::: incremental
+- Корреляции параметров образуют вытянутые области правдоподобия.
+- Изменение $\theta$ может частично компенсироваться изменением $\boldsymbol\eta$.
+- Поэтому неопределённость $\theta$ определяется не только сечением likelihood при фиксированных nuisance-параметрах.
+:::
+
+## Профильное правдоподобие
+
+Для каждого фиксированного $\theta$ повторно оптимизируем nuisance-параметры:
+$$
+\widehat{\widehat{\boldsymbol\eta}}(\theta)
+=
+\underset{\boldsymbol\eta}{\operatorname{arg\,max}}\,
+L(\theta,\boldsymbol\eta).
+$$
+
+Профильное правдоподобие:
+$$
+\boxed{
+L_{\rm p}(\theta)
+=
+L\!\left(
+\theta,
+\widehat{\widehat{\boldsymbol\eta}}(\theta)
+\right).
+}
+$$
+
+Двойная шляпка подчёркивает: nuisance-параметры оптимизированы при фиксированном $\theta$.
+
+## Интерактив: что делает профилирование
+
+Цвет показывает совместное относительное правдоподобие $L(\theta,\eta)/L_{\max}$. Белая линия проходит через лучшее значение $\eta$ для каждого фиксированного $\theta$.
+
+::: {.clt-widget}
+```{ojs}
+//| echo: false
+
+viewof profileRho = Inputs.range([-0.9, 0.9], {value: 0.75, step: 0.05, label: "корреляция параметров rho"})
+viewof profileTheta = Inputs.range([-2.5, 2.5], {value: 1.2, step: 0.1, label: "фиксированное theta"})
+
+profileGrid = {
+  const values = [];
+  for (let i = 0; i <= 60; ++i) {
+    const theta = -3 + 6 * i / 60;
+    for (let j = 0; j <= 60; ++j) {
+      const eta = -3 + 6 * j / 60;
+      const q = (theta * theta - 2 * profileRho * theta * eta + eta * eta) / (1 - profileRho * profileRho);
+      values.push({theta, eta, relative: Math.exp(-0.5 * q)});
+    }
+  }
+  return values;
+}
+
+profilePath = Array.from({length: 121}, (_, i) => {
+  const theta = -3 + 6 * i / 120;
+  return {theta, eta: profileRho * theta};
+})
+profileEta = profileRho * profileTheta
+
+profileJointPlot = Plot.plot({
+  width: 590,
+  height: 480,
+  marginLeft: 65,
+  x: {label: "theta", domain: [-3, 3], grid: true},
+  y: {label: "eta", domain: [-3, 3], grid: true},
+  color: {scheme: "magma", domain: [0, 1]},
+  marks: [
+    Plot.dot(profileGrid, {x: "theta", y: "eta", fill: "relative", r: 3.8}),
+    Plot.line(profilePath, {x: "theta", y: "eta", stroke: "#f2f2f2", strokeWidth: 3}),
+    Plot.ruleX([profileTheta], {stroke: "#4ea1ff", strokeWidth: 3}),
+    Plot.dot([{theta: profileTheta, eta: profileEta}], {x: "theta", y: "eta", r: 8, fill: "#ffb347"})
+  ]
+})
+
+profileCurve = Array.from({length: 201}, (_, i) => {
+  const theta = -3 + 6 * i / 200;
+  return {theta, qProfile: theta * theta, qFixed: theta * theta / (1 - profileRho * profileRho)};
+})
+
+profileCurvePlot = Plot.plot({
+  width: 590,
+  height: 480,
+  marginLeft: 65,
+  x: {label: "theta", domain: [-3, 3], grid: true},
+  y: {label: "q(theta)", domain: [0, 9], grid: true},
+  color: {domain: ["профиль", "eta = 0"], range: ["#ffb347", "#4ea1ff"], legend: true},
+  marks: [
+    Plot.line(profileCurve, {x: "theta", y: "qProfile", stroke: "#ffb347", strokeWidth: 4}),
+    Plot.line(profileCurve, {x: "theta", y: "qFixed", stroke: "#4ea1ff", strokeWidth: 3}),
+    Plot.ruleY([1], {stroke: "#999", strokeDasharray: "6,5"})
+  ]
+})
+
+html`
+<div class="clt-panel">
+  <div style="display:flex; gap:0.6rem; align-items:center; justify-content:center;">
+    ${profileJointPlot}
+    ${profileCurvePlot}
+  </div>
+  <div class="clt-summary">
+    <span>при theta = ${profileTheta.toFixed(1)} профиль выбирает eta = ${profileEta.toFixed(2)}</span>
+    <span>профилирование учитывает компенсацию между параметрами</span>
+  </div>
+</div>
+`
+```
+:::
+
+## Что показывает аплет
+
+::: incremental
+1. При фиксированном $\theta$ синяя вертикальная линия задаёт допустимые значения nuisance-параметра $\eta$.
+2. Оранжевая точка выбирает на этой линии максимум likelihood.
+3. Повторение для всех $\theta$ образует белую профильную траекторию.
+4. Профильная кривая шире сечения при фиксированном $\eta=0$.
+5. Чем сильнее корреляция, тем сильнее фиксирование nuisance-параметра занижает неопределённость.
+:::
+
+---
+
+# Likelihood для реального анализа
+
+## Ограничивающая информация
+
+Nuisance-параметр часто имеет внешнее измерение:
+$$
+\eta_{\rm aux}\sim\mathrm N(\eta,\sigma_\eta^2).
+$$
+
+Тогда полное правдоподобие содержит два множителя:
+$$
+\boxed{
+L_{\rm total}(\theta,\eta)
+=
+L_{\rm data}(\theta,\eta)
+\,
+L_{\rm aux}(\eta).
+}
+$$
+
+::: incremental
+- Основные данные измеряют $\theta$ и одновременно ограничивают $\eta$.
+- Вспомогательное измерение добавляет независимую информацию об $\eta$.
+- Слово «constraint» не означает произвольный штраф: это часть вероятностной модели данных.
+:::
+
+## Extended likelihood
+
+Если модель предсказывает и число событий $\nu(\theta)$, и распределение их признаков $f(x\mid\theta)$, используют
+$$
+\boxed{
+L_{\rm ext}(\theta)
+=
+\operatorname{Pois}(N\mid\nu(\theta))
+\prod_{i=1}^{N} f(x_i\mid\theta).
+}
+$$
+
+::: incremental
+- Пуассоновский множитель использует информацию о полном числе событий.
+- Произведение плотностей использует форму распределения.
+- Для смеси сигнала и фона в $f(x\mid\theta)$ входят оба компонента.
+:::
+
+## Бинированное пуассоновское правдоподобие
+
+Если данные представлены числами событий $n_j$ в независимых бинах, а модель предсказывает $\nu_j(\boldsymbol\theta)$:
+$$
+\boxed{
+L(\boldsymbol\theta)
+=
+\prod_j
+\operatorname{Pois}
+\!\left(
+n_j\mid\nu_j(\boldsymbol\theta)
+\right).
+}
+$$
+
+Соответствующий log-likelihood:
+$$
+\ell(\boldsymbol\theta)
+=
+\sum_j
+\left[
+n_j\ln\nu_j(\boldsymbol\theta)
+-
+\nu_j(\boldsymbol\theta)
+-
+\ln n_j!
+\right].
+$$
+
+## Инвариантность MLE
+
+Если
+$$
+\widehat\theta_{\rm ML}
+=
+\underset{\theta}{\operatorname{arg\,max}}\,L(\theta),
+$$
+а $\phi=g(\theta)$ — взаимно однозначное преобразование, то
+$$
+\boxed{
+\widehat\phi_{\rm ML}
+=
+g(\widehat\theta_{\rm ML}).
+}
+$$
+
+::: incremental
+- Можно фитировать удобную параметризацию.
+- Результат затем переводится в физически интересующую величину.
+- Но ошибка при нелинейном преобразовании обычно становится асимметричной.
+:::
+
+## Практический алгоритм fit
+
+::: incremental
+1. Явно записать вероятностную модель всех наблюдений.
+2. Определить параметры интереса, nuisance-параметры и физические границы.
+3. Реализовать устойчивый log-likelihood.
+4. Найти совместный максимум несколькими начальными приближениями.
+5. Проверить градиенты, сходимость и положение относительно границ.
+6. Построить одномерные и двумерные сканы likelihood.
+7. Проверить процедуру на псевдоэкспериментах.
+8. Сравнить fitted-модель с данными.
+:::
+
+## Что проверять на псевдоэкспериментах
+
+Для известных истинных параметров $\boldsymbol\theta_0$:
+
+::: incremental
+- распределение $\widehat{\boldsymbol\theta}$;
+- смещение и дисперсию оценки;
+- частоту попадания fit в границы;
+- устойчивость оптимизатора;
+- покрытие интервалов;
+- распределение статистик отношения правдоподобия;
+- влияние ошибочной модели.
+:::
+
+::: {.fragment .callout-note .thmbox appearance="simple"}
+Формула likelihood задаёт статистическую модель. Псевдоэксперименты проверяют, как ведёт себя вся процедура анализа.
+:::
+
+## Типичные проблемы
+
+| Проблема | Симптом |
+|---|---|
+| локальный максимум | результат зависит от начальной точки |
+| параметр на границе | несимметричный likelihood, неверная ошибка по кривизне |
+| слабая идентифицируемость | длинная плоская долина likelihood |
+| сильная корреляция | нестабильный fit, большая профильная ошибка |
+| неверная модель | смещение и плохое согласие с данными |
+| численная нестабильность | `NaN`, бесконечности, ложная сходимость |
+
+## Минимизатор сообщил success. Достаточно?
+
+Нет. После численной оптимизации необходимо проверить:
+
+::: incremental
+- действительно ли найден максимум, а не седловая точка;
+- устойчив ли результат к начальному приближению;
+- не упираются ли параметры в границы;
+- гладок ли профиль likelihood;
+- воспроизводится ли истина в псевдоэкспериментах;
+- описывает ли fitted-модель наблюдаемые данные.
+:::
+
+---
+
+# Что важно запомнить
+
+## Резюме
+
+::: incremental
+- Оценка — случайная функция данных; оценённое значение — её реализация.
+- Likelihood рассматривает вероятностную модель как функцию неизвестных параметров при фиксированных данных.
+- MLE выбирает параметры, максимизирующие likelihood.
+- Хорошую оценку характеризуют смещение, дисперсия, MSE, состоятельность и эффективность.
+- Кривизна log-likelihood даёт локальную оценку точности только в регулярном почти гауссовом случае.
+- Профилирование учитывает компенсацию между параметром интереса и nuisance-параметрами.
+- Реальный fit необходимо проверять сканами, диагностикой оптимизатора и псевдоэкспериментами.
+:::

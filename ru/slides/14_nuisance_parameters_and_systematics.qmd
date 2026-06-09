@@ -1,0 +1,964 @@
+---
+title: "Nuisance-параметры и систематические неопределённости"
+subtitle: "Статистический анализ данных"
+author: "Дмитрий В. Наумов (ОИЯИ)"
+format:
+  revealjs:
+    theme: black
+    slide-number: true
+    preview-links: auto
+    chalkboard:
+      buttons: false
+    logo: shared/figures/dvnlogo.png
+    css: styles.css
+    transition: fade
+    center: true
+---
+
+# Зачем нужны nuisance-параметры
+
+## Не все параметры одинаково интересны
+
+Модель данных обычно содержит:
+$$
+L(\mu,\boldsymbol\theta),
+$$
+где:
+
+::: incremental
+- $\mu$ — параметр интереса;
+- $\boldsymbol\theta$ — nuisance-параметры;
+- nuisance-параметры нужны для корректного описания данных;
+- но итоговый физический вывод обычно формулируется про $\mu$.
+:::
+
+Примеры: фон, эффективность, энергетическая шкала, разрешение, нормировка, форма распределения, статистика MC-шаблонов.
+
+## Систематическая неопределённость
+
+Систематическая неопределённость — не «ещё одна ошибка для квадратуры», а неопределённый элемент модели.
+
+Её следует описать как параметр:
+$$
+\theta_j,
+$$
+который влияет на предсказание:
+$$
+\nu_i(\mu,\boldsymbol\theta).
+$$
+
+::: incremental
+- нормировка;
+- форма шаблона;
+- калибровка шкалы;
+- разрешение;
+- эффективность отбора;
+- относительная доля процессов.
+:::
+
+## Полный likelihood
+
+Типичная структура:
+$$
+\boxed{
+L(\mu,\boldsymbol\theta)
+=
+L_{\rm main}\!\left(\text{data}\mid\mu,\boldsymbol\theta\right)
+\,
+L_{\rm aux}\!\left(\text{aux}\mid\boldsymbol\theta\right).
+}
+$$
+
+::: incremental
+- $L_{\rm main}$ описывает основные данные.
+- $L_{\rm aux}$ описывает внешние измерения или prior-like constraints.
+- Constraint — это часть вероятностной модели, а не декоративный штраф.
+- Если убрать $L_{\rm aux}$, nuisance-параметр может стать неидентифицируемым.
+:::
+
+## Auxiliary measurement
+
+Если фон $b$ измерен отдельно:
+$$
+B_{\rm aux}\sim\mathrm N(b,\sigma_b^2),
+$$
+то likelihood:
+$$
+L(\mu,b)
+=
+\operatorname{Pois}(n\mid \mu s+b)
+\,
+\mathrm N(b_{\rm aux}\mid b,\sigma_b^2).
+$$
+
+Эквивалентно можно писать:
+$$
+b=b_0+\sigma_b\theta,
+\qquad
+\theta\sim\mathrm N(0,1).
+$$
+
+## Pull
+
+Для стандартизованного nuisance-параметра:
+$$
+\theta=0\pm1
+$$
+часто смотрят fitted pull:
+$$
+\boxed{
+\operatorname{pull}(\theta)
+=
+\widehat\theta.
+}
+$$
+
+::: incremental
+- $\widehat\theta\simeq0$ — данные не требуют сдвига.
+- $|\widehat\theta|\gtrsim1$ — fit заметно использует систематику.
+- Большой pull не всегда ошибка; он может быть реальным уточнением модели данными.
+- Но систематические большие pulls требуют диагностики.
+:::
+
+## Constraint после fit
+
+Исходное ограничение:
+$$
+\theta=0\pm1.
+$$
+
+После fit профиль likelihood может дать:
+$$
+\theta=\widehat\theta\pm\sigma_{\theta,\rm post}.
+$$
+
+::: incremental
+- Если $\sigma_{\theta,\rm post}<1$, данные сами ограничили nuisance-параметр.
+- Если $\sigma_{\theta,\rm post}\approx1$, информация почти только внешняя.
+- Если $\sigma_{\theta,\rm post}>1$, возможны слабая идентифицируемость или конфликт модели.
+:::
+
+## Nuisance-параметр не должен скрывать плохую модель
+
+Слишком гибкая система nuisance-параметров может подогнать данные и скрыть несогласие.
+
+Риск особенно велик, если:
+
+::: incremental
+- shape uncertainty задаётся слишком свободно;
+- каждый бин получает независимый nuisance;
+- constraints слишком широкие;
+- нет контрольных областей;
+- systematic variations построены по данным, которые затем используются в fit.
+:::
+
+---
+
+# Constraints
+
+## Gaussian constraint
+
+Для аддитивной неопределённости:
+$$
+\theta\sim\mathrm N(0,1),
+$$
+constraint:
+$$
+\boxed{
+L_{\rm constr}(\theta)
+=
+\exp\left(-\frac{\theta^2}{2}\right).
+}
+$$
+
+Пример:
+$$
+b(\theta)=b_0+\sigma_b\theta.
+$$
+
+Подходит, если отрицательные значения физически невозможного параметра исключены или находятся далеко.
+
+## Log-normal constraint
+
+Для положительной нормировки:
+$$
+\nu(\theta)=\nu_0\,\exp(\sigma_{\ln}\theta).
+$$
+
+Тогда:
+$$
+\nu(\theta)>0
+$$
+для любых $\theta$.
+
+::: incremental
+- удобен для multiplicative uncertainty;
+- симметрия задана в логарифме;
+- вверх и вниз на один $\sigma$ не обязаны быть одинаковыми в абсолютных единицах;
+- часто используется для нормировок и efficiencies.
+:::
+
+## Gamma constraint
+
+Если фон оценивается из контрольного счёта:
+$$
+m\sim\operatorname{Pois}(\tau b),
+$$
+то auxiliary likelihood:
+$$
+L_{\rm aux}(b)
+=
+\operatorname{Pois}(m\mid\tau b).
+$$
+
+Это естественнее, чем Gaussian constraint при малых контрольных счётах.
+
+::: incremental
+- сохраняет дискретную природу данных;
+- не допускает отрицательного $b$;
+- корректно работает при малых $m$;
+- напрямую связывает signal и control regions.
+:::
+
+## Correlated constraints
+
+Для нескольких nuisance-параметров:
+$$
+\boldsymbol\theta\sim\mathrm N(\mathbf0,V_\theta).
+$$
+
+Constraint:
+$$
+\boxed{
+-2\ln L_{\rm constr}
+=
+\boldsymbol\theta^\mathsf T
+V_\theta^{-1}
+\boldsymbol\theta
++\text{const}.
+}
+$$
+
+Корреляции нужно задавать на уровне источников неопределённости, а не только на уровне итоговых ошибок.
+
+## Shape uncertainty
+
+Бинированное предсказание:
+$$
+\nu_i(\mu,\boldsymbol\theta)
+=
+\mu s_i(\boldsymbol\theta)+b_i(\boldsymbol\theta).
+$$
+
+Один nuisance-параметр может согласованно менять много бинов:
+$$
+b_i(\theta)
+=
+b_i^0+\theta\,\Delta b_i.
+$$
+
+::: incremental
+- Это не независимая ошибка каждого бина.
+- Сдвиги между бинами коррелированы.
+- Форма может менять не только нормировку, но и положение/ширину распределения.
+:::
+
+## Интерполяция шаблонов
+
+Часто есть три шаблона:
+$$
+\nu_i^0,
+\qquad
+\nu_i^{+},
+\qquad
+\nu_i^{-}.
+$$
+
+Для $|\theta|\le1$ используют интерполяцию:
+$$
+\nu_i(\theta)
+\approx
+\nu_i^0+\theta\,\Delta_i,
+$$
+где
+$$
+\Delta_i=\frac{\nu_i^+-\nu_i^-}{2}.
+$$
+
+За пределами $\pm1\sigma$ нужна аккуратная экстраполяция и контроль положительности.
+
+---
+
+# Профилирование систематик
+
+## Профильная статистика с nuisance-параметрами
+
+Для проверки $\mu$:
+$$
+\lambda(\mu)
+=
+\frac{
+L(\mu,\widehat{\widehat{\boldsymbol\theta}}(\mu))
+}{
+L(\widehat\mu,\widehat{\boldsymbol\theta})
+}.
+$$
+
+Профиль:
+$$
+\boxed{
+q(\mu)
+=
+-2\ln\lambda(\mu).
+}
+$$
+
+Nuisance-параметры выбираются так, чтобы при данном $\mu$ максимально хорошо описать данные.
+
+## Фиксировать систематики нельзя
+
+Если заменить
+$$
+\boldsymbol\theta
+\quad\text{на}\quad
+\boldsymbol\theta=\mathbf0,
+$$
+то обычно:
+
+::: incremental
+- неопределённость $\mu$ занижается;
+- значимость завышается;
+- верхние пределы становятся слишком жёсткими;
+- coverage может нарушиться;
+- конфликты между данными и constraints становятся невидимыми.
+:::
+
+Фиксирование nuisance-параметров допустимо только как диагностический вариант, не как финальный результат.
+
+## Интерактив: счётный эксперимент с фоном
+
+::: {.clt-widget}
+```{ojs}
+//| echo: false
+
+viewof sysN = Inputs.range([0, 80], {value: 24, step: 1, label: "наблюдённые события n"})
+viewof sysS = Inputs.range([1, 30], {value: 8, step: 0.5, label: "сигнал при μ=1"})
+viewof sysB0 = Inputs.range([1, 80], {value: 20, step: 0.5, label: "центральный фон b0"})
+viewof sysSigmaB = Inputs.range([0, 25], {value: 6, step: 0.5, label: "неопределённость фона σ_b"})
+
+logPoisSys = (n, lambda) => lambda <= 0 ? -Infinity : n * Math.log(lambda) - lambda
+logLSys = (mu, theta) => {
+  const b = sysB0 + sysSigmaB * theta;
+  const lambda = mu * sysS + b;
+  return logPoisSys(sysN, lambda) - 0.5 * theta * theta;
+}
+thetaGridSys = Array.from({length: 501}, (_, i) => -5 + 10 * i / 500)
+muGridSys = Array.from({length: 301}, (_, i) => 4 * i / 300)
+bestForMuSys = mu => {
+  let best = {theta: 0, ll: -Infinity};
+  for (const theta of thetaGridSys) {
+    const ll = logLSys(mu, theta);
+    if (ll > best.ll) best = {theta, ll};
+  }
+  return best;
+}
+globalBestSys = {
+  let best = {mu: 0, theta: 0, ll: -Infinity};
+  for (const mu of muGridSys) {
+    const prof = bestForMuSys(mu);
+    if (prof.ll > best.ll) best = {mu, theta: prof.theta, ll: prof.ll};
+  }
+  return best;
+}
+fixedBestSys = {
+  let best = {mu: 0, ll: -Infinity};
+  for (const mu of muGridSys) {
+    const ll = logLSys(mu, 0);
+    if (ll > best.ll) best = {mu, ll};
+  }
+  return best;
+}
+profileCurveSys = muGridSys.map(mu => {
+  const prof = bestForMuSys(mu);
+  return {
+    mu,
+    qProfile: 2 * (globalBestSys.ll - prof.ll),
+    qFixed: 2 * (fixedBestSys.ll - logLSys(mu, 0)),
+    theta: prof.theta
+  };
+})
+profileAllowedSys = profileCurveSys.filter(d => d.qProfile <= 1)
+fixedAllowedSys = profileCurveSys.filter(d => d.qFixed <= 1)
+profLowSys = profileAllowedSys.length ? Math.min(...profileAllowedSys.map(d => d.mu)) : NaN
+profHighSys = profileAllowedSys.length ? Math.max(...profileAllowedSys.map(d => d.mu)) : NaN
+fixedLowSys = fixedAllowedSys.length ? Math.min(...fixedAllowedSys.map(d => d.mu)) : NaN
+fixedHighSys = fixedAllowedSys.length ? Math.max(...fixedAllowedSys.map(d => d.mu)) : NaN
+
+sysPlot = Plot.plot({
+  width: 1040,
+  height: 480,
+  marginLeft: 70,
+  x: {label: "сила сигнала μ", domain: [0, 4], grid: true},
+  y: {label: "q(μ)", domain: [0, 12], grid: true},
+  color: {domain: ["profile", "fixed nuisance"], range: ["#ffb347", "#4ea1ff"], legend: true},
+  marks: [
+    Plot.line(profileCurveSys, {x: "mu", y: "qProfile", stroke: "#ffb347", strokeWidth: 4}),
+    Plot.line(profileCurveSys, {x: "mu", y: "qFixed", stroke: "#4ea1ff", strokeWidth: 4}),
+    Plot.ruleY([1, 3.84], {stroke: "#f2f2f2", strokeDasharray: "8,6"}),
+    Plot.ruleX([globalBestSys.mu], {stroke: "#ffb347", strokeWidth: 3})
+  ]
+})
+
+html`
+<div class="clt-panel">
+  ${sysPlot}
+  <div class="clt-summary">
+    <span>μ_hat = ${globalBestSys.mu.toFixed(2)}, θ_hat = ${globalBestSys.theta.toFixed(2)}</span>
+    <span>profile Δq≤1: [${profLowSys.toFixed(2)}, ${profHighSys.toFixed(2)}]</span>
+    <span>fixed Δq≤1: [${fixedLowSys.toFixed(2)}, ${fixedHighSys.toFixed(2)}]</span>
+  </div>
+</div>
+`
+```
+:::
+
+## Что показывает профилирование
+
+::: incremental
+1. При $\sigma_b=0$ fixed и profile почти совпадают.
+2. При большой неопределённости фона профиль становится шире.
+3. Fitted nuisance-параметр может компенсировать изменение $\mu$.
+4. Фиксирование фона делает результат искусственно точным.
+5. Pull $\widehat\theta$ показывает, насколько данные сдвигают фон относительно constraint.
+:::
+
+## Профилирование и маргинализация
+
+Профилирование:
+$$
+L_{\rm prof}(\mu)
+=
+L(\mu,\widehat{\widehat{\boldsymbol\theta}}(\mu)).
+$$
+
+Маргинализация:
+$$
+L_{\rm marg}(\mu)
+=
+\int
+L(\mu,\boldsymbol\theta)\,
+\pi(\boldsymbol\theta)\,
+d\boldsymbol\theta.
+$$
+
+::: incremental
+- Профилирование выбирает наиболее благоприятные nuisance-параметры.
+- Маргинализация усредняет по ним с весом prior.
+- Это разные операции и разные интерпретации.
+- В почти гауссовом случае результаты часто похожи.
+:::
+
+## В частотном анализе
+
+Часто используют:
+
+::: incremental
+- profile likelihood для оценки параметров, тестов и интервалов;
+- constraints как likelihood для auxiliary measurements;
+- псевдоэксперименты для проверки покрытия и значимости;
+- Asimov-данные для ожидаемой чувствительности.
+:::
+
+Маргинализация может появляться в гибридных методах, но тогда нужно явно описывать prior для nuisance-параметров.
+
+---
+
+# Корреляции систематик
+
+## Один источник — много эффектов
+
+Один nuisance-параметр может одновременно менять несколько каналов:
+$$
+\nu_{ci}(\theta)
+=
+\nu_{ci}^0
+\theta\,\Delta_{ci}.
+$$
+
+::: incremental
+- Светимость коррелирует нормировки всех процессов, измеренных с той же luminosity.
+- Энергетическая шкала меняет форму распределений в нескольких каналах.
+- Теоретическая неопределённость может быть общей для родственных процессов.
+- Статистическая ошибка независимых control regions обычно не коррелирована.
+:::
+
+## Нельзя складывать коррелированные ошибки как независимые
+
+Для вектора измерений:
+$$
+\mathbf y
+=
+\mu\mathbf 1+\boldsymbol\epsilon,
+\qquad
+\boldsymbol\epsilon\sim\mathrm N(\mathbf0,V).
+$$
+
+Правильный fit использует:
+$$
+\boxed{
+\chi^2(\mu)
+=
+(\mathbf y-\mu\mathbf1)^\mathsf T
+V^{-1}
+(\mathbf y-\mu\mathbf1).
+}
+$$
+
+Корреляции входят через полную ковариационную матрицу.
+
+## BLUE-оценка с корреляциями
+
+Для общей средней:
+$$
+\boxed{
+\widehat\mu
+=
+\frac{\mathbf1^\mathsf T V^{-1}\mathbf y}
+{\mathbf1^\mathsf T V^{-1}\mathbf1},
+\qquad
+\sigma_\mu^2
+=
+\frac{1}
+{\mathbf1^\mathsf T V^{-1}\mathbf1}.
+}
+$$
+
+При сильных корреляциях веса могут быть неожиданными, включая отрицательные.
+
+## Интерактив: две оценки и общая систематика
+
+::: {.clt-widget}
+```{ojs}
+//| echo: false
+
+viewof corrY1 = Inputs.range([-2, 4], {value: 0.8, step: 0.05, label: "измерение y1"})
+viewof corrY2 = Inputs.range([-2, 4], {value: 1.4, step: 0.05, label: "измерение y2"})
+viewof corrStat1 = Inputs.range([0.1, 2], {value: 0.45, step: 0.05, label: "stat σ1"})
+viewof corrStat2 = Inputs.range([0.1, 2], {value: 0.55, step: 0.05, label: "stat σ2"})
+viewof corrSys = Inputs.range([0, 2], {value: 0.8, step: 0.05, label: "общая systematic σsys"})
+
+v11Corr = corrStat1 * corrStat1 + corrSys * corrSys
+v22Corr = corrStat2 * corrStat2 + corrSys * corrSys
+v12Corr = corrSys * corrSys
+detCorr = v11Corr * v22Corr - v12Corr * v12Corr
+vinvCorr = ({a: v22Corr / detCorr, b: -v12Corr / detCorr, d: v11Corr / detCorr})
+denCorr = vinvCorr.a + 2 * vinvCorr.b + vinvCorr.d
+muHatCorr = ((vinvCorr.a + vinvCorr.b) * corrY1 + (vinvCorr.b + vinvCorr.d) * corrY2) / denCorr
+sigmaMuCorr = Math.sqrt(1 / denCorr)
+muNaiveCorr = (corrY1 / v11Corr + corrY2 / v22Corr) / (1 / v11Corr + 1 / v22Corr)
+sigmaNaiveCorr = Math.sqrt(1 / (1 / v11Corr + 1 / v22Corr))
+corrCoeff = v12Corr / Math.sqrt(v11Corr * v22Corr)
+
+ellipseCorr = Array.from({length: 241}, (_, i) => {
+  const t = 2 * Math.PI * i / 240;
+  const a = Math.sqrt(v11Corr);
+  const b = Math.sqrt(Math.max(1e-9, v22Corr * (1 - corrCoeff * corrCoeff)));
+  const x = a * Math.cos(t);
+  const y = corrCoeff * Math.sqrt(v22Corr) * Math.cos(t) + b * Math.sin(t);
+  return {x: corrY1 + x, y: corrY2 + y};
+})
+lineCorr = Array.from({length: 101}, (_, i) => {
+  const x = -2.5 + 7 * i / 100;
+  return {x, y: x};
+})
+
+corrPlot = Plot.plot({
+  width: 720,
+  height: 500,
+  marginLeft: 65,
+  x: {label: "y1", domain: [-2.5, 4.5], grid: true},
+  y: {label: "y2", domain: [-2.5, 4.5], grid: true},
+  marks: [
+    Plot.line(ellipseCorr, {x: "x", y: "y", stroke: "#4ea1ff", strokeWidth: 4}),
+    Plot.line(lineCorr, {x: "x", y: "y", stroke: "#777", strokeDasharray: "8,6"}),
+    Plot.dot([{x: corrY1, y: corrY2}], {x: "x", y: "y", fill: "#ffb347", r: 8}),
+    Plot.dot([{x: muHatCorr, y: muHatCorr}], {x: "x", y: "y", fill: "#ff5f57", r: 8})
+  ]
+})
+corrWeights = [
+  {name: "w1", value: (vinvCorr.a + vinvCorr.b) / denCorr},
+  {name: "w2", value: (vinvCorr.b + vinvCorr.d) / denCorr}
+]
+weightsPlotCorr = Plot.plot({
+  width: 520,
+  height: 500,
+  marginLeft: 70,
+  x: {label: "вес", grid: true},
+  y: {label: null, domain: ["w1", "w2"]},
+  marks: [
+    Plot.ruleX([0]),
+    Plot.barX(corrWeights, {y: "name", x: "value", fill: d => d.value >= 0 ? "#ffb347" : "#4ea1ff"})
+  ]
+})
+
+html`
+<div class="clt-panel">
+  <div style="display:flex; gap:0.7rem; justify-content:center; align-items:center;">
+    ${corrPlot}
+    ${weightsPlotCorr}
+  </div>
+  <div class="clt-summary">
+    <span>ρ = ${corrCoeff.toFixed(2)}</span>
+    <span>с корреляцией: μ = ${muHatCorr.toFixed(3)} ± ${sigmaMuCorr.toFixed(3)}</span>
+    <span>если игнорировать корреляцию: μ = ${muNaiveCorr.toFixed(3)} ± ${sigmaNaiveCorr.toFixed(3)}</span>
+  </div>
+</div>
+`
+```
+:::
+
+## Что показывает корреляция
+
+::: incremental
+1. Общая систематика не усредняется как независимый шум.
+2. При росте общей systematic итоговая ошибка перестаёт быстро уменьшаться.
+3. Игнорирование корреляций обычно занижает неопределённость.
+4. При сильной корреляции веса отдельных измерений могут стать неинтуитивными.
+5. Эллипс ошибок показывает, какие линейные комбинации измерены хорошо или плохо.
+:::
+
+## Корреляции между каналами
+
+Решение о корреляции должно основываться на физике источника:
+
+::: incremental
+- один и тот же calibration constant — коррелирован;
+- независимые статистики control samples — не коррелированы;
+- одна теоретическая шкала для процессов — часто коррелирована;
+- разные генераторные модели — могут быть частично коррелированы;
+- разные годы данных — зависит от detector conditions и методики.
+:::
+
+Неверные корреляции могут изменить не только ошибку, но и центральное значение.
+
+---
+
+# Impacts, pulls и ranking
+
+## Что такое impact
+
+Impact nuisance-параметра $\theta_j$ на $\mu$ — изменение результата при сдвиге или фиксации $\theta_j$.
+
+Один распространённый вариант:
+$$
+\Delta\widehat\mu_j^{\pm}
+=
+\widehat\mu\!\left(\theta_j=\widehat\theta_j\pm\sigma_j^{\rm post}\right)
+-\widehat\mu.
+$$
+
+::: incremental
+- impact показывает, какие источники доминируют ошибку результата;
+- sign показывает направление сдвига;
+- ranking помогает планировать улучшения анализа;
+- impact не заменяет полный fit.
+:::
+
+## Pull и impact отвечают на разные вопросы
+
+| Величина | Вопрос |
+|---|---|
+| pull | насколько данные сдвинули nuisance-параметр |
+| post-fit uncertainty | насколько nuisance-параметр ограничен после fit |
+| impact | насколько nuisance-параметр влияет на $\mu$ |
+| correlation with $\mu$ | насколько $\theta_j$ компенсирует изменение $\mu$ |
+
+Большой impact может быть при малом pull.
+
+Большой pull может иметь малый impact.
+
+## Интерактив: ranking систематик
+
+::: {.clt-widget}
+```{ojs}
+//| echo: false
+
+viewof impStat = Inputs.range([0.1, 2], {value: 0.7, step: 0.05, label: "статистическая ошибка μ"})
+viewof impLumi = Inputs.range([0, 2], {value: 0.35, step: 0.05, label: "impact luminosity"})
+viewof impBkg = Inputs.range([0, 2], {value: 0.85, step: 0.05, label: "impact background"})
+viewof impShape = Inputs.range([0, 2], {value: 0.55, step: 0.05, label: "impact shape"})
+viewof impCalib = Inputs.range([0, 2], {value: 0.45, step: 0.05, label: "impact calibration"})
+
+impactRows = [
+  {name: "stat", impact: impStat, type: "stat"},
+  {name: "background", impact: impBkg, type: "syst"},
+  {name: "shape", impact: impShape, type: "syst"},
+  {name: "calibration", impact: impCalib, type: "syst"},
+  {name: "luminosity", impact: impLumi, type: "syst"}
+].sort((a,b) => b.impact - a.impact)
+totalImpact = Math.sqrt(impactRows.reduce((s,d) => s + d.impact*d.impact, 0))
+withoutLargestSyst = {
+  const largest = impactRows.find(d => d.type === "syst");
+  return Math.sqrt(impactRows.filter(d => d !== largest).reduce((s,d) => s + d.impact*d.impact, 0));
+}
+impactPlot = Plot.plot({
+  width: 1050,
+  height: 470,
+  marginLeft: 150,
+  x: {label: "примерный вклад в σ(μ)", grid: true},
+  y: {label: null, domain: impactRows.map(d => d.name)},
+  color: {domain: ["stat", "syst"], range: ["#4ea1ff", "#ffb347"], legend: true},
+  marks: [
+    Plot.barX(impactRows, {y: "name", x: "impact", fill: "type"}),
+    Plot.text(impactRows, {y: "name", x: d => d.impact + 0.05, text: d => d.impact.toFixed(2), fill: "#f2f2f2", textAnchor: "start"})
+  ]
+})
+
+html`
+<div class="clt-panel">
+  ${impactPlot}
+  <div class="clt-summary">
+    <span>полная ошибка ≈ ${totalImpact.toFixed(2)}</span>
+    <span>без крупнейшей систематики ≈ ${withoutLargestSyst.toFixed(2)}</span>
+    <span>ranking показывает, что выгоднее улучшать первым</span>
+  </div>
+</div>
+`
+```
+:::
+
+## Осторожность с quadrature ranking
+
+Картинка impact часто выглядит как квадратурное разложение, но реальный fit может быть сложнее:
+
+::: incremental
+- nuisance-параметры коррелированы;
+- impacts могут быть асимметричны;
+- shape uncertainties меняют не только ширину, но и центральное значение;
+- ranking зависит от выбранного результата $\mu$;
+- улучшение одного источника может усилить роль другого.
+:::
+
+## Pre-fit и post-fit uncertainties
+
+**Pre-fit**:
+
+::: incremental
+- задаётся внешними измерениями и оценками систематик;
+- показывает исходное знание до использования signal/control data.
+:::
+
+**Post-fit**:
+
+::: incremental
+- учитывает информацию из fit;
+- может стать меньше из-за constraints от данных;
+- может выявить tension через pulls;
+- не должен использоваться для переопределения исходной систематики задним числом.
+:::
+
+---
+
+# Нормировка, форма и MC-stat
+
+## Нормировочная систематика
+
+Если процесс имеет ожидание:
+$$
+\nu_i^0,
+$$
+нормировочная uncertainty:
+$$
+\nu_i(\theta)
+=
+\nu_i^0(1+\delta\theta)
+$$
+или log-normal:
+$$
+\nu_i(\theta)
+=
+\nu_i^0\exp(\sigma_{\ln}\theta).
+$$
+
+Все бины процесса меняются согласованно.
+
+## Shape-only systematic
+
+Иногда систематика должна менять форму, но не интеграл.
+
+Пусть variation:
+$$
+\nu_i^\pm.
+$$
+
+Shape-only версия нормируется:
+$$
+\widetilde\nu_i^\pm
+=
+\nu_i^\pm
+\frac{\sum_j\nu_j^0}{\sum_j\nu_j^\pm}.
+$$
+
+Так сохраняется ожидаемое полное число событий, а меняется распределение по бинам.
+
+## Нормировка плюс форма
+
+В реальном анализе важно решить:
+
+::: incremental
+- variation меняет только shape;
+- только normalization;
+- или одновременно shape и normalization.
+:::
+
+Это физическое решение, а не техническая деталь.
+
+Одинаковые up/down-шаблоны с разной нормировкой могут по-разному влиять на fit и пределы.
+
+## Ограниченная статистика MC
+
+Шаблонный бин имеет не точное ожидание, а оценку из MC:
+$$
+m_i\sim\operatorname{Pois}(\tau_i\nu_i).
+$$
+
+Это добавляет nuisance-параметры bin-by-bin:
+$$
+\nu_i\rightarrow \gamma_i\nu_i.
+$$
+
+::: incremental
+- При малой MC-stat форма шаблона шумная.
+- Слишком много свободных $\gamma_i$ может сделать fit нестабильным.
+- Нужно сглаживание, объединение бинов или специальная модель MC-stat.
+:::
+
+## Control regions
+
+Control region должна ограничивать nuisance-параметры, сохраняя связь с signal region:
+$$
+L
+=
+L_{\rm SR}
+\times
+L_{\rm CR}
+\times
+L_{\rm constr}.
+$$
+
+::: incremental
+- Она должна быть обогащена нужным фоном.
+- Сигнальная примесь должна быть мала или явно учтена.
+- Transfer factor связывает CR и SR.
+- Систематика transfer factor часто доминирует результат.
+:::
+
+## Sidebands
+
+Sideband-метод использует соседнюю область переменной:
+$$
+m\notin\text{signal window}
+$$
+для ограничения фона в окне.
+
+Риски:
+
+::: incremental
+- signal leakage в sideband;
+- неверная функциональная форма фона;
+- sculpting после отбора или классификатора;
+- корреляция discriminant с mass;
+- выбор ширины окна после просмотра данных.
+:::
+
+---
+
+# Валидация систематик
+
+## Что нужно проверить
+
+::: incremental
+- покрывают ли up/down variations реальные различия;
+- согласуются ли контрольные области;
+- нет ли систематических pulls одного знака;
+- устойчив ли результат к разумным вариантам модели;
+- не доминирует ли один плохо проверенный источник;
+- сохраняется ли покрытие с nuisance-параметрами.
+:::
+
+## Ranking как план улучшений
+
+Если доминирует:
+
+::: incremental
+- luminosity — улучшать нормировку или использовать ratio;
+- background normalization — усиливать control region;
+- shape uncertainty — улучшать модель формы;
+- calibration — уточнять шкалу и resolution;
+- MC-stat — увеличивать MC, объединять бины или сглаживать шаблон;
+- theory uncertainty — сравнивать генераторы и orders.
+:::
+
+## Blind analysis и систематики
+
+Систематические uncertainty нельзя настраивать под желаемый финальный результат.
+
+Практически:
+
+::: incremental
+- фиксировать sources и correlations до unblinding;
+- проверять variations в control/validation regions;
+- документировать изменения после unblinding;
+- разделять статистическую оптимизацию и физическую интерпретацию;
+- избегать tuning на signal region.
+:::
+
+## Что сообщать в публикации
+
+::: incremental
+- полный список основных sources;
+- тип constraints;
+- pre-fit и post-fit uncertainties;
+- pulls и impacts для доминирующих источников;
+- корреляции между каналами и годами;
+- влияние на результат и ожидаемую чувствительность;
+- проверки в контрольных областях;
+- способ обработки MC-stat.
+:::
+
+## Частые ошибки
+
+| Ошибка | Последствие |
+|---|---|
+| systematic добавлена в квадратуру после fit | неверный likelihood |
+| корреляции проигнорированы | ошибка результата занижена |
+| одна систематика разбита на независимые биновые ошибки | модель слишком гибкая |
+| constraint выбран только для удобства | неверная форма хвостов |
+| nuisance-параметры фиксированы в финальном fit | завышенная значимость |
+| post-fit uncertainty трактуется как новая внешняя систематика | круговая логика |
+| control region содержит неучтённый сигнал | смещённая оценка фона |
+
+## Практический workflow
+
+::: incremental
+1. Перечислить физические источники неопределённости.
+2. Определить, что они меняют: norm, shape или оба.
+3. Задать nuisance-параметры и constraints.
+4. Задать корреляции между каналами, годами и процессами.
+5. Проверить up/down variations и положительность предсказаний.
+6. Построить совместный likelihood с control regions.
+7. Проверить pulls, post-fit constraints и impacts.
+8. Проверить покрытие и ожидаемую чувствительность псевдоэкспериментами.
+:::
+
+## Резюме
+
+::: incremental
+- Систематическая неопределённость должна входить в вероятностную модель через nuisance-параметр.
+- Constraint — это likelihood для вспомогательного знания, а не произвольный штраф.
+- Профилирование учитывает компенсации между параметром интереса и систематиками.
+- Корреляции систематик критичны для объединений и совместных fit.
+- Pull, post-fit uncertainty и impact измеряют разные свойства fit.
+- Shape uncertainties и MC-stat требуют аккуратной шаблонной модели.
+- Итоговая систематика проверяется не таблицей, а полной процедурой анализа.
+:::

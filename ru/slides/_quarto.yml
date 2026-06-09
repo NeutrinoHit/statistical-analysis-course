@@ -6,17 +6,39 @@ project:
     - shared/reveal/**
   render:
     - index.qmd
-    - introduction.qmd
-    - random-distributions.qmd
-    - characteristic-functions.qmd
-    - central-limit-theorem.qmd
-    - non_gaussian_clt_violations.qmd
+    - 00_introduction.qmd
+    - 01_random_distributions.qmd
+    - 02_characteristic_functions.qmd
+    - 03_central_limit_theorem.qmd
+    - 04_non_gaussian_clt_violations.qmd
+    - 05_error_propagation_and_covariance.qmd
+    - 06_monte_carlo_method.qmd
+    - 07_parameter_estimation_and_maximum_likelihood.qmd
+    - 08_method_of_least_squares.qmd
+    - 09_statistical_tests_basics.qmd
+    - 10_test_statistics_and_multivariate_methods.qmd
+    - 11_goodness_of_fit_and_significance.qmd
+    - 12_feldman_cousins_and_cls.qmd
+    - 13_interval_estimation_and_limits.qmd
+    - 14_nuisance_parameters_and_systematics.qmd
+    - 15_bayesian_examples.qmd
     - exercises/index.qmd
     - exercises/introduction_exercises.qmd
     - exercises/random-distributions_exercises.qmd
     - exercises/characteristic-functions_exercises.qmd
     - exercises/central-limit-theorem_exercises.qmd
     - exercises/non_gaussian_clt_violations_exercises.qmd
+    - exercises/error-propagation-and-covariance_exercises.qmd
+    - exercises/monte-carlo-method_exercises.qmd
+    - exercises/parameter-estimation-and-maximum-likelihood_exercises.qmd
+    - exercises/method-of-least-squares_exercises.qmd
+    - exercises/statistical-tests-basics_exercises.qmd
+    - exercises/test-statistics-and-multivariate-methods_exercises.qmd
+    - exercises/goodness-of-fit-and-significance_exercises.qmd
+    - exercises/feldman-cousins-and-cls_exercises.qmd
+    - exercises/interval-estimation-and-limits_exercises.qmd
+    - exercises/nuisance-parameters-and-systematics_exercises.qmd
+    - exercises/bayesian-examples_exercises.qmd
 
 website:
   title: "Статистический анализ данных: слайды"
