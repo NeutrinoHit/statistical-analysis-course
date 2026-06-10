@@ -103,13 +103,19 @@ $$
 Базовые характеристики случайной величины:
 
 $$
-\mathbb E[X],
-\qquad
-\mathrm{Var}(X),
-\qquad
-\sigma_X=\sqrt{\mathrm{Var}(X)},
-\qquad
-\mathrm{cov}(X,Y).
+\mathbb E[X]
+$$
+
+$$
+\mathrm{Var}(X)
+$$
+
+$$
+\sigma_X=\sqrt{\mathrm{Var}(X)}
+$$
+
+$$
+\mathrm{cov}(X,Y)
 $$
 
 Именно переход от неизвестного параметра $\theta$ к его оценке

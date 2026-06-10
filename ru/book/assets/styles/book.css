@@ -309,6 +309,12 @@ body:has(.book-landing) #title-block-header {
   overflow-wrap: normal;
 }
 
+@container (max-width: 520px) {
+  .book-landing h1 {
+    font-size: clamp(1.8rem, 10.5cqw, 3rem);
+  }
+}
+
 .book-kicker {
   margin-bottom: 1.4rem;
   color: var(--book-coral);
@@ -913,10 +919,6 @@ body:has(.book-landing) #title-block-header {
 }
 
 @media (max-width: 560px) {
-  .book-landing h1 {
-    font-size: 3rem;
-  }
-
   .analysis-pipeline {
     grid-template-columns: 1fr;
   }
