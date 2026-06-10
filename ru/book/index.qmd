@@ -24,7 +24,7 @@ body-classes: book-home
       <a class="book-button" href="syllabus.html">Посмотреть маршрут</a>
     </div>
   </div>
-  <aside class="book-author">
+  <div class="book-author">
     <div>
       <div class="book-author-meta">
         <span>Автор</span>
@@ -33,7 +33,7 @@ body-classes: book-home
       <strong>Дмитрий В. Наумов</strong>
       <p>Физик, доктор физико-математических наук, преподаватель.</p>
     </div>
-  </aside>
+  </div>
 </section>
 
 <section class="book-principles" aria-label="Принципы книги">
@@ -73,7 +73,8 @@ body-classes: book-home
   <section>
     <h3>Дальше</h3>
     <p>Следующие главы постепенно переводятся из лекций в книжный формат.
-    Каркас книги, слайды и вычислительные материалы уже доступны из оглавления.</p>
+    Каркас всех шестнадцати глав уже доступен из оглавления, а каждая заготовка
+    содержит ссылки на соответствующие слайды и задачи.</p>
   </section>
 </div>
 ```

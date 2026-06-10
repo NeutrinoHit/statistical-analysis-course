@@ -5,7 +5,7 @@ format:
   html:
     toc: true
     number-sections: true
-    css: ../../shared/styles/book.css
+    css: assets/styles/book.css
     include-in-header:
       - ../../shared/html/mathjax.html
   pdf:

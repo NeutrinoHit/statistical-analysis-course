@@ -12,15 +12,15 @@ number-sections: false
   <section>
     <span>I</span>
     <div>
-      <h3>Язык данных</h3>
-      <p>Вероятность, случайные величины, распределения, моменты и первые модели.</p>
+      <h3>Вероятностный язык</h3>
+      <p>Случайные величины, характеристические функции, ЦПТ и границы гауссовского приближения.</p>
     </div>
   </section>
   <section>
     <span>II</span>
     <div>
-      <h3>Оценивание и подгонка</h3>
-      <p>Правдоподобие, оценки параметров, метод наименьших квадратов и диагностика фита.</p>
+      <h3>Моделирование и оценивание</h3>
+      <p>Ковариации, Монте-Карло, максимальное правдоподобие и метод наименьших квадратов.</p>
     </div>
   </section>
   <section>
@@ -33,24 +33,30 @@ number-sections: false
   <section>
     <span>IV</span>
     <div>
-      <h3>Реальный анализ</h3>
-      <p>Систематические неопределённости, корреляции и законченные физические кейсы.</p>
+      <h3>Неопределённости и альтернативный вывод</h3>
+      <p>Nuisance-параметры, систематические неопределённости и байесовский подход.</p>
     </div>
   </section>
 </div>
 ```
 
-## Главы и вычислительные материалы
+## Шестнадцать глав
 
-| Тема | Основной результат | Практика |
-|---|---|---|
-| [Зачем физику статистика](chapters/why_statistics.qmd) | Язык физических результатов и первый фит | Интерактивный фит |
-| [Вероятность и моменты](chapters/probability.qmd) | Ожидание, дисперсия, выборочные моменты | [Ноутбук](notebooks/probability_demo.qmd) |
-| [Пуассон и гаусс](chapters/poisson_gaussian.qmd) | Счётные модели и приближения | [Ноутбук](notebooks/poisson_gaussian_demo.qmd) |
-| [Правдоподобие](chapters/likelihood.qmd) | Логика likelihood | [Ноутбук](notebooks/likelihood_demo.qmd) |
-| [Подгонка моделей](chapters/fitting.qmd) | Оценка параметров модели | [Ноутбук](notebooks/fitting_demo.qmd) |
-| [Интервальные оценки](chapters/intervals.qmd) | Интервалы и coverage | [Ноутбук](notebooks/intervals_demo.qmd) |
-| [Интервалы Фельдмана—Казинса](chapters/feldman_cousins.qmd) | Unified construction | [Ноутбук](notebooks/feldman_cousins_demo.qmd) |
-| [Проверка гипотез](chapters/hypothesis_tests.qmd) | $p$-value, мощность, статистики теста | [Ноутбук](notebooks/hypothesis_tests_demo.qmd) |
-| [Систематические неопределённости](chapters/systematics.qmd) | Nuisance-параметры и ковариации | [Ноутбук](notebooks/systematics_demo.qmd) |
-| [Нейтринные кейсы](chapters/neutrino_cases.qmd) | Полный анализ на физических примерах | [Ноутбук](notebooks/neutrino_cases_demo.qmd) |
+| № | Глава | Статус |
+|---:|---|---|
+| 1 | [Зачем физику статистика](chapters/why_statistics.qmd) | Первая редакция |
+| 2 | [Случайные величины, распределения, моменты](chapters/01_random_distributions.qmd) | Заготовка |
+| 3 | [Характеристические функции и суммы случайных величин](chapters/02_characteristic_functions.qmd) | Заготовка |
+| 4 | [Центральная предельная теорема и нормальное распределение](chapters/03_central_limit_theorem.qmd) | Заготовка |
+| 5 | [Когда не возникает гауссового распределения](chapters/04_non_gaussian_clt_violations.qmd) | Заготовка |
+| 6 | [Распространение ошибок, ковариации и многомерный гаусс](chapters/05_error_propagation_and_covariance.qmd) | Заготовка |
+| 7 | [Метод Монте-Карло и псевдоэксперименты](chapters/06_monte_carlo_method.qmd) | Заготовка |
+| 8 | [Оценивание параметров и метод максимального правдоподобия](chapters/07_parameter_estimation_and_maximum_likelihood.qmd) | Заготовка |
+| 9 | [Метод наименьших квадратов](chapters/08_method_of_least_squares.qmd) | Заготовка |
+| 10 | [Статистические тесты: общие понятия](chapters/09_statistical_tests_basics.qmd) | Заготовка |
+| 11 | [Статистики тестов и многомерные методы](chapters/10_test_statistics_and_multivariate_methods.qmd) | Заготовка |
+| 12 | [Проверка согласия и статистическая значимость](chapters/11_goodness_of_fit_and_significance.qmd) | Заготовка |
+| 13 | [Фельдман–Казинс, CLs и родственные методы](chapters/12_feldman_cousins_and_cls.qmd) | Заготовка |
+| 14 | [Интервальные оценки и установление ограничений](chapters/13_interval_estimation_and_limits.qmd) | Заготовка |
+| 15 | [Nuisance-параметры и систематические неопределённости](chapters/14_nuisance_parameters_and_systematics.qmd) | Заготовка |
+| 16 | [Байесовский вывод и практические примеры](chapters/15_bayesian_examples.qmd) | Заготовка |

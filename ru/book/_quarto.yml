@@ -19,35 +19,30 @@ book:
     - index.qmd
     - preface.qmd
     - syllabus.qmd
-    - part: "I. Язык данных"
+    - part: "I. Вероятностный язык"
       chapters:
         - chapters/why_statistics.qmd
-        - chapters/probability.qmd
-        - chapters/poisson_gaussian.qmd
-    - part: "II. Оценивание и подгонка"
+        - chapters/01_random_distributions.qmd
+        - chapters/02_characteristic_functions.qmd
+        - chapters/03_central_limit_theorem.qmd
+        - chapters/04_non_gaussian_clt_violations.qmd
+    - part: "II. Моделирование и оценивание"
       chapters:
-        - chapters/likelihood.qmd
-        - chapters/fitting.qmd
+        - chapters/05_error_propagation_and_covariance.qmd
+        - chapters/06_monte_carlo_method.qmd
+        - chapters/07_parameter_estimation_and_maximum_likelihood.qmd
+        - chapters/08_method_of_least_squares.qmd
     - part: "III. Статистический вывод"
       chapters:
-        - chapters/intervals.qmd
-        - chapters/feldman_cousins.qmd
-        - chapters/hypothesis_tests.qmd
-    - part: "IV. Реальный анализ"
+        - chapters/09_statistical_tests_basics.qmd
+        - chapters/10_test_statistics_and_multivariate_methods.qmd
+        - chapters/11_goodness_of_fit_and_significance.qmd
+        - chapters/12_feldman_cousins_and_cls.qmd
+        - chapters/13_interval_estimation_and_limits.qmd
+    - part: "IV. Неопределённости и альтернативный вывод"
       chapters:
-        - chapters/systematics.qmd
-        - chapters/neutrino_cases.qmd
-    - part: "Вычислительные лаборатории"
-      chapters:
-        - notebooks/probability_demo.qmd
-        - notebooks/poisson_gaussian_demo.qmd
-        - notebooks/likelihood_demo.qmd
-        - notebooks/fitting_demo.qmd
-        - notebooks/intervals_demo.qmd
-        - notebooks/feldman_cousins_demo.qmd
-        - notebooks/hypothesis_tests_demo.qmd
-        - notebooks/systematics_demo.qmd
-        - notebooks/neutrino_cases_demo.qmd
+        - chapters/14_nuisance_parameters_and_systematics.qmd
+        - chapters/15_bayesian_examples.qmd
 
 bibliography: ../../shared/bib/references.bib
 lang: ru
@@ -57,7 +52,12 @@ format:
     toc: true
     toc-depth: 3
     number-sections: true
-    css: ../../shared/styles/book.css
+    grid:
+      sidebar-width: 260px
+      body-width: 1050px
+      margin-width: 230px
+      gutter-width: 1rem
+    css: assets/styles/book.css
     include-in-header:
       - ../../shared/html/mathjax.html
     include-after-body: analytics/cloudflare-web-analytics.html
