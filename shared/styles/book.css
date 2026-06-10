@@ -23,6 +23,12 @@ html {
   scroll-behavior: smooth;
 }
 
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
 body {
   color: var(--book-ink);
   background: var(--book-canvas);
@@ -222,15 +228,23 @@ body:has(.book-landing) #title-block-header {
   display: none;
 }
 
+@media (min-width: 992px) {
+  body.book-home main#quarto-document-content > section.level1 {
+    grid-column: body-content-start / page-end !important;
+    min-width: 0;
+  }
+}
+
 .book-landing {
   display: grid;
-  grid-template-columns: minmax(0, 1.65fr) minmax(260px, 0.7fr);
-  gap: 3.2rem;
+  grid-template-columns: minmax(0, 1.5fr) minmax(230px, 0.65fr);
+  gap: clamp(1.8rem, 4vw, 3.2rem);
   align-items: end;
-  max-width: 1240px;
+  width: 100%;
+  max-width: 1120px;
   min-height: 62vh;
   margin: 0 auto;
-  padding: clamp(3rem, 9vh, 7rem) clamp(1.5rem, 5vw, 5rem) 3rem;
+  padding: clamp(3rem, 9vh, 6rem) clamp(1.5rem, 4vw, 3.5rem) 3rem;
   border-bottom: 1px solid var(--book-line);
   background:
     linear-gradient(var(--book-paper), var(--book-paper)) padding-box,
@@ -238,11 +252,17 @@ body:has(.book-landing) #title-block-header {
   border-top: 5px solid transparent;
 }
 
+.book-landing-main {
+  min-width: 0;
+  container-type: inline-size;
+}
+
 .book-landing h1 {
-  max-width: 13ch;
+  max-width: 15ch;
   margin: 0 0 1rem;
-  font-size: clamp(3rem, 8vw, 6.5rem);
-  line-height: 0.93;
+  font-size: clamp(3rem, 9cqw, 4.5rem);
+  line-height: 0.98;
+  overflow-wrap: normal;
 }
 
 .book-kicker {
@@ -348,9 +368,10 @@ body:has(.book-landing) #title-block-header {
 .book-principles {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  max-width: 1240px;
+  width: 100%;
+  max-width: 1120px;
   margin: 0 auto 4rem;
-  padding: 0 clamp(1.5rem, 5vw, 5rem);
+  padding: 0 clamp(1.5rem, 4vw, 3.5rem);
   background: var(--book-paper);
 }
 

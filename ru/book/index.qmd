@@ -1,5 +1,5 @@
 ---
-page-layout: full
+page-layout: article
 toc: false
 number-sections: false
 body-classes: book-home
@@ -25,7 +25,7 @@ body-classes: book-home
     </div>
   </div>
   <aside class="book-author">
-    <img src="../../shared/figures/naumov-portrait.jpg" alt="Дмитрий В. Наумов">
+    <img src="assets/figures/naumov-portrait.jpg" alt="Дмитрий В. Наумов">
     <div>
       <span>Автор</span>
       <strong>Дмитрий В. Наумов</strong>
