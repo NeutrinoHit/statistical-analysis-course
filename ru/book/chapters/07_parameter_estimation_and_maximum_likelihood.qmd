@@ -1,0 +1,23 @@
+---
+title: "Оценивание параметров и метод максимального правдоподобия"
+description: "Точечные оценки, функция правдоподобия и практическая диагностика фита."
+---
+
+::: {.chapter-opening}
+<span>Статус главы</span>
+
+Глава подготовлена как каркас по материалам восьмой лекции. Полный текст,
+выводы и примеры оценивания будут добавлены позднее.
+:::
+
+## План главы
+
+- оценки и их свойства;
+- функция и метод максимального правдоподобия;
+- информация Фишера и точность оценки;
+- профильное правдоподобие и диагностика фита.
+
+## Материалы курса
+
+- [Слайды лекции](https://neutrinohit.github.io/statistical-analysis-course/ru/slides/07_parameter_estimation_and_maximum_likelihood.html)
+- [Задачи](https://neutrinohit.github.io/statistical-analysis-course/ru/slides/exercises/parameter-estimation-and-maximum-likelihood_exercises.html)

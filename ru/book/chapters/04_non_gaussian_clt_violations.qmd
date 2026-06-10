@@ -1,0 +1,23 @@
+---
+title: "Когда не возникает гауссового распределения"
+description: "Границы применимости центральной предельной теоремы и негауссовские данные."
+---
+
+::: {.chapter-opening}
+<span>Статус главы</span>
+
+Глава подготовлена как каркас по материалам пятой лекции. Полный текст и
+практические примеры будут добавлены позднее.
+:::
+
+## План главы
+
+- тяжёлые хвосты и отсутствие конечной дисперсии;
+- корреляции и нарушение независимости;
+- смеси распределений, пороги и отбор;
+- малые счёты и диагностика негауссовости.
+
+## Материалы курса
+
+- [Слайды лекции](https://neutrinohit.github.io/statistical-analysis-course/ru/slides/04_non_gaussian_clt_violations.html)
+- [Задачи](https://neutrinohit.github.io/statistical-analysis-course/ru/slides/exercises/non_gaussian_clt_violations_exercises.html)

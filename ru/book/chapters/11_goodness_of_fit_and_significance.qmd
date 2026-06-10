@@ -1,0 +1,23 @@
+---
+title: "Проверка согласия и статистическая значимость"
+description: "Goodness-of-fit, калибровка p-value и статистическая значимость поиска."
+---
+
+::: {.chapter-opening}
+<span>Статус главы</span>
+
+Глава подготовлена как каркас по материалам двенадцатой лекции. Полный текст,
+примеры и интерактивы будут добавлены позднее.
+:::
+
+## План главы
+
+- критерии согласия и анализ остатков;
+- статистики Пирсона и deviance;
+- калибровка $p$-value;
+- локальная, глобальная значимость и look-elsewhere effect.
+
+## Материалы курса
+
+- [Слайды лекции](https://neutrinohit.github.io/statistical-analysis-course/ru/slides/11_goodness_of_fit_and_significance.html)
+- [Задачи](https://neutrinohit.github.io/statistical-analysis-course/ru/slides/exercises/goodness-of-fit-and-significance_exercises.html)

@@ -1,0 +1,23 @@
+---
+title: "Фельдман–Казинс, CLs и родственные методы"
+description: "Построение Неймана, unified intervals и ограничения при слабой чувствительности."
+---
+
+::: {.chapter-opening}
+<span>Статус главы</span>
+
+Глава подготовлена как каркас по материалам тринадцатой лекции. Полный текст,
+численные построения и примеры будут добавлены позднее.
+:::
+
+## План главы
+
+- построение Неймана и покрытие;
+- правила упорядочивания;
+- unified intervals Фельдмана–Казинса;
+- метод $CL_s$ и ожидаемые ограничения.
+
+## Материалы курса
+
+- [Слайды лекции](https://neutrinohit.github.io/statistical-analysis-course/ru/slides/12_feldman_cousins_and_cls.html)
+- [Задачи](https://neutrinohit.github.io/statistical-analysis-course/ru/slides/exercises/feldman-cousins-and-cls_exercises.html)

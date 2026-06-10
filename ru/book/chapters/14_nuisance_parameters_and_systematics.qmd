@@ -1,0 +1,23 @@
+---
+title: "Nuisance-параметры и систематические неопределённости"
+description: "Включение систематических эффектов в статистическую модель и итоговый вывод."
+---
+
+::: {.chapter-opening}
+<span>Статус главы</span>
+
+Глава подготовлена как каркас по материалам пятнадцатой лекции. Полный текст,
+практические модели и примеры будут добавлены позднее.
+:::
+
+## План главы
+
+- nuisance-параметры и constrained likelihood;
+- ковариационные модели систематик;
+- профилирование и маргинализация;
+- влияние систематических неопределённостей на результат.
+
+## Материалы курса
+
+- [Слайды лекции](https://neutrinohit.github.io/statistical-analysis-course/ru/slides/14_nuisance_parameters_and_systematics.html)
+- [Задачи](https://neutrinohit.github.io/statistical-analysis-course/ru/slides/exercises/nuisance-parameters-and-systematics_exercises.html)

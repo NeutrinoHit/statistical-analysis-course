@@ -1,0 +1,23 @@
+---
+title: "Интервальные оценки и установление ограничений"
+description: "Интервальные процедуры, profile likelihood, bootstrap и проверка покрытия."
+---
+
+::: {.chapter-opening}
+<span>Статус главы</span>
+
+Глава подготовлена как каркас по материалам четырнадцатой лекции. Полный текст,
+сравнение процедур и вычислительные примеры будут добавлены позднее.
+:::
+
+## План главы
+
+- pivotal quantities и классические интервалы;
+- интервалы Вальда и Уилсона;
+- profile likelihood и многомерные контуры;
+- bootstrap, односторонние ограничения и coverage.
+
+## Материалы курса
+
+- [Слайды лекции](https://neutrinohit.github.io/statistical-analysis-course/ru/slides/13_interval_estimation_and_limits.html)
+- [Задачи](https://neutrinohit.github.io/statistical-analysis-course/ru/slides/exercises/interval-estimation-and-limits_exercises.html)
