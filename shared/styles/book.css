@@ -325,26 +325,19 @@ body:has(.book-landing) #title-block-header {
 }
 
 .book-author {
-  display: grid;
-  grid-template-columns: 92px minmax(0, 1fr);
-  gap: 1rem;
-  align-items: center;
   padding-top: 1.2rem;
   border-top: 1px solid var(--book-line);
   font-family: var(--book-sans);
 }
 
-.book-author img {
-  width: 92px;
-  height: 92px;
-  border: 3px solid var(--book-paper);
-  border-radius: 50%;
-  object-fit: cover;
-  box-shadow: 0 0 0 1px var(--book-line-strong);
+.book-author-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 0.8rem;
+  align-items: center;
 }
 
 .book-author span {
-  display: block;
   color: var(--book-coral);
   font-size: 0.72rem;
   font-weight: 800;
@@ -352,9 +345,15 @@ body:has(.book-landing) #title-block-header {
   text-transform: uppercase;
 }
 
+.book-author-meta a {
+  color: var(--book-teal-dark);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
 .book-author strong {
   display: block;
-  margin: 0.12rem 0 0.25rem;
+  margin: 0.35rem 0 0.25rem;
   font-size: 1.05rem;
 }
 
@@ -835,15 +834,6 @@ body:has(.book-landing) #title-block-header {
 @media (max-width: 560px) {
   .book-landing h1 {
     font-size: 3rem;
-  }
-
-  .book-author {
-    grid-template-columns: 72px 1fr;
-  }
-
-  .book-author img {
-    width: 72px;
-    height: 72px;
   }
 
   .analysis-pipeline {

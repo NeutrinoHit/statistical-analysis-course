@@ -25,9 +25,11 @@ body-classes: book-home
     </div>
   </div>
   <aside class="book-author">
-    <img src="assets/figures/naumov-portrait.jpg" alt="Дмитрий В. Наумов">
     <div>
-      <span>Автор</span>
+      <div class="book-author-meta">
+        <span>Автор</span>
+        <a href="https://neutrinohit.github.io/">NeutrinoHit</a>
+      </div>
       <strong>Дмитрий В. Наумов</strong>
       <p>Физик, доктор физико-математических наук, преподаватель.</p>
     </div>
