@@ -57,7 +57,7 @@ $$
 
 Параметр $\mu$ можно оценивать по-разному:
 $$
-\overline X,
+\langle X\rangle,
 \qquad
 \operatorname{median}(X_1,\ldots,X_N),
 \qquad
@@ -349,7 +349,7 @@ $$
 \boxed{
 \widehat\mu_{\rm ML}
 =
-\overline x.
+\langle x\rangle.
 }
 $$
 
@@ -358,11 +358,11 @@ $$
 Если неизвестны и $\mu$, и $\sigma^2$, то
 $$
 \boxed{
-\widehat\mu_{\rm ML}=\overline x,
+\widehat\mu_{\rm ML}=\langle x\rangle,
 \qquad
 \widehat{\sigma^2}_{\rm ML}
 =
-\frac1N\sum_{i=1}^{N}(x_i-\overline x)^2.
+\frac1N\sum_{i=1}^{N}(x_i-\langle x\rangle)^2.
 }
 $$
 
@@ -377,7 +377,7 @@ $$
 $$
 s^2
 =
-\frac1{N-1}\sum_{i=1}^{N}(x_i-\overline x)^2.
+\frac1{N-1}\sum_{i=1}^{N}(x_i-\langle x\rangle)^2.
 $$
 
 ---
@@ -451,11 +451,11 @@ $$
 $$
 \widehat{\sigma^2}_{\rm ML}
 =
-\frac1N\sum_i(X_i-\overline X)^2,
+\frac1N\sum_i(X_i-\langle X\rangle)^2,
 \qquad
 s^2
 =
-\frac1{N-1}\sum_i(X_i-\overline X)^2.
+\frac1{N-1}\sum_i(X_i-\langle X\rangle)^2.
 $$
 
 ::: {.clt-widget}
@@ -655,7 +655,7 @@ $$
 
 Для $N$ наблюдений с известной $\sigma$:
 $$
-\widehat\mu=\overline x,
+\widehat\mu=\langle x\rangle,
 \qquad
 \sigma_{\widehat\mu}=\frac{\sigma}{\sqrt N}.
 $$
@@ -665,7 +665,7 @@ $$
 \boxed{
 q(\mu)
 =
-\frac{(\mu-\overline x)^2}
+\frac{(\mu-\langle x\rangle)^2}
 {\sigma^2/N}.
 }
 $$

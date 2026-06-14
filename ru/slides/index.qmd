@@ -26,6 +26,7 @@ format:
     <div class="lecture-links">
       <a href="https://neutrinohit.github.io/lectures.html">Все курсы лекций</a>
       <a href="exercises/index.html">Все задачи</a>
+      <a href="exam_projects/index.html">Экзаменационные проекты</a>
     </div>
   </section>
 
@@ -39,7 +40,7 @@ format:
         <p>Зачем физику статистика и какие вопросы решает курс.</p>
         <div class="lecture-links">
           <a href="00_introduction.html">Открыть лекцию</a>
-          <a href="exercises/introduction_exercises.html">Задачи</a>
+          <a href="exercises/00_introduction_exercises.html">Задачи</a>
           <span class="lecture-link-pending">Видео появится позже</span>
         </div>
       </div>
@@ -54,7 +55,7 @@ format:
         <p>Вероятности, плотности, кумулятивная функция распределения и моменты.</p>
         <div class="lecture-links">
           <a href="01_random_distributions.html">Открыть лекцию</a>
-          <a href="exercises/random-distributions_exercises.html">Задачи</a>
+          <a href="exercises/01_random_distributions_exercises.html">Задачи</a>
           <span class="lecture-link-pending">Видео появится позже</span>
         </div>
       </div>
@@ -69,7 +70,7 @@ format:
         <p>Преобразование Фурье распределения, свёртки, независимые суммы, моменты, кумулянты и мост к ЦПТ.</p>
         <div class="lecture-links">
           <a href="02_characteristic_functions.html">Открыть лекцию</a>
-          <a href="exercises/characteristic-functions_exercises.html">Задачи</a>
+          <a href="exercises/02_characteristic_functions_exercises.html">Задачи</a>
           <span class="lecture-link-pending">Видео появится позже</span>
         </div>
       </div>
@@ -84,7 +85,7 @@ format:
         <p>Почему возникает гаусс, как читать квантили и как проверять совместимость измерений.</p>
         <div class="lecture-links">
           <a href="03_central_limit_theorem.html">Открыть лекцию</a>
-          <a href="exercises/central-limit-theorem_exercises.html">Задачи</a>
+          <a href="exercises/03_central_limit_theorem_exercises.html">Задачи</a>
           <span class="lecture-link-pending">Видео появится позже</span>
         </div>
       </div>
@@ -99,7 +100,7 @@ format:
         <p>Границы применимости ЦПТ: тяжёлые хвосты, корреляции, смеси распределений, пороги и малые счёты.</p>
         <div class="lecture-links">
           <a href="04_non_gaussian_clt_violations.html">Открыть лекцию</a>
-          <a href="exercises/non_gaussian_clt_violations_exercises.html">Задачи</a>
+          <a href="exercises/04_non_gaussian_clt_violations_exercises.html">Задачи</a>
           <span class="lecture-link-pending">Видео появится позже</span>
         </div>
       </div>
@@ -114,7 +115,7 @@ format:
         <p>Линейное распространение ошибок, корреляции, ковариационные матрицы, двумерный гаусс и вероятностные эллипсы.</p>
         <div class="lecture-links">
           <a href="05_error_propagation_and_covariance.html">Открыть лекцию</a>
-          <a href="exercises/error-propagation-and-covariance_exercises.html">Задачи</a>
+          <a href="exercises/05_error_propagation_and_covariance_exercises.html">Задачи</a>
           <span class="lecture-link-pending">Видео появится позже</span>
         </div>
       </div>
@@ -129,7 +130,7 @@ format:
         <p>Генерация распределений, численное интегрирование, псевдоэксперименты, распространение неопределённостей и моделирование детектора.</p>
         <div class="lecture-links">
           <a href="06_monte_carlo_method.html">Открыть лекцию</a>
-          <a href="exercises/monte-carlo-method_exercises.html">Задачи</a>
+          <a href="exercises/06_monte_carlo_method_exercises.html">Задачи</a>
           <span class="lecture-link-pending">Видео появится позже</span>
         </div>
       </div>
@@ -144,7 +145,7 @@ format:
         <p>Функция правдоподобия, MLE, свойства оценок, информация Фишера, профильное правдоподобие и практическая диагностика fit.</p>
         <div class="lecture-links">
           <a href="07_parameter_estimation_and_maximum_likelihood.html">Открыть лекцию</a>
-          <a href="exercises/parameter-estimation-and-maximum-likelihood_exercises.html">Задачи</a>
+          <a href="exercises/07_parameter_estimation_and_maximum_likelihood_exercises.html">Задачи</a>
           <span class="lecture-link-pending">Видео появится позже</span>
         </div>
       </div>
@@ -159,7 +160,7 @@ format:
         <p>Связь МНК с гауссовым likelihood, линейные и нелинейные fit, коррелированные ошибки, остатки и проверка качества согласия.</p>
         <div class="lecture-links">
           <a href="08_method_of_least_squares.html">Открыть лекцию</a>
-          <a href="exercises/method-of-least-squares_exercises.html">Задачи</a>
+          <a href="exercises/08_method_of_least_squares_exercises.html">Задачи</a>
           <span class="lecture-link-pending">Видео появится позже</span>
         </div>
       </div>
@@ -174,7 +175,7 @@ format:
         <p>Нулевая и альтернативная гипотезы, ошибки I и II рода, мощность, критические области, p-value и оптимальные тесты.</p>
         <div class="lecture-links">
           <a href="09_statistical_tests_basics.html">Открыть лекцию</a>
-          <a href="exercises/statistical-tests-basics_exercises.html">Задачи</a>
+          <a href="exercises/09_statistical_tests_basics_exercises.html">Задачи</a>
           <span class="lecture-link-pending">Видео появится позже</span>
         </div>
       </div>
@@ -189,7 +190,7 @@ format:
         <p>Likelihood-ratio, профильные статистики, асимптотика, многомерные дискриминанты, ROC, переобучение, калибровка и валидация.</p>
         <div class="lecture-links">
           <a href="10_test_statistics_and_multivariate_methods.html">Открыть лекцию</a>
-          <a href="exercises/test-statistics-and-multivariate-methods_exercises.html">Задачи</a>
+          <a href="exercises/10_test_statistics_and_multivariate_methods_exercises.html">Задачи</a>
           <span class="lecture-link-pending">Видео появится позже</span>
         </div>
       </div>
@@ -204,7 +205,7 @@ format:
         <p>Goodness-of-fit, остатки, Pearson и deviance, небинированные тесты, калибровка p-value, значимость поиска и look-elsewhere effect.</p>
         <div class="lecture-links">
           <a href="11_goodness_of_fit_and_significance.html">Открыть лекцию</a>
-          <a href="exercises/goodness-of-fit-and-significance_exercises.html">Задачи</a>
+          <a href="exercises/11_goodness_of_fit_and_significance_exercises.html">Задачи</a>
           <span class="lecture-link-pending">Видео появится позже</span>
         </div>
       </div>
@@ -219,7 +220,7 @@ format:
         <p>Построение Неймана, покрытие, правила упорядочивания, unified intervals Фельдмана–Казинса, CLs, ожидаемые пределы и защита при слабой чувствительности.</p>
         <div class="lecture-links">
           <a href="12_feldman_cousins_and_cls.html">Открыть лекцию</a>
-          <a href="exercises/feldman-cousins-and-cls_exercises.html">Задачи</a>
+          <a href="exercises/12_feldman_cousins_and_cls_exercises.html">Задачи</a>
           <span class="lecture-link-pending">Видео появится позже</span>
         </div>
       </div>
@@ -234,7 +235,7 @@ format:
         <p>Pivotal quantities, Wald и Wilson intervals, profile likelihood, многомерные контуры, bootstrap, односторонние ограничения и проверка покрытия.</p>
         <div class="lecture-links">
           <a href="13_interval_estimation_and_limits.html">Открыть лекцию</a>
-          <a href="exercises/interval-estimation-and-limits_exercises.html">Задачи</a>
+          <a href="exercises/13_interval_estimation_and_limits_exercises.html">Задачи</a>
           <span class="lecture-link-pending">Видео появится позже</span>
         </div>
       </div>
@@ -249,7 +250,7 @@ format:
         <p>Constraints, auxiliary measurements, профилирование систематик, корреляции, norm/shape uncertainties, pulls, impacts, MC-stat и контрольные области.</p>
         <div class="lecture-links">
           <a href="14_nuisance_parameters_and_systematics.html">Открыть лекцию</a>
-          <a href="exercises/nuisance-parameters-and-systematics_exercises.html">Задачи</a>
+          <a href="exercises/14_nuisance_parameters_and_systematics_exercises.html">Задачи</a>
           <span class="lecture-link-pending">Видео появится позже</span>
         </div>
       </div>
@@ -264,7 +265,7 @@ format:
         <p>Prior, posterior, credible intervals, posterior predictive checks, маргинализация nuisance-параметров, иерархические модели и Bayes factors.</p>
         <div class="lecture-links">
           <a href="15_bayesian_examples.html">Открыть лекцию</a>
-          <a href="exercises/bayesian-examples_exercises.html">Задачи</a>
+          <a href="exercises/15_bayesian_examples_exercises.html">Задачи</a>
           <span class="lecture-link-pending">Видео появится позже</span>
         </div>
       </div>

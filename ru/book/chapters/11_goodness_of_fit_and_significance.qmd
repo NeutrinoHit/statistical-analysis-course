@@ -20,4 +20,4 @@ description: "Goodness-of-fit, калибровка p-value и статисти�
 ## Материалы курса
 
 - [Слайды лекции](https://neutrinohit.github.io/statistical-analysis-course/ru/slides/11_goodness_of_fit_and_significance.html)
-- [Задачи](https://neutrinohit.github.io/statistical-analysis-course/ru/slides/exercises/goodness-of-fit-and-significance_exercises.html)
+- [Задачи](https://neutrinohit.github.io/statistical-analysis-course/ru/slides/exercises/11_goodness_of_fit_and_significance_exercises.html)

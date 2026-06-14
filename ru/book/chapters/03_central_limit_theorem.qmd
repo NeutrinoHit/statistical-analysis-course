@@ -20,4 +20,4 @@ description: "Возникновение нормального распреде
 ## Материалы курса
 
 - [Слайды лекции](https://neutrinohit.github.io/statistical-analysis-course/ru/slides/03_central_limit_theorem.html)
-- [Задачи](https://neutrinohit.github.io/statistical-analysis-course/ru/slides/exercises/central-limit-theorem_exercises.html)
+- [Задачи](https://neutrinohit.github.io/statistical-analysis-course/ru/slides/exercises/03_central_limit_theorem_exercises.html)

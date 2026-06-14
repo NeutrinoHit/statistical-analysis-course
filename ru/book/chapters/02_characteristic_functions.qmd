@@ -20,4 +20,4 @@ description: "Фурье-образ распределения, свёртки, 
 ## Материалы курса
 
 - [Слайды лекции](https://neutrinohit.github.io/statistical-analysis-course/ru/slides/02_characteristic_functions.html)
-- [Задачи](https://neutrinohit.github.io/statistical-analysis-course/ru/slides/exercises/characteristic-functions_exercises.html)
+- [Задачи](https://neutrinohit.github.io/statistical-analysis-course/ru/slides/exercises/02_characteristic_functions_exercises.html)

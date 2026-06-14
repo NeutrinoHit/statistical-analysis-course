@@ -20,4 +20,4 @@ description: "Точечные оценки, функция правдоподо
 ## Материалы курса
 
 - [Слайды лекции](https://neutrinohit.github.io/statistical-analysis-course/ru/slides/07_parameter_estimation_and_maximum_likelihood.html)
-- [Задачи](https://neutrinohit.github.io/statistical-analysis-course/ru/slides/exercises/parameter-estimation-and-maximum-likelihood_exercises.html)
+- [Задачи](https://neutrinohit.github.io/statistical-analysis-course/ru/slides/exercises/07_parameter_estimation_and_maximum_likelihood_exercises.html)

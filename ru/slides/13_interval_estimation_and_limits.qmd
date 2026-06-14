@@ -191,7 +191,7 @@ $$
 \boxed{
 T
 =
-\frac{\overline X-\mu}{S/\sqrt n}
+\frac{\langle X\rangle-\mu}{S/\sqrt n}
 \sim t_{n-1}
 }
 $$
@@ -201,7 +201,7 @@ $$
 $$
 \mu
 \in
-\overline X
+\langle X\rangle
 \pm
 t_{1-\alpha/2,n-1}
 \frac{S}{\sqrt n}.

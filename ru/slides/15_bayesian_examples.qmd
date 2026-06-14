@@ -685,7 +685,7 @@ $$
 
 Пусть:
 $$
-\overline X\mid\mu
+\langle X\rangle\mid\mu
 \sim
 \mathrm N\left(\mu,\frac{\sigma^2}{n}\right),
 \qquad
@@ -712,7 +712,7 @@ $$
 \left(
 \frac{\mu_0}{\tau_0^2}
 +
-\frac{n\overline x}{\sigma^2}
+\frac{n\langle x\rangle}{\sigma^2}
 \right).
 $$
 
@@ -723,7 +723,7 @@ $$
 \boxed{
 \mu_n
 =
-w\overline x+(1-w)\mu_0,
+w\langle x\rangle+(1-w)\mu_0,
 \qquad
 w=
 \frac{n/\sigma^2}{1/\tau_0^2+n/\sigma^2}.
