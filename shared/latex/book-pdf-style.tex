@@ -1,0 +1,81 @@
+% PDF style for the statistical analysis book
+
+\usepackage{xcolor}
+\definecolor{BookInk}{HTML}{18262F}
+\definecolor{BookMuted}{HTML}{687984}
+\definecolor{BookTeal}{HTML}{0F6972}
+\definecolor{BookCoral}{HTML}{C7472F}
+\definecolor{BookGold}{HTML}{B97817}
+\definecolor{BookSoft}{HTML}{F4F6F7}
+\definecolor{BookLine}{HTML}{D9E0E3}
+
+\usepackage{microtype}
+\usepackage{mathtools}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{caption}
+\usepackage[most]{tcolorbox}
+\usepackage{fvextra}
+
+% KOMA typography
+\KOMAoptions{
+  headings=small,
+  chapterprefix=false,
+  numbers=noenddot,
+  headinclude=true,
+  footinclude=false
+}
+
+\setkomafont{disposition}{\sffamily\bfseries\color{BookInk}}
+\setkomafont{chapter}{\Huge}
+\setkomafont{section}{\Large}
+\setkomafont{subsection}{\large}
+\setkomafont{pageheadfoot}{\small\itshape\color{BookMuted}}
+\setkomafont{pagenumber}{\small\color{BookInk}}
+
+% Less empty space before chapter titles
+\renewcommand*{\chapterheadstartvskip}{\vspace*{12mm}}
+\renewcommand*{\chapterheadendvskip}{\vspace{8mm}}
+
+% Paragraph and list rhythm
+\setlength{\parindent}{1.2em}
+\setlength{\parskip}{0pt}
+\setlist[itemize]{topsep=0.35em,itemsep=0.15em,parsep=0pt,leftmargin=1.6em}
+\setlist[enumerate]{topsep=0.35em,itemsep=0.15em,parsep=0pt,leftmargin=1.8em}
+
+% Tables
+\renewcommand{\arraystretch}{1.15}
+\setlength{\tabcolsep}{6pt}
+
+% Captions
+\captionsetup{
+  font=small,
+  labelfont=bf,
+  textfont=it,
+  margin=1.2em
+}
+
+% Code blocks produced by Quarto/Pandoc
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{
+  breaklines,
+  breakanywhere,
+  commandchars=\\\{\},
+  fontsize=\small
+}
+\definecolor{shadecolor}{HTML}{F6F8FA}
+
+% Boxes analogous to HTML callouts
+\newtcolorbox{bookpdfnote}{
+  breakable,
+  enhanced,
+  colback=BookSoft,
+  colframe=BookTeal,
+  boxrule=0.5pt,
+  leftrule=2.4pt,
+  arc=1.5pt,
+  left=6pt,
+  right=6pt,
+  top=5pt,
+  bottom=5pt
+}
