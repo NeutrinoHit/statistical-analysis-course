@@ -281,7 +281,7 @@ $$
 \boxed{
 Z
 =
-\frac{\overline X-\mu_0}{\sigma/\sqrt N}
+\frac{\langle X\rangle-\mu_0}{\sigma/\sqrt N}
 \sim
 \mathrm N(0,1).
 }

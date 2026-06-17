@@ -20,4 +20,4 @@ description: "Включение систематических эффектов
 ## Материалы курса
 
 - [Слайды лекции](https://neutrinohit.github.io/statistical-analysis-course/ru/slides/14_nuisance_parameters_and_systematics.html)
-- [Задачи](https://neutrinohit.github.io/statistical-analysis-course/ru/slides/exercises/nuisance-parameters-and-systematics_exercises.html)
+- [Задачи](https://neutrinohit.github.io/statistical-analysis-course/ru/slides/exercises/14_nuisance_parameters_and_systematics_exercises.html)

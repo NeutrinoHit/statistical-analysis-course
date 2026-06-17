@@ -20,4 +20,4 @@ description: "От отношения правдоподобий к многом
 ## Материалы курса
 
 - [Слайды лекции](https://neutrinohit.github.io/statistical-analysis-course/ru/slides/10_test_statistics_and_multivariate_methods.html)
-- [Задачи](https://neutrinohit.github.io/statistical-analysis-course/ru/slides/exercises/test-statistics-and-multivariate-methods_exercises.html)
+- [Задачи](https://neutrinohit.github.io/statistical-analysis-course/ru/slides/exercises/10_test_statistics_and_multivariate_methods_exercises.html)

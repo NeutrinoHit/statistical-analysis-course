@@ -20,4 +20,4 @@ description: "Гипотезы, ошибки решений, мощность т
 ## Материалы курса
 
 - [Слайды лекции](https://neutrinohit.github.io/statistical-analysis-course/ru/slides/09_statistical_tests_basics.html)
-- [Задачи](https://neutrinohit.github.io/statistical-analysis-course/ru/slides/exercises/statistical-tests-basics_exercises.html)
+- [Задачи](https://neutrinohit.github.io/statistical-analysis-course/ru/slides/exercises/09_statistical_tests_basics_exercises.html)

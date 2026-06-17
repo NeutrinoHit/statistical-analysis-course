@@ -87,7 +87,7 @@ $$
 
 Пусть:
 $$
-\overline X\mid\mu
+\langle X\rangle\mid\mu
 \sim
 \mathrm N\left(\mu,\frac{\sigma^2}{n}\right),
 \qquad
@@ -95,7 +95,7 @@ $$
 $$
 
 1. Выведите posterior.
-2. Покажите, что posterior mean является взвешенным средним $\overline x$ и $\mu_0$.
+2. Покажите, что posterior mean является взвешенным средним $\langle x\rangle$ и $\mu_0$.
 3. Исследуйте bias и variance posterior mean.
 4. Постройте posterior predictive distribution.
 5. Объясните смысл shrinkage.

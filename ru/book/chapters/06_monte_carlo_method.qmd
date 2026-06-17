@@ -20,4 +20,4 @@ description: "Случайное моделирование, численное 
 ## Материалы курса
 
 - [Слайды лекции](https://neutrinohit.github.io/statistical-analysis-course/ru/slides/06_monte_carlo_method.html)
-- [Задачи](https://neutrinohit.github.io/statistical-analysis-course/ru/slides/exercises/monte-carlo-method_exercises.html)
+- [Задачи](https://neutrinohit.github.io/statistical-analysis-course/ru/slides/exercises/06_monte_carlo_method_exercises.html)

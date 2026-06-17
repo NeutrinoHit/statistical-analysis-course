@@ -20,4 +20,4 @@ description: "Априорные распределения, апостерио�
 ## Материалы курса
 
 - [Слайды лекции](https://neutrinohit.github.io/statistical-analysis-course/ru/slides/15_bayesian_examples.html)
-- [Задачи](https://neutrinohit.github.io/statistical-analysis-course/ru/slides/exercises/bayesian-examples_exercises.html)
+- [Задачи](https://neutrinohit.github.io/statistical-analysis-course/ru/slides/exercises/15_bayesian_examples_exercises.html)

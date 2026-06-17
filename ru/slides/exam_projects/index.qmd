@@ -1,0 +1,266 @@
+---
+title: "Экзаменационные проекты"
+subtitle: "Статистический анализ данных"
+author: "Дмитрий В. Наумов"
+format:
+  html:
+    toc: false
+    page-layout: full
+---
+
+```{=html}
+<style>
+  .quarto-title-block {
+    display: none;
+  }
+</style>
+```
+
+::: {.project-page}
+
+[← Вернуться к курсу](../index.html){.exercise-back-link}
+
+# Экзаменационные проекты
+
+Экзаменационный проект показывает полный путь от физического вопроса до
+воспроизводимого статистического вывода. Важен не объём кода, а ясная постановка
+задачи, обоснованный выбор метода, проверка его свойств и честная интерпретация
+результата.
+
+## Формат работы
+
+Проект выполняется индивидуально или в паре. Можно выбрать тему ниже либо
+согласовать собственную задачу сопоставимого масштаба. Анализ должен быть
+воспроизводимым: после запуска кода из исходных данных должны получаться все
+числа, таблицы и рисунки отчёта.
+
+::: {.project-requirements}
+
+### Минимальные требования к сдаче
+
+- сформулирован физический или прикладной вопрос;
+- описаны данные, вероятностная модель и проверяемые предположения;
+- реализован основной статистический метод и хотя бы одна контрольная проверка;
+- исследованы неопределённости, устойчивость результата или coverage;
+- вывод отделяет статистический результат от его физической интерпретации;
+- репозиторий содержит `report.qmd`, `slides.qmd`, код анализа и `README.md`.
+
+:::
+
+## Темы проектов
+
+```{=html}
+<section class="project-list" aria-label="Список экзаменационных проектов">
+
+<details class="project-card" open>
+  <summary>
+    <span class="project-number">01</span>
+    <span class="project-title">Скрытая топология и энергетическое разрешение жидкого сцинтиллятора</span>
+    <span class="project-result">дисперсия · смесь</span>
+  </summary>
+  <div class="project-card-body">
+    <div class="project-passport">
+      <p><strong>Краткая идея.</strong> Моноэнергетический γ-квант передаёт одну и ту же энергию разным наборам вторичных электронов. Из-за нелинейного светового выхода скрытая топология события создаёт дополнительный вклад в энергетическое разрешение.</p>
+      <p><strong>Данные.</strong> Toy MC двух или нескольких классов каскада с пуассоновскими флуктуациями числа фотоэлектронов.</p>
+      <p><strong>Модель.</strong> Смесь пуассоновских распределений и формула полной дисперсии.</p>
+    </div>
+    <div class="project-actions">
+      <h3>Что нужно сделать</h3>
+      <ol>
+        <li>Сгенерировать события нескольких скрытых классов.</li>
+        <li>Разделить полную дисперсию на внутриклассовую и межклассовую части.</li>
+        <li>Исследовать зависимость разрешения от нелинейности и долей классов.</li>
+        <li>Проверить, что при линейном отклике дополнительный вклад исчезает.</li>
+      </ol>
+    </div>
+    <p class="project-deliverable"><strong>Что сдать.</strong> <code>report.qmd</code>, <code>slides.qmd</code>, код анализа, <code>README.md</code>.</p>
+    <p class="project-key-result"><strong>Ключевой результат.</strong> Количественная оценка вклада скрытой топологии в полную дисперсию.</p>
+  </div>
+</details>
+
+<details class="project-card">
+  <summary>
+    <span class="project-number">02</span>
+    <span class="project-title">Поиск редкого сигнала на известном фоне</span>
+    <span class="project-result">p-value · предел</span>
+  </summary>
+  <div class="project-card-body">
+    <div class="project-passport">
+      <p><strong>Краткая идея.</strong> В счётном эксперименте наблюдается небольшое число событий на фоне. Нужно проверить гипотезу отсутствия сигнала и установить ограничение на его интенсивность.</p>
+      <p><strong>Данные.</strong> Наблюдаемое число событий и toy MC для разных значений сигнала и фона.</p>
+      <p><strong>Модель.</strong> Пуассоновский likelihood для суммы сигнала и фона.</p>
+    </div>
+    <div class="project-actions">
+      <h3>Что нужно сделать</h3>
+      <ol>
+        <li>Построить likelihood и оценить интенсивность сигнала.</li>
+        <li>Вычислить p-value гипотезы отсутствия сигнала.</li>
+        <li>Получить верхний предел выбранным методом.</li>
+        <li>Проверить coverage предела с помощью псевдоэкспериментов.</li>
+      </ol>
+    </div>
+    <p class="project-deliverable"><strong>Что сдать.</strong> <code>report.qmd</code>, <code>slides.qmd</code>, код анализа, <code>README.md</code>.</p>
+    <p class="project-key-result"><strong>Ключевой результат.</strong> p-value и верхний предел с проверенным coverage.</p>
+  </div>
+</details>
+
+<details class="project-card">
+  <summary>
+    <span class="project-number">03</span>
+    <span class="project-title">Калибровка детектора с коррелированными неопределённостями</span>
+    <span class="project-result">оценка · ковариация</span>
+  </summary>
+  <div class="project-card-body">
+    <div class="project-passport">
+      <p><strong>Краткая идея.</strong> По нескольким калибровочным точкам требуется восстановить энергетическую шкалу детектора. Общая ошибка нормировки коррелирует измерения и меняет результат fit.</p>
+      <p><strong>Данные.</strong> Сгенерированная таблица калибровочных точек с независимыми и общими ошибками.</p>
+      <p><strong>Модель.</strong> Линейная или слабо нелинейная калибровочная функция и многомерный гауссов likelihood.</p>
+    </div>
+    <div class="project-actions">
+      <h3>Что нужно сделать</h3>
+      <ol>
+        <li>Построить полную ковариационную матрицу.</li>
+        <li>Сравнить fit с диагональной и полной матрицей ошибок.</li>
+        <li>Оценить параметры шкалы и их корреляцию.</li>
+        <li>Проверить остатки и качество согласия.</li>
+      </ol>
+    </div>
+    <p class="project-deliverable"><strong>Что сдать.</strong> <code>report.qmd</code>, <code>slides.qmd</code>, код анализа, <code>README.md</code>.</p>
+    <p class="project-key-result"><strong>Ключевой результат.</strong> Оценка параметров калибровки и их ковариационная матрица.</p>
+  </div>
+</details>
+
+<details class="project-card">
+  <summary>
+    <span class="project-number">04</span>
+    <span class="project-title">Совместимость двух измерений с общими систематиками</span>
+    <span class="project-result">контур · p-value</span>
+  </summary>
+  <div class="project-card-body">
+    <div class="project-passport">
+      <p><strong>Краткая идея.</strong> Два эксперимента измеряют одни и те же параметры, но часть систематических неопределённостей у них общая. Нужно корректно оценить совместимость результатов.</p>
+      <p><strong>Данные.</strong> Две оценки вектора параметров и их ковариационные матрицы.</p>
+      <p><strong>Модель.</strong> Многомерный гаусс и статистика квадратичной формы.</p>
+    </div>
+    <div class="project-actions">
+      <h3>Что нужно сделать</h3>
+      <ol>
+        <li>Построить совместную ковариационную матрицу.</li>
+        <li>Вычислить статистику совместимости.</li>
+        <li>Построить доверительные эллипсы и совместный контур.</li>
+        <li>Исследовать влияние общей корреляции на вывод.</li>
+      </ol>
+    </div>
+    <p class="project-deliverable"><strong>Что сдать.</strong> <code>report.qmd</code>, <code>slides.qmd</code>, код анализа, <code>README.md</code>.</p>
+    <p class="project-key-result"><strong>Ключевой результат.</strong> Контур совместной оценки и p-value совместимости.</p>
+  </div>
+</details>
+
+<details class="project-card">
+  <summary>
+    <span class="project-number">05</span>
+    <span class="project-title">Поиск локального избытка в спектре</span>
+    <span class="project-result">значимость</span>
+  </summary>
+  <div class="project-card-body">
+    <div class="project-passport">
+      <p><strong>Краткая идея.</strong> В гладком спектре ищется узкий неизвестный сигнал. Сканирование положения пика повышает вероятность случайного локального избытка.</p>
+      <p><strong>Данные.</strong> Toy MC бинированного спектра фоновой модели с возможным гауссовым пиком.</p>
+      <p><strong>Модель.</strong> Пуассоновский likelihood, likelihood-ratio и псевдоэксперименты.</p>
+    </div>
+    <div class="project-actions">
+      <h3>Что нужно сделать</h3>
+      <ol>
+        <li>Выполнить сканирование положения и интенсивности сигнала.</li>
+        <li>Найти локальную значимость максимального избытка.</li>
+        <li>Откалибровать глобальное p-value по псевдоэкспериментам.</li>
+        <li>Сравнить локальную и глобальную значимость.</li>
+      </ol>
+    </div>
+    <p class="project-deliverable"><strong>Что сдать.</strong> <code>report.qmd</code>, <code>slides.qmd</code>, код анализа, <code>README.md</code>.</p>
+    <p class="project-key-result"><strong>Ключевой результат.</strong> Локальное и глобальное p-value наблюдаемого избытка.</p>
+  </div>
+</details>
+
+<details class="project-card">
+  <summary>
+    <span class="project-number">06</span>
+    <span class="project-title">Интервалы для эффективности детектора</span>
+    <span class="project-result">интервал · coverage</span>
+  </summary>
+  <div class="project-card-body">
+    <div class="project-passport">
+      <p><strong>Краткая идея.</strong> Эффективность оценивается как доля успешно зарегистрированных событий. При малой статистике разные интервальные методы ведут себя существенно по-разному.</p>
+      <p><strong>Данные.</strong> Сгенерированные биномиальные выборки для разных истинных эффективностей и размеров выборки.</p>
+      <p><strong>Модель.</strong> Биномиальное распределение.</p>
+    </div>
+    <div class="project-actions">
+      <h3>Что нужно сделать</h3>
+      <ol>
+        <li>Реализовать несколько интервальных оценок эффективности.</li>
+        <li>Сравнить длину и положение интервалов.</li>
+        <li>Измерить coverage по псевдоэкспериментам.</li>
+        <li>Исследовать поведение методов у границ параметра.</li>
+      </ol>
+    </div>
+    <p class="project-deliverable"><strong>Что сдать.</strong> <code>report.qmd</code>, <code>slides.qmd</code>, код анализа, <code>README.md</code>.</p>
+    <p class="project-key-result"><strong>Ключевой результат.</strong> Карта coverage и рекомендация по выбору интервала.</p>
+  </div>
+</details>
+
+<details class="project-card">
+  <summary>
+    <span class="project-number">07</span>
+    <span class="project-title">Toy-анализ нейтринных осцилляций</span>
+    <span class="project-result">контур · систематики</span>
+  </summary>
+  <div class="project-card-body">
+    <div class="project-passport">
+      <p><strong>Краткая идея.</strong> По спектру событий требуется оценить два параметра осцилляций. Неопределённости нормировки и энергетической шкалы должны учитываться как nuisance-параметры.</p>
+      <p><strong>Данные.</strong> Toy MC спектра числа событий в энергетических интервалах.</p>
+      <p><strong>Модель.</strong> Пуассоновский likelihood с constraint-членами для систематик.</p>
+    </div>
+    <div class="project-actions">
+      <h3>Что нужно сделать</h3>
+      <ol>
+        <li>Сгенерировать ожидаемый и наблюдаемый спектры.</li>
+        <li>Выполнить профильный fit физических и nuisance-параметров.</li>
+        <li>Построить двумерные доверительные контуры.</li>
+        <li>Оценить влияние каждой систематики на результат.</li>
+      </ol>
+    </div>
+    <p class="project-deliverable"><strong>Что сдать.</strong> <code>report.qmd</code>, <code>slides.qmd</code>, код анализа, <code>README.md</code>.</p>
+    <p class="project-key-result"><strong>Ключевой результат.</strong> Доверительный контур параметров и таблица impacts систематик.</p>
+  </div>
+</details>
+
+<details class="project-card">
+  <summary>
+    <span class="project-number">08</span>
+    <span class="project-title">Байесовский анализ счётного эксперимента</span>
+    <span class="project-result">posterior · предел</span>
+  </summary>
+  <div class="project-card-body">
+    <div class="project-passport">
+      <p><strong>Краткая идея.</strong> Для пуассоновского числа событий требуется получить posterior интенсивности сигнала при неопределённом фоне и исследовать чувствительность вывода к prior.</p>
+      <p><strong>Данные.</strong> Счётные данные и вспомогательное измерение фона.</p>
+      <p><strong>Модель.</strong> Иерархическая пуассоновская модель с nuisance-параметром фона.</p>
+    </div>
+    <div class="project-actions">
+      <h3>Что нужно сделать</h3>
+      <ol>
+        <li>Построить совместный posterior сигнала и фона.</li>
+        <li>Маргинализовать nuisance-параметр.</li>
+        <li>Получить credible interval или верхний предел.</li>
+        <li>Сравнить вывод для нескольких обоснованных prior.</li>
+      </ol>
+    </div>
+    <p class="project-deliverable"><strong>Что сдать.</strong> <code>report.qmd</code>, <code>slides.qmd</code>, код анализа, <code>README.md</code>.</p>
+    <p class="project-key-result"><strong>Ключевой результат.</strong> Posterior и верхний предел с анализом чувствительности к prior.</p>
+  </div>
+</details>
+
+</section>
+```
+
+:::

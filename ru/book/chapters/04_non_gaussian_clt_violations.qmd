@@ -20,4 +20,4 @@ description: "Границы применимости центральной п�
 ## Материалы курса
 
 - [Слайды лекции](https://neutrinohit.github.io/statistical-analysis-course/ru/slides/04_non_gaussian_clt_violations.html)
-- [Задачи](https://neutrinohit.github.io/statistical-analysis-course/ru/slides/exercises/non_gaussian_clt_violations_exercises.html)
+- [Задачи](https://neutrinohit.github.io/statistical-analysis-course/ru/slides/exercises/04_non_gaussian_clt_violations_exercises.html)

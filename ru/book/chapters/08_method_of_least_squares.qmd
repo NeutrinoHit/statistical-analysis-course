@@ -20,4 +20,4 @@ description: "Линейные и нелинейные подгонки, кор�
 ## Материалы курса
 
 - [Слайды лекции](https://neutrinohit.github.io/statistical-analysis-course/ru/slides/08_method_of_least_squares.html)
-- [Задачи](https://neutrinohit.github.io/statistical-analysis-course/ru/slides/exercises/method-of-least-squares_exercises.html)
+- [Задачи](https://neutrinohit.github.io/statistical-analysis-course/ru/slides/exercises/08_method_of_least_squares_exercises.html)

@@ -20,4 +20,4 @@ description: "Построение Неймана, unified intervals и огра
 ## Материалы курса
 
 - [Слайды лекции](https://neutrinohit.github.io/statistical-analysis-course/ru/slides/12_feldman_cousins_and_cls.html)
-- [Задачи](https://neutrinohit.github.io/statistical-analysis-course/ru/slides/exercises/feldman-cousins-and-cls_exercises.html)
+- [Задачи](https://neutrinohit.github.io/statistical-analysis-course/ru/slides/exercises/12_feldman_cousins_and_cls_exercises.html)
