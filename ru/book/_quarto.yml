@@ -47,6 +47,10 @@ book:
 bibliography: ../../shared/bib/references.bib
 lang: ru
 
+filters:
+  - quarto
+  - ../../shared/filters/drop-ojs-in-pdf.lua
+
 format:
   html:
     toc: true
@@ -69,9 +73,30 @@ format:
     fig-responsive: true
   pdf:
     documentclass: scrbook
-    toc: true
-    number-sections: true
     pdf-engine: lualatex
+
+    papersize: a4
+    fontsize: 11pt
+    linestretch: 1.08
+
+    toc: true
+    toc-depth: 2
+    number-sections: true
+
+    geometry:
+      - inner=28mm
+      - outer=24mm
+      - top=25mm
+      - bottom=28mm
+      - headsep=7mm
+      - footskip=11mm
+
+    colorlinks: true
+    linkcolor: BookTeal
+    urlcolor: BookTeal
+    citecolor: BookTeal
+
     include-in-header:
       - ../../shared/latex/common-pdf.tex
       - ../../shared/latex/ru-lang.tex
+      - ../../shared/latex/book-pdf-style.tex
