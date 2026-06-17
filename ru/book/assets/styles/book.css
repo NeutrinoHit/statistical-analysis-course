@@ -13,6 +13,7 @@
   --book-coral-soft: #f8ece9;
   --book-gold: #b97817;
   --book-gold-soft: #fbf3e4;
+  --book-sky-soft: #b8d3f4;
   --book-blue: #2a5ea8;
   --book-shadow: 0 18px 42px -34px rgba(24, 38, 47, 0.5);
   --book-serif: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, serif;
@@ -465,6 +466,13 @@ body:has(.book-landing) #title-block-header {
 .book-route,
 .book-roadmap,
 .book-note,
+.book-derivation{
+  margin: 1.75rem 0;
+  padding: 1rem 1.2rem;
+  border-left: 4px solid var(--book-blue);
+  background: var(--book-sky-soft);
+  box-shadow: none;
+}
 .chapter-opening,
 .chapter-summary,
 .next-chapter,
