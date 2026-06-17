@@ -1,0 +1,2099 @@
+---
+title: "Когда не возникает гауссового распределения"
+subtitle: "О чем вам не расскажут, но знать это нужно"
+author: "Дмитрий В. Наумов (ОИЯИ)"
+jupyter: python3
+lang: ru-RU
+format:
+  revealjs:
+    theme: black
+    slide-number: true
+    preview-links: auto
+    chalkboard:
+      buttons: false
+    logo: shared/figures/dvnlogo.png
+    css: styles.css
+    transition: fade
+    center: true
+---
+
+# Мотивация
+
+## Зачем нужна эта лекция
+
+::: incremental
+- В лекции [про ЦПТ](central-limit-theorem.qmd) мы увидели, как сумма бесконечного числа независимых вкладов описывается гауссовым распределением.
+- Но в реальной жизни гауссовое распределение возникает не всегда.
+- Важно понимать, когда и почему гауссово распределение не возникает.
+:::
+
+
+## Напоминание: ЦПТ и условия
+
+Пусть
+$$
+S_n=X_1+\dots+X_n.
+$$
+
+Если величины независимы и имеют конечные средние и дисперсии,
+$$
+\mathbb{E}[X_i]=\mu_i,
+\qquad
+\mathrm{Var}(X_i)=\sigma_i^2<\infty,
+$$
+то при достаточно мягких дополнительных условиях нормированная сумма
+$$
+Z_n=\frac{S_n-\mathbb{E}[S_n]}{\sqrt{\mathrm{Var}(S_n)}}
+$$
+стремится к стандартному гауссу:
+$$
+Z_n\Rightarrow \mathrm{N}(0,1).
+$$
+
+## Где спрятаны условия
+
+::: incremental
+- Сумма должна состоять из бесконечного числа малых вкладов.
+- Ни один вклад не должен доминировать над всеми остальными.
+- Слагаемые не должны иметь бесконечно тяжёлых хвостов.
+- Корреляции должны отсутствовать.
+- Мы должны смотреть именно на сумму, а не на произвольную нелинейную функцию суммы.
+- Для суммы
+$$
+S_n=\sum_{i=1}^n X_i
+$$
+дисперсия равна
+$$
+\mathrm{Var}(S_n) =\sum_i\mathrm{Var}(X_i)+2\sum_{i<j}\mathrm{cov}(X_i,X_j).
+$$
+
+- Если ковариации равны нулю, дисперсии складываются.
+- Если ковариации велики, число слагаемых само по себе ничего не гарантирует.
+- Если дисперсии отдельных вкладов не существуют, формула теряет смысл.
+:::
+
+# Распределение Коши
+
+## Что такое распределение Коши
+
+:::: {.columns}
+
+::: {.column width="50%" .incremental}
+
+- Стандартное распределение Коши
+$$
+f(x)=\frac{1}{\pi}\frac{1}{1+x^2}.
+$$
+- известно в физике как распределение Лоренц и Брейта-Вигнера.
+- У нее есть CDF:
+$$
+F(x)=\frac{1}{2}+\frac{1}{\pi}\arctan(x).
+$$
+- Обратная к ней:
+$$
+F^{-1}(x) = \tan\!\left[\pi\left(x-\frac{1}{2}\right)\right].
+$$
+позволяет разыгрывать $X\sim \mathrm{Cauchy}$.
+:::
+
+::: {.column width="50%" .incremental}
+
+- Все моменты не определены или бесконечны
+  - среднее:
+  $$
+  \begin{aligned}
+  \mathbb{E}[X]&=\int_{-\infty}^{+\infty}\frac{x}{\pi(1+x^2)}\,dx\\
+  &=\lim\limits_{R\to\infty}\frac{1}{\pi}\ln(1+R^2)\to \infty.
+  \end{aligned}
+  $$
+  - Средний квадрат:
+  $$\mathbb{E}[X^2]=\int_{-\infty}^{+\infty}\frac{x^2}{\pi(1+x^2)}\,dx=\infty.
+$$
+
+:::
+
+::::
+
+## Среднее Коши не улучшается
+
+Пусть
+$$
+X_1,\dots,X_n\sim \mathrm{Cauchy}(0,1)
+$$
+независимы.
+
+Тогда
+$$
+\bar X_n=\frac{1}{n}\sum_{i=1}^n X_i
+$$
+имеет то же распределение:
+$$
+\bar X_n\sim \mathrm{Cauchy}(0,1).
+$$
+
+::: {.callout-important .thmbox appearance="simple"}
+## Вывод
+
+Усреднение независимых величин Коши не сужает распределение среднего.
+:::
+
+## Почему это происходит
+
+У распределения Коши характеристическая функция равна
+$$
+\varphi_X(t)=\mathbb{E}\left[e^{itX}\right]=e^{-|t|}.
+$$
+
+Для суммы независимых величин
+$$
+S_n=X_1+\dots+X_n
+$$
+характеристическая функция равна
+$$
+\varphi_{S_n}(t)=\left(e^{-|t|}\right)^n=e^{-n|t|}.
+$$
+
+Это характеристическая функция распределения
+$$
+S_n\sim \mathrm{Cauchy}(0,n).
+$$
+
+Значит,
+$$
+\frac{S_n}{n}\sim \mathrm{Cauchy}(0,1).
+$$
+
+## Интерактив: среднее Коши не становится гауссом
+
+::: {.clt-widget}
+```{ojs}
+//| echo: false
+
+viewof nCauchy = Inputs.range([1, 200], {
+  value: 1,
+  step: 1,
+  label: "n"
+})
+
+viewof sampleCauchy = Inputs.range([1000, 50000], {
+  value: 15000,
+  step: 1000,
+  label: "N"
+})
+
+viewof regenerateCauchy = Inputs.button("Новая статистика")
+
+randnCauchy = () => {
+  let u = 0;
+  let v = 0;
+  while (u === 0) u = Math.random();
+  while (v === 0) v = Math.random();
+  return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
+}
+
+cauchyRandom = () => Math.tan(Math.PI * (Math.random() - 0.5))
+
+cauchyMeans = {
+  regenerateCauchy;
+  const values = new Array(sampleCauchy);
+  for (let i = 0; i < sampleCauchy; ++i) {
+    let sum = 0;
+    for (let j = 0; j < nCauchy; ++j) sum += cauchyRandom();
+    values[i] = sum / nCauchy;
+  }
+  return values;
+}
+
+gaussMeans = {
+  regenerateCauchy;
+  const values = new Array(sampleCauchy);
+  for (let i = 0; i < sampleCauchy; ++i) {
+    let sum = 0;
+    for (let j = 0; j < nCauchy; ++j) sum += randnCauchy();
+    values[i] = sum / Math.sqrt(nCauchy);
+  }
+  return values;
+}
+
+histogramCauchy = (values, bins, min, max) => {
+  const width = (max - min) / bins;
+  const counts = Array(bins).fill(0);
+  for (const value of values) {
+    if (value < min || value >= max) continue;
+    counts[Math.floor((value - min) / width)] += 1;
+  }
+  return counts.map((count, i) => ({
+    x0: min + i * width,
+    x1: min + (i + 1) * width,
+    density: count / (values.length * width)
+  }));
+}
+
+histCauchy = histogramCauchy(cauchyMeans, 100, -10, 10)
+histGaussMean = histogramCauchy(gaussMeans, 100, -10, 10)
+
+cauchyTheory = Array.from({length: 501}, (_, i) => {
+  const x = -10 + 20 * i / 500;
+  return {x, y: 1 / (Math.PI * (1 + x * x))};
+})
+
+cauchyPlot = Plot.plot({
+  width: 760,
+  height: 390,
+  marginLeft: 55,
+  x: {label: "x", domain: [-10, 10]},
+  y: {label: "density", domain: [0, 0.38]},
+  grid: true,
+  marks: [
+    Plot.rectY(histGaussMean, {
+      x1: "x0", x2: "x1", y: "density",
+      fill: "#9be564", fillOpacity: 0.40
+    }),
+    Plot.rectY(histCauchy, {
+      x1: "x0", x2: "x1", y: "density",
+      fill: "#4ea1ff", fillOpacity: 0.68
+    }),
+    Plot.line(cauchyTheory, {x: "x", y: "y", stroke: "#ffb347", strokeWidth: 2.7})
+  ]
+})
+
+html`
+<div class="clt-panel">
+  ${cauchyPlot}
+  <div class="clt-summary">
+    <span>синий: среднее Коши</span>
+    <span>зелёный: нормированная сумма гауссовых</span>
+    <span>n = ${nCauchy}</span>
+  </div>
+</div>
+`
+```
+:::
+
+## Физический смысл примера Коши
+
+::: incremental
+- Это не типичная модель детекторного отклика.
+- Это эталонный пример того, почему условие конечной дисперсии принципиально.
+- Если хвосты слишком тяжёлые, отдельные редкие события могут определять сумму даже при большом $n$.
+- В экспериментальном анализе похожая опасность возникает при poorly controlled outliers, catastrophic losses, spikes, poorly vetoed backgrounds.
+:::
+
+---
+
+# Пример 2. Тяжёлые хвосты с конечной дисперсией
+
+## Формально ЦПТ работает, но медленно
+
+Рассмотрим симметричное распределение с хвостом
+$$
+p(x)\sim \frac{C}{|x|^{1+\alpha}}.
+$$
+
+Моменты ведут себя как
+$$
+\mathbb{E}[|X|^k]
+\sim
+\int^\infty x^k\frac{dx}{x^{1+\alpha}}
+=
+\int^\infty \frac{dx}{x^{1+\alpha-k}}.
+$$
+
+Интеграл сходится, если
+$$
+1+\alpha-k>1,
+\qquad
+\alpha>k.
+$$
+
+## Когда существует дисперсия
+
+Для среднего нужен момент $k=1$:
+$$
+\alpha>1.
+$$
+
+Для дисперсии нужен момент $k=2$:
+$$
+\alpha>2.
+$$
+
+::: incremental
+- Если $\alpha\le 2$, обычная ЦПТ не работает.
+- Если $\alpha>2$, ЦПТ формально работает.
+- Но при $\alpha$ немного больше 2 сходимость к гауссу может быть очень медленной.
+:::
+
+## Практическая проблема
+
+Пусть дисперсия конечна, но хвост очень тяжёлый.
+
+Тогда при конечной статистике сумма
+$$
+S_n=X_1+\dots+X_n
+$$
+часто выглядит так:
+$$
+S_n\approx X_{\rm max}+\text{много малых вкладов}.
+$$
+
+::: {.callout-important .thmbox appearance="simple"}
+## Вывод
+
+Фраза «при $n\to\infty$ будет гаусс» не означает, что гаусс уже хорош при доступной статистике.
+:::
+
+## Интерактив: медленная сходимость тяжёлых хвостов
+
+::: {.clt-widget}
+```{ojs}
+//| echo: false
+
+viewof nTail = Inputs.range([1, 300], {value: 5, step: 1, label: "n"})
+viewof alphaTail = Inputs.range([2.1, 8.0], {value: 2.3, step: 0.1, label: "alpha"})
+viewof sampleTail = Inputs.range([2000, 40000], {value: 12000, step: 1000, label: "N"})
+viewof regenerateTail = Inputs.button("Новая статистика")
+
+paretoSym = (alpha) => {
+  const u = Math.random();
+  const y = Math.pow(1 - u, -1 / alpha);
+  return Math.random() < 0.5 ? y : -y;
+}
+
+tailValues = {
+  regenerateTail;
+  const values = new Array(sampleTail);
+  const variance = alphaTail / (alphaTail - 2); // symmetric +/- Pareto xm=1 has E[X^2]=alpha/(alpha-2)
+  const scale = Math.sqrt(nTail * variance);
+  for (let i = 0; i < sampleTail; ++i) {
+    let sum = 0;
+    for (let j = 0; j < nTail; ++j) sum += paretoSym(alphaTail);
+    values[i] = sum / scale;
+  }
+  return values;
+}
+
+histTail = histogramCauchy(tailValues, 100, -8, 8)
+normalTail = Array.from({length: 401}, (_, i) => {
+  const z = -8 + 16 * i / 400;
+  return {z, density: Math.exp(-0.5 * z * z) / Math.sqrt(2 * Math.PI)};
+})
+
+tailPlot = Plot.plot({
+  width: 760,
+  height: 390,
+  marginLeft: 55,
+  x: {label: "z", domain: [-8, 8]},
+  y: {label: "density", domain: [0, 0.55]},
+  grid: true,
+  marks: [
+    Plot.rectY(histTail, {x1: "x0", x2: "x1", y: "density", fill: "#4ea1ff", fillOpacity: 0.70, stroke: "white"}),
+    Plot.line(normalTail, {x: "z", y: "density", stroke: "#ffb347", strokeWidth: 2.8})
+  ]
+})
+
+html`
+<div class="clt-panel">
+  ${tailPlot}
+  <div class="clt-summary">
+    <span>симметричный Pareto-хвост</span>
+    <span>alpha = ${alphaTail.toFixed(1)}</span>
+    <span>n = ${nTail}</span>
+  </div>
+</div>
+`
+```
+:::
+
+---
+
+# Пример 3. Один вклад доминирует
+
+## Условие малости отдельных вкладов
+
+ЦПТ требует, чтобы сумма состояла из многих малых вкладов.
+
+Неформально:
+$$
+\frac{\max_i \sigma_i^2}{\sum_j \sigma_j^2}\to 0.
+$$
+
+Если это не выполнено, форма суммы может определяться одним слагаемым.
+
+## Простейшая модель
+
+Пусть
+$$
+S=X_0+\epsilon_1+\dots+\epsilon_n,
+$$
+где
+$$
+\epsilon_i\sim \mathrm{N}(0,\sigma^2),
+$$
+а $X_0$ имеет негауссово распределение и большую дисперсию:
+$$
+\mathrm{Var}(X_0)\gg n\sigma^2.
+$$
+
+Тогда
+$$
+S\approx X_0.
+$$
+
+Наличие многих малых гауссовых вкладов не спасает форму суммы.
+
+## В эксперименте
+
+::: incremental
+- Один PMT может насытиться.
+- Один шумовой канал может дать большой spike.
+- Один редкий фон может доминировать в окне анализа.
+- Один escaping particle может унести существенную энергию.
+- Один shower fluctuation может задавать хвост распределения.
+:::
+
+---
+
+# Пример 4. Коррелированные слагаемые
+
+## Независимость не техническая деталь
+
+Для суммы
+$$
+S_n=\sum_{i=1}^n X_i
+$$
+дисперсия равна
+$$
+\mathrm{Var}(S_n)
+=
+\sum_i\sigma_i^2
++
+2\sum_{i<j}\mathrm{cov}(X_i,X_j).
+$$
+
+Если слагаемые независимы, то
+$$
+\mathrm{cov}(X_i,X_j)=0.
+$$
+
+Если нет — дисперсия может масштабироваться иначе.
+
+## Одинаковые корреляции
+
+Пусть
+$$
+\mathrm{Var}(X_i)=\sigma^2,
+\qquad
+\mathrm{corr}(X_i,X_j)=\rho
+\quad (i\ne j).
+$$
+
+Тогда
+$$
+\mathrm{cov}(X_i,X_j)=\rho\sigma^2.
+$$
+
+Для среднего
+$$
+\bar X=\frac{1}{n}\sum_{i=1}^n X_i
+$$
+получаем
+$$
+\mathrm{Var}(\bar X)
+=
+\frac{\sigma^2}{n}\left[1+(n-1)\rho\right].
+$$
+
+## Что происходит при большом n
+
+Если $\rho=0$, то
+$$
+\mathrm{Var}(\bar X)=\frac{\sigma^2}{n}.
+$$
+
+Но если $\rho>0$ фиксировано, то
+$$
+\mathrm{Var}(\bar X)
+\to \rho\sigma^2
+\qquad (n\to\infty).
+$$
+
+::: {.callout-important .thmbox appearance="simple"}
+## Вывод
+
+Коррелированная систематика не усредняется как статистическая ошибка.
+:::
+
+## Common-mode модель
+
+Пусть
+$$
+X_i=\mu+C+\epsilon_i,
+$$
+где
+$$
+C\sim \mathrm{N}(0,\sigma_C^2),
+\qquad
+\epsilon_i\sim \mathrm{N}(0,\sigma_\epsilon^2).
+$$
+
+Тогда
+$$
+\bar X=\mu+C+\frac{1}{n}\sum_i\epsilon_i.
+$$
+
+Дисперсия среднего:
+$$
+\mathrm{Var}(\bar X)=\sigma_C^2+\frac{\sigma_\epsilon^2}{n}.
+$$
+
+## Интерактив: коррелированная ошибка не исчезает
+
+::: {.clt-widget}
+```{ojs}
+//| echo: false
+
+viewof nCorr = Inputs.range([1, 500], {value: 10, step: 1, label: "n"})
+viewof sigmaCommon = Inputs.range([0, 2.0], {value: 0.6, step: 0.05, label: "sigma common"})
+viewof sigmaStat = Inputs.range([0.1, 2.0], {value: 1.0, step: 0.05, label: "sigma stat"})
+viewof sampleCorr = Inputs.range([1000, 30000], {value: 12000, step: 1000, label: "N"})
+viewof regenerateCorr = Inputs.button("Новая статистика")
+
+corrMeans = {
+  regenerateCorr;
+  const values = new Array(sampleCorr);
+  for (let i = 0; i < sampleCorr; ++i) {
+    const c = sigmaCommon * randnCauchy();
+    let sum = 0;
+    for (let j = 0; j < nCorr; ++j) sum += c + sigmaStat * randnCauchy();
+    values[i] = sum / nCorr;
+  }
+  return values;
+}
+
+corrTheorySigma = Math.sqrt(sigmaCommon * sigmaCommon + sigmaStat * sigmaStat / nCorr)
+
+histCorr = histogramCauchy(corrMeans, 90, -4, 4)
+normalCorr = Array.from({length: 401}, (_, i) => {
+  const z = -4 + 8 * i / 400;
+  return {z, density: Math.exp(-0.5 * z * z / (corrTheorySigma * corrTheorySigma)) / (corrTheorySigma * Math.sqrt(2 * Math.PI))};
+})
+
+corrPlot = Plot.plot({
+  width: 760,
+  height: 390,
+  marginLeft: 55,
+  x: {label: "mean", domain: [-4, 4]},
+  y: {label: "density", domain: [0, 1.4]},
+  grid: true,
+  marks: [
+    Plot.rectY(histCorr, {x1: "x0", x2: "x1", y: "density", fill: "#4ea1ff", fillOpacity: 0.70, stroke: "white"}),
+    Plot.line(normalCorr, {x: "z", y: "density", stroke: "#ffb347", strokeWidth: 2.8})
+  ]
+})
+
+html`
+<div class="clt-panel">
+  ${corrPlot}
+  <div class="clt-summary">
+    <span>Var(mean) = sigma_common² + sigma_stat²/n</span>
+    <span>sigma(mean) = ${corrTheorySigma.toFixed(3)}</span>
+    <span>n = ${nCorr}</span>
+  </div>
+</div>
+`
+```
+:::
+
+---
+
+# Пример 5. Дальние корреляции во времени
+
+## Среднее временного ряда
+
+Пусть есть временной ряд
+$$
+X_1,X_2,\dots,X_n,
+$$
+где
+$$
+\mathbb{E}[X_i]=\mu,
+\qquad
+\mathrm{Var}(X_i)=\sigma^2.
+$$
+
+Среднее:
+$$
+\bar X=\frac{1}{n}\sum_{i=1}^n X_i.
+$$
+
+Если точки независимы,
+$$
+\mathrm{Var}(\bar X)=\frac{\sigma^2}{n}.
+$$
+
+## Автокорреляция
+
+Пусть
+$$
+\rho(k)=\mathrm{corr}(X_i,X_{i+k}).
+$$
+
+Тогда
+$$
+\mathrm{Var}(\bar X)
+=
+\frac{\sigma^2}{n}
+\left[
+1+2\sum_{k=1}^{n-1}\left(1-\frac{k}{n}\right)\rho(k)
+\right].
+$$
+
+## Эффективное число независимых точек
+
+Удобно записать
+$$
+\mathrm{Var}(\bar X)=\frac{\sigma^2}{n_{\rm eff}}.
+$$
+
+Тогда
+$$
+n_{\rm eff}
+=
+\frac{n}{1+2\sum_{k=1}^{n-1}\left(1-\frac{k}{n}\right)\rho(k)}.
+$$
+
+::: incremental
+- Если автокорреляции нет, $n_{\rm eff}=n$.
+- Если автокорреляция положительна, $n_{\rm eff}<n$.
+- При долгой памяти можно иметь много точек, но мало независимой информации.
+:::
+
+---
+
+# Пример 6. Смесь распределений
+
+## Условный гаусс не означает безусловный гаусс
+
+Пусть при фиксированном скрытом параметре $\theta$
+$$
+X|\theta\sim \mathrm{N}(\mu_\theta,\sigma_\theta^2).
+$$
+
+Но мы не наблюдаем $\theta$.
+
+Тогда полная плотность равна
+$$
+p(x)=\int p(\theta)\,
+\mathrm{N}(x;\mu_\theta,\sigma_\theta^2)\,d\theta.
+$$
+
+Это смесь гауссовых распределений.
+
+## Дисперсия смеси
+
+По формуле полной дисперсии
+$$
+\mathrm{Var}(X)
+=
+\mathbb{E}_\theta\left[\mathrm{Var}(X|\theta)\right]
++
+\mathrm{Var}_\theta\left(\mathbb{E}[X|\theta]\right).
+$$
+
+Так как
+$$
+\mathrm{Var}(X|\theta)=\sigma_\theta^2,
+\qquad
+\mathbb{E}[X|\theta]=\mu_\theta,
+$$
+получаем
+$$
+\boxed{
+\mathrm{Var}(X)
+=
+\mathbb{E}_\theta[\sigma_\theta^2]
++
+\mathrm{Var}_\theta(\mu_\theta).
+}
+$$
+
+## Физический смысл второго члена
+
+Первый член:
+$$
+\mathbb{E}_\theta[\sigma_\theta^2]
+$$
+— средняя внутренняя ширина классов.
+
+Второй член:
+$$
+\mathrm{Var}_\theta(\mu_\theta)
+$$
+— разброс между классами.
+
+::: {.callout-important .thmbox appearance="simple"}
+## Вывод
+
+Даже если каждый класс почти гауссов, смесь классов может быть асимметричной, широкой или многопиковой.
+:::
+
+## Интерактив: смесь двух гауссов
+
+::: {.clt-widget}
+```{ojs}
+//| echo: false
+
+viewof mixWeight = Inputs.range([0.0, 1.0], {value: 0.5, step: 0.02, label: "weight"})
+viewof mixSeparation = Inputs.range([0.0, 6.0], {value: 2.5, step: 0.1, label: "separation"})
+viewof mixSigma2 = Inputs.range([0.2, 2.5], {value: 1.0, step: 0.05, label: "sigma 2"})
+viewof sampleMix = Inputs.range([1000, 40000], {value: 15000, step: 1000, label: "N"})
+viewof regenerateMix = Inputs.button("Новая статистика")
+
+mixValues = {
+  regenerateMix;
+  const values = new Array(sampleMix);
+  const mu1 = -mixSeparation / 2;
+  const mu2 = mixSeparation / 2;
+  for (let i = 0; i < sampleMix; ++i) {
+    if (Math.random() < mixWeight) values[i] = mu1 + randnCauchy();
+    else values[i] = mu2 + mixSigma2 * randnCauchy();
+  }
+  return values;
+}
+
+mixMean = mixValues.reduce((s, x) => s + x, 0) / mixValues.length
+mixVar = mixValues.reduce((s, x) => s + (x - mixMean) ** 2, 0) / mixValues.length
+mixSigma = Math.sqrt(mixVar)
+
+histMix = histogramCauchy(mixValues, 100, -8, 8)
+normalMix = Array.from({length: 401}, (_, i) => {
+  const x = -8 + 16 * i / 400;
+  return {x, y: Math.exp(-0.5 * (x - mixMean) ** 2 / mixVar) / (mixSigma * Math.sqrt(2 * Math.PI))};
+})
+
+mixPlot = Plot.plot({
+  width: 760,
+  height: 390,
+  marginLeft: 55,
+  x: {label: "x", domain: [-8, 8]},
+  y: {label: "density", domain: [0, 0.55]},
+  grid: true,
+  marks: [
+    Plot.rectY(histMix, {x1: "x0", x2: "x1", y: "density", fill: "#4ea1ff", fillOpacity: 0.70, stroke: "white"}),
+    Plot.line(normalMix, {x: "x", y: "y", stroke: "#ffb347", strokeWidth: 2.8})
+  ]
+})
+
+html`
+<div class="clt-panel">
+  ${mixPlot}
+  <div class="clt-summary">
+    <span>синий: смесь</span>
+    <span>оранжевый: гаусс с теми же mean и variance</span>
+    <span>mean = ${mixMean.toFixed(2)}</span>
+    <span>sigma = ${mixSigma.toFixed(2)}</span>
+  </div>
+</div>
+`
+```
+:::
+
+## Пример: жидкий сцинтиллятор
+
+В жидком сцинтилляторе измеряемая величина может быть записана схематично как
+$$
+Q=Q(E,\theta)+\text{фотонная статистика}+\text{электроника},
+$$
+где $\theta$ описывает скрытые детали события:
+$$
+\theta=\{
+\text{тип частицы},
+\text{топология},
+\text{позиция},
+\text{Cherenkov fraction},
+\text{quenching},
+\text{оптический путь}
+\}.
+$$
+
+## Один и тот же E, разные события
+
+Для $\gamma$-кванта энергия сначала передаётся вторичным электронам:
+$$
+\gamma \to e_1+e_2+\dots+e_m.
+$$
+
+Полная энергия может быть одинаковой:
+$$
+E_\gamma=\sum_{a=1}^m E_a.
+$$
+
+Но световой выход нелинеен:
+$$
+Q\ne C\sum_a E_a.
+$$
+
+Более реалистично:
+$$
+Q\simeq \sum_a L(E_a),
+$$
+где $L(E)$ — нелинейная функция.
+
+## Почему сумма энергий не всё определяет
+
+Если $L(E)$ была бы линейной,
+$$
+L(E)=CE,
+$$
+то
+$$
+\sum_a L(E_a)=C\sum_a E_a=C E_\gamma.
+$$
+
+Тогда детализация события не важна.
+
+Но если $L(E)$ нелинейна,
+$$
+\sum_a L(E_a)
+$$
+зависит не только от суммы энергий, но и от разложения энергии по вторичным частицам.
+
+---
+
+# Пример 7. Нелинейное преобразование
+
+## Гаусс на входе не гарантирует гаусс на выходе
+
+Пусть
+$$
+X\sim \mathrm{N}(\mu,\sigma).
+$$
+
+Рассмотрим
+$$
+Y=f(X).
+$$
+
+Если $f$ почти линейна на масштабе $\sigma$, то
+$$
+Y\approx f(\mu)+f'(\mu)(X-\mu)
+$$
+и распределение $Y$ почти гауссово.
+
+Но если нелинейность существенна, форма меняется.
+
+## Пример: квадрат гауссовой величины
+
+Пусть
+$$
+X\sim \mathrm{N}(0,1),
+\qquad
+Y=X^2.
+$$
+
+Тогда
+$$
+Y\ge 0.
+$$
+
+Плотность можно найти заменой переменной.
+
+Уравнение
+$$
+y=x^2
+$$
+имеет два корня:
+$$
+x=\pm\sqrt y.
+$$
+
+## Плотность X²
+
+Формула замены переменной даёт
+$$
+g(y)=\sum_{x_i:\,x_i^2=y} f_X(x_i)\left|\frac{dx_i}{dy}\right|.
+$$
+
+Так как
+$$
+\left|\frac{dx}{dy}\right|=\frac{1}{2\sqrt y},
+$$
+получаем
+$$
+g(y)=
+\frac{1}{\sqrt{2\pi}}e^{-y/2}\frac{1}{2\sqrt y}
++
+\frac{1}{\sqrt{2\pi}}e^{-y/2}\frac{1}{2\sqrt y}.
+$$
+
+Значит,
+$$
+\boxed{
+g(y)=\frac{1}{\sqrt{2\pi y}}e^{-y/2},
+\qquad y>0.
+}
+$$
+
+Это распределение $\chi^2$ с одной степенью свободы.
+
+## Пример: экспонента гауссовой величины
+
+Пусть
+$$
+X\sim \mathrm{N}(\mu,\sigma),
+\qquad
+Y=e^X.
+$$
+
+Тогда
+$$
+\ln Y=X.
+$$
+
+Значит, логарифм $Y$ гауссов:
+$$
+\ln Y\sim \mathrm{N}(\mu,\sigma).
+$$
+
+Сама величина $Y$ имеет логнормальное распределение:
+$$
+g(y)=\frac{1}{y\sigma\sqrt{2\pi}}
+\exp\left[-\frac{(\ln y-\mu)^2}{2\sigma^2}\right],
+\qquad y>0.
+$$
+
+## Интерактив: нелинейная функция гаусса
+
+::: {.clt-widget}
+```{ojs}
+//| echo: false
+
+viewof transformKind = Inputs.select(["x", "x^2", "exp(x)", "1/x"], {value: "x^2", label: "f(x)"})
+viewof muTrans = Inputs.range([-2.0, 2.0], {value: 0.0, step: 0.1, label: "mu"})
+viewof sigmaTrans = Inputs.range([0.1, 2.0], {value: 1.0, step: 0.05, label: "sigma"})
+viewof sampleTrans = Inputs.range([1000, 40000], {value: 15000, step: 1000, label: "N"})
+viewof regenerateTrans = Inputs.button("Новая статистика")
+
+applyTransform = (x, kind) => {
+  if (kind === "x") return x;
+  if (kind === "x^2") return x * x;
+  if (kind === "exp(x)") return Math.exp(x);
+  if (kind === "1/x") return 1 / x;
+}
+
+transValuesRaw = {
+  regenerateTrans;
+  const values = new Array(sampleTrans);
+  for (let i = 0; i < sampleTrans; ++i) {
+    const x = muTrans + sigmaTrans * randnCauchy();
+    values[i] = applyTransform(x, transformKind);
+  }
+  return values.filter(Number.isFinite);
+}
+
+transDomain = transformKind === "x" ? [-6, 6]
+  : transformKind === "x^2" ? [0, 16]
+  : transformKind === "exp(x)" ? [0, 20]
+  : [-20, 20]
+
+histTrans = histogramCauchy(transValuesRaw, 110, transDomain[0], transDomain[1])
+
+transPlot = Plot.plot({
+  width: 760,
+  height: 390,
+  marginLeft: 55,
+  x: {label: "y", domain: transDomain},
+  y: {label: "density"},
+  grid: true,
+  marks: [
+    Plot.rectY(histTrans, {x1: "x0", x2: "x1", y: "density", fill: "#4ea1ff", fillOpacity: 0.72, stroke: "white"})
+  ]
+})
+
+html`
+<div class="clt-panel">
+  ${transPlot}
+  <div class="clt-summary">
+    <span>X ~ N(${muTrans.toFixed(1)}, ${sigmaTrans.toFixed(2)})</span>
+    <span>Y = ${transformKind}</span>
+  </div>
+</div>
+`
+```
+:::
+
+---
+
+# Пример 8. Отношение случайных величин
+
+## Отношение двух гауссовых величин
+
+Пусть
+$$
+R=\frac{X}{Y}.
+$$
+
+Даже если $X$ и $Y$ гауссовы, $R$ обычно не гауссово.
+
+Главная опасность возникает, если знаменатель может быть близок к нулю.
+
+## Классический случай
+
+Пусть
+$$
+X,Y\sim \mathrm{N}(0,1)
+$$
+независимы.
+
+Тогда
+$$
+R=\frac{X}{Y}
+$$
+имеет стандартное распределение Коши:
+$$
+f_R(r)=\frac{1}{\pi(1+r^2)}.
+$$
+
+## Вывод плотности отношения
+
+Используем замену переменных
+$$
+X=RY,
+\qquad
+Y=Y.
+$$
+
+Якобиан:
+$$
+\left|\frac{\partial(x,y)}{\partial(r,y)}\right|=|y|.
+$$
+
+Тогда
+$$
+f_R(r)=\int_{-\infty}^{+\infty} f_X(ry)f_Y(y)|y|\,dy.
+$$
+
+Для стандартных гауссов
+$$
+f_R(r)=\frac{1}{2\pi}\int_{-\infty}^{+\infty}|y|\exp\left[-\frac{(1+r^2)y^2}{2}\right]dy.
+$$
+
+## Завершение вывода
+
+Так как интеграл чётный,
+$$
+f_R(r)=\frac{1}{\pi}\int_0^\infty y\exp\left[-\frac{(1+r^2)y^2}{2}\right]dy.
+$$
+
+Используем
+$$
+\int_0^\infty y e^{-ay^2/2}\,dy=\frac{1}{a}.
+$$
+
+При
+$$
+a=1+r^2
+$$
+получаем
+$$
+\boxed{
+f_R(r)=\frac{1}{\pi(1+r^2)}.
+}
+$$
+
+## Где это встречается
+
+::: incremental
+- Отношение двух скоростей счёта.
+- Нормировка на контрольную область.
+- Поправка на эффективность.
+- Асимметрия вида $(N_1-N_2)/(N_1+N_2)$.
+- Восстановление величины через деление на малую или шумную оценку.
+:::
+
+## Интерактив: отношение гауссовых величин
+
+::: {.clt-widget}
+```{ojs}
+//| echo: false
+
+viewof muDenom = Inputs.range([0.0, 5.0], {value: 0.0, step: 0.1, label: "mean denominator"})
+viewof sigmaDenom = Inputs.range([0.1, 2.0], {value: 1.0, step: 0.05, label: "sigma denominator"})
+viewof sampleRatio = Inputs.range([1000, 40000], {value: 15000, step: 1000, label: "N"})
+viewof regenerateRatio = Inputs.button("Новая статистика")
+
+ratioValues = {
+  regenerateRatio;
+  const values = [];
+  for (let i = 0; i < sampleRatio; ++i) {
+    const x = randnCauchy();
+    const y = muDenom + sigmaDenom * randnCauchy();
+    const r = x / y;
+    if (Number.isFinite(r)) values.push(r);
+  }
+  return values;
+}
+
+histRatio = histogramCauchy(ratioValues, 120, -20, 20)
+cauchyRatio = Array.from({length: 501}, (_, i) => {
+  const x = -20 + 40 * i / 500;
+  return {x, y: 1 / (Math.PI * (1 + x * x))};
+})
+
+ratioPlot = Plot.plot({
+  width: 760,
+  height: 390,
+  marginLeft: 55,
+  x: {label: "R = X/Y", domain: [-20, 20]},
+  y: {label: "density", domain: [0, 0.35]},
+  grid: true,
+  marks: [
+    Plot.rectY(histRatio, {x1: "x0", x2: "x1", y: "density", fill: "#4ea1ff", fillOpacity: 0.70, stroke: "white"}),
+    Plot.line(cauchyRatio, {x: "x", y: "y", stroke: "#ffb347", strokeWidth: 2.6})
+  ]
+})
+
+html`
+<div class="clt-panel">
+  ${ratioPlot}
+  <div class="clt-summary">
+    <span>X ~ N(0,1)</span>
+    <span>Y ~ N(${muDenom.toFixed(1)}, ${sigmaDenom.toFixed(2)})</span>
+    <span>оранжевый: Cauchy для Y ~ N(0,1)</span>
+  </div>
+</div>
+`
+```
+:::
+
+---
+
+# Пример 9. Физические границы
+
+## Гаусс живёт на всей прямой
+
+Гауссово распределение допускает любые значения:
+$$
+-
+\infty < X < +\infty.
+$$
+
+Но многие физические величины ограничены:
+$$
+N\ge 0,
+\qquad
+E\ge 0,
+\qquad
+0\le \epsilon\le 1,
+\qquad
+m^2\ge 0.
+$$
+
+Около границы симметричный гаусс становится плохой моделью.
+
+## Пример: число событий
+
+Запись
+$$
+N=2.0\pm3.0
+$$
+как гауссова оценка означает ненулевую вероятность
+$$
+N<0.
+$$
+
+Но отрицательное число событий физически невозможно.
+
+В малых счётах нужно использовать распределение Пуассона, а не симметричную гауссову ошибку.
+
+## Пример: эффективность
+
+Эффективность лежит в интервале
+$$
+0\le \epsilon\le 1.
+$$
+
+Запись
+$$
+\epsilon=0.98\pm0.04
+$$
+как гауссова оценка формально допускает
+$$
+\epsilon>1.
+$$
+
+Это сигнал, что переменная около границы и обычная гауссова аппроксимация опасна.
+
+---
+
+# Пример 10. Малые счёты: Пуассон
+
+## Распределение Пуассона
+
+Если число событий в фиксированном окне случайно, то часто
+$$
+N\sim \mathrm{Poisson}(\lambda).
+$$
+
+Вероятность получить $n$ событий:
+$$
+P(N=n)=e^{-\lambda}\frac{\lambda^n}{n!},
+\qquad
+n=0,1,2,\dots
+$$
+
+Среднее и дисперсия равны
+$$
+\mathbb{E}[N]=\lambda,
+\qquad
+\mathrm{Var}(N)=\lambda.
+$$
+
+## Когда Пуассон похож на гаусс
+
+При больших $\lambda$ распределение Пуассона приближается гауссом:
+$$
+N\approx \mathrm{N}(\lambda,\lambda).
+$$
+
+Но при малых $\lambda$ распределение:
+
+::: incremental
+- дискретно;
+- асимметрично;
+- ограничено снизу нулём;
+- плохо описывается симметричной ошибкой $\sqrt N$.
+:::
+
+## Интерактив: Пуассон против гаусса
+
+::: {.clt-widget}
+```{ojs}
+//| echo: false
+
+viewof lambdaPois = Inputs.range([0.2, 60], {value: 3.0, step: 0.2, label: "lambda"})
+
+poissonPmf = (k, lambda) => {
+  if (k < 0) return 0;
+  let logp = -lambda + k * Math.log(lambda);
+  for (let j = 2; j <= k; ++j) logp -= Math.log(j);
+  return Math.exp(logp);
+}
+
+kMaxPois = Math.max(20, Math.ceil(lambdaPois + 6 * Math.sqrt(lambdaPois)))
+poisData = Array.from({length: kMaxPois + 1}, (_, k) => ({k, p: poissonPmf(k, lambdaPois)}))
+gaussPois = Array.from({length: 501}, (_, i) => {
+  const x = 0 + kMaxPois * i / 500;
+  return {x, y: Math.exp(-0.5 * (x - lambdaPois) ** 2 / lambdaPois) / Math.sqrt(2 * Math.PI * lambdaPois)};
+})
+
+poisPlot = Plot.plot({
+  width: 760,
+  height: 390,
+  marginLeft: 55,
+  x: {label: "n", domain: [0, kMaxPois]},
+  y: {label: "probability"},
+  grid: true,
+  marks: [
+    Plot.barY(poisData, {x: "k", y: "p", fill: "#4ea1ff", fillOpacity: 0.75}),
+    Plot.line(gaussPois, {x: "x", y: "y", stroke: "#ffb347", strokeWidth: 2.8})
+  ]
+})
+
+html`
+<div class="clt-panel">
+  ${poisPlot}
+  <div class="clt-summary">
+    <span>синий: Poisson(lambda)</span>
+    <span>оранжевый: N(lambda, lambda)</span>
+    <span>lambda = ${lambdaPois.toFixed(1)}</span>
+  </div>
+</div>
+`
+```
+:::
+
+---
+
+# Пример 11. Биномиальное распределение около границы
+
+## Эффективность как биномиальная величина
+
+Пусть из $n$ событий прошло отбор $k$ событий.
+
+Тогда
+$$
+k\sim \mathrm{Binomial}(n,\epsilon),
+$$
+где $\epsilon$ — истинная эффективность.
+
+Оценка эффективности:
+$$
+\hat\epsilon=\frac{k}{n}.
+$$
+
+## Среднее и дисперсия
+
+Для биномиального распределения
+$$
+\mathbb{E}[k]=n\epsilon,
+\qquad
+\mathrm{Var}(k)=n\epsilon(1-\epsilon).
+$$
+
+Поэтому
+$$
+\mathbb{E}[\hat\epsilon]=\epsilon,
+\qquad
+\mathrm{Var}(\hat\epsilon)=\frac{\epsilon(1-\epsilon)}{n}.
+$$
+
+Гауссова аппроксимация:
+$$
+\hat\epsilon\approx \mathrm{N}\left(\epsilon,\frac{\epsilon(1-\epsilon)}{n}\right).
+$$
+
+## Где аппроксимация плоха
+
+::: incremental
+- $n$ мало.
+- $\epsilon$ близко к нулю.
+- $\epsilon$ близко к единице.
+- Наблюдается $k=0$ или $k=n$.
+:::
+
+В этих случаях симметричный интервал может выходить за физические границы:
+$$
+0\le \epsilon\le 1.
+$$
+
+## Интерактив: биномиальное распределение
+
+::: {.clt-widget}
+```{ojs}
+//| echo: false
+
+viewof nBin = Inputs.range([5, 300], {value: 20, step: 1, label: "n"})
+viewof epsBin = Inputs.range([0.01, 0.99], {value: 0.9, step: 0.01, label: "epsilon"})
+
+logFact = (k) => {
+  let s = 0;
+  for (let i = 2; i <= k; ++i) s += Math.log(i);
+  return s;
+}
+
+binPmf = (k, n, p) => {
+  return Math.exp(logFact(n) - logFact(k) - logFact(n-k) + k * Math.log(p) + (n-k) * Math.log(1-p));
+}
+
+binData = Array.from({length: nBin + 1}, (_, k) => ({e: k / nBin, p: binPmf(k, nBin, epsBin)}))
+binSigma = Math.sqrt(epsBin * (1 - epsBin) / nBin)
+normalBin = Array.from({length: 401}, (_, i) => {
+  const x = 0 + i / 400;
+  return {x, y: Math.exp(-0.5 * (x - epsBin) ** 2 / (binSigma * binSigma)) / (binSigma * Math.sqrt(2 * Math.PI)) / nBin};
+})
+
+binPlot = Plot.plot({
+  width: 760,
+  height: 390,
+  marginLeft: 55,
+  x: {label: "epsilon_hat", domain: [0, 1]},
+  y: {label: "probability per bin"},
+  grid: true,
+  marks: [
+    Plot.barY(binData, {x: "e", y: "p", fill: "#4ea1ff", fillOpacity: 0.75}),
+    Plot.line(normalBin, {x: "x", y: "y", stroke: "#ffb347", strokeWidth: 2.8})
+  ]
+})
+
+html`
+<div class="clt-panel">
+  ${binPlot}
+  <div class="clt-summary">
+    <span>k ~ Binomial(n, epsilon)</span>
+    <span>n = ${nBin}</span>
+    <span>epsilon = ${epsBin.toFixed(2)}</span>
+  </div>
+</div>
+`
+```
+:::
+
+---
+
+# Пример 12. Отборы и пороги
+
+## Обрезанный гаусс
+
+Пусть до отбора
+$$
+X\sim \mathrm{N}(\mu,\sigma).
+$$
+
+Но регистрируются только события
+$$
+X>x_{\rm cut}.
+$$
+
+Тогда наблюдаемая плотность
+$$
+p(x|x>x_{\rm cut})=
+\frac{p(x)}{P(X>x_{\rm cut})},
+\qquad x>x_{\rm cut}.
+$$
+
+Это уже не исходный гаусс.
+
+## Порог меняет среднее
+
+Даже если исходное распределение симметрично,
+после порога оно становится асимметричным.
+
+Наблюдаемое среднее сдвигается:
+$$
+\mathbb{E}[X|X>x_{\rm cut}]>\mu
+$$
+если порог стоит справа от левого хвоста.
+
+::: incremental
+- Trigger threshold.
+- Energy threshold.
+- Quality cuts.
+- Fiducial cuts.
+- Saturation cuts.
+:::
+
+## Интерактив: порог отбора
+
+::: {.clt-widget}
+```{ojs}
+//| echo: false
+
+viewof cutValue = Inputs.range([-3.0, 3.0], {value: -0.5, step: 0.05, label: "cut"})
+viewof sampleCut = Inputs.range([1000, 40000], {value: 15000, step: 1000, label: "N"})
+viewof regenerateCut = Inputs.button("Новая статистика")
+
+cutValues = {
+  regenerateCut;
+  const values = [];
+  while (values.length < sampleCut) {
+    const x = randnCauchy();
+    if (x > cutValue) values.push(x);
+  }
+  return values;
+}
+
+histCut = histogramCauchy(cutValues, 90, -4, 5)
+normalCut = Array.from({length: 401}, (_, i) => {
+  const x = -4 + 9 * i / 400;
+  return {x, y: Math.exp(-0.5 * x * x) / Math.sqrt(2 * Math.PI)};
+})
+
+cutPlot = Plot.plot({
+  width: 760,
+  height: 390,
+  marginLeft: 55,
+  x: {label: "x", domain: [-4, 5]},
+  y: {label: "density", domain: [0, 0.8]},
+  grid: true,
+  marks: [
+    Plot.rectY(histCut, {x1: "x0", x2: "x1", y: "density", fill: "#4ea1ff", fillOpacity: 0.72, stroke: "white"}),
+    Plot.line(normalCut, {x: "x", y: "y", stroke: "#ffb347", strokeWidth: 2.6}),
+    Plot.ruleX([cutValue], {stroke: "#ff8a65", strokeWidth: 2.5})
+  ]
+})
+
+cutMean = cutValues.reduce((s, x) => s + x, 0) / cutValues.length
+
+html`
+<div class="clt-panel">
+  ${cutPlot}
+  <div class="clt-summary">
+    <span>исходно X ~ N(0,1)</span>
+    <span>наблюдаем только X > ${cutValue.toFixed(2)}</span>
+    <span>observed mean = ${cutMean.toFixed(2)}</span>
+  </div>
+</div>
+`
+```
+:::
+
+---
+
+# Пример 13. Экстремальные значения
+
+## ЦПТ относится к суммам, а не максимумам
+
+ЦПТ говорит о величине
+$$
+S_n=X_1+\dots+X_n.
+$$
+
+Но часто в анализе возникает максимум:
+$$
+M_n=\max(X_1,\dots,X_n).
+$$
+
+Распределение $M_n$ подчиняется другой асимптотике.
+
+## Распределение максимума
+
+Если $X_i$ независимы и имеют функцию распределения $F(x)$, то
+$$
+P(M_n\le x)=P(X_1\le x,\dots,X_n\le x).
+$$
+
+По независимости
+$$
+P(M_n\le x)=\prod_{i=1}^n P(X_i\le x)=F(x)^n.
+$$
+
+Это не гауссова форма.
+
+## Где это важно
+
+::: incremental
+- Максимальный шумовой всплеск.
+- Самый яркий пик в спектре.
+- Поиск bump в большом диапазоне масс.
+- Look-elsewhere effect.
+- Максимальное значение тестовой статистики по сетке гипотез.
+:::
+
+---
+
+# Пример 14. Мультипликативные процессы
+
+## Произведение случайных факторов
+
+Пусть
+$$
+Y=Y_0\prod_{i=1}^n A_i.
+$$
+
+Это не сумма, а произведение.
+
+Но логарифм превращает произведение в сумму:
+$$
+\ln Y=\ln Y_0+\sum_{i=1}^n \ln A_i.
+$$
+
+Если $\ln A_i$ удовлетворяют условиям ЦПТ, то
+$$
+\ln Y\approx \mathrm{N}(\mu,\sigma).
+$$
+
+## Логнормальное распределение
+
+Если
+$$
+\ln Y\sim \mathrm{N}(\mu,\sigma),
+$$
+то
+$$
+Y
+$$
+имеет логнормальное распределение:
+$$
+p(y)=\frac{1}{y\sigma\sqrt{2\pi}}
+\exp\left[-\frac{(\ln y-\mu)^2}{2\sigma^2}\right],
+\qquad y>0.
+$$
+
+::: {.callout-important .thmbox appearance="simple"}
+## Вывод
+
+ЦПТ может делать гауссовым не саму величину, а её логарифм.
+:::
+
+## Примеры
+
+::: incremental
+- Multiplicative gain fluctuations.
+- Произведение калибровочных коэффициентов.
+- Каскадные процессы.
+- Атмосферное ослабление.
+- Ошибки, естественно задаваемые в процентах.
+:::
+
+---
+
+# Пример 15. Случайная сумма случайных вкладов
+
+## Compound Poisson
+
+Пусть число вкладов само случайно:
+$$
+N\sim \mathrm{Poisson}(\lambda).
+$$
+
+И есть независимые вклады
+$$
+X_1,X_2,\dots
+$$
+
+Тогда
+$$
+S=\sum_{i=1}^N X_i
+$$
+имеет compound Poisson distribution.
+
+## Среднее и дисперсия
+
+Условно при фиксированном $N$:
+$$
+\mathbb{E}[S|N]=N\mathbb{E}[X],
+$$
+$$
+\mathrm{Var}(S|N)=N\mathrm{Var}(X).
+$$
+
+По формуле полного среднего:
+$$
+\mathbb{E}[S]=\mathbb{E}[N]\mathbb{E}[X]
+=\lambda\mu_X.
+$$
+
+## Полная дисперсия
+
+Используем
+$$
+\mathrm{Var}(S)=
+\mathbb{E}\left[\mathrm{Var}(S|N)\right]
++
+\mathrm{Var}\left(\mathbb{E}[S|N]\right).
+$$
+
+Тогда
+$$
+\mathrm{Var}(S)=
+\mathbb{E}[N\sigma_X^2]
++
+\mathrm{Var}(N\mu_X).
+$$
+
+Так как для Пуассона
+$$
+\mathbb{E}[N]=\lambda,
+\qquad
+\mathrm{Var}(N)=\lambda,
+$$
+получаем
+$$
+\boxed{
+\mathrm{Var}(S)=\lambda\sigma_X^2+
+\lambda\mu_X^2=
+\lambda\mathbb{E}[X^2].
+}
+$$
+
+## Физический смысл
+
+::: incremental
+- Флуктуирует размер отдельного вклада.
+- Флуктуирует число вкладов.
+- Поэтому полная дисперсия содержит оба источника.
+- При малом $\lambda$ форма не обязана быть гауссовой.
+:::
+
+## Интерактив: случайная сумма
+
+::: {.clt-widget}
+```{ojs}
+//| echo: false
+
+viewof lambdaComp = Inputs.range([0.2, 60], {value: 4.0, step: 0.2, label: "lambda"})
+viewof gainSigma = Inputs.range([0.05, 2.0], {value: 0.5, step: 0.05, label: "single-hit sigma"})
+viewof sampleComp = Inputs.range([1000, 40000], {value: 15000, step: 1000, label: "N samples"})
+viewof regenerateComp = Inputs.button("Новая статистика")
+
+poissonRandom = (lambda) => {
+  const L = Math.exp(-lambda);
+  let k = 0;
+  let p = 1;
+  do {
+    k += 1;
+    p *= Math.random();
+  } while (p > L);
+  return k - 1;
+}
+
+compValues = {
+  regenerateComp;
+  const values = new Array(sampleComp);
+  for (let i = 0; i < sampleComp; ++i) {
+    const n = poissonRandom(lambdaComp);
+    let s = 0;
+    for (let j = 0; j < n; ++j) s += 1 + gainSigma * randnCauchy();
+    values[i] = s;
+  }
+  return values;
+}
+
+compMean = lambdaComp
+compVar = lambdaComp * (1 + gainSigma * gainSigma)
+compSigma = Math.sqrt(compVar)
+compMax = Math.max(12, Math.ceil(compMean + 6 * compSigma))
+histComp = histogramCauchy(compValues, 100, 0, compMax)
+normalComp = Array.from({length: 401}, (_, i) => {
+  const x = 0 + compMax * i / 400;
+  return {x, y: Math.exp(-0.5 * (x - compMean) ** 2 / compVar) / Math.sqrt(2 * Math.PI * compVar)};
+})
+
+compPlot = Plot.plot({
+  width: 760,
+  height: 390,
+  marginLeft: 55,
+  x: {label: "S", domain: [0, compMax]},
+  y: {label: "density"},
+  grid: true,
+  marks: [
+    Plot.rectY(histComp, {x1: "x0", x2: "x1", y: "density", fill: "#4ea1ff", fillOpacity: 0.72, stroke: "white"}),
+    Plot.line(normalComp, {x: "x", y: "y", stroke: "#ffb347", strokeWidth: 2.7})
+  ]
+})
+
+html`
+<div class="clt-panel">
+  ${compPlot}
+  <div class="clt-summary">
+    <span>N ~ Poisson(lambda)</span>
+    <span>X_i ~ N(1, sigma)</span>
+    <span>lambda = ${lambdaComp.toFixed(1)}</span>
+  </div>
+</div>
+`
+```
+:::
+
+---
+
+# Пример 16. Неизвестная дисперсия: Student-t
+
+## Когда возникает распределение Стьюдента
+
+Пусть
+$$
+X_1,\dots,X_n\sim \mathrm{N}(\mu,\sigma)
+$$
+независимы.
+
+Если $\sigma$ известна, то
+$$
+Z=\frac{\bar X-\mu}{\sigma/\sqrt n}
+\sim \mathrm{N}(0,1).
+$$
+
+Но на практике $\sigma$ часто неизвестна.
+
+## Оценка дисперсии
+
+Используем выборочную дисперсию
+$$
+s^2=\frac{1}{n-1}\sum_{i=1}^n (X_i-\bar X)^2.
+$$
+
+Тогда статистика
+$$
+t=\frac{\bar X-\mu}{s/\sqrt n}
+$$
+имеет распределение Стьюдента с
+$$
+\nu=n-1
+$$
+степенями свободы.
+
+## Плотность Student-t
+
+Плотность равна
+$$
+f_\nu(t)=
+\frac{\Gamma\left(\frac{\nu+1}{2}\right)}
+{\sqrt{\nu\pi}\,\Gamma\left(\frac{\nu}{2}\right)}
+\left(1+\frac{t^2}{\nu}\right)^{-\frac{\nu+1}{2}}.
+$$
+
+::: incremental
+- При малом $\nu$ хвосты тяжелее, чем у гаусса.
+- При $\nu\to\infty$ распределение Стьюдента стремится к $\mathrm{N}(0,1)$.
+:::
+
+## Смысл
+
+Даже если исходные данные гауссовы, статистика анализа не обязана быть гауссовой.
+
+Причина:
+$$
+s
+$$
+тоже случайная величина.
+
+Мы делим случайное отклонение среднего на случайную оценку ширины.
+
+---
+
+# Пример 17. Нестационарность
+
+## Разные периоды набора данных
+
+Пусть данные набраны в разные run periods:
+$$
+r=1,2,\dots,R.
+$$
+
+В каждом периоде
+$$
+X|r\sim \mathrm{N}(\mu_r,\sigma_r^2).
+$$
+
+Если объединить все данные без учёта $r$, получаем смесь:
+$$
+p(x)=\sum_{r=1}^R w_r\,\mathrm{N}(x;\mu_r,\sigma_r^2).
+$$
+
+## Почему это опасно
+
+::: incremental
+- Среднее может дрейфовать во времени.
+- Gain может меняться от периода к периоду.
+- Фон может иметь сезонную или техническую структуру.
+- Условия триггера могут быть разными.
+- Разные калибровки могут создавать искусственные хвосты.
+:::
+
+## Диагностический принцип
+
+Перед тем как объявлять «негауссовые хвосты», нужно проверить stability plots:
+$$
+\hat\mu_r,
+\qquad
+\hat\sigma_r,
+\qquad
+\chi^2_r,
+\qquad
+\text{rate}_r.
+$$
+
+Негауссовость объединённой выборки может быть не свойством физики события, а следствием смешивания разных условий.
+
+---
+
+# Пример 18. Неправильная статистика
+
+## Не всё является суммой
+
+В анализе часто используют величины:
+$$
+\hat\theta,
+\qquad
+\chi^2_{\min},
+\qquad
+-2\ln\lambda,
+\qquad
+\hat s,
+\qquad
+\text{unfolded spectrum}.
+$$
+
+Они строятся из данных, но не являются простой суммой независимых одинаковых вкладов.
+
+## Пример: граница параметра
+
+Пусть параметр сигнала физически ограничен:
+$$
+s\ge 0.
+$$
+
+Если истинное значение близко к границе,
+распределение оценки $\hat s$ обычно асимметрично.
+
+Гауссова аппроксимация
+$$
+\hat s\sim \mathrm{N}(s,\sigma_s)
+$$
+может давать отрицательные значения сигнала.
+
+## Пример: профильное правдоподобие
+
+Статистика
+$$
+q(\theta)=-2\ln\frac{L(\theta,\hat{\hat\eta})}{L(\hat\theta,\hat\eta)}
+$$
+может иметь простые асимптотические распределения.
+
+Но эти асимптотики могут ломаться при:
+
+::: incremental
+- малой статистике;
+- границах параметров;
+- сильных nuisance parameters;
+- плохо идентифицируемых параметрах;
+- дискретных данных;
+- scan over many hypotheses.
+:::
+
+---
+
+# Сводная карта причин
+
+## Когда гаусс не надо ожидать
+
+| Механизм | Что нарушено | Типичный симптом |
+|---|---|---|
+| Коши | нет конечной дисперсии | среднее не стабилизируется |
+| тяжёлые хвосты | медленная асимптотика | редкие большие выбросы |
+| доминирующий вклад | нет малости вкладов | хвост задаётся одним механизмом |
+| корреляции | нет независимости | ошибка не падает как $1/\sqrt n$ |
+| смесь классов | разные $\mu_\theta,\sigma_\theta$ | асимметрия, хвосты, два пика |
+| нелинейность | не сумма, а $f(X)$ | асимметрия, границы |
+| малые счёты | дискретность и граница | Poisson вместо Gaussian |
+| cuts | условное распределение | сдвиг среднего и обрезанный хвост |
+
+## Практический алгоритм
+
+::: incremental
+- Сначала спросить: какая случайная величина реально суммируется?
+- Проверить: независимы ли вклады?
+- Проверить: конечна ли дисперсия и нет ли тяжёлых хвостов?
+- Проверить: нет ли скрытых классов событий?
+- Проверить: не применяем ли мы нелинейное преобразование?
+- Проверить: нет ли физических границ и порогов?
+- Если сомневаемся — строить likelihood или toy Monte Carlo, а не навязывать гаусс.
+:::
+
+## Главный вывод
+
+::: {.callout-important .thmbox appearance="simple"}
+## ЦПТ не отменяет физику детектора
+
+Гаусс возникает не потому, что данных много.
+
+Гаусс возникает, когда наблюдаемая величина действительно является суммой большого числа независимых малых вкладов с конечной дисперсией и без существенного скрытого смешивания.
+:::
+
+---
+
+# Задачи
+
+## 
+
+::: {.taskbox}
+### ✍️ <span class="tasknum">Задача 1.</span> Среднее распределения Коши
+
+Пусть
+$$
+X_i\sim \mathrm{Cauchy}(0,1)
+$$
+независимы.
+
+1. Покажите, что дисперсия $X_i$ не существует.
+2. Используя характеристическую функцию $\varphi_X(t)=e^{-|t|}$, покажите, что
+$$
+\bar X_n=\frac{1}{n}\sum_{i=1}^n X_i
+$$
+имеет то же распределение Коши.
+3. Объясните, почему это не противоречит ЦПТ.
+
+<div class="hint">
+<strong>Подсказка.</strong> Для суммы независимых величин характеристические функции перемножаются.
+</div>
+:::
+
+## 
+
+::: {.taskbox}
+### ✍️ <span class="tasknum">Задача 2.</span> Common-mode systematic
+
+Пусть
+$$
+X_i=\mu+C+\epsilon_i,
+$$
+где
+$$
+C\sim \mathrm{N}(0,\sigma_C^2),
+\qquad
+\epsilon_i\sim \mathrm{N}(0,\sigma_\epsilon^2)
+$$
+и все случайные величины независимы, кроме общего $C$.
+
+Найдите:
+
+1. $\mathbb{E}[\bar X]$;
+2. $\mathrm{Var}(\bar X)$;
+3. предел $\mathrm{Var}(\bar X)$ при $n\to\infty$;
+4. физический смысл результата.
+
+<div class="hint">
+<strong>Подсказка.</strong> Общий сдвиг $C$ входит в каждое измерение одинаково.
+</div>
+:::
+
+## 
+
+::: {.taskbox}
+### ✍️ <span class="tasknum">Задача 3.</span> Смесь двух гауссов
+
+Пусть
+$$
+X|A\sim \mathrm{N}(\mu_A,\sigma_A^2),
+\qquad
+X|B\sim \mathrm{N}(\mu_B,\sigma_B^2),
+$$
+а вероятность класса $A$ равна $w$.
+
+1. Запишите полную плотность $p(x)$.
+2. Найдите $\mathbb{E}[X]$.
+3. Найдите $\mathrm{Var}(X)$.
+4. При каких условиях смесь будет плохо похожа на один гаусс?
+
+<div class="hint">
+<strong>Подсказка.</strong> Используйте формулы полного среднего и полной дисперсии.
+</div>
+:::
+
+## 
+
+::: {.taskbox}
+### ✍️ <span class="tasknum">Задача 4.</span> Отношение гауссовых величин
+
+Пусть
+$$
+X,Y\sim \mathrm{N}(0,1)
+$$
+независимы и
+$$
+R=\frac{X}{Y}.
+$$
+
+1. Используя замену $X=RY$, выведите плотность $R$.
+2. Покажите, что $R$ имеет распределение Коши.
+3. Объясните, почему у $R$ нет конечной дисперсии.
+
+<div class="hint">
+<strong>Подсказка.</strong> Не забудьте якобиан $|Y|$.
+</div>
+:::
+
+## 
+
+::: {.taskbox}
+### ✍️ <span class="tasknum">Задача 5.</span> Порог отбора
+
+Пусть
+$$
+X\sim \mathrm{N}(0,1),
+$$
+но наблюдаются только события с
+$$
+X>1.
+$$
+
+1. Запишите условную плотность $p(x|X>1)$.
+2. Объясните, почему наблюдаемое распределение не является гауссовым.
+3. Объясните, почему среднее наблюдаемой выборки будет положительным.
+
+<div class="hint">
+<strong>Подсказка.</strong> Условная плотность нормируется на вероятность пройти отбор.
+</div>
+:::

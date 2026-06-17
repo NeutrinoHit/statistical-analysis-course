@@ -1,0 +1,1049 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ru-RU" xml:lang="ru-RU"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.37">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Дмитрий В. Наумов (ОИЯИ)">
+
+<title>Intrinsic resolution как смесь скрытых топологий</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="intrinsic_resolution_mixture_notes_files/libs/clipboard/clipboard.min.js"></script>
+<script src="intrinsic_resolution_mixture_notes_files/libs/quarto-html/quarto.js" type="module"></script>
+<script src="intrinsic_resolution_mixture_notes_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="intrinsic_resolution_mixture_notes_files/libs/quarto-html/popper.min.js"></script>
+<script src="intrinsic_resolution_mixture_notes_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="intrinsic_resolution_mixture_notes_files/libs/quarto-html/anchor.min.js"></script>
+<link href="intrinsic_resolution_mixture_notes_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="intrinsic_resolution_mixture_notes_files/libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="intrinsic_resolution_mixture_notes_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="intrinsic_resolution_mixture_notes_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="intrinsic_resolution_mixture_notes_files/libs/bootstrap/bootstrap-8ffd5f67044e5306d9846f29df41dda5.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="quarto-light">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Содержание</h2>
+   
+  <ul>
+  <li><a href="#статус-заметки" id="toc-статус-заметки" class="nav-link active" data-scroll-target="#статус-заметки"><span class="header-section-number">1</span> Статус заметки</a></li>
+  <li><a href="#отправная-точка-статья-смирнова" id="toc-отправная-точка-статья-смирнова" class="nav-link" data-scroll-target="#отправная-точка-статья-смирнова"><span class="header-section-number">2</span> Отправная точка: статья Смирнова</a></li>
+  <li><a href="#общая-вероятностная-формулировка" id="toc-общая-вероятностная-формулировка" class="nav-link" data-scroll-target="#общая-вероятностная-формулировка"><span class="header-section-number">3</span> Общая вероятностная формулировка</a></li>
+  <li><a href="#условный-гаусс-не-означает-безусловный-гаусс" id="toc-условный-гаусс-не-означает-безусловный-гаусс" class="nav-link" data-scroll-target="#условный-гаусс-не-означает-безусловный-гаусс"><span class="header-section-number">4</span> Условный гаусс не означает безусловный гаусс</a></li>
+  <li><a href="#главная-формула-полная-дисперсия" id="toc-главная-формула-полная-дисперсия" class="nav-link" data-scroll-target="#главная-формула-полная-дисперсия"><span class="header-section-number">5</span> Главная формула: полная дисперсия</a></li>
+  <li><a href="#связь-с-энергетическим-разрешением" id="toc-связь-с-энергетическим-разрешением" class="nav-link" data-scroll-target="#связь-с-энергетическим-разрешением"><span class="header-section-number">6</span> Связь с энергетическим разрешением</a></li>
+  <li><a href="#откуда-возникает-стандартный-вид" id="toc-откуда-возникает-стандартный-вид" class="nav-link" data-scroll-target="#откуда-возникает-стандартный-вид"><span class="header-section-number">7</span> Откуда возникает стандартный вид</a></li>
+  <li><a href="#масштабирование-смесевого-вклада" id="toc-масштабирование-смесевого-вклада" class="nav-link" data-scroll-target="#масштабирование-смесевого-вклада"><span class="header-section-number">8</span> Масштабирование смесевого вклада</a></li>
+  <li><a href="#модель-для-жидкого-сцинтиллятора" id="toc-модель-для-жидкого-сцинтиллятора" class="nav-link" data-scroll-target="#модель-для-жидкого-сцинтиллятора"><span class="header-section-number">9</span> Модель для жидкого сцинтиллятора</a></li>
+  <li><a href="#гамма-кванты-уже-близко-к-этой-идее" id="toc-гамма-кванты-уже-близко-к-этой-идее" class="nav-link" data-scroll-target="#гамма-кванты-уже-близко-к-этой-идее"><span class="header-section-number">10</span> Гамма-кванты: уже близко к этой идее</a></li>
+  <li><a href="#что-может-быть-новым" id="toc-что-может-быть-новым" class="nav-link" data-scroll-target="#что-может-быть-новым"><span class="header-section-number">11</span> Что может быть новым</a></li>
+  <li><a href="#как-это-можно-обнаружить" id="toc-как-это-можно-обнаружить" class="nav-link" data-scroll-target="#как-это-можно-обнаружить"><span class="header-section-number">12</span> Как это можно обнаружить</a>
+  <ul class="collapse">
+  <li><a href="#excess-variance" id="toc-excess-variance" class="nav-link" data-scroll-target="#excess-variance"><span class="header-section-number">12.1</span> 1. Excess variance</a></li>
+  <li><a href="#форма-распределения" id="toc-форма-распределения" class="nav-link" data-scroll-target="#форма-распределения"><span class="header-section-number">12.2</span> 2. Форма распределения</a></li>
+  <li><a href="#условное-сужение" id="toc-условное-сужение" class="nav-link" data-scroll-target="#условное-сужение"><span class="header-section-number">12.3</span> 3. Условное сужение</a></li>
+  <li><a href="#ковариации-между-частями-сигнала" id="toc-ковариации-между-частями-сигнала" class="nav-link" data-scroll-target="#ковариации-между-частями-сигнала"><span class="header-section-number">12.4</span> 4. Ковариации между частями сигнала</a></li>
+  </ul></li>
+  <li><a href="#почему-интересен-результат-для-протонов" id="toc-почему-интересен-результат-для-протонов" class="nav-link" data-scroll-target="#почему-интересен-результат-для-протонов"><span class="header-section-number">13</span> Почему интересен результат для протонов</a></li>
+  <li><a href="#связь-с-аналогией-эм-ливня" id="toc-связь-с-аналогией-эм-ливня" class="nav-link" data-scroll-target="#связь-с-аналогией-эм-ливня"><span class="header-section-number">14</span> Связь с аналогией ЭМ-ливня</a></li>
+  <li><a href="#что-обсудить-со-смирновым" id="toc-что-обсудить-со-смирновым" class="nav-link" data-scroll-target="#что-обсудить-со-смирновым"><span class="header-section-number">15</span> Что обсудить со Смирновым</a></li>
+  <li><a href="#возможный-экзаменационный-проект" id="toc-возможный-экзаменационный-проект" class="nav-link" data-scroll-target="#возможный-экзаменационный-проект"><span class="header-section-number">16</span> Возможный экзаменационный проект</a>
+  <ul class="collapse">
+  <li><a href="#название" id="toc-название" class="nav-link" data-scroll-target="#название"><span class="header-section-number">16.1</span> Название</a></li>
+  <li><a href="#идея" id="toc-идея" class="nav-link" data-scroll-target="#идея"><span class="header-section-number">16.2</span> Идея</a></li>
+  <li><a href="#модель" id="toc-модель" class="nav-link" data-scroll-target="#модель"><span class="header-section-number">16.3</span> Модель</a></li>
+  <li><a href="#что-сделать" id="toc-что-сделать" class="nav-link" data-scroll-target="#что-сделать"><span class="header-section-number">16.4</span> Что сделать</a></li>
+  <li><a href="#что-сдать" id="toc-что-сдать" class="nav-link" data-scroll-target="#что-сдать"><span class="header-section-number">16.5</span> Что сдать</a></li>
+  </ul></li>
+  <li><a href="#короткий-итог" id="toc-короткий-итог" class="nav-link" data-scroll-target="#короткий-итог"><span class="header-section-number">17</span> Короткий итог</a></li>
+  <li><a href="#ссылки" id="toc-ссылки" class="nav-link" data-scroll-target="#ссылки"><span class="header-section-number">18</span> Ссылки</a></li>
+  </ul>
+</nav>
+</div>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Intrinsic resolution как смесь скрытых топологий</h1>
+<p class="subtitle lead">Внутренние заметки</p>
+  <div class="quarto-categories">
+    <div class="quarto-category">Внутренние заметки</div>
+    <div class="quarto-category">Жидкий сцинтиллятор</div>
+    <div class="quarto-category">Energy resolution</div>
+    <div class="quarto-category">Intrinsic resolution</div>
+  </div>
+  </div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Автор</div>
+    <div class="quarto-title-meta-contents">
+             <p>Дмитрий В. Наумов (ОИЯИ) </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Дата публикации</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">13 июня 2026 г.</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="статус-заметки" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> Статус заметки</h1>
+<p>Это рабочая заметка для обсуждения с О. Смирновым и возможной формулировки экзаменационного проекта.</p>
+<p>Цель: аккуратно записать гипотезу, что часть intrinsic resolution в органических сцинтилляторах может быть описана как <strong>смесь условных распределений по скрытой микротопологии события</strong>.</p>
+<p>Основная идея не в том, что распределение обязательно сильно негауссово. Даже если условно на фиксированную микротопологию отклик почти гауссов, безусловное распределение может быть шире из-за разброса условных средних.</p>
+</section>
+<section id="отправная-точка-статья-смирнова" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> Отправная точка: статья Смирнова</h1>
+<p>Статья:</p>
+<pre class="text"><code>O. Smirnov,
+Intrinsic Resolution of Organic Scintillators,
+arXiv:2506.03208</code></pre>
+<p>В статье intrinsic resolution определяется как вклад флуктуаций производства фотонов в полное энергетическое разрешение сцинтилляционного детектора. Вводится феноменологическая модель, в которой excess variance производства фотонов масштабируется как</p>
+<p><span class="math display">\[
+v_{\rm int}(Q)=\frac{Q_1}{Q}\,v^{\rm int}_1,
+\]</span></p>
+<p>где <span class="math inline">\(Q_1\)</span> — средний заряд в фотоэлектронах для события с энерговыделением 1 MeV, а <span class="math inline">\(v^{\rm int}_1\)</span> — относительная дисперсия, соответствующая intrinsic resolution при 1 MeV.</p>
+<p>В области линейного световыхода</p>
+<p><span class="math display">\[
+Q\propto E,
+\]</span></p>
+<p>поэтому модель даёт</p>
+<p><span class="math display">\[
+v_{\rm int}(E)\propto \frac{1}{E}.
+\]</span></p>
+<p>Это феноменологически похоже на статистический член, но физически может иметь другой источник.</p>
+<p>Существенная фраза статьи: происхождение non-Gaussian deviations in photon production, responsible for IR, находится вне рамок работы. Поэтому есть место для более микрофизической постановки.</p>
+</section>
+<section id="общая-вероятностная-формулировка" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> Общая вероятностная формулировка</h1>
+<p>Пусть истинная энергия события фиксирована и равна <span class="math inline">\(E\)</span>.</p>
+<p>Обозначим через <span class="math inline">\(\theta\)</span> скрытые параметры события:</p>
+<div class="incremental">
+<ul class="incremental">
+<li>разложение энергии по вторичным электронам;</li>
+<li>тип и топологию взаимодействия;</li>
+<li>локальную плотность ионизации;</li>
+<li>вклад quenching;</li>
+<li>вклад Cherenkov light;</li>
+<li>пространственное распределение световыделения;</li>
+<li>оптические пути и локальные transfer probabilities.</li>
+</ul>
+</div>
+<p>Тогда полное распределение наблюдаемого заряда <span class="math inline">\(Q\)</span> имеет вид</p>
+<p><span class="math display">\[
+p(Q|E)=\int p(Q|E,\theta)\,p(\theta|E)\,d\theta.
+\]</span></p>
+<p>Это просто формула полной вероятности. В этом смысле это действительно байесовская структура: мы усредняем условное распределение по скрытым состояниям события.</p>
+</section>
+<section id="условный-гаусс-не-означает-безусловный-гаусс" class="level1" data-number="4">
+<h1 data-number="4"><span class="header-section-number">4</span> Условный гаусс не означает безусловный гаусс</h1>
+<p>Предположим, что при фиксированной скрытой топологии уже работает обычная статистика большого числа фотонов:</p>
+<p><span class="math display">\[
+Q|E,\theta
+\approx
+\mathrm N\!\left(m(E,\theta),v(E,\theta)\right).
+\]</span></p>
+<p>Тогда</p>
+<p><span class="math display">\[
+p(Q|E)
+=
+\int
+\mathrm N\!\left(Q;m(E,\theta),v(E,\theta)\right)
+p(\theta|E)\,d\theta.
+\]</span></p>
+<p>Это смесь гауссовых распределений.</p>
+<p>Если <span class="math inline">\(m(E,\theta)\)</span> зависит от <span class="math inline">\(\theta\)</span>, то итоговое распределение шире, чем среднее условное распределение.</p>
+</section>
+<section id="главная-формула-полная-дисперсия" class="level1" data-number="5">
+<h1 data-number="5"><span class="header-section-number">5</span> Главная формула: полная дисперсия</h1>
+<p>Из закона полной дисперсии:</p>
+<p><span class="math display">\[
+\boxed{
+\mathrm{Var}(Q|E)
+=
+\mathbb E_\theta\!\left[v(E,\theta)\right]
++
+\mathrm{Var}_\theta\!\left[m(E,\theta)\right].
+}
+\]</span></p>
+<p>Первый член — средняя условная ширина.</p>
+<p>Второй член — разброс условных средних.</p>
+<p>Именно второй член является естественным кандидатом на топологический или intrinsic contribution:</p>
+<p><span class="math display">\[
+\boxed{
+V_{\rm mix}(E)=\mathrm{Var}_\theta\!\left[m(E,\theta)\right].
+}
+\]</span></p>
+</section>
+<section id="связь-с-энергетическим-разрешением" class="level1" data-number="6">
+<h1 data-number="6"><span class="header-section-number">6</span> Связь с энергетическим разрешением</h1>
+<p>Пусть средний отклик</p>
+<p><span class="math display">\[
+\overline Q(E)=\mathbb E[Q|E].
+\]</span></p>
+<p>Тогда в первом порядке</p>
+<p><span class="math display">\[
+\sigma_E^2
+\approx
+\frac{\mathrm{Var}(Q|E)}{
+\left(d\overline Q/dE\right)^2
+}.
+\]</span></p>
+<p>Если отклик почти линейный,</p>
+<p><span class="math display">\[
+\overline Q(E)\simeq Y E,
+\]</span></p>
+<p>то</p>
+<p><span class="math display">\[
+\left(\frac{\sigma_E}{E}\right)^2
+\approx
+\frac{\mathrm{Var}(Q|E)}{Y^2E^2}.
+\]</span></p>
+<p>Подставляя полную дисперсию, получаем</p>
+<p><span class="math display">\[
+\boxed{
+\left(\frac{\sigma_E}{E}\right)^2
+\approx
+\frac{\mathbb E_\theta[v(E,\theta)]}{Y^2E^2}
++
+\frac{\mathrm{Var}_\theta[m(E,\theta)]}{Y^2E^2}.
+}
+\]</span></p>
+<p>Первый член содержит обычную фотонную статистику и электронику.</p>
+<p>Второй член содержит разброс средних между скрытыми топологиями.</p>
+</section>
+<section id="откуда-возникает-стандартный-вид" class="level1" data-number="7">
+<h1 data-number="7"><span class="header-section-number">7</span> Откуда возникает стандартный вид</h1>
+<p>Обычно разрешение параметризуют как</p>
+<p><span class="math display">\[
+\left(\frac{\sigma_E}{E}\right)^2
+=
+a+\frac{b}{E}+\frac{c}{E^2}+\cdots.
+\]</span></p>
+<p>Эта форма возникает, если дисперсия отклика допускает разложение</p>
+<p><span class="math display">\[
+\mathrm{Var}(Q|E)=A E^2+B E+C+\cdots.
+\]</span></p>
+<p>После деления на <span class="math inline">\(Y^2E^2\)</span> получаем</p>
+<p><span class="math display">\[
+\left(\frac{\sigma_E}{E}\right)^2
+=
+\frac{A}{Y^2}
++
+\frac{B}{Y^2E}
++
+\frac{C}{Y^2E^2}
++\cdots.
+\]</span></p>
+<p>Важно: такая зависимость сама по себе не доказывает наличие смеси. Разные физические механизмы могут давать одинаковую энергетическую зависимость.</p>
+</section>
+<section id="масштабирование-смесевого-вклада" class="level1" data-number="8">
+<h1 data-number="8"><span class="header-section-number">8</span> Масштабирование смесевого вклада</h1>
+<p>Смесевой вклад равен</p>
+<p><span class="math display">\[
+\left(\frac{\sigma_E}{E}\right)^2_{\rm mix}
+=
+\frac{\mathrm{Var}_\theta[m(E,\theta)]}{Y^2E^2}.
+\]</span></p>
+<p>Если</p>
+<p><span class="math display">\[
+m(E,\theta)=YE\,[1+\delta(\theta)],
+\]</span></p>
+<p>и <span class="math inline">\(\delta\)</span> почти не уменьшается с энергией, то</p>
+<p><span class="math display">\[
+\mathrm{Var}_\theta[m(E,\theta)]
+=Y^2E^2\,\mathrm{Var}(\delta),
+\]</span></p>
+<p>и возникает постоянный член</p>
+<p><span class="math display">\[
+\left(\frac{\sigma_E}{E}\right)^2_{\rm mix}
+=\mathrm{Var}(\delta).
+\]</span></p>
+<p>Если же скрытая топология состоит из большого числа почти независимых подструктур, число которых пропорционально энергии, то естественно</p>
+<p><span class="math display">\[
+\mathrm{Var}_\theta[m(E,\theta)]\propto E.
+\]</span></p>
+<p>Тогда</p>
+<p><span class="math display">\[
+\left(\frac{\sigma_E}{E}\right)^2_{\rm mix}
+\propto \frac{1}{E}.
+\]</span></p>
+<p>Такой вклад внешне имитирует фотонную статистику.</p>
+</section>
+<section id="модель-для-жидкого-сцинтиллятора" class="level1" data-number="9">
+<h1 data-number="9"><span class="header-section-number">9</span> Модель для жидкого сцинтиллятора</h1>
+<p>Пусть эффективный световой выход до фотонной статистики равен</p>
+<p><span class="math display">\[
+L(E,\theta).
+\]</span></p>
+<p>Тогда можно записать</p>
+<p><span class="math display">\[
+Q|E,\theta
+\approx
+\mathrm N\!\left(
+Y L(E,\theta),
+F Y L(E,\theta)+\sigma_{\rm el}^2
+\right),
+\]</span></p>
+<p>где <span class="math inline">\(Y\)</span> — коэффициент перевода светового выхода в фотоэлектроны, <span class="math inline">\(F\)</span> — эффективный фактор избыточной дисперсии, а <span class="math inline">\(\sigma_{\rm el}\)</span> — электронный шум.</p>
+<p>Тогда</p>
+<p><span class="math display">\[
+\mathbb E[Q|E]=Y\,\mathbb E_\theta[L(E,\theta)],
+\]</span></p>
+<p>и</p>
+<p><span class="math display">\[
+\mathrm{Var}(Q|E)
+=
+F Y\,\mathbb E_\theta[L(E,\theta)]
++Y^2\mathrm{Var}_\theta[L(E,\theta)]
++\sigma_{\rm el}^2.
+\]</span></p>
+<p>Отсюда</p>
+<p><span class="math display">\[
+\boxed{
+\left(\frac{\sigma_E}{E}\right)^2
+\approx
+\frac{F Y\,\mathbb E_\theta[L(E,\theta)]}{Y^2E^2}
++
+\frac{\mathrm{Var}_\theta[L(E,\theta)]}{E^2}
++
+\frac{\sigma_{\rm el}^2}{Y^2E^2}.
+}
+\]</span></p>
+<p>Если <span class="math inline">\(\mathbb E_\theta[L(E,\theta)]\simeq E\)</span>, то первый член даёт <span class="math inline">\(1/E\)</span>, а последний — <span class="math inline">\(1/E^2\)</span>.</p>
+<p>Смесевой член определяется величиной</p>
+<p><span class="math display">\[
+\boxed{
+\frac{\mathrm{Var}_\theta[L(E,\theta)]}{
+\left(\mathbb E_\theta[L(E,\theta)]\right)^2
+}.
+}
+\]</span></p>
+<p>Это естественная относительная дисперсия светового выхода по скрытой топологии события.</p>
+</section>
+<section id="гамма-кванты-уже-близко-к-этой-идее" class="level1" data-number="10">
+<h1 data-number="10"><span class="header-section-number">10</span> Гамма-кванты: уже близко к этой идее</h1>
+<p>Для <span class="math inline">\(\gamma\)</span>-кванта энергия распределяется между вторичными электронами:</p>
+<p><span class="math display">\[
+E=\sum_i E_i.
+\]</span></p>
+<p>При нелинейном световыходе</p>
+<p><span class="math display">\[
+L_\gamma(E,\theta)=\sum_i L_e(E_i),
+\]</span></p>
+<p>и вообще</p>
+<p><span class="math display">\[
+L_\gamma(E,\theta)\ne L_e(E).
+\]</span></p>
+<p>Поэтому разные Compton electron subdivision patterns при одной и той же полной энергии дают разные средние сигналы.</p>
+<p>Это приводит к дополнительной дисперсии</p>
+<p><span class="math display">\[
+\mathrm{Var}_\theta[L_\gamma(E,\theta)].
+\]</span></p>
+<p>В статье Смирнова аналогичный эффект уже фактически записан для гамма-квантов через вариацию среднего <span class="math inline">\(Q_\gamma\)</span> по возможным разложениям на Compton electrons. Это не просто фотонная статистика, а variance of conditional means.</p>
+</section>
+<section id="что-может-быть-новым" class="level1" data-number="11">
+<h1 data-number="11"><span class="header-section-number">11</span> Что может быть новым</h1>
+<p>Потенциально новая часть — не гамма-добавка сама по себе, а обобщение этой логики на intrinsic resolution электронов и на микрофизику сцинтилляции.</p>
+<p>Гипотеза:</p>
+<p><span class="math display">\[
+v_{\rm int}(E)
+\simeq
+\frac{\mathrm{Var}_\theta[L(E,\theta)]}{
+\left(\mathbb E_\theta[L(E,\theta)]\right)^2
+},
+\]</span></p>
+<p>где <span class="math inline">\(\theta\)</span> описывает не макроскопическую неоднородность детектора, а скрытую микротопологию энерговыделения и производства света.</p>
+<p>Если эта гипотеза верна, то <span class="math inline">\(v_{\rm int}\)</span> — не просто феноменологический excess variance, а измеримый след распределения скрытых средних светового выхода.</p>
+</section>
+<section id="как-это-можно-обнаружить" class="level1" data-number="12">
+<h1 data-number="12"><span class="header-section-number">12</span> Как это можно обнаружить</h1>
+<p>Одной зависимости</p>
+<p><span class="math display">\[
+\left(\frac{\sigma_E}{E}\right)^2
+=a+\frac{b}{E}+\frac{c}{E^2}
+\]</span></p>
+<p>недостаточно. Она не является уникальной сигнатурой смеси.</p>
+<p>Нужны дополнительные тесты.</p>
+<section id="excess-variance" class="level2" data-number="12.1">
+<h2 data-number="12.1" class="anchored" data-anchor-id="excess-variance"><span class="header-section-number">12.1</span> 1. Excess variance</h2>
+<p>Сначала вычесть известные вклады:</p>
+<p><span class="math display">\[
+V_{\rm excess}(E)
+=
+\mathrm{Var}_{\rm obs}(Q|E)
+-V_{\rm p.e.}(E)
+-V_{\rm SER}(E)
+-V_{\rm nonunif}(E)
+-V_{\rm source}(E).
+\]</span></p>
+<p>Если остаток положителен и воспроизводим, он является кандидатом на intrinsic/topology term.</p>
+</section>
+<section id="форма-распределения" class="level2" data-number="12.2">
+<h2 data-number="12.2" class="anchored" data-anchor-id="форма-распределения"><span class="header-section-number">12.2</span> 2. Форма распределения</h2>
+<p>Смесь условных гауссовых может иметь:</p>
+<div class="incremental">
+<ul class="incremental">
+<li>асимметрию;</li>
+<li>excess kurtosis;</li>
+<li>плечи;</li>
+<li>хвосты;</li>
+<li>зависимость формы от энергии.</li>
+</ul>
+</div>
+<p>Если ширина объясняется только статистикой фотоэлектронов, стандартизованная форма должна быть ближе к гауссовой.</p>
+<p>Если есть смесь средних, форма может оставаться негауссовой даже при большой фотонной статистике.</p>
+</section>
+<section id="условное-сужение" class="level2" data-number="12.3">
+<h2 data-number="12.3" class="anchored" data-anchor-id="условное-сужение"><span class="header-section-number">12.3</span> 3. Условное сужение</h2>
+<p>Если найден proxy для <span class="math inline">\(\theta\)</span>, то после условного разбиения событий ширина должна уменьшаться:</p>
+<p><span class="math display">\[
+\mathrm{Var}(Q|E)
+&gt;
+\mathbb E_z\!\left[\mathrm{Var}(Q|E,z)\right],
+\]</span></p>
+<p>где <span class="math inline">\(z\)</span> — наблюдаемый proxy скрытой топологии.</p>
+<p>Возможные proxy:</p>
+<div class="incremental">
+<ul class="incremental">
+<li>временной профиль света;</li>
+<li>доля раннего света;</li>
+<li>Cherenkov-like component;</li>
+<li>reconstructed topology;</li>
+<li>позиция события;</li>
+<li>разбиение сигнала по группам PMT;</li>
+<li>параметры pulse shape discrimination.</li>
+</ul>
+</div>
+</section>
+<section id="ковариации-между-частями-сигнала" class="level2" data-number="12.4">
+<h2 data-number="12.4" class="anchored" data-anchor-id="ковариации-между-частями-сигнала"><span class="header-section-number">12.4</span> 4. Ковариации между частями сигнала</h2>
+<p>Разделим сигнал на две почти независимые части:</p>
+<p><span class="math display">\[
+Q=Q_1+Q_2.
+\]</span></p>
+<p>Например, по двум группам PMT, по раннему и позднему свету или по двум независимым реконструкциям.</p>
+<p>Тогда</p>
+<p><span class="math display">\[
+\mathrm{Cov}(Q_1,Q_2|E)
+=
+\mathbb E_\theta[\mathrm{Cov}(Q_1,Q_2|E,\theta)]
++\mathrm{Cov}_\theta[m_1(E,\theta),m_2(E,\theta)].
+\]</span></p>
+<p>Чистая фотонная статистика в независимых каналах даёт малую ковариацию.</p>
+<p>Скрытая топология, меняющая общий средний световой выход, даёт положительную ковариацию.</p>
+<p>Это один из наиболее чистых диагностических тестов.</p>
+</section>
+</section>
+<section id="почему-интересен-результат-для-протонов" class="level1" data-number="13">
+<h1 data-number="13"><span class="header-section-number">13</span> Почему интересен результат для протонов</h1>
+<p>В статье отмечается, что intrinsic resolution для протонов совместим с нулём в рассмотренном анализе.</p>
+<p>Это может быть важным указанием.</p>
+<p>Если IR связан не с универсальным шумом сцинтиллятора, а с микротопологией энерговыделения, то разные частицы могут иметь разные intrinsic terms:</p>
+<p><span class="math display">\[
+v_{\rm int}^{(e)}(E)
+\ne
+v_{\rm int}^{(p)}(E)
+\ne
+v_{\rm int}^{(\gamma)}(E).
+\]</span></p>
+<p>Для протонов энерговыделение плотное и более локальное; для электронов и гамма-квантов есть более сложная структура вторичных электронов и нелинейного световыхода.</p>
+<p>Это не доказательство, но хорошее направление для проверки.</p>
+</section>
+<section id="связь-с-аналогией-эм-ливня" class="level1" data-number="14">
+<h1 data-number="14"><span class="header-section-number">14</span> Связь с аналогией ЭМ-ливня</h1>
+<p>Для электромагнитного ливня индивидуальный ливень может иметь относительно узкую форму при фиксированном начале.</p>
+<p>Но начало ливня флуктуирует из-за длины взаимодействия начального фотона.</p>
+<p>Если <span class="math inline">\(z_0\)</span> — скрытая глубина начала ливня, то</p>
+<p><span class="math display">\[
+p(X|E)=\int p(X|E,z_0)p(z_0|E)\,dz_0.
+\]</span></p>
+<p>И</p>
+<p><span class="math display">\[
+\mathrm{Var}(X|E)
+=\mathbb E_{z_0}[\mathrm{Var}(X|E,z_0)]
++\mathrm{Var}_{z_0}[\mathbb E(X|E,z_0)].
+\]</span></p>
+<p>Это тот же механизм: не только внутренняя ширина индивидуального процесса, но и разброс его условного положения или условного среднего.</p>
+</section>
+<section id="что-обсудить-со-смирновым" class="level1" data-number="15">
+<h1 data-number="15"><span class="header-section-number">15</span> Что обсудить со Смирновым</h1>
+<ol type="1">
+<li>Можно ли интерпретировать <span class="math inline">\(v^{\rm int}_1\)</span> как относительную дисперсию скрытых средних светового выхода?</li>
+</ol>
+<p><span class="math display">\[
+v^{\rm int}(E)
+\sim
+\frac{\mathrm{Var}_\theta[L(E,\theta)]}{
+\left(\mathbb E_\theta[L(E,\theta)]\right)^2
+}.
+\]</span></p>
+<ol start="2" type="1">
+<li><p>Есть ли event-level данные, где можно проверить форму распределения, а не только ширину линии?</p></li>
+<li><p>Можно ли разделить события по proxy-переменным: time profile, pulse shape, early/late light, PMT groups?</p></li>
+<li><p>Можно ли построить covariance test между частями сигнала?</p></li>
+<li><p>Можно ли сравнить электронные, гамма- и протонные данные в единой модели скрытой топологии?</p></li>
+<li><p>Можно ли проверить, действительно ли scaling <span class="math inline">\(v_{\rm int}\propto 1/E\)</span> следует из суммы большого числа независимых микротопологических вкладов?</p></li>
+<li><p>Какие систематики мешают больше всего: absolute p.e. calibration, SER variance, source width, nonuniformity, nonlinearity?</p></li>
+</ol>
+</section>
+<section id="возможный-экзаменационный-проект" class="level1" data-number="16">
+<h1 data-number="16"><span class="header-section-number">16</span> Возможный экзаменационный проект</h1>
+<section id="название" class="level2" data-number="16.1">
+<h2 data-number="16.1" class="anchored" data-anchor-id="название"><span class="header-section-number">16.1</span> Название</h2>
+<p>Intrinsic resolution как смесь условных распределений</p>
+</section>
+<section id="идея" class="level2" data-number="16.2">
+<h2 data-number="16.2" class="anchored" data-anchor-id="идея"><span class="header-section-number">16.2</span> Идея</h2>
+<p>Студент моделирует сцинтилляционный отклик как смесь гауссовых распределений по скрытой топологии события. Нужно показать, как дополнительная дисперсия возникает из разброса условных средних, и почему она может имитировать статистический член <span class="math inline">\(1/E\)</span>.</p>
+</section>
+<section id="модель" class="level2" data-number="16.3">
+<h2 data-number="16.3" class="anchored" data-anchor-id="модель"><span class="header-section-number">16.3</span> Модель</h2>
+<p><span class="math display">\[
+Q|E,\theta
+\sim
+\mathrm N\!\left(YL(E,\theta),FY L(E,\theta)+\sigma_{\rm el}^2\right),
+\]</span></p>
+<p><span class="math display">\[
+L(E,\theta)=E\,[1+\delta(E,\theta)].
+\]</span></p>
+<p>Рассмотреть несколько вариантов:</p>
+<p><span class="math display">\[
+\mathrm{Var}_\theta[L(E,\theta)]\propto E^2,
+\qquad
+\mathrm{Var}_\theta[L(E,\theta)]\propto E,
+\qquad
+\mathrm{Var}_\theta[L(E,\theta)]\propto 1.
+\]</span></p>
+</section>
+<section id="что-сделать" class="level2" data-number="16.4">
+<h2 data-number="16.4" class="anchored" data-anchor-id="что-сделать"><span class="header-section-number">16.4</span> Что сделать</h2>
+<ol type="1">
+<li>Сгенерировать toy MC для нескольких энергий.</li>
+<li>Построить распределения <span class="math inline">\(Q|E\)</span>.</li>
+<li>Разложить полную дисперсию на два вклада:</li>
+</ol>
+<p><span class="math display">\[
+\mathbb E_\theta[v(E,\theta)]
+\quad\text{и}\quad
+\mathrm{Var}_\theta[m(E,\theta)].
+\]</span></p>
+<ol start="4" type="1">
+<li>Получить зависимость</li>
+</ol>
+<p><span class="math display">\[
+\left(\frac{\sigma_E}{E}\right)^2
+\]</span></p>
+<p>от энергии.</p>
+<ol start="5" type="1">
+<li><p>Показать, когда смесевой вклад выглядит как <span class="math inline">\(a\)</span>, <span class="math inline">\(b/E\)</span> или <span class="math inline">\(c/E^2\)</span>.</p></li>
+<li><p>Проверить, можно ли обнаружить смесь по форме распределения и по ковариации двух частей сигнала.</p></li>
+</ol>
+</section>
+<section id="что-сдать" class="level2" data-number="16.5">
+<h2 data-number="16.5" class="anchored" data-anchor-id="что-сдать"><span class="header-section-number">16.5</span> Что сдать</h2>
+<pre class="text"><code>report.qmd
+slides.qmd
+src/analysis.py
+README.md</code></pre>
+</section>
+</section>
+<section id="короткий-итог" class="level1" data-number="17">
+<h1 data-number="17"><span class="header-section-number">17</span> Короткий итог</h1>
+<p>Феноменологическая модель Смирнова вводит intrinsic resolution как excess relative variance производства фотонов.</p>
+<p>Наша гипотеза: этот excess variance может иметь микрофизическую интерпретацию как variance of conditional means по скрытым топологиям события.</p>
+<p>Ключевая формула:</p>
+<p><span class="math display">\[
+\boxed{
+\mathrm{Var}(Q|E)
+=
+\mathbb E_\theta[\mathrm{Var}(Q|E,\theta)]
++
+\mathrm{Var}_\theta[\mathbb E(Q|E,\theta)].
+}
+\]</span></p>
+<p>Если второй член не равен нулю, то даже условно-гауссовые события дают дополнительное разрешение.</p>
+<p>Это не доказывается одной зависимостью <span class="math inline">\(1/E\)</span>. Нужны дополнительные признаки: excess variance, форма линии, условное сужение и ковариации между частями сигнала.</p>
+</section>
+<section id="ссылки" class="level1" data-number="18">
+<h1 data-number="18"><span class="header-section-number">18</span> Ссылки</h1>
+<ul>
+<li>O. Smirnov, <em>Intrinsic Resolution of Organic Scintillators</em>, arXiv:2506.03208.</li>
+</ul>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Скопировано");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Скопировано");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

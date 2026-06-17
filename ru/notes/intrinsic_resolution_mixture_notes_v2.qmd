@@ -1,0 +1,955 @@
+---
+title: "Intrinsic resolution as a mixture problem"
+subtitle: "Hidden event structure and excess variance in liquid scintillator response"
+author: "Dmitry V. Naumov (JINR)"
+date: today
+categories:
+  - Внутренние заметки
+  - liquid scintillator
+  - energy resolution
+  - statistical model
+jupyter: python3
+lang: en-US
+format:
+  html:
+    toc: true
+    number-sections: true
+    code-fold: true
+    code-summary: "Show code"
+  pdf:
+    pdf-engine: lualatex
+    toc: true
+    number-sections: true  
+execute:
+  echo: true
+  warning: false
+  message: false
+---
+
+# Purpose
+
+The purpose of this note is to formulate a minimal statistical model for intrinsic energy-resolution effects in a liquid scintillator.
+
+The central idea is simple. At fixed deposited energy, the detector response may be a mixture of conditional response distributions. Each conditional distribution corresponds to a hidden microscopic event structure: a particular subdivision of the deposited energy among secondary electrons, a particular ionization-density pattern, a particular Cherenkov contribution, a particular local quenching history, and so on.
+
+Even if every conditional distribution is approximately Gaussian, the unconditional distribution does not have to be a single Gaussian. It is a mixture. The mixture may still look nearly Gaussian in its central region, but it carries an additional variance from the spread of conditional means.
+
+This note develops this statement from definitions.
+
+# Random variables and notation
+
+Let
+
+$$
+E
+$$
+
+denote the true deposited energy. In this note, we consider a fixed value of $E$.
+
+Let
+
+$$
+Q
+$$
+
+denote the measured detector response. It may be the total number of produced scintillation photons, the number of detected photoelectrons, or a reconstructed charge. The exact choice must be specified in a concrete application.
+
+Let
+
+$$
+\theta
+$$
+
+denote a hidden event variable. It is not directly observed, but it affects the response. Examples are:
+
+- the energies of secondary electrons produced by a gamma ray;
+- the spatial topology of the ionization pattern;
+- local ionization density and quenching;
+- the relative Cherenkov contribution;
+- microscopic excitation and energy-transfer paths in the scintillator.
+
+The conditional probability density of $Q$ at fixed $E$ and fixed $\theta$ is written as
+
+$$
+p(Q|E,\theta).
+$$
+
+The probability density of hidden event structures at fixed energy is written as
+
+$$
+p(\theta|E).
+$$
+
+The observed response density at fixed $E$ is therefore
+
+$$
+\boxed{
+p(Q|E)=\int p(Q|E,\theta)\,p(\theta|E)\,d\theta.
+}
+$$
+
+For a discrete set of hidden classes this becomes
+
+$$
+\boxed{
+p(Q|E)=\sum_k w_k(E)\,p(Q|E,\theta_k),
+\qquad
+\sum_k w_k(E)=1.
+}
+$$
+
+This is a mixture distribution.
+
+# Meaning of $\mathbb E_\theta$ and $\mathrm{Var}_\theta$
+
+The symbol
+
+$$
+\mathbb E_\theta[\cdots]
+$$
+
+means averaging only over the hidden variable $\theta$, with $E$ fixed.
+
+For any function $g(E,\theta)$,
+
+$$
+\boxed{
+\mathbb E_\theta[g(E,\theta)]
+=
+\int g(E,\theta)\,p(\theta|E)\,d\theta.
+}
+$$
+
+For a discrete set of hidden classes,
+
+$$
+\boxed{
+\mathbb E_\theta[g(E,\theta)]
+=
+\sum_k w_k(E)\,g(E,\theta_k).
+}
+$$
+
+The symbol
+
+$$
+\mathrm{Var}_\theta[g(E,\theta)]
+$$
+
+means the variance of $g(E,\theta)$ with respect to the hidden variable $\theta$ only, again at fixed $E$:
+
+$$
+\boxed{
+\mathrm{Var}_\theta[g(E,\theta)]
+=
+\mathbb E_\theta\left[
+\left(g(E,\theta)-\mathbb E_\theta[g(E,\theta)]\right)^2
+\right].
+}
+$$
+
+Equivalently,
+
+$$
+\boxed{
+\mathrm{Var}_\theta[g]
+=
+\mathbb E_\theta[g^2]-\left(\mathbb E_\theta[g]\right)^2.
+}
+$$
+
+This notation is useful because it separates two sources of randomness:
+
+1. fluctuations of $Q$ at fixed hidden structure $\theta$;
+2. fluctuations of the hidden structure $\theta$ itself from event to event.
+
+# Conditional mean and conditional variance
+
+Define the conditional mean response
+
+$$
+\boxed{
+m(E,\theta)=\mathbb E[Q|E,\theta].
+}
+$$
+
+Define the conditional variance
+
+$$
+\boxed{
+v(E,\theta)=\mathrm{Var}(Q|E,\theta).
+}
+$$
+
+Here the expectation and variance are taken over the response fluctuations at fixed $E$ and fixed $\theta$.
+
+For example, if at fixed $\theta$ the detected signal is dominated by photon counting statistics, one may have approximately
+
+$$
+v(E,\theta)\simeq F\,m(E,\theta),
+$$
+
+where $F$ is an effective excess-noise factor. In the ideal Poisson case, $F=1$.
+
+# The mixture of conditional Gaussians
+
+A useful limiting model is
+
+$$
+\boxed{
+Q|E,\theta
+\sim
+\mathrm N\left(m(E,\theta),v(E,\theta)\right).
+}
+$$
+
+Then
+
+$$
+\boxed{
+p(Q|E)
+=
+\int p(\theta|E)\,
+\mathrm N\left(Q;m(E,\theta),v(E,\theta)\right)d\theta.
+}
+$$
+
+This is a mixture of Gaussians.
+
+It is important that a mixture of Gaussians is not generally a Gaussian. It can be wider, asymmetric, heavy-tailed, or even multi-peaked. However, if the distribution of conditional means is itself close to Gaussian and the conditional variances are nearly constant, the mixture may look very similar to a single Gaussian.
+
+Therefore, a nearly Gaussian line shape does not prove that only one response mechanism is present.
+
+# Derivation of the variance formula
+
+The unconditional mean response at fixed $E$ is
+
+$$
+\bar Q(E)=\mathbb E[Q|E].
+$$
+
+Using the mixture formula,
+
+$$
+\begin{aligned}
+\bar Q(E)
+&=\int d\theta\,p(\theta|E)
+\int dQ\,Q\,p(Q|E,\theta)\\
+&=\int d\theta\,p(\theta|E)\,m(E,\theta).
+\end{aligned}
+$$
+
+Hence
+
+$$
+\boxed{
+\bar Q(E)=\mathbb E_\theta[m(E,\theta)].
+}
+$$
+
+Now compute the variance:
+
+$$
+\mathrm{Var}(Q|E)
+=
+\mathbb E\left[(Q-\bar Q)^2\middle|E\right].
+$$
+
+Insert and subtract the conditional mean $m(E,\theta)$:
+
+$$
+Q-\bar Q
+=
+\left(Q-m(E,\theta)\right)
++
+\left(m(E,\theta)-\bar Q\right).
+$$
+
+Squaring and averaging gives
+
+$$
+\begin{aligned}
+\mathrm{Var}(Q|E)
+&=\mathbb E\left[(Q-m)^2|E\right]
++\mathbb E\left[(m-\bar Q)^2|E\right]\\
+&\quad+2\mathbb E\left[(Q-m)(m-\bar Q)|E\right].
+\end{aligned}
+$$
+
+The cross term is zero because, at fixed $\theta$,
+
+$$
+\mathbb E[Q-m(E,\theta)|E,\theta]=0.
+$$
+
+Therefore,
+
+$$
+\boxed{
+\mathrm{Var}(Q|E)
+=
+\mathbb E_\theta[v(E,\theta)]
++
+\mathrm{Var}_\theta[m(E,\theta)].
+}
+$$
+
+This is the key formula.
+
+The first term is the average width of the conditional response distributions. The second term is the variance of their centers. The second term exists even when every conditional distribution is narrow.
+
+# Interpretation of the two variance terms
+
+The first term,
+
+$$
+\mathbb E_\theta[v(E,\theta)],
+$$
+
+contains ordinary event-by-event fluctuations at fixed hidden structure. Examples are photon counting statistics, single-photoelectron response fluctuations, and electronics noise.
+
+The second term,
+
+$$
+\mathrm{Var}_\theta[m(E,\theta)],
+$$
+
+is different. It is not a fluctuation around a fixed mean. It is the spread of the mean response from one hidden event structure to another.
+
+This is the same statistical mechanism as in a mixture of lines: each subpopulation has its own center, and the total line is broader than the individual lines.
+
+# From response variance to energy resolution
+
+Suppose the reconstructed energy is obtained from the mean response curve
+
+$$
+\bar Q(E)=\mathbb E[Q|E].
+$$
+
+For small fluctuations, error propagation gives
+
+$$
+\sigma_E^2
+\simeq
+\frac{\mathrm{Var}(Q|E)}{
+\left(d\bar Q/dE\right)^2
+}.
+$$
+
+Therefore,
+
+$$
+\boxed{
+\left(\frac{\sigma_E}{E}\right)^2
+\simeq
+\frac{
+\mathbb E_\theta[v(E,\theta)]
++
+\mathrm{Var}_\theta[m(E,\theta)]
+}{
+E^2\left(d\bar Q/dE\right)^2
+}.
+}
+$$
+
+If the response is approximately linear,
+
+$$
+\bar Q(E)\simeq Y E,
+$$
+
+then
+
+$$
+\frac{d\bar Q}{dE}\simeq Y,
+$$
+
+and
+
+$$
+\boxed{
+\left(\frac{\sigma_E}{E}\right)^2
+\simeq
+\frac{
+\mathbb E_\theta[v(E,\theta)]
++
+\mathrm{Var}_\theta[m(E,\theta)]
+}{Y^2E^2}.
+}
+$$
+
+# How the usual resolution form appears
+
+The usual phenomenological form is
+
+$$
+\boxed{
+\left(\frac{\sigma_E}{E}\right)^2
+=
+a+\frac{b}{E}+\frac{c}{E^2}+\cdots.
+}
+$$
+
+This form follows if the response variance admits an expansion
+
+$$
+\boxed{
+\mathrm{Var}(Q|E)
+=
+A E^2+B E+C+\cdots.
+}
+$$
+
+Indeed, for an approximately linear response $\bar Q(E)\simeq YE$,
+
+$$
+\left(\frac{\sigma_E}{E}\right)^2
+\simeq
+\frac{A E^2+B E+C+\cdots}{Y^2E^2}.
+$$
+
+Thus
+
+$$
+\boxed{
+a=\frac{A}{Y^2},
+\qquad
+b=\frac{B}{Y^2},
+\qquad
+c=\frac{C}{Y^2}.
+}
+$$
+
+The question is not whether such an expansion can be written. The question is which physical mechanism contributes to each coefficient.
+
+# Scaling of the mixture contribution
+
+The mixture contribution is
+
+$$
+\boxed{
+\left(\frac{\sigma_E}{E}\right)^2_\text{mix}
+=
+\frac{\mathrm{Var}_\theta[m(E,\theta)]}{Y^2E^2}
+}
+$$
+
+for a nearly linear response.
+
+Different scalings of $m(E,\theta)$ give different resolution terms.
+
+If
+
+$$
+m(E,\theta)=YE\,[1+\delta(\theta)],
+$$
+
+and the relative hidden response variation $\delta(\theta)$ does not decrease with energy, then
+
+$$
+\mathrm{Var}_\theta[m(E,\theta)]
+=Y^2E^2\,\mathrm{Var}_\theta[\delta].
+$$
+
+Hence
+
+$$
+\boxed{
+\left(\frac{\sigma_E}{E}\right)^2_\text{mix}
+=\mathrm{Var}_\theta[\delta].
+}
+$$
+
+This is a constant term.
+
+If instead the hidden structure consists of many almost independent substructures and their number is proportional to $E$, then a natural scaling is
+
+$$
+\mathrm{Var}_\theta[m(E,\theta)]\propto E.
+$$
+
+Then
+
+$$
+\boxed{
+\left(\frac{\sigma_E}{E}\right)^2_\text{mix}\propto \frac{1}{E}.
+}
+$$
+
+This contribution has the same energy dependence as photon counting statistics. It cannot be separated from photon statistics using the energy dependence alone.
+
+If
+
+$$
+m(E,\theta)=YE+A(\theta),
+$$
+
+with an energy-independent additive hidden offset, then
+
+$$
+\mathrm{Var}_\theta[m(E,\theta)]\simeq \mathrm{const},
+$$
+
+and therefore
+
+$$
+\boxed{
+\left(\frac{\sigma_E}{E}\right)^2_\text{mix}\propto \frac{1}{E^2}.
+}
+$$
+
+This looks like a noise term.
+
+# A simple liquid-scintillator model
+
+Consider a gamma ray of fixed energy $E$ in a liquid scintillator. The gamma ray deposits energy through secondary electrons:
+
+$$
+E=\sum_{a=1}^{M} E_a.
+$$
+
+The hidden variable can be taken as
+
+$$
+\theta=\{M,E_1,E_2,\dots,E_M,\text{topology}\}.
+$$
+
+Let
+
+$$
+L_e(E_a)
+$$
+
+denote the mean scintillation light produced by an electron of energy $E_a$.
+
+Because of nonlinearity and quenching,
+
+$$
+L_e(E_a)
+$$
+
+need not be proportional to $E_a$.
+
+The total mean scintillation light for a fixed hidden topology is then
+
+$$
+\boxed{
+L(E,\theta)=\sum_{a=1}^{M}L_e(E_a).
+}
+$$
+
+In general,
+
+$$
+\boxed{
+L(E,\theta)\ne L_e(E).
+}
+$$
+
+Thus two gamma events with the same total energy $E$ can have different conditional mean light yields.
+
+Let $Y$ denote the detection factor converting produced light into measured charge or photoelectrons. Then
+
+$$
+m(E,\theta)=Y L(E,\theta).
+$$
+
+If photon counting dominates the conditional variance, then
+
+$$
+v(E,\theta)\simeq F Y L(E,\theta)+\sigma_\text{el}^2,
+$$
+
+where $F$ is an effective excess-noise factor and $\sigma_\text{el}^2$ is the electronics-noise variance in the same units as $Q^2$.
+
+Then
+
+$$
+\begin{aligned}
+\mathrm{Var}(Q|E)
+&=\mathbb E_\theta[v(E,\theta)]
++\mathrm{Var}_\theta[m(E,\theta)]\\
+&\simeq
+F Y\,\mathbb E_\theta[L(E,\theta)]
++\sigma_\text{el}^2
++Y^2\mathrm{Var}_\theta[L(E,\theta)].
+\end{aligned}
+$$
+
+The corresponding relative energy-resolution contribution is approximately
+
+$$
+\boxed{
+\left(\frac{\sigma_E}{E}\right)^2
+\simeq
+\frac{F}{Y_\text{eff}E}
++
+\frac{\mathrm{Var}_\theta[L(E,\theta)]}
+{\left(\mathbb E_\theta[L(E,\theta)]\right)^2}
++
+\frac{\sigma_\text{el}^2}{Y_\text{eff}^2E^2}.
+}
+$$
+
+Here $Y_\text{eff}$ is the effective detected light yield per unit deposited energy near the energy of interest.
+
+The middle term is the hidden-topology contribution:
+
+$$
+\boxed{
+\left(\frac{\sigma_E}{E}\right)^2_\text{topology}
+=
+\frac{\mathrm{Var}_\theta[L(E,\theta)]}
+{\left(\mathbb E_\theta[L(E,\theta)]\right)^2}.
+}
+$$
+
+This term is not photon counting statistics. It exists because different hidden event topologies have different conditional mean light yields.
+
+# Higher moments as a diagnostic
+
+Variance alone is not enough to identify a mixture. A mixture contribution can increase the variance while preserving an almost Gaussian central shape.
+
+Higher central moments are therefore useful. Define
+
+$$
+\mu_r(E)=\mathbb E\left[(Q-\bar Q)^r|E\right].
+$$
+
+The skewness is
+
+$$
+\boxed{
+\gamma_1=\frac{\mu_3}{\mu_2^{3/2}}.
+}
+$$
+
+The excess kurtosis is
+
+$$
+\boxed{
+\gamma_2=\frac{\mu_4}{\mu_2^2}-3.
+}
+$$
+
+For an exact Gaussian distribution,
+
+$$
+\gamma_1=0,
+\qquad
+\gamma_2=0.
+$$
+
+A mixture can have nonzero skewness or nonzero excess kurtosis even if each conditional distribution is Gaussian.
+
+# Higher moments for a Gaussian mixture
+
+Assume
+
+$$
+Q|\theta\sim \mathrm N(m_\theta,v_\theta),
+$$
+
+where the fixed energy $E$ is omitted from the notation.
+
+Let
+
+$$
+\bar Q=\mathbb E_\theta[m_\theta],
+\qquad
+\Delta_\theta=m_\theta-\bar Q.
+$$
+
+Then the second central moment is
+
+$$
+\boxed{
+\mu_2=\mathbb E_\theta[v_\theta]+\mathbb E_\theta[\Delta_\theta^2].
+}
+$$
+
+The third central moment is
+
+$$
+\boxed{
+\mu_3=
+\mathbb E_\theta[\Delta_\theta^3]
++3\mathbb E_\theta[\Delta_\theta v_\theta].
+}
+$$
+
+The fourth central moment is
+
+$$
+\boxed{
+\mu_4=
+\mathbb E_\theta[\Delta_\theta^4]
++6\mathbb E_\theta[\Delta_\theta^2v_\theta]
++3\mathbb E_\theta[v_\theta^2].
+}
+$$
+
+These formulas show exactly where hidden structure enters the line shape.
+
+If all conditional variances are equal,
+
+$$
+v_\theta=v,
+$$
+
+then
+
+$$
+\mu_3=\mathbb E_\theta[\Delta_\theta^3],
+$$
+
+and
+
+$$
+\mu_4=\mathbb E_\theta[\Delta_\theta^4]
++6v\mathbb E_\theta[\Delta_\theta^2]
++3v^2.
+$$
+
+Thus the skewness and excess kurtosis directly probe the distribution of conditional means.
+
+There is an important caveat. If the distribution of conditional means is itself exactly Gaussian and $v_\theta$ is constant, then the mixture is exactly Gaussian with a larger variance. In that special case, higher moments do not reveal the mixture. One must then use conditional information, event-shape variables, or independent partitions of the signal.
+
+# Two-component Gaussian mixture
+
+A minimal example is a two-component mixture:
+
+$$
+Q|\theta=1\sim \mathrm N(m_1,v),
+\qquad
+Q|\theta=2\sim \mathrm N(m_2,v),
+$$
+
+with
+
+$$
+P(\theta=1)=w,
+\qquad
+P(\theta=2)=1-w.
+$$
+
+Let
+
+$$
+\delta=m_2-m_1.
+$$
+
+The mean is
+
+$$
+\boxed{
+\bar Q=w m_1+(1-w)m_2.
+}
+$$
+
+The variance is
+
+$$
+\boxed{
+\mu_2=v+w(1-w)\delta^2.
+}
+$$
+
+The third central moment is
+
+$$
+\boxed{
+\mu_3=w(1-w)(2w-1)\delta^3.
+}
+$$
+
+The fourth central moment is
+
+$$
+\boxed{
+\mu_4=3v^2+6v w(1-w)\delta^2
++w(1-w)\left[(1-w)^3+w^3\right]\delta^4.
+}
+$$
+
+Therefore,
+
+$$
+\boxed{
+\gamma_1=
+\frac{w(1-w)(2w-1)\delta^3}
+{\left[v+w(1-w)\delta^2\right]^{3/2}}.
+}
+$$
+
+and
+
+$$
+\boxed{
+\gamma_2=
+\frac{
+3v^2+6v w(1-w)\delta^2
++w(1-w)\left[(1-w)^3+w^3\right]\delta^4
+}{
+\left[v+w(1-w)\delta^2\right]^2
+}-3.
+}
+$$
+
+This example is useful because it shows that the variance excess can be present even when the skewness is zero. For $w=1/2$, the mixture is symmetric and $\gamma_1=0$, but its kurtosis is generally not Gaussian.
+
+# Numerical illustration of moments
+
+The following code computes the variance, skewness, and excess kurtosis of a two-component Gaussian mixture.
+
+```{python}
+#| label: mixture-moments
+#| fig-cap: "Skewness and excess kurtosis of a two-component Gaussian mixture."
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+
+def mixture_moments(w, delta, v=1.0):
+    mu2 = v + w * (1 - w) * delta**2
+    mu3 = w * (1 - w) * (2 * w - 1) * delta**3
+    mu4 = (
+        3 * v**2
+        + 6 * v * w * (1 - w) * delta**2
+        + w * (1 - w) * ((1 - w)**3 + w**3) * delta**4
+    )
+    skew = mu3 / mu2**1.5
+    excess = mu4 / mu2**2 - 3
+    return mu2, skew, excess
+
+
+delta = np.linspace(0.0, 6.0, 300)
+weights = [0.5, 0.3, 0.1]
+
+plt.figure(figsize=(7, 4))
+for w in weights:
+    skew = np.array([mixture_moments(w, d)[1] for d in delta])
+    plt.plot(delta, skew, label=f"w = {w}")
+plt.axhline(0, linewidth=0.8)
+plt.xlabel(r"separation $\delta/\sqrt{v}$")
+plt.ylabel(r"skewness $\gamma_1$")
+plt.legend()
+plt.tight_layout()
+plt.show()
+
+plt.figure(figsize=(7, 4))
+for w in weights:
+    excess = np.array([mixture_moments(w, d)[2] for d in delta])
+    plt.plot(delta, excess, label=f"w = {w}")
+plt.axhline(0, linewidth=0.8)
+plt.xlabel(r"separation $\delta/\sqrt{v}$")
+plt.ylabel(r"excess kurtosis $\gamma_2$")
+plt.legend()
+plt.tight_layout()
+plt.show()
+```
+
+The main lesson is not that every mixture must show large higher moments. The lesson is more precise:
+
+1. variance excess is the first signature;
+2. skewness and excess kurtosis can reveal non-Gaussian hidden structure;
+3. symmetric mixtures may have zero skewness;
+4. a continuous Gaussian distribution of hidden means can produce an exactly Gaussian observed distribution with enlarged variance.
+
+# Practical diagnostics
+
+The mixture hypothesis should be tested by more than one observable.
+
+First, compare the measured variance with the expected conditional variance:
+
+$$
+\boxed{
+\mathrm{Var}_\text{excess}(Q|E)
+=
+\mathrm{Var}(Q|E)-\mathbb E_\theta[v(E,\theta)].
+}
+$$
+
+If the model for photon counting statistics, single-photoelectron response, and electronics noise is reliable, a positive excess variance is evidence for hidden response variability.
+
+Second, measure higher moments of the line shape:
+
+$$
+\gamma_1(E),
+\qquad
+\gamma_2(E).
+$$
+
+Their energy dependence may distinguish different hidden mechanisms.
+
+Third, condition on proxy variables for $\theta$. Examples are event position, time profile, reconstructed topology, early-light fraction, Cherenkov-sensitive observables, and pulse-shape variables.
+
+If the line becomes narrower after conditioning on such variables, this supports the mixture interpretation.
+
+Fourth, split the signal into two statistically independent or weakly correlated parts, for example two groups of photodetectors or early and late light. Let these partial signals be
+
+$$
+Q_1,
+\qquad
+Q_2.
+$$
+
+Then
+
+$$
+\boxed{
+\mathrm{Cov}(Q_1,Q_2|E)
+=
+\mathbb E_\theta[\mathrm{Cov}(Q_1,Q_2|E,\theta)]
++
+\mathrm{Cov}_\theta[m_1(E,\theta),m_2(E,\theta)].
+}
+$$
+
+A hidden topology that changes the mean response in both partitions creates a covariance contribution. Pure independent photon counting does not.
+
+# Relation to Smirnov's paper
+
+Reference:
+
+O. Smirnov, *Intrinsic Resolution of Organic Scintillators*, arXiv:2506.03208.
+
+The paper analyzes intrinsic-resolution data for organic scintillators. It uses a phenomenological intrinsic-resolution contribution that scales approximately as
+
+$$
+v_\text{int}(Q)=\frac{Q_1}{Q}v^\text{int}_1,
+$$
+
+where $Q$ is the measured signal, $Q_1$ is the signal corresponding to 1 MeV, and $v^\text{int}_1$ is the intrinsic-resolution variance contribution at 1 MeV.
+
+The paper also discusses several experimental systematics. The following abbreviations are useful:
+
+- PMT: photomultiplier tube;
+- p.e.: photoelectron;
+- single-photoelectron response: the distribution of PMT output charge produced by one detected photoelectron;
+- SER: single-electron response or single-photoelectron response, depending on convention; in this context it means the PMT response to one photoelectron;
+- FWHM: full width at half maximum;
+- LY: light yield, usually measured in photoelectrons per MeV;
+- WACC: wide-angle Compton coincidence, a technique for selecting Compton-scattered electrons of known energy;
+- IR: intrinsic resolution, the part of the energy resolution attributed to fluctuations in photon production in the scintillator rather than to photon counting statistics or electronics.
+
+The present note asks a more microscopic question: can the intrinsic-resolution term be interpreted as
+
+$$
+\frac{\mathrm{Var}_\theta[m(E,\theta)]}{\bar Q(E)^2}
+$$
+
+or, in a light-yield model,
+
+$$
+\frac{\mathrm{Var}_\theta[L(E,\theta)]}{\left(\mathbb E_\theta[L(E,\theta)]\right)^2}?
+$$
+
+Concrete questions for discussion are:
+
+1. Which hidden variable $\theta$ is most plausible for electrons in liquid scintillator: energy-transfer paths, ionization-density structure, microscopic quenching fluctuations, Cherenkov admixture, or another mechanism?
+2. Does the measured intrinsic-resolution term scale as $1/E$ because $\mathrm{Var}_\theta[m(E,\theta)]\propto E$?
+3. Can existing measurements provide skewness or excess kurtosis of the response lines, not only their widths?
+4. Can the intrinsic-resolution contribution be reduced by conditioning on pulse-shape or time-profile observables?
+5. Can the covariance of independent signal partitions separate photon counting statistics from hidden-topology variance?
+
