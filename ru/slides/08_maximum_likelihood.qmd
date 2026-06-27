@@ -1,0 +1,484 @@
+---
+title: "Правдоподобие и оценки максимального правдоподобия"
+subtitle: "Статистический анализ данных"
+author: "Дмитрий В. Наумов (ОИЯИ)"
+format:
+  revealjs:
+    theme: black
+    slide-number: true
+    preview-links: auto
+    chalkboard:
+      buttons: false
+    logo: shared/figures/dvnlogo.png
+    css: styles.css
+    transition: fade
+    center: true
+---
+
+# От данных к параметрам
+
+## Что требуется определить
+
+::: incremental
+
+- Вероятностная модель связывает наблюдаемые данные $X$ с неизвестными параметрами $\boldsymbol\theta$:
+$$
+X\sim f(x\mid\boldsymbol\theta).
+$$
+- Параметр $\boldsymbol\theta$ считается фиксированным, но неизвестным.
+- Данные $X$ случайны до проведения эксперимента.
+- По наблюдённым данным $x_{\mathrm{obs}}$ строится оценка параметра $\widehat{\theta}$.
+
+- Примеры параметров: среднее, ширина распределения, интенсивность сигнала, сечение процесса, эффективность регистрации.
+:::
+
+
+## Оценка и оценённое значение
+
+**Оценка** — правило, применяемое к случайным данным:
+$$
+\widehat\theta=T(X_1,\ldots,X_N).
+$$
+
+**Оценённое значение** — результат применения правила к конкретной выборке:
+$$
+\widehat\theta_{\mathrm{obs}}=T(x_1,\ldots,x_N).
+$$
+
+::: {.fragment .callout-note .thmbox appearance="simple"}
+До эксперимента $\widehat\theta$ является случайной величиной. После эксперимента $\widehat\theta_{\mathrm{obs}}$ — число.
+:::
+
+## Один параметр — разные оценки
+
+Пусть
+$$
+X_1,\ldots,X_N\sim\mathrm N(\mu,\sigma^2).
+$$
+
+Параметр $\mu$ можно оценивать по-разному:
+$$
+\langle X\rangle,
+\qquad
+\operatorname{median}(X_1,\ldots,X_N),
+\qquad
+\frac{X_1+X_N}{2}.
+$$
+
+::: incremental
+- Все три правила используют те же данные.
+- Они имеют разные смещение, дисперсию и устойчивость к выбросам.
+- Необходимо выбрать правило и проверить его свойства.
+:::
+
+## Точечное и интервальное оценивание
+
+::::: {.columns}
+
+::: {.column width="48%"}
+
+**Точечная оценка**
+
+Одно наиболее предпочтительное значение:
+$$
+\widehat\theta_{\mathrm{obs}}.
+$$
+
+:::
+
+::: {.column width="52%"}
+
+**Интервальная оценка**
+
+Набор значений параметра, совместимых с данными по выбранному правилу:
+$$
+[\theta_{\mathrm{low}},\theta_{\mathrm{high}}].
+$$
+
+:::
+
+:::::
+
+В этой лекции строим точечные оценки и изучаем форму функции правдоподобия. Строгое построение интервалов рассмотрим отдельно.
+
+
+# Функция правдоподобия
+
+## Та же модель, другой вопрос
+
+Плотность или вероятность
+$$
+f(x\mid\theta)
+$$
+отвечает на вопрос:
+
+> Насколько вероятны разные данные $x$, если параметр $\theta$ известен?
+
+После наблюдения $x_{\mathrm{obs}}$ рассматриваем ту же функцию как функцию параметра:
+$$
+\boxed{
+L(\theta;x_{\mathrm{obs}})=f(x_{\mathrm{obs}}\mid\theta).
+}
+$$
+
+Она отвечает на вопрос: какие значения $\theta$ лучше объясняют наблюдённые данные?
+
+## Правдоподобие не является вероятностью параметра
+
+::: incremental
+- В частотном подходе параметр $\theta$ не считается случайной величиной.
+- Поэтому $L(\theta;x)$ не обязана нормироваться по $\theta$:
+  $$
+  \int L(\theta;x)\,d\theta\ne1.
+  $$
+- Правдоподобие сравнивает разные значения параметра при одних и тех же данных.
+- Умножение $L$ на положительную константу, не зависящую от $\theta$, не меняет выводов.
+:::
+
+::: {.fragment .callout-important .remarkbox appearance="simple"}
+Вероятность описывает возможные данные при заданном параметре. Правдоподобие сравнивает параметры после наблюдения данных.
+:::
+
+## Независимая выборка
+
+Для независимых наблюдений
+$$
+X_i\sim f(x_i\mid\theta)
+$$
+совместное правдоподобие равно
+$$
+\boxed{
+L(\theta)
+=
+\prod_{i=1}^{N}f(x_i\mid\theta).
+}
+$$
+
+Логарифм превращает произведение в сумму:
+$$
+\boxed{
+\ell(\theta)
+=
+\ln L(\theta)
+=
+\sum_{i=1}^{N}\ln f(x_i\mid\theta).
+}
+$$
+
+## Почему работаем с логарифмом правдоподобия
+
+::: incremental
+- Произведение многих малых вероятностей быстро вызывает численное переполнение вниз.
+- Сумму логарифмов вычислять устойчивее.
+- Максимумы $L(\theta)$ и $\ell(\theta)$ находятся в одной точке.
+- Производные суммы проще производных произведения.
+- Независимые наборы данных добавляют свои логарифмы правдоподобия:
+  $$
+  \ell_{\mathrm{total}}=\ell_1+\ell_2+\cdots.
+  $$
+:::
+
+---
+
+# Метод максимального правдоподобия
+
+## Определение
+
+Оценка максимального правдоподобия — значение параметра, при котором наблюдённые данные наиболее правдоподобны:
+$$
+\boxed{
+\widehat\theta_{\mathrm{ММП}}
+=
+\underset{\theta}{\operatorname{arg\,max}}\ L(\theta)
+=
+\underset{\theta}{\operatorname{arg\,max}}\ \ell(\theta).
+}
+$$
+
+Для внутреннего гладкого максимума:
+$$
+\left.
+\frac{\partial\ell}{\partial\theta}
+\right|_{\theta=\widehat\theta_{\mathrm{ММП}}}
+=0,
+\qquad
+\left.
+\frac{\partial^2\ell}{\partial\theta^2}
+\right|_{\theta=\widehat\theta_{\mathrm{ММП}}}
+<0.
+$$
+
+## Пример: Бернулли
+
+Пусть в $N$ независимых испытаниях наблюдается $k$ успехов:
+$$
+K\sim\operatorname{Bin}(N,p).
+$$
+
+С точностью до множителя, не зависящего от $p$:
+$$
+L(p)\propto p^k(1-p)^{N-k}.
+$$
+
+Поэтому
+$$
+\ell(p)=k\ln p+(N-k)\ln(1-p)+\mathrm{const}.
+$$
+
+## Оценка вероятности успеха
+
+Условие максимума:
+$$
+\frac{d\ell}{dp}
+=
+\frac{k}{p}
+-
+\frac{N-k}{1-p}
+=0.
+$$
+
+Отсюда
+$$
+\boxed{
+\widehat p_{\mathrm{ММП}}
+=
+\frac{k}{N}.
+}
+$$
+
+Как случайная величина до эксперимента:
+$$
+\widehat p_{\mathrm{ММП}}
+=
+\frac{K}{N},
+\qquad
+\mathbb E[\widehat p_{\mathrm{ММП}}]
+=
+\frac{\mathbb E[K]}{N}
+=
+\frac{Np}{N}
+=
+p.
+$$
+
+::: incremental
+- Результат совпадает с интуитивной частотой успехов.
+- Здесь оценка максимального правдоподобия несмещена.
+- При увеличении $N$ максимум становится уже.
+- При $k=0$ или $k=N$ максимум находится на физической границе.
+:::
+
+## Интерактив: биномиальное правдоподобие
+
+::: {.clt-widget}
+```{ojs}
+//| echo: false
+
+viewof likeN = Inputs.range([1, 200], {value: 20, step: 1, label: "N"})
+viewof likeK = Inputs.range([0, likeN], {value: Math.round(0.35 * likeN), step: 1, label: "k"})
+
+likePGrid = Array.from({length: 499}, (_, i) => 0.002 + 0.996 * i / 498)
+likePhat = likeK / likeN
+likeLog = p => likeK * Math.log(p) + (likeN - likeK) * Math.log(1 - p)
+likeLogMax = likeK === 0
+  ? 0
+  : likeK === likeN
+    ? 0
+    : likeLog(likePhat)
+likeCurve = likePGrid.map(p => ({
+  p,
+  relative: Math.exp(likeLog(p) - likeLogMax),
+  q: -2 * (likeLog(p) - likeLogMax)
+}))
+
+likePlot = Plot.plot({
+  width: 940,
+  height: 430,
+  marginLeft: 70,
+  x: {label: "p", domain: [0, 1], grid: true},
+  y: {label: "L(p) / L(p̂)", domain: [0, 1.05], grid: true},
+  marks: [
+    Plot.line(likeCurve, {x: "p", y: "relative", stroke: "#4ea1ff", strokeWidth: 4}),
+    Plot.ruleX([likePhat], {stroke: "#ffb347", strokeWidth: 4}),
+    Plot.ruleY([Math.exp(-0.5)], {stroke: "#999", strokeDasharray: "6,5"})
+  ]
+})
+
+html`
+<div class="clt-panel">
+  ${likePlot}
+  <div class="clt-summary">
+    <span>N — число испытаний, k — число успехов</span>
+    <span>p̂ = k/N = ${likePhat.toFixed(3)}</span>
+    <span>стандартная ошибка ≈ ${Math.sqrt(likePhat * (1 - likePhat) / likeN).toFixed(3)}</span>
+    <span>увеличение N сужает максимум</span>
+  </div>
+</div>
+`
+```
+:::
+
+## Пример: пуассоновский счёт
+
+Пусть наблюдаем число событий:
+$$
+N\sim\operatorname{Pois}(\mu).
+$$
+
+Функция правдоподобия:
+$$
+L(\mu)
+=
+\frac{\mu^n e^{-\mu}}{n!}.
+$$
+
+Тогда
+$$
+\ell(\mu)=n\ln\mu-\mu-\ln n!,
+\qquad
+\frac{d\ell}{d\mu}=\frac n\mu-1.
+$$
+
+Следовательно,
+$$
+\boxed{\widehat\mu_{\mathrm{ММП}}=n.}
+$$
+
+## Пример: пуассоновский счёт
+
+До эксперимента оценка является случайной величиной:
+$$
+\widehat\mu_{\mathrm{ММП}}=N,
+\qquad
+\mathbb E[\widehat\mu_{\mathrm{ММП}}]
+=
+\mathbb E[N]
+=
+\mu.
+$$
+
+В пуассоновском счёте эта оценка тоже несмещена.
+
+## Пример: среднее гаусса
+
+Пусть
+$$
+X_i\sim\mathrm N(\mu,\sigma^2),
+$$
+где $\sigma$ известна.
+
+Тогда
+$$
+\ell(\mu)
+=
+-\frac{1}{2\sigma^2}
+\sum_{i=1}^{N}(x_i-\mu)^2
++\mathrm{const}.
+$$
+
+$$
+\frac{\partial\ell}{\partial\mu}
+=
+\frac{1}{\sigma^2}\sum_{i=1}^{N}(x_i-\mu)
+=0
+\quad\Longrightarrow\quad
+\widehat\mu_{\mathrm{ММП}}
+=
+\frac1N\sum_{i=1}^{N}x_i
+=
+\langle x\rangle.
+$$
+
+Максимизация $\ell$ эквивалентна минимизации суммы квадратов:
+$$
+\boxed{
+\widehat\mu_{\mathrm{ММП}}
+=
+\langle x\rangle.
+}
+$$
+
+## Неизвестные среднее и дисперсия
+::: incremental
+
+- Если неизвестны и $\mu$, и $\sigma^2$, то
+$$
+\ell(\mu,v)
+=
+-\frac{N}{2}\ln v
+-\frac{1}{2v}\sum_{i=1}^{N}(x_i-\mu)^2
++\mathrm{const},
+\qquad
+v=\sigma^2.
+$$
+
+- Здесь нельзя отбросить нормировку: член $-\frac{N}{2}\ln v$ зависит от $v$.
+$$
+\frac{\partial\ell}{\partial\mu}=0
+\quad\Longrightarrow\quad
+\widehat\mu_{\mathrm{ММП}}=\langle x\rangle,
+\qquad
+\frac{\partial\ell}{\partial v}=0
+\quad\Longrightarrow\quad
+\widehat v_{\mathrm{ММП}}
+=
+\frac1N\sum_{i=1}^{N}(x_i-\langle x\rangle)^2.
+$$
+
+- Итак:
+$$
+\boxed{
+\widehat\mu_{\mathrm{ММП}}=\langle x\rangle,
+\qquad
+\widehat{\sigma^2}_{\mathrm{ММП}}
+=
+\frac1N\sum_{i=1}^{N}(x_i-\langle x\rangle)^2.
+}
+$$
+:::
+
+## Матожидание оценок
+::: incremental
+- Для среднего:
+$$
+\mathbb E[\widehat\mu_{\mathrm{ММП}}]
+=
+\mathbb E\!\left[\frac1N\sum_{i=1}^{N}X_i\right]
+=
+\frac1N\sum_{i=1}^{N}\mathbb E[X_i]
+=
+\mu.
+$$
+
+- Значит, $\widehat\mu_{\mathrm{ММП}}$ несмещена.
+
+- Но
+$$
+\mathbb E[\widehat{\sigma^2}_{\mathrm{ММП}}]
+=
+\frac{N-1}{N}\sigma^2.
+$$
+
+- Значит, $\widehat{\sigma^2}_{\mathrm{ММП}}$ смещена вниз.
+
+- Несмещённая оценка использует делитель $N-1$:
+$$
+s^2
+=
+\frac1{N-1}\sum_{i=1}^{N}(x_i-\langle x\rangle)^2.
+$$
+
+- Вывод: ММП не обязан давать несмещённую оценку. Несмещённость — отдельное свойство процедуры, которое нужно проверять.
+:::
+
+# Что важно запомнить
+
+## Резюме
+
+::: incremental
+- Оценка — случайная функция данных; оценённое значение — её реализация.
+- Правдоподобие рассматривает вероятностную модель как функцию неизвестных параметров при фиксированных данных.
+- Оценка максимального правдоподобия выбирает параметры, максимизирующие правдоподобие.
+- ММП часто даёт естественные оценки, но не гарантирует несмещённость.
+- Свойства процедуры нужно проверять отдельно, а не выводить из одного наблюдённого значения.
+:::

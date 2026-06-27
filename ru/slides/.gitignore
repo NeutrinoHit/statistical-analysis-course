@@ -1,8 +1,11 @@
 /.quarto/
-**/*.quarto_ipynb
+**/*.quarto_ipynb*
 /_site/
 /*_files/
 /_freeze/
 /*.html
+!/applets.html
 /*.pdf
 .DS_Store
+
+**/*.quarto_ipynb

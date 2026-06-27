@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex,nofollow,noarchive">
-  <title>Stat Course Pilot</title>
+  <title>Статистический анализ данных</title>
   <style>
     :root {
       --bg-1: #f5f1e8;
@@ -28,12 +28,12 @@
         radial-gradient(circle at bottom right, rgba(125, 72, 44, 0.12), transparent 32%),
         linear-gradient(135deg, var(--bg-1), var(--bg-2));
       display: grid;
-      place-items: center;
+      place-items: start center;
       padding: 24px;
     }
 
     main {
-      width: min(760px, 100%);
+      width: min(1060px, 100%);
       padding: 32px;
       border: 1px solid var(--line);
       border-radius: 28px;
@@ -119,12 +119,90 @@
       font-size: 0.92rem;
       color: var(--muted);
     }
+
+    .section-title {
+      margin: 34px 0 12px;
+      font: 750 1.25rem/1.2 "Avenir Next", "Segoe UI", sans-serif;
+      color: var(--ink);
+    }
+
+    .lecture-accordion {
+      display: grid;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .lecture-row {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.9);
+      overflow: hidden;
+    }
+
+    .lecture-row summary {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      min-height: 4rem;
+      padding: 0.78rem 3rem 0.78rem 1rem;
+      cursor: pointer;
+      list-style: none;
+      position: relative;
+      font: 750 1.04rem/1.25 "Avenir Next", "Segoe UI", sans-serif;
+    }
+
+    .lecture-row summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .lecture-row summary::after {
+      content: "+";
+      position: absolute;
+      right: 1rem;
+      color: var(--accent);
+      font-size: 1.45rem;
+      font-weight: 450;
+      line-height: 1;
+    }
+
+    .lecture-row[open] summary::after {
+      content: "-";
+    }
+
+    .lecture-index {
+      color: var(--accent);
+      font-size: 0.82rem;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .lecture-row-body {
+      padding: 0 1rem 1rem 3rem;
+      border-top: 1px solid var(--line);
+    }
+
+    .lecture-row-body p {
+      font-size: 0.98rem;
+    }
+
+    @media (max-width: 640px) {
+      body {
+        padding: 14px;
+      }
+
+      main {
+        padding: 22px;
+      }
+
+      .lecture-row-body {
+        padding-left: 1rem;
+      }
+    }
   </style>
 </head>
 <body>
   <main>
-    <p class="eyebrow">Test Preview</p>
-    <h1>Stat Course Pilot</h1>
+    <p class="eyebrow">NeutrinoHit</p>
+    <h1>Статистический анализ данных</h1>
     <p>
       Статистический анализ. Теория и практика. Автор: Д.В. Наумов (в разработке)
     </p>
@@ -146,6 +224,14 @@
       </section>
 
       <section class="card">
+        <h2>Аплеты</h2>
+        <p>Калькуляторы для p-value, значимости и биномиальных интервалов.</p>
+        <div class="actions">
+          <a class="link primary" href="./applets.html">Открыть аплеты</a>
+        </div>
+      </section>
+
+      <section class="card">
         <h2>English Book</h2>
         <div class="actions">
           <a class="link" href="./en/book/">Open EN Book</a>
@@ -160,6 +246,192 @@
         </div>
       </section>
     </div>
+
+    <h2 class="section-title">Лекции 00-12</h2>
+    <section class="lecture-accordion" aria-label="Лекции 00-12">
+      <details class="lecture-row" open>
+        <summary>
+          <span class="lecture-index">00</span>
+          <span>Мотивация и обзор курса</span>
+        </summary>
+        <div class="lecture-row-body">
+          <p>Зачем физику статистика и какие вопросы решает курс.</p>
+          <div class="actions">
+            <a class="link" href="./ru/slides/00_introduction.html">Открыть лекцию</a>
+            <a class="link" href="./ru/slides/exercises/00_introduction_exercises.html">Задачи</a>
+          </div>
+        </div>
+      </details>
+
+      <details class="lecture-row">
+        <summary>
+          <span class="lecture-index">01</span>
+          <span>Случайные величины, распределения, моменты</span>
+        </summary>
+        <div class="lecture-row-body">
+          <p>Вероятности, плотности, кумулятивная функция распределения и моменты.</p>
+          <div class="actions">
+            <a class="link" href="./ru/slides/01_random_distributions.html">Открыть лекцию</a>
+            <a class="link" href="./ru/slides/exercises/01_random_distributions_exercises.html">Задачи</a>
+          </div>
+        </div>
+      </details>
+
+      <details class="lecture-row">
+        <summary>
+          <span class="lecture-index">02</span>
+          <span>Характеристические функции и суммы случайных величин</span>
+        </summary>
+        <div class="lecture-row-body">
+          <p>Преобразование Фурье распределения, свёртки, независимые суммы, моменты, кумулянты и мост к ЦПТ.</p>
+          <div class="actions">
+            <a class="link" href="./ru/slides/02_characteristic_functions.html">Открыть лекцию</a>
+            <a class="link" href="./ru/slides/exercises/02_characteristic_functions_exercises.html">Задачи</a>
+          </div>
+        </div>
+      </details>
+
+      <details class="lecture-row">
+        <summary>
+          <span class="lecture-index">03</span>
+          <span>Центральная предельная теорема и нормальное распределение</span>
+        </summary>
+        <div class="lecture-row-body">
+          <p>Почему возникает гаусс, как читать квантили и как проверять совместимость измерений.</p>
+          <div class="actions">
+            <a class="link" href="./ru/slides/03_central_limit_theorem.html">Открыть лекцию</a>
+            <a class="link" href="./ru/slides/exercises/03_central_limit_theorem_exercises.html">Задачи</a>
+          </div>
+        </div>
+      </details>
+
+      <details class="lecture-row">
+        <summary>
+          <span class="lecture-index">04</span>
+          <span>Когда гаусс не возникает</span>
+        </summary>
+        <div class="lecture-row-body">
+          <p>Границы применимости ЦПТ: тяжёлые хвосты, корреляции, смеси распределений, пороги и малые счёты.</p>
+          <div class="actions">
+            <a class="link" href="./ru/slides/04_non_gaussian_clt_violations.html">Открыть лекцию</a>
+            <a class="link" href="./ru/slides/exercises/04_non_gaussian_clt_violations_exercises.html">Задачи</a>
+          </div>
+        </div>
+      </details>
+
+      <details class="lecture-row">
+        <summary>
+          <span class="lecture-index">05</span>
+          <span>Распространение ошибок</span>
+        </summary>
+        <div class="lecture-row-body">
+          <p>Линейное распространение ошибок, нелинейные функции, оценки среднего, дисперсии и стандартного отклонения, ковариации.</p>
+          <div class="actions">
+            <a class="link" href="./ru/slides/05_error_propagation.html">Открыть лекцию</a>
+            <a class="link" href="./ru/slides/exercises/05_error_propagation_and_covariance_exercises.html">Задачи</a>
+          </div>
+        </div>
+      </details>
+
+      <details class="lecture-row">
+        <summary>
+          <span class="lecture-index">06</span>
+          <span>Двумерный гаусс</span>
+        </summary>
+        <div class="lecture-row-body">
+          <p>Ковариационная матрица как геометрия распределения, корреляция, двумерный гаусс, эллипсы, контуры и практические применения.</p>
+          <div class="actions">
+            <a class="link" href="./ru/slides/06_two_dimensional_gaussian.html">Открыть лекцию</a>
+            <a class="link" href="./ru/slides/exercises/05_error_propagation_and_covariance_exercises.html">Задачи</a>
+          </div>
+        </div>
+      </details>
+
+      <details class="lecture-row">
+        <summary>
+          <span class="lecture-index">07</span>
+          <span>Метод Монте-Карло и псевдоэксперименты</span>
+        </summary>
+        <div class="lecture-row-body">
+          <p>Генерация распределений, численное интегрирование, псевдоэксперименты, распространение неопределённостей и моделирование детектора.</p>
+          <div class="actions">
+            <a class="link" href="./ru/slides/07_monte_carlo_method.html">Открыть лекцию</a>
+            <a class="link" href="./ru/slides/notebooks/mc_vegas_notebook.html">Ноутбук VEGAS</a>
+            <a class="link" href="./ru/slides/exercises/06_monte_carlo_method_exercises.html">Задачи</a>
+          </div>
+        </div>
+      </details>
+
+      <details class="lecture-row">
+        <summary>
+          <span class="lecture-index">08</span>
+          <span>Правдоподобие и оценки максимального правдоподобия</span>
+        </summary>
+        <div class="lecture-row-body">
+          <p>Функция правдоподобия, логарифм правдоподобия, ММП и первые примеры оценивания параметров.</p>
+          <div class="actions">
+            <a class="link" href="./ru/slides/08_maximum_likelihood.html">Открыть лекцию</a>
+            <a class="link" href="./ru/slides/exercises/07_parameter_estimation_and_maximum_likelihood_exercises.html">Задачи</a>
+          </div>
+        </div>
+      </details>
+
+      <details class="lecture-row">
+        <summary>
+          <span class="lecture-index">09</span>
+          <span>Свойства оценок, профильное правдоподобие и примеры анализа данных</span>
+        </summary>
+        <div class="lecture-row-body">
+          <p>Смещение, дисперсия, информация Фишера, форма правдоподобия, профилирование, несколько параметров и практическая диагностика подгонки.</p>
+          <div class="actions">
+            <a class="link" href="./ru/slides/09_estimator_properties_profile_likelihood.html">Открыть лекцию</a>
+            <a class="link" href="./ru/slides/exercises/07_parameter_estimation_and_maximum_likelihood_exercises.html">Задачи</a>
+          </div>
+        </div>
+      </details>
+
+      <details class="lecture-row">
+        <summary>
+          <span class="lecture-index">10</span>
+          <span>Метод наименьших квадратов и линейная подгонка</span>
+        </summary>
+        <div class="lecture-row-body">
+          <p>Связь МНК с гауссовым правдоподобием, линейная модель, нормальные уравнения, ковариации параметров, остатки и выбросы.</p>
+          <div class="actions">
+            <a class="link" href="./ru/slides/10_least_squares_linear_fit.html">Открыть лекцию</a>
+            <a class="link" href="./ru/slides/exercises/08_method_of_least_squares_exercises.html">Задачи</a>
+          </div>
+        </div>
+      </details>
+
+      <details class="lecture-row">
+        <summary>
+          <span class="lecture-index">11</span>
+          <span>χ²-интервалы, систематики и практический рецепт МНК</span>
+        </summary>
+        <div class="lecture-row-body">
+          <p>Общий матричный случай, интервалы из формы χ², систематические неопределённости, нормировка, парадокс Д’Агостини и практический рецепт анализа.</p>
+          <div class="actions">
+            <a class="link" href="./ru/slides/11_least_squares_systematics.html">Открыть лекцию</a>
+            <a class="link" href="./ru/slides/exercises/08_method_of_least_squares_exercises.html">Задачи</a>
+          </div>
+        </div>
+      </details>
+
+      <details class="lecture-row">
+        <summary>
+          <span class="lecture-index">12</span>
+          <span>Качество согласия и статистическая значимость</span>
+        </summary>
+        <div class="lecture-row-body">
+          <p>Остатки, распределение χ², число степеней свободы, p-значение, перевод в Z и калибровка статистики псевдоэкспериментами.</p>
+          <div class="actions">
+            <a class="link" href="./ru/slides/12_goodness_of_fit_and_significance.html">Открыть лекцию</a>
+            <a class="link" href="./ru/slides/exercises/09_statistical_tests_basics_exercises.html">Задачи</a>
+          </div>
+        </div>
+      </details>
+    </section>
 
     <p class="note">
       Search engines are asked not to index this preview, but this is only a hint, not access control.

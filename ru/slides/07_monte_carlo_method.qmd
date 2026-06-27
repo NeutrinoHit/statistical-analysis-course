@@ -1,0 +1,1459 @@
+---
+title: "Метод Монте-Карло и псевдоэксперименты"
+subtitle: "Статистический анализ данных"
+author: "Дмитрий В. Наумов (ОИЯИ)"
+jupyter: python3
+format:
+  revealjs:
+    theme: black
+    slide-number: true
+    preview-links: auto
+    chalkboard:
+      buttons: false
+    logo: shared/figures/dvnlogo.png
+    css: styles.css
+    transition: fade
+    center: true
+---
+
+# Зачем нужен Монте-Карло
+
+## Когда аналитики недостаточно
+
+::: incremental
+- Распределение результата может быть неизвестно в замкнутой форме.
+- Преобразование измеряемых величин может быть сильно нелинейным.
+- Модель может включать пороги, отборы и физические границы.
+- Экспериментальная установка может иметь сложный многомерный отклик.
+- Интеграл может иметь большую размерность.
+:::
+
+::: {.fragment .callout-note .thmbox appearance="simple"}
+Метод Монте-Карло заменяет сложное аналитическое вычисление статистикой большого числа искусственно сгенерированных реализаций.
+:::
+
+## Основная идея
+
+Пусть требуется узнать свойства случайной величины
+$$
+Y=g(X),
+\qquad
+X\sim f_X(x).
+$$
+
+Алгоритм Монте-Карло:
+
+::: incremental
+1. Сгенерировать независимые значения
+   $$
+   X_1,\ldots,X_N\sim f_X.
+   $$
+2. Для каждого вычислить
+   $$
+   Y_k=g(X_k).
+   $$
+3. Использовать выборку $Y_1,\ldots,Y_N$ для оценки распределения, среднего, дисперсии или вероятности события.
+:::
+
+## Три применения одного метода
+
+::::: {.columns}
+
+::: {.column width="33%"}
+
+**Численное интегрирование**
+
+$$
+\int h(x)f(x)\,dx
+=
+\mathbb E[h(X)].
+$$
+
+:::
+
+::: {.column width="33%"}
+
+**Распространение ошибок**
+
+$$
+\mathbf X\sim f(\mathbf x)
+\quad\Longrightarrow\quad
+Y=g(\mathbf X).
+$$
+
+:::
+
+::: {.column width="34%"}
+
+**Псевдоэксперименты**
+
+Повторить весь эксперимент много раз и изучить распределение результата.
+
+:::
+
+:::::
+
+## Что Монте-Карло не делает
+
+::: incremental
+- Не исправляет неверную физическую или статистическую модель.
+- Не устраняет систематические неопределённости автоматически.
+- Не превращает малую реальную выборку в большую.
+- Не даёт точного ответа при конечном числе симуляций.
+- Не заменяет проверку аналитических предельных случаев.
+:::
+
+::: {.fragment .callout-important .remarkbox appearance="simple"}
+Монте-Карло точно решает ту задачу, которую мы запрограммировали, а не обязательно ту задачу, которую хотели решить.
+:::
+
+---
+
+# Генерация случайных величин
+
+## Псевдослучайные числа
+
+Компьютерный генератор создаёт детерминированную последовательность
+$$
+U_1,U_2,\ldots,
+\qquad
+U_k\in[0,1),
+$$
+которая статистически похожа на независимую равномерную выборку.
+
+::: incremental
+- Начальное состояние генератора задаётся специальным начальным числом.
+- Одинаковое начальное число воспроизводит ту же последовательность.
+- Разные вычислительные потоки должны использовать независимые последовательности.
+- Для научной воспроизводимости начальное число и алгоритм генератора необходимо сохранять.
+:::
+
+## Равномерное распределение как исходный материал
+
+Большинство генераторов непосредственно создаёт
+$$
+U\sim\mathrm U(0,1).
+$$
+
+Из равномерных чисел можно получить другие распределения:
+
+::: incremental
+- преобразованием через обратную функцию распределения;
+- методом отбора;
+- специальными алгоритмами;
+- выбором из многомерного распределения;
+- моделированием последовательности физических процессов.
+:::
+
+## Метод обратной функции распределения
+
+Пусть
+$$
+U\sim\mathrm U(0,1),
+$$
+а $F_X(x)$ — функция распределения требуемой случайной величины.
+
+Тогда
+$$
+\boxed{
+X=F_X^{-1}(U)
+}
+$$
+имеет распределение $F_X$.
+
+Действительно,
+$$
+P(X\le x)
+=
+P(F_X^{-1}(U)\le x)
+=
+P(U\le F_X(x))
+=
+F_X(x).
+$$
+
+
+## Пример: экспоненциальное распределение
+::: incremental
+
+- Для
+$$
+f_X(x)=\lambda e^{-\lambda x},
+\qquad x\ge0,
+$$
+- Функция распределения:
+$$
+F_X(x)=\int\limits_{0}^{x}\, dx\, \lambda e^{-\lambda x} = 1-e^{-\lambda x}.
+$$
+
+- Следовательно,
+$$
+\boxed{
+X
+=
+-\frac{1}{\lambda}\ln(1-U).
+}
+$$
+
+- Поскольку $1-U$ также равномерно, часто используют $X=-\ln U/\lambda$.
+
+:::
+
+## Метод отбора
+
+Пусть требуется генерировать плотность $f(x)$, для которой
+$$
+f(x)\le M g(x),
+$$
+а из $g(x)$ генерировать легко.
+
+::: incremental
+1. Сгенерировать кандидата $X\sim g(x)$.
+2. Сгенерировать $U\sim\mathrm U(0,1)$.
+3. Принять $X$, если
+   $$
+   U\le\frac{f(X)}{Mg(X)}.
+   $$
+4. Иначе повторить попытку.
+
+- Средняя доля принятых событий равна $1/M$, если $f$ и $g$ нормированы.
+:::
+
+## Метод отбора. Пример
+::: incremental
+
+- Хотим генерировать двумерное  распределение, ограниченное:
+$$
+f(x)=6x(1-x),
+\qquad 0\le x\le1,
+$$
+- Генерируем точки **равномерно** под прямоугольником высоты $M=1.5$.
+- Используем метод отбора
+
+:::
+
+## Интерактивный пример
+::: {.clt-widget}
+```{ojs}
+//| echo: false
+
+viewof rejectN = Inputs.range([100, 6000], {value: 1200, step: 100, label: "N точек"})
+viewof regenerateReject = Inputs.button("Новое МК")
+
+rejectPoints = {
+  regenerateReject;
+  const values = [];
+  for (let i = 0; i < rejectN; ++i) {
+    const x = Math.random();
+    const y = 1.5 * Math.random();
+    values.push({x, y, accepted: y <= 6 * x * (1 - x)});
+  }
+  return values;
+}
+
+rejectCurve = Array.from({length: 301}, (_, i) => {
+  const x = i / 300;
+  return {x, y: 6 * x * (1 - x)};
+})
+
+acceptedReject = rejectPoints.filter(d => d.accepted)
+rejectRate = acceptedReject.length / rejectPoints.length
+
+rejectPlot = Plot.plot({
+  width: 900,
+  height: 470,
+  marginLeft: 65,
+  x: {label: "x", domain: [0, 1], grid: true},
+  y: {label: "y", domain: [0, 1.55], grid: true},
+  marks: [
+    Plot.dot(rejectPoints.filter(d => !d.accepted), {x: "x", y: "y", r: 2.2, fill: "#777", fillOpacity: 0.35}),
+    Plot.dot(acceptedReject, {x: "x", y: "y", r: 2.5, fill: "#4ea1ff", fillOpacity: 0.65}),
+    Plot.line(rejectCurve, {x: "x", y: "y", stroke: "#ffb347", strokeWidth: 4})
+  ]
+})
+
+html`
+<div class="clt-panel">
+  ${rejectPlot}
+  <div class="clt-summary">
+    <span>принято: ${acceptedReject.length} из ${rejectPoints.length}</span>
+    <span>эффективность = ${(100 * rejectRate).toFixed(1)}%</span>
+    <span>теоретическая эффективность = 66.7%</span>
+  </div>
+</div>
+`
+```
+:::
+
+## Выбор метода генерации
+
+| Метод | Преимущество | Ограничение |
+|---|---|---|
+| Обратная функция распределения | каждое число используется | нужна вычислимая $F^{-1}$ |
+| Отбор | простой и универсальный | может быть неэффективным |
+| Специальный алгоритм | высокая скорость | отдельная реализация для каждого семейства |
+| Марковские цепи | сложные многомерные плотности | коррелированные выборки и диагностика сходимости |
+
+
+# Интегрирование методом Монте-Карло
+
+## Интеграл как математическое ожидание
+
+Пусть
+$$
+I=\int_a^b h(x)\,dx.
+$$
+
+Для $U\sim\mathrm U(a,b)$:
+$$
+\mathbb E[h(U)]
+=
+\frac{1}{b-a}
+\int_a^b h(x)\,dx.
+$$
+
+Поэтому
+$$
+\boxed{
+\widehat{I}_N
+=
+\frac{b-a}{N}
+\sum_{k=1}^{N}h(U_k).
+}
+$$
+
+## Оценка ошибки вычисления интеграла методом Монте-Карло
+
+Если
+$$
+\operatorname{Var}[h(U)]=\sigma_h^2,
+$$
+то
+$$
+\operatorname{Var}(\widehat I_N)
+=
+\frac{(b-a)^2}{N^2}\operatorname{Var}\left[\sum_{k=1}^N h(U_k)\right] = \frac{(b-a)^2\sigma_h^2}{N}.
+$$
+
+Следовательно,
+$$
+\boxed{
+\sigma_{\widehat I_N}
+\propto
+\frac{1}{\sqrt N}.
+}
+$$
+
+::: incremental
+- Чтобы уменьшить ошибку в 10 раз, требуется в 100 раз больше точек.
+- Сходимость медленная, но почти не зависит от размерности интеграла.
+:::
+
+## Пример: площадь четверти круга
+
+Равномерно генерируем точки в единичном квадрате:
+$$
+(X,Y)\sim\mathrm U([0,1]^2).
+$$
+
+Вероятность попасть внутрь четверти круга:
+$$
+p=P(X^2+Y^2\le1)=\frac{\pi}{4}.
+$$
+
+Если $N_{\mathrm{in}}$ точек попали внутрь, то
+$$
+\boxed{
+\widehat\pi
+=
+4\frac{N_{\mathrm{in}}}{N}.
+}
+$$
+
+## Интерактив: оценка числа $\pi$
+
+::: {.clt-widget}
+```{ojs}
+//| echo: false
+
+viewof piN = Inputs.range([100, 12000], {value: 1200, step: 100, label: "число точек N"})
+viewof regeneratePi = Inputs.button("Новая выборка")
+
+piPoints = {
+  regeneratePi;
+  const values = [];
+  for (let i = 0; i < piN; ++i) {
+    const x = Math.random();
+    const y = Math.random();
+    values.push({x, y, inside: x * x + y * y <= 1});
+  }
+  return values;
+}
+
+piInside = piPoints.filter(d => d.inside)
+piEstimate = 4 * piInside.length / piPoints.length
+piSe = 4 * Math.sqrt((piInside.length / piPoints.length) * (1 - piInside.length / piPoints.length) / piPoints.length)
+quarterCircle = Array.from({length: 301}, (_, i) => {
+  const x = i / 300;
+  return {x, y: Math.sqrt(1 - x * x)};
+})
+
+piPlot = Plot.plot({
+  width: 620,
+  height: 560,
+  marginLeft: 55,
+  x: {label: "x", domain: [0, 1], grid: true},
+  y: {label: "y", domain: [0, 1], grid: true},
+  marks: [
+    Plot.dot(piPoints.filter(d => !d.inside), {x: "x", y: "y", r: 2, fill: "#ff6b6b", fillOpacity: 0.45}),
+    Plot.dot(piInside, {x: "x", y: "y", r: 2, fill: "#4ea1ff", fillOpacity: 0.50}),
+    Plot.line(quarterCircle, {x: "x", y: "y", stroke: "#ffb347", strokeWidth: 4})
+  ]
+})
+
+html`
+<div class="clt-panel">
+  ${piPlot}
+  <div class="clt-summary">
+    <span>pi по Монте-Карло = ${piEstimate.toFixed(5)}</span>
+    <span>статистическая ошибка ≈ ${piSe.toFixed(5)}</span>
+    <span>отклонение от pi = ${(piEstimate - Math.PI).toFixed(5)}</span>
+  </div>
+</div>
+`
+```
+:::
+
+## Почему Монте-Карло полезен в большой размерности
+
+Для регулярной сетки с $m$ точками по каждой координате число вычислений равно
+$$
+N_{\text{сетка}}=m^d.
+$$
+
+В Монте-Карло статистическая ошибка обычно ведёт себя как
+$$
+\sigma_{\widehat I}\propto N^{-1/2},
+$$
+почти независимо от размерности $d$.
+
+::: {.fragment .callout-note .thmbox appearance="simple"}
+Монте-Карло особенно полезен для многомерных интегралов, где регулярная сетка страдает от «проклятия размерности».
+:::
+
+## Не все точки одинаково полезны
+
+Если основной вклад в интеграл приходит из малой области, равномерная генерация тратит большинство точек впустую.
+
+Вместо
+$$
+I=\int h(x)f(x)\,dx
+$$
+можно генерировать $X\sim q(x)$:
+$$
+\boxed{
+I
+=
+\mathbb E_q\!\left[
+h(X)\frac{f(X)}{q(X)}
+\right].
+}
+$$
+
+Это называется **выборкой по важности**.
+
+## Веса событий
+
+При выборке по важности каждое событие получает вес
+$$
+w_k=\frac{f(X_k)}{q(X_k)}.
+$$
+
+Оценка интеграла:
+$$
+\widehat I
+=
+\frac1N\sum_{k=1}^Nw_kh(X_k).
+$$
+
+::: incremental
+- Хорошая $q(x)$ чаще генерирует важные области.
+- Сильно различающиеся веса увеличивают дисперсию.
+- Вес не превращает одно событие в большое число независимых событий.
+:::
+
+## Почему сетка быстро проигрывает
+
+::: {.mc-range-controls}
+
+```{ojs}
+function mcRange(label, domain, options) {
+  const [min, max] = domain;
+  const value = options.value;
+  const step = options.step ?? 1;
+  const control = html`<label class="mc-range-control">
+    <span class="mc-range-label">${label}</span>
+    <input class="mc-range-number" type="number" min=${min} max=${max} step=${step} value=${value}>
+    <input class="mc-range-slider" type="range" min=${min} max=${max} step=${step} value=${value}>
+  </label>`;
+  const number = control.querySelector(".mc-range-number");
+  const slider = control.querySelector(".mc-range-slider");
+
+  control.value = Number(value);
+  const sync = event => {
+    const next = Number(event.target.value);
+    control.value = next;
+    number.value = next;
+    slider.value = next;
+    control.dispatchEvent(new CustomEvent("input", {bubbles: true}));
+  };
+  number.addEventListener("input", sync);
+  slider.addEventListener("input", sync);
+  return control;
+}
+```
+
+```{ojs}
+viewof grid_m = mcRange("точек по каждой координате", [2, 12], {value: 5, step: 1})
+viewof grid_d = mcRange("размерность", [1, 12], {value: 8, step: 1})
+```
+
+```{ojs}
+grid_points_text = {
+  const N = Math.pow(grid_m, grid_d);
+  return html`<div style="font-size:1.4em; line-height:1.5">
+    <b>Регулярная сетка:</b><br>
+    ${grid_m} точек по каждой координате в ${grid_d}-мерном пространстве<br>
+    <span style="font-size:1.8em">N = ${N.toLocaleString("ru-RU")}</span>
+  </div>`
+}
+```
+
+:::
+
+::: {.fragment .callout-note .thmbox appearance="simple"}
+В большой размерности даже грубая сетка быстро становится дорогой.
+Монте-Карло платит не за полную сетку, а за число реально брошенных точек.
+:::
+
+## Редкая область: равномерная генерация тратит точки
+
+::: {.mc-range-controls}
+
+```{ojs}
+viewof rare_N = mcRange("число точек", [200, 6000], {value: 1500, step: 100})
+viewof rare_sigma = mcRange("ширина важной области", [0.02, 0.18], {value: 0.06, step: 0.005})
+```
+
+:::
+
+```{ojs}
+function rng32(seed) {
+  return function() {
+    seed |= 0; seed = seed + 0x6D2B79F5 | 0;
+    let t = Math.imul(seed ^ seed >>> 15, 1 | seed);
+    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  }
+}
+```
+
+```{ojs}
+rare_canvas = {
+  const width = 760, height = 430;
+  const canvas = DOM.canvas(width, height);
+  const ctx = canvas.getContext("2d");
+  const rnd = rng32(20260618);
+
+  const L = 330;
+  const x0 = 60, y0 = 55;
+  const cx = x0 + 0.68 * L;
+  const cy = y0 + 0.42 * L;
+  const r = rare_sigma * L;
+
+  ctx.clearRect(0, 0, width, height);
+  ctx.fillStyle = "rgba(255,255,255,0.035)";
+  ctx.fillRect(x0, y0, L, L);
+  ctx.font = "22px system-ui, -apple-system, Segoe UI, sans-serif";
+  ctx.fillStyle = "#f2f2f2";
+  ctx.fillText("Равномерные точки", x0, 34);
+
+  ctx.strokeStyle = "#d9d9d9";
+  ctx.lineWidth = 2;
+  ctx.strokeRect(x0, y0, L, L);
+
+  ctx.beginPath();
+  ctx.arc(cx, cy, r, 0, 2 * Math.PI);
+  ctx.fillStyle = "rgba(33, 99, 255, 0.16)";
+  ctx.fill();
+  ctx.strokeStyle = "rgba(33, 99, 255, 0.9)";
+  ctx.stroke();
+
+  let hit = 0;
+  for (let i = 0; i < rare_N; ++i) {
+    const x = rnd();
+    const y = rnd();
+    const px = x0 + x * L;
+    const py = y0 + y * L;
+    const inside = (px - cx) ** 2 + (py - cy) ** 2 < r ** 2;
+    if (inside) hit += 1;
+    ctx.beginPath();
+    ctx.arc(px, py, inside ? 2.5 : 1.4, 0, 2 * Math.PI);
+    ctx.fillStyle = inside ? "rgba(33, 99, 255, 0.92)" : "rgba(255,255,255,0.22)";
+    ctx.fill();
+  }
+
+  ctx.fillStyle = "#f2f2f2";
+  ctx.font = "24px system-ui, -apple-system, Segoe UI, sans-serif";
+  ctx.fillText("Интеграл чувствует малую область.", 430, 115);
+  ctx.fillText("Равномерная генерация", 430, 170);
+  ctx.fillText("почти всё бросает мимо.", 430, 205);
+  ctx.font = "22px system-ui, -apple-system, Segoe UI, sans-serif";
+  ctx.fillText(`попало в область: ${hit} из ${rare_N}`, 430, 285);
+  ctx.fillText(`доля: ${(hit / rare_N).toFixed(3)}`, 430, 320);
+
+  return canvas;
+}
+```
+
+## Выборка по важности: бросаем точки туда, где вклад
+
+::: {.mc-range-controls}
+
+```{ojs}
+viewof imp_N = mcRange("число точек", [200, 6000], {value: 1500, step: 100})
+viewof imp_sigma = mcRange("ширина важной области", [0.02, 0.18], {value: 0.06, step: 0.005})
+```
+
+:::
+
+```{ojs}
+importance_canvas = {
+  const width = 760, height = 430;
+  const canvas = DOM.canvas(width, height);
+  const ctx = canvas.getContext("2d");
+  const rnd = rng32(424242);
+
+  function normal() {
+    const u1 = Math.max(rnd(), 1e-12);
+    const u2 = rnd();
+    return Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
+  }
+
+  const L = 330;
+  const x0 = 60, y0 = 55;
+  const cx = x0 + 0.68 * L;
+  const cy = y0 + 0.42 * L;
+  const r = imp_sigma * L;
+
+  ctx.clearRect(0, 0, width, height);
+  ctx.fillStyle = "rgba(255,255,255,0.035)";
+  ctx.fillRect(x0, y0, L, L);
+  ctx.font = "22px system-ui, -apple-system, Segoe UI, sans-serif";
+  ctx.fillStyle = "#f2f2f2";
+  ctx.fillText("Точки из удобного распределения", x0, 34);
+
+  ctx.strokeStyle = "#d9d9d9";
+  ctx.lineWidth = 2;
+  ctx.strokeRect(x0, y0, L, L);
+
+  ctx.beginPath();
+  ctx.arc(cx, cy, r, 0, 2 * Math.PI);
+  ctx.fillStyle = "rgba(33, 99, 255, 0.16)";
+  ctx.fill();
+  ctx.strokeStyle = "rgba(33, 99, 255, 0.9)";
+  ctx.stroke();
+
+  let hit = 0;
+  for (let i = 0; i < imp_N; ++i) {
+    let x = 0.68 + imp_sigma * normal();
+    let y = 0.42 + imp_sigma * normal();
+    if (x < 0 || x > 1 || y < 0 || y > 1) continue;
+    const px = x0 + x * L;
+    const py = y0 + y * L;
+    const inside = (px - cx) ** 2 + (py - cy) ** 2 < r ** 2;
+    if (inside) hit += 1;
+    ctx.beginPath();
+    ctx.arc(px, py, inside ? 2.5 : 1.5, 0, 2 * Math.PI);
+    ctx.fillStyle = inside ? "rgba(33, 99, 255, 0.92)" : "rgba(255,255,255,0.22)";
+    ctx.fill();
+  }
+
+  ctx.fillStyle = "#f2f2f2";
+  ctx.font = "24px system-ui, -apple-system, Segoe UI, sans-serif";
+  ctx.fillText("Теперь точки чаще", 430, 115);
+  ctx.fillText("попадают в важную область.", 430, 150);
+  ctx.fillText("Цена — веса событий.", 430, 215);
+  ctx.font = "22px system-ui, -apple-system, Segoe UI, sans-serif";
+  ctx.fillText(`вблизи пика: ${hit} точек`, 430, 285);
+  ctx.fillText("если веса слишком разные,", 430, 340);
+  ctx.fillText("дисперсия снова растёт", 430, 370);
+
+  return canvas;
+}
+```
+
+## Веса: одно большое событие не заменяет статистику
+
+::: {.columns}
+
+::: {.column width="50%"}
+
+При выборке по важности мы меняем способ генерации точек.
+
+Событие получает вес, который компенсирует эту замену.
+
+Хорошая выборка по важности делает веса умеренными.
+Плохая — создаёт редкие огромные веса.
+
+:::
+
+::: {.column width="50%"}
+
+```{=html}
+<svg viewBox="0 0 760 340" width="100%" role="img" aria-label="Сравнение умеренных и сильно различающихся весов">
+  <rect x="0" y="0" width="760" height="340" fill="white"/>
+
+  <text x="60" y="42" font-size="30" font-family="system-ui">хорошие веса</text>
+  <line x1="75" y1="145" x2="315" y2="145" stroke="#111" stroke-width="3"/>
+  <rect x="90" y="88" width="28" height="57" fill="#2163ff" opacity="0.75"/>
+  <rect x="130" y="76" width="28" height="69" fill="#2163ff" opacity="0.75"/>
+  <rect x="170" y="100" width="28" height="45" fill="#2163ff" opacity="0.75"/>
+  <rect x="210" y="84" width="28" height="61" fill="#2163ff" opacity="0.75"/>
+  <rect x="250" y="92" width="28" height="53" fill="#2163ff" opacity="0.75"/>
+  <rect x="290" y="86" width="28" height="59" fill="#2163ff" opacity="0.75"/>
+
+  <text x="445" y="42" font-size="30" font-family="system-ui">плохие веса</text>
+  <line x1="465" y1="145" x2="705" y2="145" stroke="#111" stroke-width="3"/>
+  <rect x="480" y="132" width="28" height="13" fill="#2163ff" opacity="0.75"/>
+  <rect x="520" y="124" width="28" height="21" fill="#2163ff" opacity="0.75"/>
+  <rect x="560" y="134" width="28" height="11" fill="#2163ff" opacity="0.75"/>
+  <rect x="600" y="56" width="28" height="89" fill="#2163ff" opacity="0.75"/>
+  <rect x="640" y="137" width="28" height="8" fill="#2163ff" opacity="0.75"/>
+  <rect x="680" y="128" width="28" height="17" fill="#2163ff" opacity="0.75"/>
+
+  <text x="85" y="225" font-size="25" font-family="system-ui">много сопоставимых</text>
+  <text x="85" y="255" font-size="25" font-family="system-ui">вкладов</text>
+  <text x="85" y="310" font-size="27" font-family="system-ui" fill="#2163ff">дисперсия мала</text>
+
+  <text x="455" y="225" font-size="25" font-family="system-ui">оценку держат</text>
+  <text x="455" y="255" font-size="25" font-family="system-ui">редкие точки</text>
+  <text x="455" y="310" font-size="27" font-family="system-ui" fill="#2163ff">дисперсия велика</text>
+</svg>
+```
+
+:::
+
+:::
+
+## VEGAS: адаптивная выборка по важности
+
+::: {.columns}
+
+::: {.column width="52%"}
+
+Идея VEGAS: не угадывать хорошее распределение заранее.
+
+Алгоритм пробует интегранд, перестраивает разбиение координат и чаще бросает точки там, где вклад больше.
+
+На следующих итерациях выборка становится ближе к важностной.
+
+:::
+
+::: {.column width="48%"}
+
+```{=html}
+<svg viewBox="0 0 760 420" width="100%" role="img" aria-label="Адаптация сетки VEGAS вокруг пика">
+  <rect width="760" height="420" fill="white"/>
+  <text x="85" y="48" font-size="31" font-family="system-ui">до адаптации</text>
+  <rect x="70" y="80" width="230" height="230" fill="none" stroke="#111" stroke-width="3"/>
+  <g stroke="#aaa" stroke-width="2">
+    <line x1="116" y1="80" x2="116" y2="310"/><line x1="162" y1="80" x2="162" y2="310"/><line x1="208" y1="80" x2="208" y2="310"/><line x1="254" y1="80" x2="254" y2="310"/>
+    <line x1="70" y1="126" x2="300" y2="126"/><line x1="70" y1="172" x2="300" y2="172"/><line x1="70" y1="218" x2="300" y2="218"/><line x1="70" y1="264" x2="300" y2="264"/>
+  </g>
+  <circle cx="226" cy="175" r="34" fill="#2163ff" opacity="0.22" stroke="#2163ff" stroke-width="3"/>
+
+  <text x="430" y="48" font-size="31" font-family="system-ui">после адаптации</text>
+  <rect x="425" y="80" width="230" height="230" fill="none" stroke="#111" stroke-width="3"/>
+  <g stroke="#aaa" stroke-width="2">
+    <line x1="463" y1="80" x2="463" y2="310"/><line x1="501" y1="80" x2="501" y2="310"/><line x1="539" y1="80" x2="539" y2="310"/><line x1="562" y1="80" x2="562" y2="310"/><line x1="584" y1="80" x2="584" y2="310"/><line x1="607" y1="80" x2="607" y2="310"/>
+    <line x1="425" y1="121" x2="655" y2="121"/><line x1="425" y1="151" x2="655" y2="151"/><line x1="425" y1="174" x2="655" y2="174"/><line x1="425" y1="197" x2="655" y2="197"/><line x1="425" y1="228" x2="655" y2="228"/><line x1="425" y1="270" x2="655" y2="270"/>
+  </g>
+  <circle cx="584" cy="174" r="34" fill="#2163ff" opacity="0.22" stroke="#2163ff" stroke-width="3"/>
+  <text x="105" y="365" font-size="28" font-family="system-ui">равные ячейки</text>
+  <text x="450" y="365" font-size="28" font-family="system-ui">мелкие ячейки</text>
+  <text x="450" y="397" font-size="28" font-family="system-ui">около пика</text>
+</svg>
+```
+
+:::
+
+:::
+
+## Тестовый интеграл: узкий пик в большой размерности
+
+Возьмём нормированный гауссов пик в единичном гиперкубе:
+
+$$
+f(\mathbf x)
+=
+\prod_{i=1}^d
+\frac{1}{\sqrt{2\pi}\sigma}
+\exp\left[-\frac{(x_i-\mu_i)^2}{2\sigma^2}\right],
+\qquad
+0\le x_i\le1 .
+$$
+
+Интеграл почти равен единице, но вклад сосредоточен в малой области.
+
+```{python}
+#| eval: false
+from math import erf
+import numpy as np
+
+d = 8
+sigma = 0.10
+center = np.array([0.63, 0.37, 0.58, 0.42,
+                   0.69, 0.31, 0.54, 0.46])
+
+norm1d = 1 / (np.sqrt(2*np.pi) * sigma)
+
+def f_batch(x):
+    z2 = np.sum(((x - center) / sigma)**2, axis=1)
+    return np.exp(-0.5 * z2) * norm1d**d
+
+def exact_integral():
+    a = (0.0 - center) / (np.sqrt(2.0) * sigma)
+    b = (1.0 - center) / (np.sqrt(2.0) * sigma)
+    return np.prod([
+        0.5 * (erf(bi) - erf(ai))
+        for ai, bi in zip(a, b)
+    ])
+```
+
+Этот пример контролируем: точное значение получается как произведение одномерных интегралов через `erf`.
+
+## Простой Монте-Карло
+
+::::: {.panel-tabset}
+
+### Вывод
+
+Равномерная генерация честная, но не умная: она почти не знает, где находится пик.
+
+Для этого примера точное значение:
+$$
+I_{\text{точн.}}=0.9978196359 .
+$$
+
+Типичный запуск:
+
+| $N$ | простой Монте-Карло |
+|---:|---:|
+| $10^4$ | $0.946\pm0.48$ |
+| $10^5$ | $0.864\pm0.13$ |
+| $10^6$ | $1.001\pm0.061$ |
+
+### Код и графики
+
+:::: {.columns}
+
+::: {.column width="47%"}
+
+::: {.smaller}
+```python
+def plain_mc(N, seed=12345):
+    rng = np.random.default_rng(seed)
+    x = rng.random((N, d))
+    y = f_batch(x)
+    mean = np.mean(y)
+    err = np.std(y, ddof=1) / np.sqrt(N)
+    return mean, err
+
+for N in [10_000, 100_000, 1_000_000]:
+    val, err = plain_mc(N)
+    print(f"простой МК, N={N:>8}: {val:.6g} ± {err:.2g}")
+```
+:::
+
+:::
+
+::: {.column width="53%"}
+
+```{python}
+#| echo: false
+#| warning: false
+#| fig-width: 7.2
+#| fig-height: 3.6
+#| out-width: "100%"
+import numpy as np
+import matplotlib.pyplot as plt
+
+rng = np.random.default_rng(12345)
+xy = rng.random((2500, 2))
+peak = np.array([0.63, 0.37])
+
+Ns = np.array([1e4, 1e5, 1e6])
+vals = np.array([0.945546, 0.863792, 1.000935])
+errs = np.array([0.480515, 0.131991, 0.060680])
+exact = 0.9978196359
+
+plt.rcParams.update({
+    "font.size": 10,
+    "axes.facecolor": "#050505",
+    "figure.facecolor": "#050505",
+    "axes.edgecolor": "#d8d8d8",
+    "axes.labelcolor": "#f2f2f2",
+    "xtick.color": "#f2f2f2",
+    "ytick.color": "#f2f2f2",
+    "text.color": "#f2f2f2",
+})
+
+fig, axes = plt.subplots(1, 2, figsize=(7.2, 3.6), constrained_layout=True)
+
+ax = axes[0]
+ax.scatter(xy[:, 0], xy[:, 1], s=2, color="#8a8a8a", alpha=0.45, linewidths=0)
+circle = plt.Circle(peak, 0.10, color="#2163ff", alpha=0.24)
+ax.add_patch(circle)
+ax.scatter([peak[0]], [peak[1]], s=45, color="#4ea1ff")
+ax.set_xlim(0, 1)
+ax.set_ylim(0, 1)
+ax.set_aspect("equal")
+ax.set_title("равномерные точки")
+ax.set_xlabel("$x_1$")
+ax.set_ylabel("$x_2$")
+
+ax = axes[1]
+ax.errorbar(Ns, vals, yerr=errs, fmt="o", color="#ffb347", ecolor="#ffb347", capsize=4)
+ax.axhline(exact, color="#4ea1ff", linewidth=2, label="$I_{\\mathrm{точн.}}$")
+ax.set_xscale("log")
+ax.set_ylim(0.35, 1.55)
+ax.set_title("оценка интеграла")
+ax.set_xlabel("$N$")
+ax.set_ylabel("$\\widehat I$")
+ax.grid(True, alpha=0.22)
+ax.legend(frameon=False, loc="lower right")
+
+plt.show()
+```
+
+:::
+
+::::
+
+:::::
+
+
+## Тензорная квадратура Гаусса--Лежандра
+
+::::: {.panel-tabset}
+
+### Вывод
+
+В малой размерности квадратуры прекрасны. В большой размерности проблема не в идее квадратуры, а в росте числа узлов как $m^d$.
+
+| узлов на координату | всего узлов | результат |
+|---:|---:|---:|
+| 3 | 6 561 | 0.589 |
+| 5 | 390 625 | 0.722 |
+| 7 | 5 764 801 | 0.963 |
+
+Даже миллионы регулярных узлов ещё чувствительны к тому, как сетка попала относительно узкого пика.
+
+### Код
+
+::: {.smaller}
+```python
+from numpy.polynomial.legendre import leggauss
+import itertools
+
+def tensor_gauss(m):
+    nodes, weights = leggauss(m)
+    nodes = 0.5 * (nodes + 1.0)
+    weights = 0.5 * weights
+
+    total = 0.0
+    for idx in itertools.product(range(m), repeat=d):
+        x = np.array([[nodes[i] for i in idx]])
+        w = np.prod([weights[i] for i in idx])
+        total += w * f_batch(x)[0]
+
+    return total, m**d
+
+for m in [3, 5, 7]:
+    val, neval = tensor_gauss(m)
+    print(f"m={m:>2}, вызовов={neval:>9}: {val:.6g}")
+```
+:::
+
+:::::
+
+## VEGAS в Python
+
+::::: {.panel-tabset}
+
+### Вывод
+
+VEGAS не отменяет $1/\sqrt N$. Он уменьшает коэффициент перед этой ошибкой, если смог найти важные области.
+
+В этом запуске после адаптации:
+$$
+\widehat I_{\mathrm{VEGAS}}=0.99787\pm0.00053,
+\qquad
+Q\simeq0.43 .
+$$
+
+Это меньше $10^{-3}$ относительной статистической ошибки при меньшем числе вычислений, чем у простого Монте-Карло с $10^6$ точек.
+
+### Код и запуск
+
+:::: {.columns}
+
+::: {.column width="54%"}
+
+::: {.smaller}
+```python
+import runpy
+
+demo = runpy.run_path("../../shared/notebooks/mc_vegas_demo.py")
+exact = demo["exact_integral"]()
+mc_val, mc_err = demo["plain_mc"](1_000_000)
+grid_val, grid_calls = demo["tensor_gauss"](5)
+vegas_val = demo["vegas_result"]()
+
+print(f"точное       {exact:.10f}")
+print(f"простой МК   {mc_val:.6f} +- {mc_err:.3f}")
+print(f"Гаусс m=5    {grid_val:.6f}  ({grid_calls} вызовов)")
+print(f"VEGAS      {vegas_val}  Q={vegas_val.Q:.2f}")
+```
+:::
+
+:::
+
+::: {.column width="46%"}
+
+::: {.smaller}
+```{python}
+#| echo: false
+#| warning: false
+#| results: markup
+import runpy
+
+demo = runpy.run_path("../../shared/notebooks/mc_vegas_demo.py")
+exact = demo["exact_integral"]()
+mc_val, mc_err = demo["plain_mc"](1_000_000)
+grid_val, grid_calls = demo["tensor_gauss"](5)
+vegas_val = demo["vegas_result"]()
+
+print(f"точное       {exact:.10f}")
+print(f"простой МК   {mc_val:.6f} +- {mc_err:.3f}")
+print(f"Гаусс m=5    {grid_val:.6f}  ({grid_calls} вызовов)")
+print(f"VEGAS      {vegas_val}  Q={vegas_val.Q:.2f}")
+```
+:::
+
+:::
+
+::::
+
+::: {.smaller}
+Полный воспроизводимый пример: [ноутбук mc_vegas_notebook](notebooks/mc_vegas_notebook.html).
+:::
+
+:::::
+
+## Что сравниваем
+
+| метод | что делает | сильная сторона | слабое место |
+|---|---|---|---|
+| сеточная квадратура | регулярно покрывает гиперкуб | точна в малой размерности | число узлов растёт как $m^d$ |
+| простой Монте-Карло | бросает равномерные точки | ошибка $\sim N^{-1/2}$ | много точек мимо редкого вклада |
+| выборка по важности | бросает точки чаще в важные области | меньше дисперсия | плохие веса портят оценку |
+| VEGAS | строит важностную выборку адаптивно | сам ищет пики | труднее для диагональных и сложных структур |
+
+Главный вывод: выигрыш VEGAS — не магическое изменение закона $1/\sqrt N$, а уменьшение дисперсии интегранда после адаптации.
+
+## Когда VEGAS надо проверять особенно внимательно
+
+::: incremental
+- Очень узкий пик можно просто не увидеть на начальных итерациях.
+- Несколько разнесённых мод могут привести к адаптации вокруг одной из них.
+- Диагональные гребни и сильные корреляции плохо описываются произведением одномерных сеток.
+- Нужно смотреть не только центральное значение, но и итерации, $Q$-значение и независимые запуски с разными начальными числами генератора.
+:::
+
+::: {.fragment .callout-important .remarkbox appearance="simple"}
+Практическая стратегия: сначала простой Монте-Карло или грубый контрольный расчёт, затем VEGAS, затем проверка устойчивости результата.
+:::
+
+
+# Псевдоэксперименты
+
+## Что такое псевдоэксперимент
+
+Псевдоэксперимент — одна искусственная реализация полного измерения:
+
+::: incremental
+1. Сгенерировать истинные физические события.
+2. Смоделировать отклик детектора.
+3. Применить реконструкцию и отбор.
+4. Выполнить тот же анализ, что и для данных.
+5. Сохранить итоговую статистику или оценку параметра.
+:::
+
+Повторение этой процедуры строит распределение возможных результатов эксперимента.
+
+## Зачем нужны псевдоэксперименты
+
+::: incremental
+- Проверить смещение и дисперсию оценки параметра.
+- Проверить покрытие доверительного интервала.
+- Найти распределение статистики теста.
+- Оценить ожидаемую чувствительность эксперимента.
+- Проверить устойчивость подгонки.
+- Исследовать влияние систематических неопределённостей.
+:::
+
+## Пример: счётный эксперимент
+
+Пусть ожидается
+$$
+N\sim\operatorname{Pois}(s+b),
+$$
+где $s$ — сигнал, а $b$ — известный фон.
+
+Простейшая оценка сигнала:
+$$
+\widehat s=N-b.
+$$
+
+Она несмещённая:
+$$
+\mathbb E[\widehat s]=s,
+$$
+но отдельный эксперимент может дать даже $\widehat s<0$.
+
+## Интерактив: ансамбль счётных экспериментов
+
+::: {.clt-widget .toy-counting-widget}
+
+::: {.mc-range-controls .toy-counting-controls}
+
+```{ojs}
+//| echo: false
+
+viewof toySignal = mcRange("ожидаемый сигнал s", [0, 20], {value: 5, step: 0.5})
+viewof toyBackground = mcRange("ожидаемый фон b", [0.5, 30], {value: 10, step: 0.5})
+viewof toyN = mcRange("псевдоэксперименты", [500, 20000], {value: 6000, step: 500})
+viewof regenerateToys = Inputs.button("Новый ансамбль")
+```
+
+:::
+
+```{ojs}
+//| echo: false
+
+poissonToy = lambda => {
+  const limit = Math.exp(-lambda);
+  let p = 1;
+  let k = 0;
+  do {
+    k += 1;
+    p *= Math.random();
+  } while (p > limit);
+  return k - 1;
+}
+
+toyEstimates = {
+  regenerateToys;
+  return Array.from({length: toyN}, () => poissonToy(toySignal + toyBackground) - toyBackground);
+}
+
+toyMin = Math.floor(Math.min(...toyEstimates)) - 0.5
+toyMax = Math.ceil(Math.max(...toyEstimates)) + 0.5
+toyBins = {
+  const counts = new Map();
+  for (const value of toyEstimates) counts.set(value, (counts.get(value) || 0) + 1);
+  return Array.from(counts, ([value, count]) => ({
+    value,
+    x1: value - 0.45,
+    x2: value + 0.45,
+    probability: count / toyEstimates.length
+  })).sort((a, b) => a.value - b.value);
+}
+toyMean = toyEstimates.reduce((a, b) => a + b, 0) / toyEstimates.length
+toySigma = Math.sqrt(toyEstimates.reduce((a, x) => a + (x - toyMean) ** 2, 0) / toyEstimates.length)
+toyNegative = toyEstimates.filter(x => x < 0).length / toyEstimates.length
+toyYMax = Math.max(0.12, 1.18 * Math.max(...toyBins.map(d => d.probability)))
+
+toyPlot = Plot.plot({
+  width: 1180,
+  height: 360,
+  marginLeft: 72,
+  marginRight: 24,
+  marginTop: 26,
+  marginBottom: 48,
+  style: {
+    background: "transparent",
+    color: "#f2f2f2",
+    fontSize: 16
+  },
+  x: {
+    label: "оценка сигнала ŝ = N - b",
+    domain: [toyMin, toyMax],
+    grid: true,
+    tickFormat: d => Number.isInteger(d) ? d : ""
+  },
+  y: {
+    label: "вероятность",
+    domain: [0, toyYMax],
+    grid: true,
+    tickFormat: d => d.toFixed(2)
+  },
+  marks: [
+    Plot.rectY(toyBins, {x1: "x1", x2: "x2", y: "probability", fill: "#4ea1ff", fillOpacity: 0.9}),
+    Plot.ruleY([0], {stroke: "#f2f2f2", strokeWidth: 1}),
+    Plot.ruleX([toySignal], {stroke: "#ffb347", strokeWidth: 4})
+  ]
+})
+
+toyPlot.querySelectorAll(".grid line").forEach(line => line.setAttribute("stroke", "rgba(255,255,255,0.14)"))
+toyPlot.querySelectorAll(".tick line, .domain").forEach(line => line.setAttribute("stroke", "rgba(255,255,255,0.55)"))
+toyPlot.querySelectorAll("text").forEach(text => text.setAttribute("fill", "#f2f2f2"))
+
+html`
+<div class="clt-panel toy-counting-panel">
+  ${toyPlot}
+  <div class="toy-counting-takeaway">
+    <span>Фиксируем модель: ожидаемые значения сигнала s = ${toySignal.toFixed(1)} и фона b = ${toyBackground.toFixed(1)}.</span>
+    <span>Гистограмма показывает возможные исходы повторений: реальные данные дадут одну точку из этого распределения.</span>
+  </div>
+</div>
+`
+```
+
+:::
+
+## Ансамбль и реальные данные
+
+::: incremental
+- Реальный эксперимент даёт одну точку из распределения возможных результатов.
+- Псевдоэксперименты строят это распределение при заданной модели.
+- Они позволяют ответить: «что произошло бы, если повторить эксперимент?»
+- Но ответ всегда условен относительно выбранной модели и её параметров.
+:::
+
+::: {.fragment .callout-important .remarkbox appearance="simple"}
+Нельзя выбирать модель псевдоэкспериментов после просмотра результата так, чтобы получить желаемый вывод.
+:::
+
+
+# Моделирование эксперимента
+
+## Цепочка моделирования {.sim-chain-slide}
+
+::::: {.panel-tabset}
+
+### Схема
+
+В физическом анализе Монте-Карло часто проходит несколько уровней:
+
+::: incremental
+1. **Генерация процесса:** частицы и кинематика.
+2. **Взаимодействие с веществом:** каскады, потери энергии, вторичные частицы.
+3. **Отклик детектора:** сигналы сенсоров и электроники.
+4. **Реконструкция:** восстановленные объекты и параметры.
+5. **Отбор:** триггеры, критерии качества и анализ.
+:::
+
+На каждом уровне модель может вносить систематическую неопределённость.
+
+### Моделирование Daya Bay и JUNO
+
+![](shared/figures/static/opticks_juno_simon_blyth.mp4){controls="true" fig-alt="Моделирование оптических фотонов Daya Bay и JUNO с помощью Opticks" width="100%"}
+
+::: {.smaller}
+Моделирование Daya Bay и JUNO в Opticks. Автор: Simon Blyth.
+:::
+
+:::::
+
+## Эффективность отбора
+
+Если из $N_{\mathrm{gen}}$ сгенерированных событий прошло отбор $N_{\mathrm{sel}}$, то
+$$
+\widehat\varepsilon
+=
+\frac{N_{\mathrm{sel}}}{N_{\mathrm{gen}}}.
+$$
+
+При независимых событиях
+$$
+N_{\mathrm{sel}}\sim\operatorname{Bin}(N_{\mathrm{gen}},\varepsilon),
+$$
+поэтому
+$$
+\boxed{
+\sigma_{\widehat\varepsilon}
+\approx
+\sqrt{
+\frac{\widehat\varepsilon(1-\widehat\varepsilon)}
+{N_{\mathrm{gen}}}
+}.
+}
+$$
+
+## Когда биномиальная ошибка ломается
+
+Если все события прошли отбор, $N_{\mathrm{sel}}=N_{\mathrm{gen}}$, то
+наивная формула даёт
+$$
+\widehat\varepsilon=1,
+\qquad
+\sigma_{\widehat\varepsilon}=0.
+$$
+
+Это не означает, что эффективность известна точно. Это означает только, что в данной выборке Монте-Карло не было ни одного отказа.
+
+::: incremental
+- Точечная оценка $\widehat\varepsilon=N_{\mathrm{sel}}/N_{\mathrm{gen}}$ остаётся разумной как [оценка методом максимального правдоподобия](08_maximum_likelihood.html#/метод-максимального-правдоподобия).
+- На границах особенно ясно, что вместо дисперсии нужно использовать **интервал**. Симметричная запись $\widehat\varepsilon\pm\sigma$ может вывести за границу определения.  
+- Частотное решение: интервал Уилсона или интервал Клоппера--Пирсона; численно их можно посчитать в [аплетах](applets.html).
+- Байесовское решение: бета-биномиальное апостериорное распределение и байесовский интервал. Это будет отдельная тема.
+:::
+
+## Матрица отклика
+
+Истинное значение может быть восстановлено в другом бине:
+$$
+R_{ji}
+=
+P(\text{восстановленный бин }j\mid\text{истинный бин }i).
+$$
+
+Если истинный спектр равен $\mathbf t$, то ожидаемый восстановленный спектр:
+$$
+\boxed{
+\mathbf r=R\mathbf t.
+}
+$$
+
+::: incremental
+- Диагональные элементы описывают правильную реконструкцию.
+- Внедиагональные элементы описывают миграции.
+- Потери эффективности уменьшают сумму элементов столбца.
+- Матрица отклика оценивается по Монте-Карло.
+:::
+
+## Ограниченная статистика моделирования
+
+Монте-Карло имеет собственные статистические флуктуации.
+
+Для взвешенной выборки эффективный размер:
+$$
+\boxed{
+N_{\mathrm{eff}}
+=
+\frac{\left(\sum_k w_k\right)^2}
+{\sum_k w_k^2}.
+}
+$$
+
+::: incremental
+- Если все веса равны, $N_{\mathrm{eff}}=N$.
+- Несколько больших весов могут сделать $N_{\mathrm{eff}}\ll N$.
+- Большое число сгенерированных событий не гарантирует малую ошибку после отбора и перевзвешивания.
+:::
+
+# Как работать с Монте-Карло
+
+## Проверка генератора и реализации
+
+::: incremental
+- Сравнить простые распределения с аналитическими результатами.
+- Проверить средние, дисперсии, корреляции и нормировку.
+- Проверить предельные случаи параметров.
+- Сравнить несколько независимых реализаций.
+- Зафиксировать начальное состояние генератора для воспроизведения ошибки.
+- Отдельно проверить каждый этап цепочки моделирования.
+:::
+
+## Проверка сходимости
+
+Результат необходимо изучить как функцию числа симуляций $N$.
+
+::: incremental
+- Статистическая ошибка должна убывать примерно как $1/\sqrt N$.
+- Независимые запуски должны быть совместимы в пределах ожидаемой ошибки.
+- Редкие области распределения требуют существенно большей статистики.
+- Для взвешенных событий следует контролировать $N_{\mathrm{eff}}$.
+:::
+
+## Смещение и дисперсия оценки
+
+Для оценки $\widehat\theta$ псевдоэксперименты позволяют вычислить
+$$
+\operatorname{bias}(\widehat\theta)
+=
+\mathbb E[\widehat\theta]-\theta,
+$$
+$$
+\operatorname{Var}(\widehat\theta)
+=
+\mathbb E\!\left[
+(\widehat\theta-\mathbb E[\widehat\theta])^2
+\right].
+$$
+
+::: {.fragment .callout-note .thmbox appearance="simple"}
+Хороший анализ должен показывать, что процедура восстановления параметра работает на псевдоэкспериментах с известной истиной.
+:::
+
+## Разделять два источника ошибки
+
+::: incremental
+- **Физическая статистическая неопределённость:** разброс возможных результатов реального эксперимента.
+- **Численная ошибка Монте-Карло:** неточность оценки этого разброса из-за конечного числа симуляций.
+:::
+
+Например, увеличение числа псевдоэкспериментов точнее определяет распределение $\widehat\theta$, но не уменьшает ожидаемую ошибку одного реального измерения.
+
+## Воспроизводимый рабочий процесс
+
+::: incremental
+1. Явно записать вероятностную модель.
+2. Сохранить конфигурацию и версии программ.
+3. Сохранить начальное состояние генератора или правило формирования независимых начальных состояний.
+4. Проверить реализацию на задачах с известным ответом.
+5. Оценить численную ошибку Монте-Карло.
+6. Проверить устойчивость к увеличению статистики.
+7. Сравнить моделирование с контрольными данными.
+8. Документировать веса, отборы и систематические вариации.
+:::
+
+## Когда нужен другой инструмент
+
+::: incremental
+- Для простого аналитического результата Монте-Карло может скрыть понимание.
+- Для крайне редких событий наивная генерация неэффективна.
+- Для сложного апостериорного распределения могут потребоваться Монте-Карло по марковским цепям или вложенная выборка.
+- Для обратных задач нужны методы регуляризации и развёртки.
+- Для дорогостоящего моделирования могут понадобиться суррогатные модели.
+:::
+
+---
+
+# Что важно запомнить
+
+## Резюме
+
+::: incremental
+- Монте-Карло строит численный ансамбль возможных реализаций модели.
+- Равномерные псевдослучайные числа преобразуются в требуемые распределения.
+- Интеграл можно представить как математическое ожидание.
+- Статистическая ошибка обычного Монте-Карло убывает как $1/\sqrt N$.
+- Псевдоэксперименты проверяют всю статистическую процедуру.
+- Численное распространение ошибок сохраняет нелинейность, корреляции и асимметрию.
+- Моделирование имеет собственную конечную статистику и систематические неопределённости.
+- Результату Монте-Карло можно доверять только после проверок сходимости и воспроизводимости.
+:::
