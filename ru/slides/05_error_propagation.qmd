@@ -1,0 +1,1778 @@
+---
+title: "Распространение ошибок"
+subtitle: "Статистический анализ данных"
+author: "Дмитрий В. Наумов (ОИЯИ)"
+format:
+  revealjs:
+    theme: black
+    slide-number: true
+    preview-links: auto
+    chalkboard:
+      buttons: false
+    logo: shared/figures/dvnlogo.png
+    css: styles.css
+    transition: fade
+    center: true
+---
+
+# От измерения к результату
+
+## Что обычно измеряет эксперимент
+
+::: incremental
+- Детектор непосредственно измеряет набор величин
+  $$
+  \mathbf X=(X_1,\ldots,X_n).
+  $$
+- Физический результат часто является производной величиной:
+  $$
+  \mathbf Y=\mathbf f(\mathbf X).
+  $$
+- Вместе со значением $\mathbf Y$ необходимо сообщить его неопределённость.
+- Для этого недостаточно знать только ошибки отдельных $X_i$: нужны также их корреляции.
+:::
+
+## Примеры производных величин
+
+::: incremental
+- Импульс заряженной частицы из радиуса кривизны:
+  $$
+  p_T=qBR.
+  $$
+- Отношение числа сигнальных событий к эффективности:
+  $$
+  \sigma=\frac{N_{\mathrm{sig}}}{\varepsilon\, L}.
+  $$
+- Инвариантная масса двух частиц:
+  $$
+  m^2=2E_1E_2(1-\cos\theta).
+  $$
+- Координаты точки пересечения двух восстановленных треков.
+:::
+
+::: {.fragment .callout-note .thmbox appearance="simple"}
+Во всех этих примерах неопределённости исходных измерений необходимо перенести на итоговый результат.
+:::
+
+## Главная идея
+
+Если ошибки достаточно малы, функцию можно локально заменить касательной:
+$$
+f(X)
+\approx
+f(\mu_X)+f'(\mu_X)(X-\mu_X).
+$$
+
+::: incremental
+- Случайное отклонение $X-\mu_X$ преобразуется почти линейно.
+- Поэтому его дисперсию можно вычислить аналитически.
+- Это приближение называется **линейным распространением ошибок**.
+:::
+
+---
+
+# Одна измеряемая величина
+
+## Линейное распространение ошибки
+
+Пусть
+$$
+Y=f(X),
+\qquad
+\mathbb E[X]=\mu_X,
+\qquad
+\operatorname{Var}(X)=\sigma_X^2.
+$$
+
+В линейном приближении
+$$
+Y-\mathbb E[Y]
+\approx
+f'(\mu_X)(X-\mu_X).
+$$
+
+Следовательно,
+$$
+\boxed{
+\sigma_Y^2
+\approx
+\left[f'(\mu_X)\right]^2\sigma_X^2,
+\qquad
+\sigma_Y
+\approx
+\left|f'(\mu_X)\right|\sigma_X.
+}
+$$
+
+## Пример: степенная зависимость
+
+Для
+$$
+Y=X^a
+$$
+имеем
+$$
+\frac{dY}{dX}=aX^{a-1}.
+$$
+
+Поэтому
+$$
+\sigma_Y
+\approx
+|a|\mu_X^{a-1}\sigma_X,
+$$
+или в относительной форме
+$$
+\boxed{
+\frac{\sigma_Y}{|Y|}
+\approx
+|a|\frac{\sigma_X}{|\mu_X|}.
+}
+$$
+
+## Часто используемые следствия
+
+::: {style="display: flex; justify-content: center;"}
+| Функция | Распространённая ошибка |
+|---|---|
+| $Y=aX+b$ | $\sigma_Y=|a|\sigma_X$ |
+| $Y=X^a$ | $\sigma_Y/|Y|\approx |a|\sigma_X/|X|$ |
+| $Y=1/X$ | $\sigma_Y/|Y|\approx \sigma_X/|X|$ |
+| $Y=\ln X$ | $\sigma_Y\approx \sigma_X/|X|$ |
+| $Y=e^X$ | $\sigma_Y/|Y|\approx \sigma_X$ |
+:::
+
+::: {.fragment .callout-note .remarkbox appearance="simple"}
+Эти формулы справедливы локально: производная не должна сильно меняться внутри области неопределённости.
+:::
+
+## Пример. Измерение поперечного импульса частицы в магнитном поле
+::: incremental
+
+- Пусть $R$ — радиус кривизны трека, а $B$ — магнитное поле. Тогда
+$$
+  p_T=qBR.
+$$
+- Если $R$ измеряется с ошибкой $\sigma_R$, то
+$$
+  \sigma_{p_T}=qB\sigma_R, \qquad \frac{\sigma_{p_T}}{p_T}=\frac{\sigma_R}{R}.
+$$
+
+:::
+
+## Пример. Измерение сечения процесса
+::: incremental
+- Пусть $N$ — число наблюдаемых событий, $\varepsilon$ — эффективность, а $L$ — интегральная светимость. Тогда
+  $$
+  \sigma=\frac{N}{\varepsilon L}.
+  $$
+- Если все величины измеряются с ошибками с **нулевой ковариацией**, то
+  $$
+  \sigma^2_\sigma=\frac{\sigma_N^2}{\varepsilon^2 L^2}+\frac{N^2\sigma_\varepsilon^2}{\varepsilon^4 L^2}+\frac{N^2\sigma_L^2}{\varepsilon^2 L^4}.
+  $$
+- относительная ошибка сечения:
+$$
+  \left(\frac{\sigma_\sigma}{\sigma}\right)^2
+= \left(\frac{\sigma_N}{N}\right)^2 +
+  \left(\frac{\sigma_\varepsilon}{\varepsilon}\right)^2 + \left(\frac{\sigma_L}{L}\right)^2.
+$$
+:::
+
+## Когда линейное приближение работает плохо
+
+::: incremental
+- Ошибка $\sigma_X$ велика по сравнению с масштабом изменения $f(X)$.
+- Производная близка к нулю, и главным становится квадратичный член.
+- Функция имеет особенность, порог или физическую границу.
+- Преобразованное распределение становится заметно асимметричным.
+
+- Например, для
+$$
+Y=X^2,
+\qquad
+\mu_X=0,
+$$
+линейная формула предсказывает $\sigma_Y\approx0$, хотя $Y$ флуктуирует.
+:::
+
+## Пример: где ломается линейное приближение
+
+Рассмотрим гауссову величину и нелинейное преобразование:
+$$
+X\sim\mathrm N(1,\sigma_X^2),
+\qquad
+Y=X+aX^2.
+$$
+
+::::: {.columns}
+
+::: {.column width="50%"}
+
+Линейное приближение около $\mu_X=1$ предсказывает
+$$
+\boxed{
+\begin{aligned}
+\mathbb E[Y]&\approx 1+a,\\
+\sigma_Y&\approx |1+2a|\,\sigma_X.
+\end{aligned}
+}
+$$
+
+Оно заменяет параболу её касательной в точке $X=1$.
+
+:::
+
+::: {.column width="50%"}
+
+Точный результат для гауссова $X$:
+$$
+\boxed{
+\begin{aligned}
+\mathbb E[Y]&=1+a+a\sigma_X^2,\\
+\sigma_Y^2&=(1+2a)^2\sigma_X^2
++2a^2\sigma_X^4.
+\end{aligned}
+}
+$$
+
+Отброшенные квадратичные члены создают смещение и дополнительную дисперсию.
+
+:::
+
+:::::
+
+## Пример: где ломается линейное приближение. Алгоритм
+
+::: incremental
+1. Выбираем ширину исходного гаусса $\sigma_X$ и нелинейность $a$.
+2. Генерируем много значений
+   $$
+   X_k\sim\mathrm N(1,\sigma_X^2).
+   $$
+3. Для каждого значения вычисляем
+   $$
+   Y_k=X_k+aX_k^2.
+   $$
+4. **Синяя гистограмма** показывает фактическое распределение $Y_k$.
+5. **Оранжевая кривая** — гауссово распределение, предсказанное линейной формулой.
+:::
+
+::: {.fragment .callout-note .thmbox appearance="simple"}
+При малых $a$ и $\sigma_X$ результаты совпадают. При росте нелинейности распределение смещается, становится асимметричным, а линейная ошибка занижается.
+:::
+
+## Интерактив: где ломается линейная формула
+
+::: {.clt-widget}
+```{ojs}
+//| echo: false
+
+viewof propSigma = Inputs.range([0.05, 1.5], {value: 0.35, step: 0.05, label: "sigma_X"})
+viewof propCurvature = Inputs.range([0, 1.5], {value: 0.35, step: 0.05, label: "кривизна a"})
+viewof regenerateProp = Inputs.button("Новая выборка")
+
+randnProp = () => {
+  const u1 = Math.max(Math.random(), 1e-12);
+  const u2 = Math.random();
+  return Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
+}
+
+propSample = {
+  regenerateProp;
+  const n = 18000;
+  const values = new Array(n);
+  for (let i = 0; i < n; ++i) {
+    const x = 1 + propSigma * randnProp();
+    values[i] = x + propCurvature * x * x;
+  }
+  return values;
+}
+
+histProp = {
+  const bins = 80;
+  const lo = Math.min(...propSample);
+  const hi = Math.max(...propSample);
+  const width = (hi - lo) / bins;
+  const counts = Array(bins).fill(0);
+  for (const y of propSample) {
+    const j = Math.min(bins - 1, Math.max(0, Math.floor((y - lo) / width)));
+    counts[j] += 1;
+  }
+  return counts.map((count, j) => ({
+    x0: lo + j * width,
+    x1: lo + (j + 1) * width,
+    density: count / (propSample.length * width)
+  }));
+}
+
+propMeanLinear = 1 + propCurvature
+propSigmaLinear = Math.abs(1 + 2 * propCurvature) * propSigma
+propMeanExact = 1 + propCurvature + propCurvature * propSigma * propSigma
+propSigmaExact = Math.sqrt(
+  (1 + 2 * propCurvature) ** 2 * propSigma ** 2
+  + 2 * propCurvature ** 2 * propSigma ** 4
+)
+normalProp = Array.from({length: 401}, (_, i) => {
+  const lo = histProp[0].x0;
+  const hi = histProp[histProp.length - 1].x1;
+  const y = lo + (hi - lo) * i / 400;
+  const z = (y - propMeanLinear) / propSigmaLinear;
+  return {
+    y,
+    density: Math.exp(-0.5 * z * z) / (propSigmaLinear * Math.sqrt(2 * Math.PI))
+  };
+})
+
+propActualMean = propSample.reduce((a, b) => a + b, 0) / propSample.length
+propActualSigma = Math.sqrt(propSample.reduce((s, y) => s + (y - propActualMean) ** 2, 0) / propSample.length)
+
+propPlot = Plot.plot({
+  width: 940,
+  height: 410,
+  marginLeft: 70,
+  x: {label: "Y = X + aX^2", grid: true},
+  y: {label: "плотность", grid: true},
+  marks: [
+    Plot.rectY(histProp, {x1: "x0", x2: "x1", y: "density", fill: "#4ea1ff", fillOpacity: 0.7}),
+    Plot.line(normalProp, {x: "y", y: "density", stroke: "#ffb347", strokeWidth: 3})
+  ]
+})
+
+html`
+<div class="clt-panel">
+  ${propPlot}
+  <div class="clt-summary">
+    <span>линейно: mean = ${propMeanLinear.toFixed(3)}, sigma = ${propSigmaLinear.toFixed(3)}</span>
+    <span>точно: mean = ${propMeanExact.toFixed(3)}, sigma = ${propSigmaExact.toFixed(3)}</span>
+    <span>Монте-Карло: mean = ${propActualMean.toFixed(3)}, sigma = ${propActualSigma.toFixed(3)}</span>
+    <span>синий: Монте-Карло; оранжевый: линейное приближение</span>
+  </div>
+</div>
+`
+```
+:::
+
+
+## Разброс оценки стандартного отклонения
+
+::: incremental
+
+- Пусть
+$$
+X_1,\ldots,X_N\sim  N(\mu,\sigma^2)
+$$
+— независимые измерения одной и той же величины.
+
+- Истинные, но обычно неизвестные параметры распределения:
+$$
+\mu,
+\qquad
+\sigma^2.
+$$
+
+- По выборке оцениваем среднее и дисперсию:
+$$
+\widehat\mu
+=
+\frac1N\sum_{k=1}^N X_k, \qquad \widehat{\sigma^2}
+=
+\frac{1}{N-1}
+\sum_{k=1}^N (X_k-\widehat\mu)^2.
+$$
+
+- Оценка стандартного отклонения:
+$$
+\widehat\sigma
+=
+\sqrt{\widehat{\sigma^2}}.
+$$
+
+:::
+
+## Разброс оценки стандартного отклонения
+
+::: incremental
+
+- Величины
+$$
+\widehat\mu,
+\qquad
+\widehat{\sigma^2},
+\qquad
+\widehat\sigma
+$$
+сами являются случайными величинами.
+
+- Если повторять весь эксперимент много раз, то в каждом эксперименте получится своё значение:
+$$
+\widehat\sigma_1,
+\widehat\sigma_2,
+\widehat\sigma_3,
+\ldots
+$$
+
+- Поэтому можно говорить о дисперсии оценки:
+$$
+\operatorname{Var}(\widehat\sigma).
+$$
+
+- Для гауссовой выборки при достаточно большом $N$:
+$$
+\boxed{
+\frac{\operatorname{Var}(\widehat\sigma)}{\sigma^2}
+\approx
+\frac{1}{2(N-1)}.
+}
+$$
+
+- Сейчас мы покажем, откуда берётся эта формула.
+
+:::
+
+## Оценка разброса среднего
+
+::: incremental
+
+- Истинная дисперсия оценки среднего равна
+$$
+\operatorname{Var}(\widehat\mu)
+=
+\frac{\sigma^2}{N}.
+$$
+
+- Но истинное $\sigma^2$ обычно неизвестно.
+
+- Поэтому вместо него используют оценку:
+$$
+\widehat{\operatorname{Var}}(\widehat\mu)
+=
+\frac{\widehat{\sigma^2}}{N}.
+$$
+
+- Соответствующий масштаб разброса оценки среднего оценивается как
+$$
+\sqrt{\widehat{\operatorname{Var}}(\widehat\mu)}
+=
+\frac{\widehat\sigma}{\sqrt N}.
+$$
+
+- Но $\widehat\sigma$ найдено по конечной выборке. Значит, у $\widehat\sigma$ тоже есть собственный разброс от выборки к выборке.
+
+:::
+
+## Что именно мы хотим найти
+
+::: incremental
+
+- Нас интересует дисперсия оценки стандартного отклонения:
+$$
+\operatorname{Var}(\widehat\sigma).
+$$
+
+- Непосредственно работать с $\widehat\sigma$ неудобно, потому что
+$$
+\widehat\sigma
+=
+\sqrt{\widehat{\sigma^2}}.
+$$
+
+- Поэтому сначала найдём дисперсию оценки дисперсии:
+$$
+\operatorname{Var}(\widehat{\sigma^2}).
+$$
+
+- Для гауссовой выборки получится точный результат:
+$$
+\boxed{
+\operatorname{Var}(\widehat{\sigma^2})
+=
+\frac{2\sigma^4}{N-1}.
+}
+$$
+
+- Затем перейдём от $\widehat{\sigma^2}$ к $\widehat\sigma$.
+
+:::
+
+## Вывод: отклонения от истинного среднего
+
+::: incremental
+
+- Введём отклонение одного измерения от истинного среднего:
+$$
+Y_k=X_k-\mu.
+$$
+
+- Это не отклонение от выборочного среднего $\widehat\mu$.
+
+- Поэтому
+$$
+\mathbb E[Y_k] = \mathbb E[X_k-\mu] = \mathbb E[X_k]-\mu =0.
+$$
+
+- Также
+$$
+\mathbb E[Y_k^2]=\sigma^2,
+\qquad
+\mathbb E[Y_k^4]=3\sigma^4.
+$$
+
+- Последнее равенство использует гауссовость распределения.
+
+:::
+
+## Вывод: две удобные суммы
+
+::: incremental
+
+- Обозначим
+$$
+A=
+\sum_{k=1}^N Y_k^2,
+\qquad
+B=
+\sum_{k=1}^N Y_k.
+$$
+
+- Тогда оценка среднего отличается от истинного среднего на
+$$
+\widehat\mu-\mu
+=
+\frac1N\sum_{k=1}^N (X_k-\mu)
+=
+\frac{B}{N}.
+$$
+
+- Значит, для каждого измерения
+$$
+X_k-\widehat\mu
+=
+(X_k-\mu)-(\widehat\mu-\mu)
+=
+Y_k-\frac{B}{N}.
+$$
+
+:::
+
+## Вывод: сумма квадратов отклонений
+
+::: incremental
+
+- Рассмотрим сумму квадратов отклонений от выборочного среднего:
+$$
+T=
+\sum_{k=1}^N (X_k-\widehat\mu)^2.
+$$
+
+- Используя
+$$
+X_k-\widehat\mu
+=
+Y_k-\frac{B}{N},
+$$
+получаем
+$$
+T=
+\sum_{k=1}^N
+\left(Y_k-\frac{B}{N}\right)^2.
+$$
+
+- Раскрываем квадрат:
+$$
+T = \sum_{k=1}^N Y_k^2 - 2\frac{B}{N}\sum_{k=1}^N Y_k + \sum_{k=1}^N \frac{B^2}{N^2}.
+$$
+:::
+
+## Вывод: сумма квадратов отклонений
+$$
+T = \sum_{k=1}^N Y_k^2 - 2\frac{B}{N}\sum_{k=1}^N Y_k + \sum_{k=1}^N \frac{B^2}{N^2}.
+$$
+
+::: incremental
+
+- Поскольку
+$$
+\sum_{k=1}^N Y_k=B,
+$$
+то
+$$
+T = A- \frac{2B^2}{N} + \frac{B^2}{N} = A- \frac{B^2}{N}.
+$$
+
+:::
+
+## Вывод: оценка дисперсии
+
+::: incremental
+
+- Оценка дисперсии равна
+$$
+\widehat{\sigma^2}
+=
+\frac{1}{N-1}\sum_{k=1}^N
+\left(X_k-\widehat\mu\right)^2
+=\frac{T}{N-1} = \frac{A- \frac{B^2}{N}}{N-1}
+$$
+
+- Математическое ожидание $A$:
+$$
+\mathbb E[A]
+=
+\mathbb E\left[\sum_{k=1}^N Y_k^2\right]
+=
+\sum_{k=1}^N \mathbb E[Y_k^2]
+=
+N\sigma^2.
+$$
+
+- Математическое ожидание $B$:
+$$
+\mathbb E[B^2]
+=
+\mathbb E\left[\left(\sum_{k=1}^N Y_k\right)^2\right]
+=
+N\sigma^2.
+$$
+
+- Математическое ожидание $T$
+$$
+\mathbb E[T] = \mathbb E[A]-\frac1N\mathbb E[B^2] = N\sigma^2-\sigma^2 = (N-1)\sigma^2.
+$$
+
+:::
+
+## Несмещённость оценки дисперсии
+
+::: incremental
+
+- Поскольку
+$$
+\widehat{\sigma^2}
+=
+\frac{T}{N-1},
+$$
+имеем
+$$
+\mathbb E[\widehat{\sigma^2}]
+=
+\frac{\mathbb E[T]}{N-1}
+=
+\sigma^2.
+$$
+
+- Значит,
+$$
+\boxed{
+\mathbb E[\widehat{\sigma^2}]=\sigma^2.
+}
+$$
+
+- Делитель $N-1$ делает оценку дисперсии несмещённой.
+
+- Интуитивно: одно число, $\widehat\mu$, уже найдено по той же выборке, поэтому независимых отклонений остаётся эффективно $N-1$.
+
+:::
+
+## Вывод: дисперсия оценки дисперсии
+
+::: incremental
+
+- Чтобы найти
+$$
+\operatorname{Var}(\widehat{\sigma^2})
+=
+\frac{\operatorname{Var}(T)}{(N-1)^2},
+$$
+достаточно вычислить $\mathbb E[T^2]$.
+
+- Из
+$$
+T=A-\frac{B^2}{N}
+$$
+следует
+$$
+T^2 = A^2- \frac{2}{N}AB^2 + \frac{1}{N^2}B^4.
+$$
+
+- Нужны три средних:
+$$
+\mathbb E[A^2],
+\qquad
+\mathbb E[AB^2],
+\qquad
+\mathbb E[B^4].
+$$
+
+:::
+
+## Первое среднее: $\mathbb E[A^2]$
+
+::: incremental
+
+- По определению
+$$
+A=
+\sum_{k=1}^N Y_k^2.
+$$
+
+- Поэтому
+$$
+A^2 = \left(\sum_{k=1}^N Y_k^2\right)^2 = \sum_{k=1}^N Y_k^4 + 2\sum_{i<j}Y_i^2Y_j^2.
+$$
+
+- Так как измерения независимы,
+$$
+\mathbb E[Y_i^2Y_j^2]
+=
+\mathbb E[Y_i^2]\mathbb E[Y_j^2]
+=
+\sigma^4
+\qquad (i\ne j).
+$$
+
+- Следовательно,
+$$
+\mathbb E[A^2] = N\,3\sigma^4 + 2\frac{N(N-1)}{2}\sigma^4 = N(N+2)\sigma^4.
+$$
+:::
+
+## Второе среднее: $\mathbb E[AB^2]$
+
+::: incremental
+
+- Запишем
+$$
+AB^2
+=
+\sum_{i=1}^N Y_i^2 B^2.
+$$
+
+- Для фиксированного $i$ представим
+$$
+B=Y_i+C_i,
+\qquad
+C_i=\sum_{j\ne i}Y_j.
+$$
+
+- Величины $Y_i$ и $C_i$ независимы.
+
+- Тогда
+$$
+\mathbb E[Y_i^2B^2]
+=
+\mathbb E\left[Y_i^2(Y_i+C_i)^2\right].
+$$
+
+- Раскрываем квадрат:
+$$
+\mathbb E[Y_i^2B^2]
+=
+\mathbb E[Y_i^4]
++2\mathbb E[Y_i^3C_i]
++\mathbb E[Y_i^2C_i^2].
+$$
+
+:::
+
+## Второе среднее: продолжение
+
+::: incremental
+
+- Первый член:
+$$
+\mathbb E[Y_i^4]=3\sigma^4.
+$$
+
+- Смешанный член равен нулю:
+$$
+\mathbb E[Y_i^3C_i] = \mathbb E[Y_i^3]\mathbb E[C_i] = 0.
+$$
+
+- Последний член:
+$$
+\mathbb E[Y_i^2C_i^2]
+=
+\mathbb E[Y_i^2]\mathbb E[C_i^2]
+=
+\sigma^2 (N-1)\sigma^2
+=
+(N-1)\sigma^4.
+$$
+
+- Поэтому для одного $i$:
+$$
+\mathbb E[Y_i^2B^2]
+=
+3\sigma^4+(N-1)\sigma^4
+=
+(N+2)\sigma^4.
+$$
+
+- Таких слагаемых $N$, значит
+$$
+\boxed{
+\mathbb E[AB^2]
+=
+N(N+2)\sigma^4.
+}
+$$
+
+:::
+
+## Третье среднее: $\mathbb E[B^4]$
+
+::: incremental
+
+- Сумма
+$$
+B=\sum_{k=1}^N Y_k
+$$
+гауссова, потому что это сумма независимых гауссовых величин.
+
+- Её среднее равно нулю:
+$$
+\mathbb E[B]=0.
+$$
+
+- Её дисперсия равна
+$$
+\operatorname{Var}(B)
+=
+\sum_{k=1}^N \operatorname{Var}(Y_k)
+=
+N\sigma^2.
+$$
+
+- Для центрированной гауссовой величины четвёртый момент равен трём квадратам дисперсии.
+
+- Поэтому
+$$
+\boxed{
+\mathbb E[B^4]
+=
+3(N\sigma^2)^2
+=
+3N^2\sigma^4.
+}
+$$
+
+:::
+
+## Вывод: второй момент $T$
+
+::: incremental
+
+- Подставим найденные средние в
+$$
+\mathbb E[T^2]
+= \mathbb E[A^2] - \frac{2}{N}\mathbb E[AB^2] +
+\frac{1}{N^2}\mathbb E[B^4].
+$$
+
+- Получаем
+$$
+\begin{aligned}
+\mathbb E[T^2]
+&= N(N+2)\sigma^4 - \frac{2}{N}N(N+2)\sigma^4 +
+\frac{1}{N^2}3N^2\sigma^4
+\\
+&=
+\bigl[N(N+2)-2(N+2)+3\bigr]\sigma^4
+\\
+&=
+(N^2-1)\sigma^4.
+\end{aligned}
+$$
+
+- Значит,
+$$
+\boxed{
+\mathbb E[T^2]
+=
+(N^2-1)\sigma^4.
+}
+$$
+
+:::
+
+## Вывод: дисперсия $T$
+
+::: incremental
+
+- Мы нашли
+$$
+\mathbb E[T]=(N-1)\sigma^2,
+\qquad
+\mathbb E[T^2]=(N^2-1)\sigma^4.
+$$
+
+- Поэтому
+$$
+\begin{aligned}
+\operatorname{Var}(T)
+&=
+\mathbb E[T^2]-\mathbb E[T]^2
+\\
+&=
+(N^2-1)\sigma^4-(N-1)^2\sigma^4
+\\
+&=
+\bigl[(N^2-1)-(N-1)^2\bigr]\sigma^4
+\\
+&=
+2(N-1)\sigma^4.
+\end{aligned}
+$$
+
+- Следовательно,
+$$
+\boxed{
+\operatorname{Var}(T)
+=
+2(N-1)\sigma^4.
+}
+$$
+
+:::
+
+## Вывод: дисперсия оценки дисперсии
+
+::: incremental
+
+- Так как
+$$
+\widehat{\sigma^2}
+=
+\frac{T}{N-1},
+$$
+то
+$$
+\operatorname{Var}(\widehat{\sigma^2})
+=
+\frac{1}{(N-1)^2}\operatorname{Var}(T).
+$$
+
+- Подставляем результат для $\operatorname{Var}(T)$:
+$$
+\operatorname{Var}(\widehat{\sigma^2})
+=
+\frac{1}{(N-1)^2}2(N-1)\sigma^4.
+$$
+
+- Получаем точный результат для гауссовой выборки:
+$$
+\boxed{
+\operatorname{Var}(\widehat{\sigma^2})
+=
+\frac{2\sigma^4}{N-1}.
+}
+$$
+
+:::
+
+## От $\widehat{\sigma^2}$ к $\widehat\sigma$
+
+::: incremental
+
+- Теперь перейдём от оценки дисперсии к оценке стандартного отклонения:
+$$
+\widehat\sigma
+=
+\sqrt{\widehat{\sigma^2}}.
+$$
+
+- Используем линейное приближение для функции
+$$
+f(y)=\sqrt y
+$$
+в окрестности $y=\sigma^2$.
+
+- Производная равна
+$$
+f'(y)=\frac{1}{2\sqrt y},
+\qquad
+f'(\sigma^2)=\frac{1}{2\sigma}.
+$$
+
+- Поэтому
+$$
+\operatorname{Var}(\widehat\sigma)
+\approx
+\left(\frac{1}{2\sigma}\right)^2
+\operatorname{Var}(\widehat{\sigma^2}).
+$$
+
+:::
+
+## Разброс оценки стандартного отклонения
+
+::: incremental
+
+- Подставляем
+$$
+\operatorname{Var}(\widehat{\sigma^2})
+=
+\frac{2\sigma^4}{N-1}.
+$$
+
+- Получаем
+$$
+\operatorname{Var}(\widehat\sigma)
+\approx
+\frac{1}{4\sigma^2}
+\frac{2\sigma^4}{N-1}
+=
+\frac{\sigma^2}{2(N-1)}.
+$$
+
+- Следовательно, при достаточно большом $N$:
+$$
+\boxed{
+\frac{\operatorname{Var}(\widehat\sigma)}{\sigma^2}
+\approx
+\frac{1}{2(N-1)}.
+}
+$$
+
+- В терминах относительного масштаба разброса:
+$$
+\boxed{
+\frac{\sqrt{\operatorname{Var}(\widehat\sigma)}}{\sigma}
+\approx
+\frac{1}{\sqrt{2(N-1)}}.
+}
+$$
+
+:::
+
+## Сколько нужно измерений?
+
+::: incremental
+
+- Относительный масштаб разброса оценки стандартного отклонения:
+$$
+\boxed{
+\frac{\sqrt{\operatorname{Var}(\widehat\sigma)}}{\sigma}
+\approx
+\frac{1}{\sqrt{2(N-1)}}.
+}
+$$
+
+- Для относительного разброса около $10\%$:
+$$
+\frac{1}{\sqrt{2(N-1)}}\approx0.1.
+$$
+
+- Отсюда
+$$
+2(N-1)\approx100,
+\qquad
+N\approx51.
+$$
+
+:::
+
+## Итоговый рецепт
+::: incremental
+
+- Пусть даны независимые измерения
+$$
+X_1,\ldots,X_N .
+$$
+
+- Оценка среднего:
+$$
+\widehat{\mu_X} = \frac{1}{N}\sum_{k=1}^N X_k .
+$$
+
+- Оценка дисперсии отдельных измерений:
+$$
+\widehat{\sigma^2_X} =
+\frac{1}{N-1}
+\sum_{k=1}^N (X_k-\widehat{\mu_X})^2.
+$$
+
+- Оценка стандартного отклонения отдельных измерений:
+$$
+\widehat{\sigma_X}=\sqrt{\widehat{\sigma_X^2}}.
+$$
+:::
+
+## Итоговый рецепт
+::: incremental
+- Оценка дисперсии среднего:
+$$
+\widehat{\sigma^2_{\widehat{\mu}}} = \frac{\widehat{\sigma^2_X}}{N}
+$$
+
+- Оценка стандартной неопределённости стандартного отклонения: 
+$$
+\widehat{\operatorname{Var}}(\widehat\sigma_X) = \frac{\widehat{\sigma^2_X}}{2(N-1)}
+$$
+
+:::
+
+## Пример: 10 измерений из гауссова распределения
+
+::: {.clt-widget}
+```{ojs}
+//| echo: false
+
+viewof pars = Inputs.form({
+  mu: Inputs.range([-5, 5], {
+    value: 0.8,
+    step: 0.1,
+    label: "μ"
+  }),
+  sigma: Inputs.range([0.2, 5], {
+    value: 1.5,
+    step: 0.1,
+    label: "σ"
+  }),
+  seed: Inputs.range([1, 1000], {
+    value: 123,
+    step: 1,
+    label: "seed"
+  })
+})
+
+muTrue = pars.mu
+sigmaTrue = pars.sigma
+seed = pars.seed
+
+N = 10
+
+mulberry32 = function(a) {
+  return function() {
+    let t = a += 0x6D2B79F5
+    t = Math.imul(t ^ t >>> 15, t | 1)
+    t ^= t + Math.imul(t ^ t >>> 7, t | 61)
+    return ((t ^ t >>> 14) >>> 0) / 4294967296
+  }
+}
+
+normal01 = function(rng) {
+  const u1 = Math.max(rng(), 1e-12)
+  const u2 = rng()
+  return Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2)
+}
+
+rng = mulberry32(seed)
+
+X = Array.from(
+  {length: N},
+  () => muTrue + sigmaTrue * normal01(rng)
+)
+
+xbar = X.reduce((a, b) => a + b, 0) / N
+
+shat2 = X
+  .map(x => (x - xbar) ** 2)
+  .reduce((a, b) => a + b, 0) / (N - 1)
+
+shat = Math.sqrt(shat2)
+
+varMeanHat = shat2 / N
+sigmaMeanHat = shat / Math.sqrt(N)
+
+varSHat = shat2 / (2 * (N - 1))
+sigmaSHat = shat / Math.sqrt(2 * (N - 1))
+
+fmt = x => Number(x).toFixed(3)
+
+html`
+<style>
+.gauss-box {
+  font-size: 0.58em;
+  line-height: 1.15;
+  margin-top: -0.4em;
+}
+
+.gauss-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.1em;
+  align-items: start;
+}
+
+.gauss-table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 0.82em;
+}
+
+.gauss-table th,
+.gauss-table td {
+  padding: 0.18em 0.45em;
+  border-bottom: 1px solid #666;
+  text-align: right;
+}
+
+.gauss-table th:first-child,
+.gauss-table td:first-child {
+  text-align: center;
+}
+
+.gauss-panel {
+  display: grid;
+  gap: 0.35em;
+}
+
+.gauss-line {
+  white-space: nowrap;
+}
+
+.gauss-result {
+  margin-top: 0.4em;
+  padding: 0.45em 0.65em;
+  border: 1px solid #666;
+  border-radius: 0.35em;
+}
+</style>
+
+<div class="gauss-box">
+  <div class="gauss-grid">
+
+    <div>
+      <table class="gauss-table">
+        <thead>
+          <tr>
+            <th>k</th>
+            <th>X_k</th>
+            <th>X_k - X̄</th>
+            <th>(X_k - X̄)^2</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${X.map((x, i) => html`
+            <tr>
+              <td>${i + 1}</td>
+              <td>${fmt(x)}</td>
+              <td>${fmt(x - xbar)}</td>
+              <td>${fmt((x - xbar) ** 2)}</td>
+            </tr>
+          `)}
+        </tbody>
+      </table>
+    </div>
+
+    <div class="gauss-panel">
+      <div class="gauss-line">Истинные параметры:</div>
+      <div class="gauss-line">μ = ${fmt(muTrue)}</div>
+      <div class="gauss-line">σ = ${fmt(sigmaTrue)}</div>
+      <div class="gauss-line">N = ${N}</div>
+
+      <div class="gauss-result">
+        <div>Оценка среднего:</div>
+        <div>X̄ = ${fmt(xbar)}</div>
+      </div>
+
+      <div class="gauss-result">
+        <div>Оценка разброса отдельных измерений:</div>
+        <div>ŝ² = ${fmt(shat2)}</div>
+        <div>ŝ = ${fmt(shat)}</div>
+      </div>
+
+      <div class="gauss-result">
+        <div>Неопределённость среднего:</div>
+        <div>ŝ / √N = ${fmt(sigmaMeanHat)}</div>
+        <div>Vâr(X̄) = ŝ² / N = ${fmt(varMeanHat)}</div>
+      </div>
+
+      <div class="gauss-result">
+        <div>Неопределённость оценки ŝ:</div>
+        <div>ŝ / √[2(N−1)] = ${fmt(sigmaSHat)}</div>
+        <div>Vâr(ŝ) ≈ ŝ² / [2(N−1)] = ${fmt(varSHat)}</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+`
+```
+:::
+
+# Несколько измеряемых величин
+
+## Ошибка суммы двух величин
+
+Пусть
+$$
+S=X+Y.
+$$
+
+Тогда
+$$
+\begin{aligned}
+\operatorname{Var}(S)
+&=
+\mathbb E\!\left[
+\bigl((X-\mu_X)+(Y-\mu_Y)\bigr)^2
+\right]
+\\
+&=
+\sigma_X^2+\sigma_Y^2
++2\operatorname{Cov}(X,Y).
+\end{aligned}
+$$
+
+Следовательно,
+$$
+\boxed{
+\sigma_{X+Y}^2
+=
+\sigma_X^2+\sigma_Y^2+2\operatorname{Cov}(X,Y).
+}
+$$
+
+## Ковариация
+
+Ковариация показывает, насколько согласованно флуктуируют две величины:
+$$
+\boxed{
+\operatorname{Cov}(X,Y)
+=
+\mathbb E[(X-\mu_X)(Y-\mu_Y)].
+}
+$$
+
+::: incremental
+- $\operatorname{Cov}(X,Y)>0$: величины обычно отклоняются в одну сторону.
+- $\operatorname{Cov}(X,Y)<0$: отклонения обычно направлены противоположно.
+- $\operatorname{Cov}(X,Y)=0$: линейной связи нет.
+- Независимость влечёт нулевую ковариацию, но обратное утверждение в общем случае неверно.
+:::
+
+## Коэффициент корреляции
+
+Чтобы убрать размерность, используют
+$$
+\boxed{
+\rho_{XY}
+=
+\frac{\operatorname{Cov}(X,Y)}{\sigma_X\sigma_Y}.
+}
+$$
+
+По неравенству Коши–Буняковского
+$$
+-1\le\rho_{XY}\le1.
+$$
+
+Тогда
+$$
+\boxed{
+\sigma_{X\pm Y}^2
+=
+\sigma_X^2+\sigma_Y^2
+\pm2\rho_{XY}\sigma_X\sigma_Y.
+}
+$$
+
+## Как оценить корреляцию по выборке
+
+Для наблюдений $(x_k,y_k)$, $k=1,\ldots,N$:
+$$
+\widehat{\operatorname{Cov}}(X,Y)
+=
+\frac{1}{N-1}
+\sum_{k=1}^{N}
+(x_k-\langle x\rangle)(y_k-\langle y\rangle),
+$$
+$$
+\boxed{
+\widehat\rho
+=
+\frac{\widehat{\operatorname{Cov}}(X,Y)}
+{s_Xs_Y}.
+}
+$$
+
+::: incremental
+- Корреляцию можно оценить по данным или моделированию детектора.
+- При малом $N$ оценка $\widehat\rho$ заметно флуктуирует.
+:::
+
+## Почему знак корреляции важен
+
+Рассмотрим две величины с одинаковой ошибкой $\sigma$:
+$$
+\sigma_X=\sigma_Y=\sigma.
+$$
+
+Тогда
+$$
+\sigma_{X+Y}^2=2\sigma^2(1+\rho),
+\qquad
+\sigma_{X-Y}^2=2\sigma^2(1-\rho).
+$$
+
+::: incremental
+- При $\rho\approx1$ сумма известна с большей ошибкой,чем разность.
+- При $\rho\approx-1$ ситуация обратная.
+- Нельзя автоматически складывать ошибки в квадратуре, если величины коррелированы.
+:::
+
+## Общая формула распространения
+
+Пусть
+$$
+F=f(X_1,\ldots,X_n).
+$$
+
+Линеаризация около средних:
+$$
+F-\mathbb E[F]
+\approx
+\sum_i
+\frac{\partial f}{\partial x_i}
+(X_i-\mu_i).
+$$
+
+Отсюда
+$$
+\boxed{
+\operatorname{Var}(F)
+\approx
+\sum_{i,j}
+\frac{\partial f}{\partial x_i}
+\operatorname{Cov}(X_i,X_j)
+\frac{\partial f}{\partial x_j}.
+}
+$$
+
+## Для двух переменных
+
+Для $F=f(X,Y)$:
+$$
+\boxed{
+\begin{aligned}
+\sigma_F^2
+\approx{}&
+\left(\frac{\partial f}{\partial x}\right)^2\sigma_X^2
++
+\left(\frac{\partial f}{\partial y}\right)^2\sigma_Y^2
+\\
+&+
+2\rho_{XY}
+\frac{\partial f}{\partial x}
+\frac{\partial f}{\partial y}
+\sigma_X\sigma_Y.
+\end{aligned}
+}
+$$
+
+Все производные вычисляются в точке центральных значений.
+
+## Интерактив: вклад корреляции в ошибку
+
+::: {.clt-widget}
+```{ojs}
+//| echo: false
+
+viewof gradX = Inputs.range([-3, 3], {value: 1, step: 0.1, label: "df/dx"})
+viewof gradY = Inputs.range([-3, 3], {value: 1, step: 0.1, label: "df/dy"})
+viewof sigmaXCalc = Inputs.range([0.1, 2], {value: 1, step: 0.05, label: "sigma_X"})
+viewof sigmaYCalc = Inputs.range([0.1, 2], {value: 0.8, step: 0.05, label: "sigma_Y"})
+viewof rhoCalc = Inputs.range([-0.99, 0.99], {value: 0, step: 0.01, label: "rho"})
+
+termX = gradX * gradX * sigmaXCalc * sigmaXCalc
+termY = gradY * gradY * sigmaYCalc * sigmaYCalc
+termCorr = 2 * rhoCalc * gradX * gradY * sigmaXCalc * sigmaYCalc
+varianceCalc = Math.max(0, termX + termY + termCorr)
+
+contribData = [
+  {term: "X", value: termX, color: "#4ea1ff"},
+  {term: "Y", value: termY, color: "#ffb347"},
+  {term: "корреляция", value: termCorr, color: "#b388ff"}
+]
+
+contribPlot = Plot.plot({
+  width: 900,
+  height: 350,
+  marginLeft: 100,
+  x: {label: "вклад в дисперсию", grid: true},
+  y: {label: null},
+  marks: [
+    Plot.ruleX([0], {stroke: "#ddd"}),
+    Plot.barX(contribData, {x: "value", y: "term", fill: d => d.color})
+  ]
+})
+
+html`
+<div class="clt-panel">
+  ${contribPlot}
+  <div class="clt-summary">
+    <span>sigma_F^2 = ${varianceCalc.toFixed(3)}</span>
+    <span>sigma_F = ${Math.sqrt(varianceCalc).toFixed(3)}</span>
+    <span>корреляционный вклад = ${termCorr.toFixed(3)}</span>
+  </div>
+</div>
+`
+```
+:::
+
+## Пример: отношение величин
+
+Для
+$$
+R=\frac{X}{Y}
+$$
+производные равны
+$$
+\frac{\partial R}{\partial X}=\frac1Y,
+\qquad
+\frac{\partial R}{\partial Y}=-\frac{X}{Y^2}.
+$$
+
+Поэтому
+$$
+\boxed{
+\left(\frac{\sigma_R}{R}\right)^2
+\approx
+\left(\frac{\sigma_X}{X}\right)^2
++
+\left(\frac{\sigma_Y}{Y}\right)^2
+-
+2\rho_{XY}
+\frac{\sigma_X}{X}
+\frac{\sigma_Y}{Y}.
+}
+$$
+
+Положительная корреляция уменьшает ошибку отношения.
+
+---
+
+# Ковариационная матрица
+
+## Определение
+
+Для случайного вектора
+$$
+\mathbf X=(X_1,\ldots,X_n)^T
+$$
+ковариационная матрица определяется как
+$$
+\boxed{
+V_{ij}
+=
+\operatorname{Cov}(X_i,X_j).
+}
+$$
+
+Для двух величин:
+$$
+\boxed{
+V=
+\begin{pmatrix}
+\sigma_X^2 & \rho\sigma_X\sigma_Y\\
+\rho\sigma_X\sigma_Y & \sigma_Y^2
+\end{pmatrix}.
+}
+$$
+
+## Свойства ковариационной матрицы
+
+::: incremental
+
+- Пусть
+$$
+V_{ij}
+=
+\operatorname{Cov}(X_i,X_j)
+=
+\mathbb E[(X_i-\mu_i)(X_j-\mu_j)] .
+$$
+
+- Матрица $V$ симметрична:
+$$
+V_{ij}=V_{ji}.
+$$
+
+- На диагонали стоят дисперсии:
+$$
+V_{ii}=\operatorname{Var}(X_i).
+$$
+
+- Вне диагонали стоят ковариации:
+$$
+V_{ij}=\operatorname{Cov}(X_i,X_j),
+\qquad i\ne j.
+$$
+
+:::
+
+## Свойства ковариационной матрицы
+
+::: incremental
+
+- Для любого вектора $\mathbf a$:
+$$
+\begin{aligned}
+\mathbf a^T V\mathbf a
+&=
+\mathbb E\!\left[
+\left(\mathbf a^T(\mathbf X-\boldsymbol\mu)\right)^2
+\right]
+\\
+&=
+\operatorname{Var}(\mathbf a^T\mathbf X)
+\ge 0.
+\end{aligned}
+$$
+
+- Поэтому ковариационная матрица положительно полуопределена:
+$$
+\boxed{
+V\succeq 0.
+}
+$$
+
+:::
+## Матричная запись распространения ошибки
+
+Градиент функции:
+$$
+\nabla f
+=
+\begin{pmatrix}
+\partial f/\partial x_1\\
+\vdots\\
+\partial f/\partial x_n
+\end{pmatrix}.
+$$
+
+Тогда общая формула принимает компактный вид:
+$$
+\boxed{
+\sigma_f^2
+\approx
+(\nabla f)^T V(\nabla f).
+}
+$$
+
+::: {.fragment .callout-note .thmbox appearance="simple"}
+Эта формула содержит независимые и коррелированные ошибки одновременно.
+:::
+
+## Несколько производных величин
+
+Пусть
+$$
+\mathbf Y=\mathbf f(\mathbf X),
+$$
+а матрица Якоби равна
+$$
+J_{ai}
+=
+\frac{\partial f_a}{\partial x_i}.
+$$
+
+Тогда
+$$
+\boxed{
+V_Y
+\approx
+J\,V_X\,J^T.
+}
+$$
+
+Это универсальный закон линейного преобразования ковариационной матрицы.
+
+## Пример: сумма и разность
+
+Пусть
+$$
+\mathbf X=
+\begin{pmatrix}X\\Y\end{pmatrix},
+\qquad
+\mathbf U=
+\begin{pmatrix}S\\D\end{pmatrix}
+=
+\begin{pmatrix}X+Y\\X-Y\end{pmatrix}.
+$$
+
+Тогда
+$$
+J=
+\begin{pmatrix}
+1&1\\
+1&-1
+\end{pmatrix},
+\qquad
+V_U=JV_XJ^T.
+$$
+
+::: incremental
+- Формула сразу даёт ошибки суммы и разности.
+- Она также вычисляет корреляцию между $S$ и $D$.
+- При $\sigma_X=\sigma_Y$ сумма и разность некоррелированы.
+:::
+
+
+## Пример: итоговая ковариационная матрица
+
+Пусть
+$$
+V_X=
+\begin{pmatrix}
+\sigma_X^2 & \sigma_{XY}\\
+\sigma_{XY} & \sigma_Y^2
+\end{pmatrix},
+\qquad
+\sigma_{XY}=\operatorname{Cov}(X,Y).
+$$
+
+Для
+$$
+S=X+Y,
+\qquad
+D=X-Y
+$$
+получаем
+$$
+V_U
+=
+\begin{pmatrix}
+\operatorname{Var}(S) & \operatorname{Cov}(S,D)\\
+\operatorname{Cov}(D,S) & \operatorname{Var}(D)
+\end{pmatrix}
+=
+\boxed{
+\begin{pmatrix}
+\sigma_X^2+\sigma_Y^2+2\sigma_{XY}
+&
+\sigma_X^2-\sigma_Y^2
+\\
+\sigma_X^2-\sigma_Y^2
+&
+\sigma_X^2+\sigma_Y^2-2\sigma_{XY}
+\end{pmatrix}.
+}
+$$
+
+::: incremental
+- Ковариация суммы и разности:
+$$
+\operatorname{Cov}(S,D)=\sigma_X^2-\sigma_Y^2.
+$$
+
+- Сумма и разность некоррелированы, если $\sigma_X=\sigma_Y$.
+
+:::
+
+# Что важно запомнить
+
+## Резюме
+
+::: incremental
+- Ошибки производных величин возникают из локальной чувствительности функции к исходным измерениям.
+- Линейная формула работает только там, где функцию можно заменить касательной.
+- Оценки среднего, дисперсии и стандартного отклонения сами флуктуируют от выборки к выборке.
+- Ковариация необходима для корректного объединения коррелированных ошибок.
+- Общий закон линейного преобразования:
+  $$
+  \boxed{V_Y\approx JV_XJ^T.}
+  $$
+:::

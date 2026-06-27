@@ -1,0 +1,990 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow,noarchive">
+  <title>Статистические аплеты</title>
+  <style>
+    :root {
+      --bg-1: #f5f1e8;
+      --bg-2: #ffffff;
+      --card: rgba(255, 255, 255, 0.9);
+      --line: rgba(28, 66, 92, 0.18);
+      --line-strong: rgba(28, 66, 92, 0.32);
+      --ink: #1b2731;
+      --muted: #546371;
+      --accent: #1f5f8b;
+      --accent-2: #174c70;
+      --coral: #c7472f;
+      --gold: #b97817;
+      --green: #147d64;
+      --sans: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif;
+      --serif: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top left, rgba(31, 95, 139, 0.12), transparent 28rem),
+        radial-gradient(circle at bottom right, rgba(125, 72, 44, 0.10), transparent 30rem),
+        linear-gradient(135deg, var(--bg-1), var(--bg-2));
+      font-family: var(--serif);
+      padding: 24px;
+    }
+
+    main {
+      width: min(1120px, 100%);
+      margin: 0 auto;
+      padding: 32px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--card);
+      box-shadow: 0 24px 60px -40px rgba(24, 46, 66, 0.5);
+      backdrop-filter: blur(10px);
+    }
+
+    a {
+      color: var(--accent-2);
+      text-decoration-color: rgba(31, 95, 139, 0.28);
+      text-underline-offset: 0.16em;
+    }
+
+    .eyebrow {
+      margin: 0 0 12px;
+      color: var(--accent);
+      font: 750 0.82rem/1.2 var(--sans);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0 0 14px;
+      font-size: clamp(2rem, 5vw, 3.4rem);
+      line-height: 1;
+    }
+
+    p {
+      margin: 0;
+      max-width: 72ch;
+      color: var(--muted);
+      font-size: 1.04rem;
+      line-height: 1.62;
+    }
+
+    .top-actions,
+    .tool-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 2.65rem;
+      padding: 0.62rem 0.9rem;
+      border: 1px solid rgba(31, 95, 139, 0.22);
+      border-radius: 8px;
+      background: #ffffff;
+      color: var(--accent-2);
+      text-decoration: none;
+      font: 700 0.94rem/1.1 var(--sans);
+    }
+
+    .link.primary {
+      border-color: var(--accent);
+      background: var(--accent);
+      color: #ffffff;
+    }
+
+    .applet-list {
+      display: grid;
+      gap: 14px;
+      margin-top: 30px;
+    }
+
+    .tool-row {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.9);
+      overflow: hidden;
+    }
+
+    .tool-row summary {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      min-height: 4.2rem;
+      padding: 0.8rem 3rem 0.8rem 1rem;
+      cursor: pointer;
+      list-style: none;
+      position: relative;
+      font: 760 1.08rem/1.22 var(--sans);
+    }
+
+    .tool-row summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .tool-row summary::after {
+      content: "+";
+      position: absolute;
+      right: 1rem;
+      color: var(--accent);
+      font-size: 1.55rem;
+      font-weight: 450;
+      line-height: 1;
+    }
+
+    .tool-row[open] summary::after {
+      content: "-";
+    }
+
+    .tool-index {
+      color: var(--accent);
+      font-size: 0.82rem;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .tool-body {
+      padding: 0 1rem 1rem;
+      border-top: 1px solid var(--line);
+    }
+
+    .tool-grid {
+      display: grid;
+      grid-template-columns: minmax(260px, 340px) minmax(0, 1fr);
+      gap: 18px;
+      align-items: start;
+      margin-top: 16px;
+    }
+
+    .control-panel,
+    .result-panel {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(248, 250, 251, 0.72);
+      padding: 14px;
+    }
+
+    .control-grid {
+      display: grid;
+      gap: 12px;
+    }
+
+    label,
+    .field-title {
+      display: grid;
+      gap: 6px;
+      color: var(--ink);
+      font: 700 0.88rem/1.2 var(--sans);
+    }
+
+    input,
+    select {
+      width: 100%;
+      min-height: 2.55rem;
+      border: 1px solid var(--line-strong);
+      border-radius: 8px;
+      background: #ffffff;
+      color: var(--ink);
+      font: 650 1rem/1.2 var(--sans);
+      padding: 0.48rem 0.58rem;
+    }
+
+    input:focus,
+    select:focus {
+      outline: 3px solid rgba(31, 95, 139, 0.18);
+      border-color: var(--accent);
+    }
+
+    .segmented {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+    }
+
+    .segmented input {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .segmented span {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 2.35rem;
+      border: 1px solid var(--line-strong);
+      border-radius: 8px;
+      background: #ffffff;
+      color: var(--accent-2);
+      font: 760 0.92rem/1 var(--sans);
+    }
+
+    .segmented input:checked + span {
+      border-color: var(--accent);
+      background: var(--accent);
+      color: #ffffff;
+    }
+
+    .readout-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .readout {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #ffffff;
+      padding: 12px;
+      min-width: 0;
+    }
+
+    .readout span {
+      display: block;
+      color: var(--muted);
+      font: 700 0.74rem/1.2 var(--sans);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .readout strong {
+      display: block;
+      margin-top: 5px;
+      color: var(--ink);
+      font: 780 clamp(1.05rem, 2.5vw, 1.35rem)/1.1 var(--sans);
+      overflow-wrap: anywhere;
+    }
+
+    canvas {
+      width: 100%;
+      min-height: 260px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #ffffff;
+      display: block;
+    }
+
+    .interval-plot {
+      display: grid;
+      gap: 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #ffffff;
+      padding: 14px;
+    }
+
+    .axis {
+      position: relative;
+      height: 34px;
+      margin-left: 90px;
+      border-bottom: 2px solid rgba(28, 66, 92, 0.25);
+      font: 700 0.76rem/1 var(--sans);
+      color: var(--muted);
+    }
+
+    .axis span {
+      position: absolute;
+      bottom: -22px;
+      transform: translateX(-50%);
+    }
+
+    .interval-row {
+      display: grid;
+      grid-template-columns: 78px minmax(0, 1fr);
+      gap: 12px;
+      align-items: center;
+      min-height: 34px;
+      font: 750 0.9rem/1.1 var(--sans);
+    }
+
+    .track {
+      position: relative;
+      height: 16px;
+      border-radius: 999px;
+      background: rgba(31, 95, 139, 0.08);
+    }
+
+    .bar {
+      position: absolute;
+      top: 4px;
+      height: 8px;
+      border-radius: 999px;
+      background: var(--accent);
+    }
+
+    .bar.wilson { background: var(--gold); }
+    .bar.cp { background: var(--green); }
+
+    .point {
+      position: absolute;
+      top: 50%;
+      width: 14px;
+      height: 14px;
+      border: 2px solid #ffffff;
+      border-radius: 50%;
+      background: var(--coral);
+      transform: translate(-50%, -50%);
+      box-shadow: 0 0 0 1px rgba(28, 66, 92, 0.22);
+    }
+
+    table {
+      width: 100%;
+      margin-top: 14px;
+      border-collapse: collapse;
+      font: 0.92rem/1.35 var(--sans);
+    }
+
+    th,
+    td {
+      border-bottom: 1px solid var(--line);
+      padding: 0.58rem 0.4rem;
+      text-align: right;
+    }
+
+    th:first-child,
+    td:first-child {
+      text-align: left;
+    }
+
+    .status {
+      min-height: 1.3rem;
+      margin-top: 10px;
+      color: var(--coral);
+      font: 700 0.86rem/1.3 var(--sans);
+    }
+
+    @media (max-width: 860px) {
+      body {
+        padding: 14px;
+      }
+
+      main {
+        padding: 22px;
+      }
+
+      .tool-grid,
+      .readout-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .axis {
+        margin-left: 0;
+      }
+
+      .interval-row {
+        grid-template-columns: 1fr;
+        gap: 6px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <p class="eyebrow">Статистический анализ данных</p>
+    <h1>Статистические аплеты</h1>
+    <p>
+      Небольшие браузерные калькуляторы для величин, которые часто нужны в
+      анализе данных и в лекциях курса.
+    </p>
+    <div class="top-actions">
+      <a class="link" href="./">На главную</a>
+      <a class="link" href="./ru/slides/">К лекциям</a>
+      <a class="link primary" href="./ru/book/">К книге</a>
+    </div>
+
+    <section class="applet-list" aria-label="Статистические аплеты">
+      <details class="tool-row" open>
+        <summary>
+          <span class="tool-index">01</span>
+          <span>p-value и значимость Z</span>
+        </summary>
+        <div class="tool-body">
+          <div class="tool-grid">
+            <section class="control-panel" aria-label="Параметры p-value и Z">
+              <div class="control-grid">
+                <div class="field-title">Направление пересчёта</div>
+                <div class="segmented" role="radiogroup" aria-label="Направление пересчёта">
+                  <label>
+                    <input type="radio" name="norm-mode" value="z" checked>
+                    <span>Z -> p</span>
+                  </label>
+                  <label>
+                    <input type="radio" name="norm-mode" value="p">
+                    <span>p -> Z</span>
+                  </label>
+                </div>
+                <label>
+                  Тест
+                  <select id="norm-tail">
+                    <option value="one">односторонний</option>
+                    <option value="two">двусторонний</option>
+                  </select>
+                </label>
+                <label>
+                  Z
+                  <input id="norm-z" type="number" min="0" max="12" step="0.01" value="5">
+                </label>
+                <label>
+                  p
+                  <input id="norm-p" type="text" inputmode="decimal" value="2.867e-7">
+                </label>
+              </div>
+              <div id="norm-status" class="status" aria-live="polite"></div>
+              <div class="tool-links">
+                <a href="./ru/slides/12_goodness_of_fit_and_significance.html" class="link">Лекция 12</a>
+              </div>
+            </section>
+
+            <section class="result-panel" aria-label="Результат p-value и Z">
+              <div class="readout-grid">
+                <div class="readout">
+                  <span>Z</span>
+                  <strong id="norm-z-out">5.000</strong>
+                </div>
+                <div class="readout">
+                  <span>p</span>
+                  <strong id="norm-p-out">2.867e-7</strong>
+                </div>
+                <div class="readout">
+                  <span>log10 p</span>
+                  <strong id="norm-logp-out">-6.543</strong>
+                </div>
+              </div>
+              <canvas id="norm-canvas" width="900" height="330" aria-label="График хвоста нормального распределения"></canvas>
+            </section>
+          </div>
+        </div>
+      </details>
+
+      <details class="tool-row" open>
+        <summary>
+          <span class="tool-index">03</span>
+          <span>Биномиальная доля и интервалы</span>
+        </summary>
+        <div class="tool-body">
+          <div class="tool-grid">
+            <section class="control-panel" aria-label="Параметры биномиальной доли">
+              <div class="control-grid">
+                <label>
+                  Испытаний n
+                  <input id="binom-n" type="number" min="1" max="5000" step="1" value="12">
+                </label>
+                <label>
+                  Успехов k
+                  <input id="binom-k" type="number" min="0" max="12" step="1" value="3">
+                </label>
+                <label>
+                  Уровень доверия, %
+                  <input id="binom-cl" type="number" min="1" max="99.999" step="0.001" value="95">
+                </label>
+              </div>
+              <div id="binom-status" class="status" aria-live="polite"></div>
+            </section>
+
+            <section class="result-panel" aria-label="Результат биномиальной доли">
+              <div class="readout-grid">
+                <div class="readout">
+                  <span>p-hat</span>
+                  <strong id="binom-phat-out">0.2500</strong>
+                </div>
+                <div class="readout">
+                  <span>z</span>
+                  <strong id="binom-z-out">1.960</strong>
+                </div>
+                <div class="readout">
+                  <span>alpha</span>
+                  <strong id="binom-alpha-out">0.0500</strong>
+                </div>
+              </div>
+
+              <div class="interval-plot" aria-label="График интервалов">
+                <div class="axis">
+                  <span style="left:0%">0</span>
+                  <span style="left:25%">0.25</span>
+                  <span style="left:50%">0.5</span>
+                  <span style="left:75%">0.75</span>
+                  <span style="left:100%">1</span>
+                </div>
+                <div class="interval-row">
+                  <span>Вальд</span>
+                  <div class="track">
+                    <span id="wald-bar" class="bar"></span>
+                    <span id="wald-point" class="point"></span>
+                  </div>
+                </div>
+                <div class="interval-row">
+                  <span>Уилсон</span>
+                  <div class="track">
+                    <span id="wilson-bar" class="bar wilson"></span>
+                    <span id="wilson-point" class="point"></span>
+                  </div>
+                </div>
+                <div class="interval-row">
+                  <span>Clopper-Pearson</span>
+                  <div class="track">
+                    <span id="cp-bar" class="bar cp"></span>
+                    <span id="cp-point" class="point"></span>
+                  </div>
+                </div>
+              </div>
+
+              <table>
+                <thead>
+                  <tr>
+                    <th>Метод</th>
+                    <th>Нижняя</th>
+                    <th>Верхняя</th>
+                    <th>Ширина</th>
+                  </tr>
+                </thead>
+                <tbody id="binom-table"></tbody>
+              </table>
+            </section>
+          </div>
+        </div>
+      </details>
+    </section>
+  </main>
+
+  <script>
+    const sqrt2 = Math.SQRT2;
+    const invSqrt2Pi = 1 / Math.sqrt(2 * Math.PI);
+
+    function parseNumber(value) {
+      return Number(String(value).trim().replace(",", "."));
+    }
+
+    function formatP(value) {
+      if (!Number.isFinite(value)) return "NaN";
+      if (value === 0) return "0";
+      if (Math.abs(value) < 1e-4 || Math.abs(value) >= 1e5) {
+        return value.toExponential(4).replace("e", "e");
+      }
+      return value.toPrecision(7).replace(/\.?0+$/, "");
+    }
+
+    function formatUnit(value) {
+      if (!Number.isFinite(value)) return "NaN";
+      return value.toFixed(6).replace(/0+$/, "").replace(/\.$/, "");
+    }
+
+    function erfc(x) {
+      const z = Math.abs(x);
+      const t = 1 / (1 + 0.5 * z);
+      const r = t * Math.exp(
+        -z * z - 1.26551223 +
+        t * (1.00002368 +
+        t * (0.37409196 +
+        t * (0.09678418 +
+        t * (-0.18628806 +
+        t * (0.27886807 +
+        t * (-1.13520398 +
+        t * (1.48851587 +
+        t * (-0.82215223 +
+        t * 0.17087277))))))))
+      );
+      return x >= 0 ? r : 2 - r;
+    }
+
+    function normalPdf(x) {
+      return invSqrt2Pi * Math.exp(-0.5 * x * x);
+    }
+
+    function normalSurvival(z) {
+      if (z < 0) return 1 - normalSurvival(-z);
+      return 0.5 * erfc(z / sqrt2);
+    }
+
+    function inverseNormal(p) {
+      if (p <= 0) return -Infinity;
+      if (p >= 1) return Infinity;
+
+      const a = [
+        -39.69683028665376,
+        220.9460984245205,
+        -275.9285104469687,
+        138.3577518672690,
+        -30.66479806614716,
+        2.506628277459239
+      ];
+      const b = [
+        -54.47609879822406,
+        161.5858368580409,
+        -155.6989798598866,
+        66.80131188771972,
+        -13.28068155288572
+      ];
+      const c = [
+        -0.007784894002430293,
+        -0.3223964580411365,
+        -2.400758277161838,
+        -2.549732539343734,
+        4.374664141464968,
+        2.938163982698783
+      ];
+      const d = [
+        0.007784695709041462,
+        0.3224671290700398,
+        2.445134137142996,
+        3.754408661907416
+      ];
+      const pLow = 0.02425;
+      const pHigh = 1 - pLow;
+
+      if (p < pLow) {
+        const q = Math.sqrt(-2 * Math.log(p));
+        return (((((c[0] * q + c[1]) * q + c[2]) * q + c[3]) * q + c[4]) * q + c[5]) /
+          ((((d[0] * q + d[1]) * q + d[2]) * q + d[3]) * q + 1);
+      }
+
+      if (p > pHigh) {
+        const q = Math.sqrt(-2 * Math.log(1 - p));
+        return -(((((c[0] * q + c[1]) * q + c[2]) * q + c[3]) * q + c[4]) * q + c[5]) /
+          ((((d[0] * q + d[1]) * q + d[2]) * q + d[3]) * q + 1);
+      }
+
+      const q = p - 0.5;
+      const r = q * q;
+      return (((((a[0] * r + a[1]) * r + a[2]) * r + a[3]) * r + a[4]) * r + a[5]) * q /
+        (((((b[0] * r + b[1]) * r + b[2]) * r + b[3]) * r + b[4]) * r + 1);
+    }
+
+    const normModeInputs = Array.from(document.querySelectorAll("input[name='norm-mode']"));
+    const normTail = document.getElementById("norm-tail");
+    const normZ = document.getElementById("norm-z");
+    const normP = document.getElementById("norm-p");
+    const normStatus = document.getElementById("norm-status");
+    const normZOut = document.getElementById("norm-z-out");
+    const normPOut = document.getElementById("norm-p-out");
+    const normLogPOut = document.getElementById("norm-logp-out");
+    const normCanvas = document.getElementById("norm-canvas");
+
+    function normMode() {
+      return normModeInputs.find((input) => input.checked).value;
+    }
+
+    function setNormMode(value) {
+      normModeInputs.forEach((input) => {
+        input.checked = input.value === value;
+      });
+    }
+
+    function drawNormalTail(z, twoSided) {
+      const canvas = normCanvas;
+      const ratio = window.devicePixelRatio || 1;
+      const cssWidth = canvas.clientWidth || 900;
+      const cssHeight = canvas.clientHeight || 330;
+      canvas.width = Math.round(cssWidth * ratio);
+      canvas.height = Math.round(cssHeight * ratio);
+      const ctx = canvas.getContext("2d");
+      ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+      ctx.clearRect(0, 0, cssWidth, cssHeight);
+
+      const pad = {left: 42, right: 18, top: 22, bottom: 38};
+      const width = cssWidth - pad.left - pad.right;
+      const height = cssHeight - pad.top - pad.bottom;
+      const bound = Math.max(5, Math.ceil(Math.abs(z)) + 1);
+      const xToPx = (x) => pad.left + (x + bound) / (2 * bound) * width;
+      const yToPx = (y) => pad.top + height - y / 0.42 * height;
+
+      ctx.strokeStyle = "rgba(28, 66, 92, 0.22)";
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(pad.left, yToPx(0));
+      ctx.lineTo(pad.left + width, yToPx(0));
+      ctx.stroke();
+
+      for (let tick = -bound; tick <= bound; tick += 1) {
+        const x = xToPx(tick);
+        ctx.strokeStyle = "rgba(28, 66, 92, 0.08)";
+        ctx.beginPath();
+        ctx.moveTo(x, pad.top);
+        ctx.lineTo(x, pad.top + height);
+        ctx.stroke();
+        ctx.fillStyle = "#546371";
+        ctx.font = "12px Avenir Next, Segoe UI, sans-serif";
+        ctx.textAlign = "center";
+        ctx.fillText(String(tick), x, cssHeight - 14);
+      }
+
+      function drawArea(from, to, color) {
+        const steps = 180;
+        ctx.beginPath();
+        ctx.moveTo(xToPx(from), yToPx(0));
+        for (let i = 0; i <= steps; ++i) {
+          const x = from + (to - from) * i / steps;
+          ctx.lineTo(xToPx(x), yToPx(normalPdf(x)));
+        }
+        ctx.lineTo(xToPx(to), yToPx(0));
+        ctx.closePath();
+        ctx.fillStyle = color;
+        ctx.fill();
+      }
+
+      drawArea(z, bound, "rgba(199, 71, 47, 0.42)");
+      if (twoSided) drawArea(-bound, -z, "rgba(199, 71, 47, 0.42)");
+
+      ctx.beginPath();
+      for (let i = 0; i <= 500; ++i) {
+        const x = -bound + 2 * bound * i / 500;
+        const px = xToPx(x);
+        const py = yToPx(normalPdf(x));
+        if (i === 0) ctx.moveTo(px, py);
+        else ctx.lineTo(px, py);
+      }
+      ctx.strokeStyle = "#174c70";
+      ctx.lineWidth = 3;
+      ctx.stroke();
+
+      ctx.strokeStyle = "#b97817";
+      ctx.lineWidth = 2;
+      [z, ...(twoSided ? [-z] : [])].forEach((value) => {
+        ctx.beginPath();
+        ctx.moveTo(xToPx(value), yToPx(0));
+        ctx.lineTo(xToPx(value), yToPx(normalPdf(value)));
+        ctx.stroke();
+      });
+    }
+
+    function updateNorm() {
+      const mode = normMode();
+      const tail = normTail.value;
+      const twoSided = tail === "two";
+      let z = parseNumber(normZ.value);
+      let p = parseNumber(normP.value);
+      normStatus.textContent = "";
+
+      if (mode === "z") {
+        if (!Number.isFinite(z) || z < 0 || z > 12) {
+          normStatus.textContent = "Z должен быть числом от 0 до 12.";
+          return;
+        }
+        p = twoSided ? 2 * normalSurvival(z) : normalSurvival(z);
+        normP.value = formatP(p);
+      } else {
+        if (!Number.isFinite(p) || p <= 0 || p > 1) {
+          normStatus.textContent = "p должен лежать в интервале (0, 1].";
+          return;
+        }
+        z = twoSided ? -inverseNormal(p / 2) : -inverseNormal(p);
+        if (!Number.isFinite(z) || z < 0) {
+          normStatus.textContent = "Для выбранного p не получается неотрицательное Z.";
+          return;
+        }
+        normZ.value = z.toFixed(5).replace(/0+$/, "").replace(/\.$/, "");
+      }
+
+      normZOut.textContent = z.toFixed(4).replace(/0+$/, "").replace(/\.$/, "");
+      normPOut.textContent = formatP(p);
+      normLogPOut.textContent = p > 0 ? Math.log10(p).toFixed(4).replace(/0+$/, "").replace(/\.$/, "") : "-Infinity";
+      drawNormalTail(Math.min(z, 12), twoSided);
+    }
+
+    normModeInputs.forEach((input) => input.addEventListener("change", updateNorm));
+    normTail.addEventListener("change", updateNorm);
+    normZ.addEventListener("input", () => {
+      setNormMode("z");
+      updateNorm();
+    });
+    normP.addEventListener("input", () => {
+      setNormMode("p");
+      updateNorm();
+    });
+
+    function logGamma(z) {
+      const p = [
+        676.5203681218851,
+        -1259.1392167224028,
+        771.3234287776531,
+        -176.6150291621406,
+        12.507343278686905,
+        -0.13857109526572012,
+        9.984369578019572e-6,
+        1.5056327351493116e-7
+      ];
+      if (z < 0.5) {
+        return Math.log(Math.PI) - Math.log(Math.sin(Math.PI * z)) - logGamma(1 - z);
+      }
+      z -= 1;
+      let x = 0.9999999999998099;
+      for (let i = 0; i < p.length; ++i) {
+        x += p[i] / (z + i + 1);
+      }
+      const t = z + p.length - 0.5;
+      return 0.5 * Math.log(2 * Math.PI) + (z + 0.5) * Math.log(t) - t + Math.log(x);
+    }
+
+    function logBinomPmf(k, n, p) {
+      if (p <= 0) return k === 0 ? 0 : -Infinity;
+      if (p >= 1) return k === n ? 0 : -Infinity;
+      return logGamma(n + 1) - logGamma(k + 1) - logGamma(n - k + 1) +
+        k * Math.log(p) + (n - k) * Math.log1p(-p);
+    }
+
+    function logSumExpBinom(from, to, n, p) {
+      if (from > to) return -Infinity;
+      if (p <= 0) return from <= 0 && 0 <= to ? 0 : -Infinity;
+      if (p >= 1) return from <= n && n <= to ? 0 : -Infinity;
+
+      let logP = logBinomPmf(from, n, p);
+      let maxLog = logP;
+      for (let k = from; k < to; ++k) {
+        logP += Math.log(n - k) - Math.log(k + 1) + Math.log(p) - Math.log1p(-p);
+        if (logP > maxLog) maxLog = logP;
+      }
+
+      logP = logBinomPmf(from, n, p);
+      let sum = Math.exp(logP - maxLog);
+      for (let k = from; k < to; ++k) {
+        logP += Math.log(n - k) - Math.log(k + 1) + Math.log(p) - Math.log1p(-p);
+        sum += Math.exp(logP - maxLog);
+      }
+      return maxLog + Math.log(sum);
+    }
+
+    function binomCdf(k, n, p) {
+      if (k < 0) return 0;
+      if (k >= n) return 1;
+      return Math.exp(logSumExpBinom(0, k, n, p));
+    }
+
+    function binomSf(k, n, p) {
+      if (k <= 0) return 1;
+      if (k > n) return 0;
+      return Math.exp(logSumExpBinom(k, n, n, p));
+    }
+
+    function waldInterval(k, n, z) {
+      const phat = k / n;
+      const half = z * Math.sqrt(phat * (1 - phat) / n);
+      return {low: phat - half, high: phat + half};
+    }
+
+    function wilsonInterval(k, n, z) {
+      const phat = k / n;
+      const z2 = z * z;
+      const den = 1 + z2 / n;
+      const center = (phat + z2 / (2 * n)) / den;
+      const half = z / den * Math.sqrt(phat * (1 - phat) / n + z2 / (4 * n * n));
+      return {low: center - half, high: center + half};
+    }
+
+    function clopperPearsonInterval(k, n, cl) {
+      const alpha = 1 - cl;
+      const target = alpha / 2;
+      let low = 0;
+      let high = 1;
+
+      if (k > 0) {
+        let a = 0;
+        let b = 1;
+        for (let i = 0; i < 70; ++i) {
+          const m = 0.5 * (a + b);
+          if (binomSf(k, n, m) < target) a = m;
+          else b = m;
+        }
+        low = 0.5 * (a + b);
+      }
+
+      if (k < n) {
+        let a = 0;
+        let b = 1;
+        for (let i = 0; i < 70; ++i) {
+          const m = 0.5 * (a + b);
+          if (binomCdf(k, n, m) > target) a = m;
+          else b = m;
+        }
+        high = 0.5 * (a + b);
+      }
+
+      return {low, high};
+    }
+
+    const binomN = document.getElementById("binom-n");
+    const binomK = document.getElementById("binom-k");
+    const binomCL = document.getElementById("binom-cl");
+    const binomStatus = document.getElementById("binom-status");
+    const binomPhatOut = document.getElementById("binom-phat-out");
+    const binomZOut = document.getElementById("binom-z-out");
+    const binomAlphaOut = document.getElementById("binom-alpha-out");
+    const binomTable = document.getElementById("binom-table");
+
+    function setIntervalBar(prefix, interval, phat) {
+      const bar = document.getElementById(`${prefix}-bar`);
+      const point = document.getElementById(`${prefix}-point`);
+      const low = Math.max(0, Math.min(1, interval.low));
+      const high = Math.max(0, Math.min(1, interval.high));
+      bar.style.left = `${100 * low}%`;
+      bar.style.width = `${100 * Math.max(0, high - low)}%`;
+      point.style.left = `${100 * Math.max(0, Math.min(1, phat))}%`;
+    }
+
+    function updateBinomial() {
+      let n = Math.round(parseNumber(binomN.value));
+      let k = Math.round(parseNumber(binomK.value));
+      const clPercent = parseNumber(binomCL.value);
+      binomStatus.textContent = "";
+
+      if (!Number.isFinite(n) || n < 1 || n > 5000) {
+        binomStatus.textContent = "n должен быть целым числом от 1 до 5000.";
+        return;
+      }
+      if (!Number.isFinite(k)) k = 0;
+      k = Math.max(0, Math.min(n, k));
+      binomN.value = String(n);
+      binomK.max = String(n);
+      binomK.value = String(k);
+
+      if (!Number.isFinite(clPercent) || clPercent <= 0 || clPercent >= 100) {
+        binomStatus.textContent = "Уровень доверия должен быть между 0 и 100%.";
+        return;
+      }
+
+      const cl = clPercent / 100;
+      const alpha = 1 - cl;
+      const z = -inverseNormal(alpha / 2);
+      const phat = k / n;
+      const intervals = [
+        {key: "wald", method: "Вальд", ...waldInterval(k, n, z)},
+        {key: "wilson", method: "Уилсон", ...wilsonInterval(k, n, z)},
+        {key: "cp", method: "Clopper-Pearson", ...clopperPearsonInterval(k, n, cl)}
+      ];
+
+      binomPhatOut.textContent = formatUnit(phat);
+      binomZOut.textContent = z.toFixed(4).replace(/0+$/, "").replace(/\.$/, "");
+      binomAlphaOut.textContent = formatUnit(alpha);
+      intervals.forEach((row) => setIntervalBar(row.key, row, phat));
+
+      binomTable.innerHTML = intervals.map((row) => `
+        <tr>
+          <td>${row.method}</td>
+          <td>${formatUnit(row.low)}</td>
+          <td>${formatUnit(row.high)}</td>
+          <td>${formatUnit(row.high - row.low)}</td>
+        </tr>
+      `).join("");
+    }
+
+    [binomN, binomK, binomCL].forEach((input) => {
+      input.addEventListener("input", updateBinomial);
+      input.addEventListener("change", updateBinomial);
+    });
+
+    window.addEventListener("resize", updateNorm);
+    updateNorm();
+    updateBinomial();
+  </script>
+  <script defer src="./shared/analytics/cloudflare-web-analytics.js"></script>
+</body>
+</html>

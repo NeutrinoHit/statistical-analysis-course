@@ -1,0 +1,1390 @@
+---
+title: "Свойства оценок, профильное правдоподобие и примеры анализа данных"
+subtitle: "Статистический анализ данных"
+author: "Дмитрий В. Наумов (ОИЯИ)"
+format:
+  revealjs:
+    theme: black
+    slide-number: true
+    preview-links: auto
+    chalkboard:
+      buttons: false
+    logo: shared/figures/dvnlogo.png
+    css: styles.css
+    transition: fade
+    center: true
+---
+
+# Свойства оценок
+
+## Смещение, дисперсия и средний квадрат ошибки
+
+Смещение:
+$$
+\operatorname{смещение}(\widehat\theta)
+=
+\mathbb E[\widehat\theta]-\theta.
+$$
+
+Средний квадрат ошибки:
+$$
+\mathbb E[(\widehat\theta-\theta)^2].
+$$
+
+Он раскладывается как
+$$
+\boxed{
+\mathbb E[(\widehat\theta-\theta)^2]
+=
+\operatorname{Var}(\widehat\theta)
++
+\operatorname{смещение}^2(\widehat\theta).
+}
+$$
+
+## Несмещённость не гарантирует оптимальность
+
+::::: {.columns}
+
+::: {.column width="50%"}
+
+Оценка может быть несмещённой, но иметь большую дисперсию:
+$$
+\mathbb E[\widehat\theta]=\theta,
+\qquad
+\operatorname{Var}(\widehat\theta)\ \text{велика}.
+$$
+
+:::
+
+::: {.column width="50%"}
+
+Небольшое смещение иногда уменьшает общий средний квадрат ошибки:
+$$
+\mathbb E[(\widehat\theta-\theta)^2]
+=
+\operatorname{Var}
++
+\operatorname{смещение}^2.
+$$
+
+:::
+
+:::::
+
+::: {.fragment .callout-note .thmbox appearance="simple"}
+Свойства процедуры необходимо оценивать вместе, а не выбирать оценку только по одному критерию.
+:::
+
+## Интерактив: делитель $N$ или $N-1$?
+
+Генерируем гауссовы выборки с истинной дисперсией $\sigma^2=1$ и сравниваем две оценки:
+$$
+\widehat{\sigma^2}_{\mathrm{ММП}}
+=
+\frac1N\sum_i(X_i-\langle X\rangle)^2,
+\qquad
+s^2
+=
+\frac1{N-1}\sum_i(X_i-\langle X\rangle)^2.
+$$
+
+::: {.clt-widget}
+```{ojs}
+//| echo: false
+
+viewof varianceN = Inputs.range([2, 50], {value: 6, step: 1, label: "N"})
+viewof regenerateVariance = Inputs.button("Новый ансамбль")
+
+randnVariance = () => {
+  const u1 = Math.max(Math.random(), 1e-12);
+  const u2 = Math.random();
+  return Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
+}
+
+varianceToys = {
+  regenerateVariance;
+  const toys = [];
+  for (let t = 0; t < 6000; ++t) {
+    const sample = Array.from({length: varianceN}, randnVariance);
+    const mean = sample.reduce((a, b) => a + b, 0) / varianceN;
+    const sumsq = sample.reduce((s, x) => s + (x - mean) ** 2, 0);
+    toys.push({ml: sumsq / varianceN, unbiased: sumsq / (varianceN - 1)});
+  }
+  return toys;
+}
+
+varianceMeanMl = varianceToys.reduce((s, d) => s + d.ml, 0) / varianceToys.length
+varianceMeanUnb = varianceToys.reduce((s, d) => s + d.unbiased, 0) / varianceToys.length
+varianceMseMl = varianceToys.reduce((s, d) => s + (d.ml - 1) ** 2, 0) / varianceToys.length
+varianceMseUnb = varianceToys.reduce((s, d) => s + (d.unbiased - 1) ** 2, 0) / varianceToys.length
+varianceLong = varianceToys.flatMap(d => [
+  {value: d.ml, estimator: "ММП: делитель N"},
+  {value: d.unbiased, estimator: "несмещённая: N - 1"}
+])
+varianceHistogram = (rows, estimator) => {
+  const xMin = 0, xMax = 3, bins = 55;
+  const width = (xMax - xMin) / bins;
+  const values = rows.filter(d => d.estimator === estimator).map(d => d.value);
+  const counts = Array.from({length: bins}, () => 0);
+  for (const x of values) {
+    if (xMin <= x && x < xMax) {
+      counts[Math.min(bins - 1, Math.floor((x - xMin) / width))] += 1;
+    }
+  }
+  return counts.map((count, i) => ({
+    x0: xMin + i * width,
+    x1: xMin + (i + 1) * width,
+    density: count / (values.length * width),
+    estimator
+  }));
+}
+varianceHist = [
+  ...varianceHistogram(varianceLong, "ММП: делитель N"),
+  ...varianceHistogram(varianceLong, "несмещённая: N - 1")
+]
+varianceHistMl = varianceHist.filter(d => d.estimator === "ММП: делитель N")
+varianceHistUnb = varianceHist.filter(d => d.estimator === "несмещённая: N - 1")
+
+variancePlot = Plot.plot({
+  width: 940,
+  height: 360,
+  marginLeft: 90,
+  x: {label: "оценка дисперсии", domain: [0, 3], grid: true},
+  y: {label: "плотность распределения оценки", grid: true},
+  color: {domain: ["ММП: делитель N", "несмещённая: N - 1"], range: ["#4ea1ff", "#ffb347"], legend: true},
+  marks: [
+    Plot.rectY(varianceHistMl, {x1: "x0", x2: "x1", y1: 0, y2: "density", fill: "#4ea1ff", fillOpacity: 0.48}),
+    Plot.rectY(varianceHistUnb, {x1: "x0", x2: "x1", y1: 0, y2: "density", fill: "#ffb347", fillOpacity: 0.38}),
+    Plot.ruleX([1], {stroke: "#f2f2f2", strokeWidth: 3})
+  ]
+})
+
+html`
+<div class="clt-panel">
+  ${variancePlot}
+  <div class="clt-summary" style="margin-top:0.35rem;">
+    <span>N — размер выборки</span>
+    <span>ось y — плотность: площадь каждой гистограммы равна 1</span>
+    <span>среднее оценки ММП ≈ ${varianceMeanMl.toFixed(3)}</span>
+    <span>среднее несмещённой оценки ≈ ${varianceMeanUnb.toFixed(3)}</span>
+    <span>средний квадрат ошибки: ММП ≈ ${varianceMseMl.toFixed(3)}, N−1 ≈ ${varianceMseUnb.toFixed(3)}</span>
+    <span>при большом N оценки почти совпадают</span>
+  </div>
+</div>
+`
+```
+:::
+
+## Состоятельность
+
+Оценка называется состоятельной, если при росте выборки она сходится к истинному параметру:
+$$
+\boxed{
+\widehat\theta_N
+\xrightarrow[N\to\infty]{P}
+\theta.
+}
+$$
+
+::: incremental
+- Смещение должно исчезать или становиться пренебрежимо малым.
+- Дисперсия должна стремиться к нулю.
+- Состоятельность — асимптотическое свойство.
+- Для конечной выборки оценка всё ещё может быть смещённой и иметь большую ошибку.
+:::
+
+## Зачем нужна нижняя граница точности
+
+Для $X_i\sim\mathrm N(\mu,\sigma^2)$ при известной $\sigma$ можно придумать несколько оценок $\mu$:
+$$
+\widehat\mu_1=\langle X\rangle,
+\qquad
+\widehat\mu_2=\operatorname{median}(X_1,\ldots,X_N),
+\qquad
+\widehat\mu_3=\frac{X_1+X_N}{2}.
+$$
+
+Все выглядят разумно, но используют информацию по-разному:
+$$
+\operatorname{Var}(\widehat\mu_1)=\frac{\sigma^2}{N},
+\qquad
+\operatorname{Var}(\widehat\mu_2)\approx\frac{\pi}{2}\frac{\sigma^2}{N},
+\qquad
+\operatorname{Var}(\widehat\mu_3)=\frac{\sigma^2}{2}.
+$$
+
+::: incremental
+- Среднее использует все наблюдения наиболее эффективно для гауссовой модели.
+- Медиана устойчивее к выбросам, но в чистой гауссовой модели платит дисперсией.
+- Оценка по двум точкам почти выбрасывает остальные данные.
+:::
+
+## Граница Крамера — Рао
+
+Скор-функция показывает, как логарифм правдоподобия реагирует на параметр:
+$$
+U(\theta)
+=
+\frac{\partial\ell(\theta)}{\partial\theta}.
+$$
+
+Информация Фишера:
+$$
+\boxed{
+I(\theta)
+=
+\mathbb E\!\left[U^2(\theta)\right]
+=
+-\mathbb E\!\left[
+\frac{\partial^2\ell}{\partial\theta^2}
+\right].
+}
+$$
+
+При выполнении условий регулярности для несмещённой оценки:
+$$
+\boxed{
+\operatorname{Var}(\widehat\theta)
+\ge
+\frac{1}{I(\theta)}.
+}
+$$
+
+Это нижняя граница: лучше неё несмещённая оценка в данной модели быть не может.
+Она не утверждает, что ММП всегда несмещён или всегда достигает границы; эти свойства нужно проверять отдельно.
+
+## Раскрываем вторую производную
+::: incremental
+
+- Пусть для одного наблюдения $s_\theta(x)=\partial_\theta\ln f(x\mid\theta)$.
+
+- Из нормировки плотности:
+$$
+\int f(x\mid\theta)\,dx=1.
+$$
+
+- Дифференцируем один раз:
+$$
+\mathbb E[s_\theta(X)]
+=
+\int \partial_\theta f(x\mid\theta)\,dx
+=0.
+$$
+
+- Дифференцируем второй раз:
+$$
+\partial_\theta f
+=
+f\,\partial_\theta\ln f
+=
+f\,s_\theta,
+$$
+$$
+\partial_\theta^2 f
+=
+\partial_\theta(f s_\theta)
+=
+(\partial_\theta f)s_\theta
++f\,\partial_\theta s_\theta
+=
+f\left[
+s_\theta^2+\partial_\theta^2\ln f
+\right].
+$$
+:::
+
+
+## Интегрируем результат
+::: incremental
+
+- Интегрируем:
+$$
+0
+=
+\int \partial_\theta^2 f\,dx
+=
+\int f\left[
+s_\theta^2+\partial_\theta^2\ln f
+\right]dx
+=
+\mathbb E\!\left[
+s_\theta^2(X)+\partial_\theta^2\ln f(X\mid\theta)
+\right].
+$$
+
+- Поэтому
+$$
+\boxed{
+\mathbb E[s_\theta^2(X)]
+=
+-\mathbb E[\partial_\theta^2\ln f(X\mid\theta)].
+}
+$$
+:::
+
+## Пример: гауссово среднее
+
+Для одного наблюдения:
+$$
+\ln f(x\mid\mu)
+=
+-\frac{(x-\mu)^2}{2\sigma^2}
++\mathrm{const},
+\qquad
+s_\mu(x)
+=
+\frac{x-\mu}{\sigma^2}.
+$$
+
+Тогда
+$$
+I_1(\mu)
+=
+\mathbb E[s_\mu^2(X)]
+=
+\frac{1}{\sigma^4}\mathbb E[(X-\mu)^2]
+=
+\frac{1}{\sigma^2}.
+$$
+
+Для $N$ независимых наблюдений:
+$$
+I_N(\mu)=\frac{N}{\sigma^2},
+\qquad
+\operatorname{Var}(\widehat\mu)\ge\frac{\sigma^2}{N}.
+$$
+
+Среднее $\langle X\rangle$ имеет ровно такую дисперсию, значит в этой модели достигает границы Крамера — Рао.
+
+## Как читать информацию Фишера
+
+::: incremental
+- Информация Фишера измеряет чувствительность распределения к параметру.
+- Чем острее максимум логарифма правдоподобия, тем точнее определяется параметр.
+- Для независимых наблюдений информация складывается: $I_N=N I_1$.
+- Поэтому типичная ошибка регулярной эффективной оценки уменьшается как $1/\sqrt N$.
+- Если оценка достигает границы Крамера — Рао, её называют эффективной.
+:::
+
+
+# Форма правдоподобия
+
+## Кривизна около максимума
+
+Разложим логарифм правдоподобия около максимума:
+$$
+\ell(\theta)
+\approx
+\ell(\widehat\theta)
+-
+\frac12
+(\theta-\widehat\theta)^2
+\left[
+-\ell''(\widehat\theta)
+\right].
+$$
+
+Отсюда локальная оценка дисперсии:
+$$
+\boxed{
+\sigma_{\widehat\theta}^2
+\approx
+\left[
+-\frac{\partial^2\ell}{\partial\theta^2}
+\bigg|_{\widehat\theta}
+\right]^{-1}.
+}
+$$
+
+Это гауссово приближение: оно может нарушаться для малых выборок, границ и асимметричных функций правдоподобия.
+
+## Относительное правдоподобие
+
+Абсолютная нормировка $L$ не важна. Удобно сравнивать с максимумом:
+$$
+\lambda(\theta)
+=
+\frac{L(\theta)}{L(\widehat\theta)}.
+$$
+
+Часто используют
+$$
+\boxed{
+q(\theta)
+=
+-2\ln\lambda(\theta)
+=
+-2\left[\ell(\theta)-\ell(\widehat\theta)\right].
+}
+$$
+
+::: incremental
+- В максимуме $q(\widehat\theta)=0$.
+- Чем хуже параметр описывает данные, тем больше $q(\theta)$.
+- Для локально гауссова правдоподобия:
+  $$
+  q(\theta)\approx\frac{(\theta-\widehat\theta)^2}{\sigma_{\widehat\theta}^2}.
+  $$
+:::
+
+## Квадратичный профиль среднего гаусса
+
+Для $N$ наблюдений с известной $\sigma$:
+$$
+\widehat\mu=\langle x\rangle,
+\qquad
+\sigma_{\widehat\mu}=\frac{\sigma}{\sqrt N}.
+$$
+
+Профиль относительного правдоподобия точно квадратичен:
+$$
+\boxed{
+q(\mu)
+=
+\frac{(\mu-\langle x\rangle)^2}
+{\sigma^2/N}.
+}
+$$
+
+Точки $q=1$ расположены на расстоянии одной стандартной ошибки от максимума. Интерпретация таких порогов вне гауссова случая требует отдельного обоснования.
+
+## Пример: время жизни частицы
+
+Пусть времена распада описываются экспоненциальным распределением:
+$$
+T_i\sim\operatorname{Exp}(\tau),
+\qquad
+f(t\mid\tau)=\frac1\tau e^{-t/\tau},
+\qquad
+t\ge0.
+$$
+
+Функция правдоподобия:
+$$
+L(\tau)
+=
+\prod_{i=1}^{N}
+\frac1\tau e^{-t_i/\tau}
+=
+\tau^{-N}
+\exp\!\left(
+-\frac1\tau\sum_{i=1}^{N}t_i
+\right).
+$$
+
+Логарифм правдоподобия:
+$$
+\ell(\tau)
+=
+-N\ln\tau
+-\frac1\tau\sum_{i=1}^{N}t_i
++\mathrm{const}.
+$$
+
+Условие максимума:
+$$
+\frac{\partial\ell}{\partial\tau}
+=
+-\frac{N}{\tau}
++\frac{1}{\tau^2}\sum_{i=1}^{N}t_i
+=0
+\quad\Longrightarrow\quad
+\boxed{\widehat\tau_{\mathrm{ММП}}=\langle t\rangle.}
+$$
+
+## Интерактив: правдоподобие времени жизни
+
+::: {.clt-widget}
+```{ojs}
+//| echo: false
+
+viewof lifeN = Inputs.range([3, 200], {value: 20, step: 1, label: "N"})
+viewof lifeTauTrue = Inputs.range([0.5, 5], {value: 2, step: 0.1, label: "τ0"})
+viewof lifeTauTry = Inputs.range([0.1, 20], {value: 2, step: 0.05, label: "τ"})
+viewof regenerateLife = Inputs.button("Новая выборка", {value: 0, reduce: () => Date.now()})
+viewof revealLifeInterval = Inputs.button("Найти интервал", {value: 0, reduce: () => Date.now()})
+
+lifeSample = {
+  regenerateLife;
+  const values = [];
+  for (let i = 0; i < lifeN; ++i) {
+    values.push(-lifeTauTrue * Math.log(Math.max(1e-12, 1 - Math.random())));
+  }
+  return values;
+}
+
+lifeNobs = lifeSample.length
+lifeSumT = lifeSample.reduce((s, t) => s + t, 0)
+lifeTauHat = lifeSumT / lifeNobs
+lifeLogLik = tau => -lifeNobs * Math.log(tau) - lifeSumT / tau
+lifeLogLikMax = lifeLogLik(lifeTauHat)
+lifeDeltaLog = tau => lifeLogLik(tau) - lifeLogLikMax
+lifeQ = tau => -2 * lifeDeltaLog(tau)
+lifeBisect = (lo, hi) => {
+  let flo = lifeQ(lo) - 1;
+  for (let i = 0; i < 70; ++i) {
+    const mid = 0.5 * (lo + hi);
+    const fmid = lifeQ(mid) - 1;
+    if (flo * fmid <= 0) {
+      hi = mid;
+    } else {
+      lo = mid;
+      flo = fmid;
+    }
+  }
+  return 0.5 * (lo + hi);
+}
+lifeRightHi = {
+  let hi = Math.max(1.2 * lifeTauHat, lifeTauHat + 0.1);
+  for (let i = 0; i < 40 && lifeQ(hi) < 1; ++i) hi *= 1.5;
+  return hi;
+}
+lifeLow = lifeBisect(Math.max(1e-6, lifeTauHat * 1e-6), lifeTauHat)
+lifeHigh = lifeBisect(lifeTauHat, lifeRightHi)
+lifeShowInterval = revealLifeInterval > regenerateLife
+lifeXmax = Math.max(
+  4 * lifeTauTrue,
+  3 * lifeTauHat,
+  1.15 * lifeTauTry,
+  lifeShowInterval ? 1.15 * lifeHigh : 0,
+  5
+)
+lifeGrid = Array.from({length: 600}, (_, i) => 1e-4 + (lifeXmax - 1e-4) * i / 599)
+lifeCurve = lifeGrid.map(tau => ({tau, dlog: lifeDeltaLog(tau), q: lifeQ(tau)}))
+lifeTryPoint = [{tau: lifeTauTry, dlog: lifeDeltaLog(lifeTauTry)}]
+lifeYmin = Math.floor(Math.max(
+  -20,
+  Math.min(-5, lifeDeltaLog(lifeTauTry)) - 0.5
+))
+lifeDataRows = lifeSample.map((t, i) => ({i: i + 1, t}))
+lifeDataXmax = Math.max(lifeXmax, Math.max(...lifeSample) * 1.05)
+lifeIntervalMarks = lifeShowInterval
+  ? [
+      Plot.ruleY([-0.5], {stroke: "#999", strokeDasharray: "7,5", strokeWidth: 3}),
+      Plot.ruleX([lifeLow, lifeHigh], {stroke: "#ff5f57", strokeDasharray: "8,6", strokeWidth: 3})
+    ]
+  : []
+
+lifePlot = Plot.plot({
+  width: 760,
+  height: 360,
+  marginLeft: 80,
+  x: {label: "время жизни τ", domain: [0, lifeXmax], grid: true},
+  y: {label: "ℓ(τ) − ℓmax", domain: [lifeYmin, 0.12], grid: true},
+  marks: [
+    Plot.line(lifeCurve, {x: "tau", y: "dlog", stroke: "#4ea1ff", strokeWidth: 4}),
+    Plot.ruleY([0], {stroke: "#777", strokeWidth: 2}),
+    Plot.ruleX([lifeTauTrue], {stroke: "#f2f2f2", strokeDasharray: "5,5", strokeWidth: 3}),
+    Plot.ruleX([lifeTauTry], {stroke: "#ffb347", strokeWidth: 4}),
+    Plot.dot(lifeTryPoint, {x: "tau", y: "dlog", fill: "#ffb347", r: 7}),
+    ...lifeIntervalMarks
+  ]
+})
+lifeDataPlot = Plot.plot({
+  width: 290,
+  height: 360,
+  marginLeft: 55,
+  x: {label: "измеренные времена tᵢ", domain: [0, lifeDataXmax], grid: true},
+  y: {label: "номер i", domain: [0, lifeN + 1]},
+  marks: [
+    Plot.dot(lifeDataRows, {x: "t", y: "i", fill: "#f2f2f2", fillOpacity: 0.72, r: 3}),
+    Plot.ruleX([lifeTauTrue], {stroke: "#f2f2f2", strokeDasharray: "5,5", strokeWidth: 2})
+  ]
+})
+
+html`
+<div class="clt-panel">
+  <div style="display:flex; gap:0.8rem; justify-content:center; align-items:flex-start;">
+    ${lifePlot}
+    ${lifeDataPlot}
+  </div>
+  <div class="clt-summary">
+    <span>τ0 задаёт генерацию; точки справа — сгенерированные времена распада</span>
+    <span>выбранное τ = ${lifeTauTry.toFixed(2)}: ℓ−ℓmax = ${lifeDeltaLog(lifeTauTry).toFixed(2)}, q = ${lifeQ(lifeTauTry).toFixed(2)}</span>
+    <span>${lifeShowInterval ? `q=1: [${lifeLow.toFixed(2)}, ${lifeHigh.toFixed(2)}]` : "сначала найдите максимум, затем нажмите «Найти интервал»"}</span>
+    <span>интервал находится опусканием от максимума на 1/2: ℓ−ℓmax = −1/2</span>
+  </div>
+</div>
+`
+```
+:::
+
+## Границы и малые выборки
+
+Для пуассоновского наблюдения $n$:
+$$
+q(\mu)
+=
+2\left[
+\mu-n+n\ln\frac n\mu
+\right],
+$$
+где при $n=0$ последний член принимается равным нулю.
+
+::: incremental
+- Форма не симметрична относительно $\widehat\mu=n$.
+- При $n=0$ максимум находится на границе $\widehat\mu=0$.
+- Кривизна около максимума может плохо описывать дальние области.
+- Симметричная запись $\widehat\mu\pm\sigma$ может быть физически бессмысленной.
+:::
+
+
+# Несколько параметров
+
+## Параметры интереса и мешающие параметры
+
+Пусть модель зависит от
+$$
+L(\theta,\boldsymbol\eta),
+$$
+где:
+
+::: incremental
+- $\theta$ — параметр интереса, который хотим измерить;
+- $\boldsymbol\eta$ — мешающие параметры: фон, эффективность, калибровка, разрешение;
+- все параметры влияют на форму правдоподобия;
+- игнорирование неопределённости мешающих параметров обычно занижает ошибку $\theta$.
+:::
+
+## Совместный максимум
+
+Полная подгонка находит
+$$
+(\widehat\theta,\widehat{\boldsymbol\eta})
+=
+\underset{\theta,\boldsymbol\eta}
+{\operatorname{arg\,max}}\,
+L(\theta,\boldsymbol\eta).
+$$
+
+::: incremental
+- Корреляции параметров образуют вытянутые области правдоподобия.
+- Изменение $\theta$ может частично компенсироваться изменением $\boldsymbol\eta$.
+- Поэтому неопределённость $\theta$ определяется не только сечением правдоподобия при фиксированных мешающих параметрах.
+:::
+
+## Профильное правдоподобие
+
+Для каждого фиксированного $\theta$ повторно оптимизируем мешающие параметры:
+$$
+\widehat{\widehat{\boldsymbol\eta}}(\theta)
+=
+\underset{\boldsymbol\eta}{\operatorname{arg\,max}}\,
+L(\theta,\boldsymbol\eta).
+$$
+
+Профильное правдоподобие:
+$$
+\boxed{
+L_{\mathrm{p}}(\theta)
+=
+L\!\left(
+\theta,
+\widehat{\widehat{\boldsymbol\eta}}(\theta)
+\right).
+}
+$$
+
+Двойная шляпка подчёркивает: мешающие параметры оптимизированы при фиксированном $\theta$.
+
+## Модель для аплета
+
+В аплете используется двумерная гауссова форма правдоподобия около максимума $(0,0)$:
+$$
+q(\theta,\eta)
+=
+-2\ln\frac{L(\theta,\eta)}{L_{\max}}
+=
+\frac{\theta^2-2\rho\theta\eta+\eta^2}{1-\rho^2},
+\qquad
+\frac{L(\theta,\eta)}{L_{\max}}
+=
+\exp\!\left[-\frac12 q(\theta,\eta)\right].
+$$
+
+Здесь $\theta$ — интересующий параметр, $\eta$ — мешающий параметр, а $\rho$ задаёт их корреляцию:
+$$
+\Sigma=
+\begin{pmatrix}
+1 & \rho\\
+\rho & 1
+\end{pmatrix},
+\qquad
+q=
+\begin{pmatrix}\theta & \eta\end{pmatrix}
+\Sigma^{-1}
+\begin{pmatrix}\theta\\ \eta\end{pmatrix}.
+$$
+
+Профилирование выбирает лучшее значение $\eta$ при каждом фиксированном $\theta$:
+$$
+\frac{\partial q}{\partial\eta}=0
+\quad\Rightarrow\quad
+\widehat{\widehat\eta}(\theta)=\rho\theta,
+\qquad
+q_{\mathrm{prof}}(\theta)=q(\theta,\widehat{\widehat\eta}(\theta))=\theta^2.
+$$
+
+Если вместо профилирования зафиксировать $\eta=0$, получаем более крутую кривую:
+$$
+q_{\eta=0}(\theta)=q(\theta,0)=\frac{\theta^2}{1-\rho^2}.
+$$
+
+## Интерактив: что делает профилирование
+
+Цвет показывает совместное относительное правдоподобие $L(\theta,\eta)/L_{\max}$. Белая линия проходит через лучшее значение $\eta$ для каждого фиксированного $\theta$.
+
+::: {.clt-widget}
+```{ojs}
+//| echo: false
+
+viewof profileRho = Inputs.range([-0.9, 0.9], {value: 0.75, step: 0.05, label: "ρ"})
+viewof profileTheta = Inputs.range([-2.5, 2.5], {value: 1.2, step: 0.1, label: "θ"})
+
+profileGrid = {
+  const values = [];
+  for (let i = 0; i <= 60; ++i) {
+    const theta = -3 + 6 * i / 60;
+    for (let j = 0; j <= 60; ++j) {
+      const eta = -3 + 6 * j / 60;
+      const q = (theta * theta - 2 * profileRho * theta * eta + eta * eta) / (1 - profileRho * profileRho);
+      values.push({theta, eta, relative: Math.exp(-0.5 * q)});
+    }
+  }
+  return values;
+}
+
+profilePath = Array.from({length: 121}, (_, i) => {
+  const theta = -3 + 6 * i / 120;
+  return {theta, eta: profileRho * theta};
+})
+profileEta = profileRho * profileTheta
+
+profileJointPlot = Plot.plot({
+  width: 590,
+  height: 480,
+  marginLeft: 65,
+  x: {label: "θ", domain: [-3, 3], grid: true},
+  y: {label: "η", domain: [-3, 3], grid: true},
+  color: {scheme: "magma", domain: [0, 1]},
+  marks: [
+    Plot.dot(profileGrid, {x: "theta", y: "eta", fill: "relative", r: 3.8}),
+    Plot.line(profilePath, {x: "theta", y: "eta", stroke: "#f2f2f2", strokeWidth: 3}),
+    Plot.ruleX([profileTheta], {stroke: "#4ea1ff", strokeWidth: 3}),
+    Plot.dot([{theta: profileTheta, eta: profileEta}], {x: "theta", y: "eta", r: 8, fill: "#ffb347"})
+  ]
+})
+
+profileCurve = Array.from({length: 201}, (_, i) => {
+  const theta = -3 + 6 * i / 200;
+  return {theta, qProfile: theta * theta, qFixed: theta * theta / (1 - profileRho * profileRho)};
+})
+
+profileCurvePlot = Plot.plot({
+  width: 590,
+  height: 480,
+  marginLeft: 65,
+  x: {label: "θ", domain: [-3, 3], grid: true},
+  y: {label: "q(θ)", domain: [0, 9], grid: true},
+  color: {domain: ["профиль", "η = 0"], range: ["#ffb347", "#4ea1ff"], legend: true},
+  marks: [
+    Plot.line(profileCurve, {x: "theta", y: "qProfile", stroke: "#ffb347", strokeWidth: 4}),
+    Plot.line(profileCurve, {x: "theta", y: "qFixed", stroke: "#4ea1ff", strokeWidth: 3}),
+    Plot.ruleY([1], {stroke: "#999", strokeDasharray: "6,5"})
+  ]
+})
+
+html`
+<div class="clt-panel">
+  <div style="display:flex; gap:0.6rem; align-items:center; justify-content:center;">
+    ${profileJointPlot}
+    ${profileCurvePlot}
+  </div>
+  <div class="clt-summary">
+    <span>ρ — корреляция параметров</span>
+    <span>при θ = ${profileTheta.toFixed(1)} профиль выбирает η = ${profileEta.toFixed(2)}</span>
+    <span>профилирование учитывает компенсацию между параметрами</span>
+  </div>
+</div>
+`
+```
+:::
+
+## Что показывает аплет
+
+::: incremental
+1. При фиксированном $\theta$ синяя вертикальная линия задаёт допустимые значения мешающего параметра $\eta$.
+2. Оранжевая точка выбирает на этой линии максимум правдоподобия.
+3. Повторение для всех $\theta$ образует белую профильную траекторию.
+4. Профильная кривая шире сечения при фиксированном $\eta=0$.
+5. Чем сильнее корреляция, тем сильнее фиксирование мешающего параметра занижает неопределённость.
+:::
+
+## Пример: реакторные нейтрино
+
+::::: {.panel-tabset}
+
+### Модель
+
+::: {.smaller}
+
+Игрушечная модель: два флейвора, вакуум, реакторные $\bar\nu_e$:
+$$
+P_{ee}(E; A, \Delta m^2)
+=
+1
+- A\,
+\sin^2\!\left(
+1.267\,\Delta m^2\,\frac{L}{E_{\mathrm{ГэВ}}}
+\right),
+\qquad
+A=\sin^2 2\theta.
+$$
+
+Ожидание в энергетическом бине:
+$$
+\lambda_i(A,\Delta m^2)
+=
+C\,\phi(E_i)\sigma(E_i)P_{ee}(E_i;A,\Delta m^2)\Delta E_i,
+\qquad
+n_i\sim\operatorname{Pois}(\lambda_i).
+$$
+
+Правдоподобие:
+$$
+\ell(A,\Delta m^2)
+=
+\sum_i\left[n_i\ln\lambda_i(A,\Delta m^2)-\lambda_i(A,\Delta m^2)\right]
+\quad
+\text{с точностью до константы.}
+$$
+
+:::
+
+### Поток
+
+::: {.smaller}
+
+Параметризация Huber--Mueller аппроксимирует логарифм спектра полиномом по $E$:
+$$
+\phi(E)
+=
+\sum_k f_k
+\exp\!\left[
+\sum_{p=0}^{5} a_{kp} E^p
+\right],
+\qquad
+k\in\{^{235}\mathrm U,\,^{238}\mathrm U,\,^{239}\mathrm{Pu},\,^{241}\mathrm{Pu}\}.
+$$
+
+ $E$ в МэВ;  $a_{kp}$ размерны, показатель экспоненты безразмерен.
+
+| изотоп | $f_k$ | $a_0$ | $a_1$ | $a_2$ | $a_3$ | $a_4$ | $a_5$ |
+|---:|---:|---:|---:|---:|---:|---:|---:|
+| $^{235}$U | 0.58 | 4.367 | -4.577 | 2.100 | -0.5294 | 0.06186 | -0.002777 |
+| $^{238}$U | 0.07 | 0.4833 | 0.1927 | -0.1283 | -0.006762 | 0.002233 | -0.0001536 |
+| $^{239}$Pu | 0.30 | 4.757 | -5.392 | 2.563 | -0.6596 | 0.07820 | -0.003536 |
+| $^{241}$Pu | 0.05 | 2.990 | -2.882 | 1.278 | -0.3343 | 0.03905 | -0.001754 |
+
+:::
+
+### Параметры
+
+::: {.smaller}
+
+В аплете фиксированы:
+
+| величина | значение |
+|---|---:|
+| расстояние $L$ | $1.6\,\text{км}$ |
+| диапазон энергий | $1.8\ldots 8.0\,\text{МэВ}$ |
+| сетка по $A=\sin^2 2\theta$ | $0\ldots 0.20$, 61 точка |
+| сетка по $\Delta m^2$ | $(1.6\ldots 3.4)\cdot 10^{-3}\,\text{эВ}^2$, 61 точка |
+
+Пользователь меняет $N_0$, $A_0$, $\Delta m^2_0$ и число энергетических бинов $N_{\mathrm{bins}}$.
+
+Для сечения обратного бета-распада используется простая форма
+$$
+\sigma(E)\propto E_e p_e,
+\qquad
+E_e=E-1.293\,\text{МэВ}.
+$$
+
+Нормировка $C$ выбирается так, чтобы при $A=0$ ожидалось $N_0$ событий во всём диапазоне энергий.
+
+:::
+
+### Алгоритм
+
+::: {.smaller}
+
+Карта показывает
+$$
+q(A,\Delta m^2)
+=
+-2\left[
+\ell(A,\Delta m^2)-\ell_{\max}
+\right].
+$$
+
+1. По заданным $(A_0,\Delta m^2_0)$ считаем $\lambda_i^0$ во всех энергетических бинах.
+2. Генерируем псевдоданные: $n_i\sim\operatorname{Pois}(\lambda_i^0)$.
+3. На сетке $(A,\Delta m^2)$ считаем $\ell(A,\Delta m^2)$ и находим максимум $\ell_{\max}$.
+4. Строим 2D-карту $q(A,\Delta m^2)$. Белая область $q\le 2.30$ — ориентир для совместной области $1\sigma$ для двух параметров.
+5. Строим профили:
+$$
+q_{\mathrm p}(A)=\min_{\Delta m^2}q(A,\Delta m^2),
+\qquad
+q_{\mathrm p}(\Delta m^2)=\min_A q(A,\Delta m^2).
+$$
+6. Одномерный ориентир $1\sigma$: пересечение профильной кривой с $q_{\mathrm p}=1$.
+
+:::
+
+:::::
+
+## Интерактив: осцилляционные параметры
+
+::: {.clt-widget .osc-widget}
+```{ojs}
+//| echo: false
+
+oscExposureInput = Inputs.range([300, 100000], {value: 2500, step: 100, label: "N₀"})
+oscATrueInput = Inputs.range([0.00, 0.20], {value: 0.085, step: 0.005, label: "A₀"})
+oscDmTrueInput = Inputs.range([1.6, 3.4], {value: 2.50, step: 0.05, label: "Δm²₀"})
+oscNBinsInput = Inputs.range([8, 80], {value: 18, step: 1, label: "Nbins"})
+oscRegenerateInput = Inputs.button("Новая стат", {value: 0, reduce: () => Date.now()})
+
+oscExposure = Generators.input(oscExposureInput)
+oscATrue = Generators.input(oscATrueInput)
+oscDmTrue = Generators.input(oscDmTrueInput)
+oscNBins = Generators.input(oscNBinsInput)
+oscRegenerate = Generators.input(oscRegenerateInput)
+
+oscBaselineKm = 1.6
+
+oscBins = Array.from({length: oscNBins}, (_, i) => {
+  const e1 = 1.8 + i * (6.2 / oscNBins);
+  const e2 = 1.8 + (i + 1) * (6.2 / oscNBins);
+  return {i, e1, e2, e: 0.5 * (e1 + e2), width: e2 - e1};
+})
+
+oscFluxComponents = [
+  {fraction: 0.58, coeffs: [4.367, -4.577, 2.100, -0.5294, 0.06186, -0.002777]},     // 235U, Huber
+  {fraction: 0.07, coeffs: [0.4833, 0.1927, -0.1283, -0.006762, 0.002233, -0.0001536]}, // 238U, Mueller
+  {fraction: 0.30, coeffs: [4.757, -5.392, 2.563, -0.6596, 0.07820, -0.003536]},     // 239Pu, Huber
+  {fraction: 0.05, coeffs: [2.990, -2.882, 1.278, -0.3343, 0.03905, -0.001754]}      // 241Pu, Huber
+]
+
+oscIsotopeFlux = (E, coeffs) => {
+  let poly = 0;
+  let power = 1;
+  for (const a of coeffs) {
+    poly += a * power;
+    power *= E;
+  }
+  return Math.exp(poly);
+}
+
+oscFlux = E => oscFluxComponents.reduce(
+  (sum, c) => sum + c.fraction * oscIsotopeFlux(E, c.coeffs),
+  0
+)
+
+oscCrossSection = E => {
+  const ee = E - 1.293;
+  const pe = Math.sqrt(Math.max(0, ee * ee - 0.511 * 0.511));
+  return Math.max(0, ee * pe);
+}
+
+oscSurvival = (Emev, A, dmMilli) => {
+  const dm2 = dmMilli * 1e-3;
+  const phase = 1.267 * dm2 * oscBaselineKm / (Emev / 1000);
+  const s = Math.sin(phase);
+  return Math.max(1e-4, 1 - A * s * s);
+}
+
+oscBaseTotal = oscBins.reduce((sum, b) => sum + oscFlux(b.e) * oscCrossSection(b.e) * b.width, 0)
+
+oscExpected = (A, dmMilli) => {
+  const scale = oscExposure / oscBaseTotal;
+  return oscBins.map(b => scale * oscFlux(b.e) * oscCrossSection(b.e) * oscSurvival(b.e, A, dmMilli) * b.width);
+}
+
+oscRandn = () => {
+  const u1 = Math.max(Math.random(), 1e-12);
+  const u2 = Math.random();
+  return Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
+}
+
+oscPoisson = lambda => {
+  if (lambda <= 0) return 0;
+  if (lambda > 80) return Math.max(0, Math.round(lambda + Math.sqrt(lambda) * oscRandn()));
+  const limit = Math.exp(-lambda);
+  let k = 0;
+  let product = 1;
+  do {
+    ++k;
+    product *= Math.random();
+  } while (product > limit);
+  return k - 1;
+}
+
+oscData = {
+  oscRegenerate;
+  const mu = oscExpected(oscATrue, oscDmTrue);
+  return oscBins.map((b, i) => ({...b, n: oscPoisson(mu[i]), muTrue: mu[i]}));
+}
+
+oscLogLike = (A, dmMilli) => {
+  const mu = oscExpected(A, dmMilli);
+  let ll = 0;
+  for (let i = 0; i < oscData.length; ++i) {
+    const lambda = Math.max(mu[i], 1e-9);
+    ll += oscData[i].n * Math.log(lambda) - lambda;
+  }
+  return ll;
+}
+
+oscAGrid = Array.from({length: 61}, (_, i) => i * 0.20 / 60)
+oscDmGrid = Array.from({length: 61}, (_, i) => 1.6 + i * (3.4 - 1.6) / 60)
+
+oscFit = {
+  const rows = [];
+  let best = {A: 0, dm: 0, ll: -Infinity};
+  for (const A of oscAGrid) {
+    for (const dm of oscDmGrid) {
+      const ll = oscLogLike(A, dm);
+      rows.push({A, dm, ll});
+      if (ll > best.ll) best = {A, dm, ll};
+    }
+  }
+  for (const row of rows) {
+    row.q = -2 * (row.ll - best.ll);
+    row.relative = Math.exp(-0.5 * Math.min(row.q, 20));
+  }
+  const profileA = oscAGrid.map(A => ({
+    A,
+    q: Math.min(...rows.filter(row => Math.abs(row.A - A) < 1e-12).map(row => row.q))
+  }));
+  const profileDm = oscDmGrid.map(dm => ({
+    dm,
+    q: Math.min(...rows.filter(row => Math.abs(row.dm - dm) < 1e-12).map(row => row.q))
+  }));
+  return {rows, best, profileA, profileDm};
+}
+
+oscRegion68 = oscFit.rows.filter(row => row.q <= 2.30)
+oscRegion95 = oscFit.rows.filter(row => row.q <= 6.18)
+oscObservedTotal = oscData.reduce((sum, row) => sum + row.n, 0)
+oscMuNoOsc = oscExpected(0, oscDmTrue)
+oscMuBest = oscExpected(oscFit.best.A, oscFit.best.dm)
+oscSpectrumRows = oscData.map((row, i) => ({...row, muNoOsc: oscMuNoOsc[i], muBest: oscMuBest[i]}))
+
+oscMapPlot = Plot.plot({
+  width: 700,
+  height: 430,
+  marginLeft: 64,
+  marginBottom: 50,
+  x: {label: "Δm² × 10³, эВ²", domain: [1.6, 3.4], grid: true},
+  y: {label: "A = sin² 2θ", domain: [0, 0.20], grid: true},
+  color: {scheme: "magma", domain: [0, 1]},
+  marks: [
+    Plot.dot(oscFit.rows, {x: "dm", y: "A", fill: "relative", r: 3.4}),
+    Plot.dot(oscRegion95, {x: "dm", y: "A", fill: "#ffffff", fillOpacity: 0.14, r: 3.6}),
+    Plot.dot(oscRegion68, {x: "dm", y: "A", fill: "#ffffff", fillOpacity: 0.55, r: 3.9}),
+    Plot.dot([{dm: oscDmTrue, A: oscATrue}], {x: "dm", y: "A", r: 8, fill: "#00d084", stroke: "#111", strokeWidth: 1.5}),
+    Plot.dot([{dm: oscFit.best.dm, A: oscFit.best.A}], {x: "dm", y: "A", r: 8, fill: "#ffb347", stroke: "#111", strokeWidth: 1.5})
+  ]
+})
+
+oscSpectrumPlot = Plot.plot({
+  width: 700,
+  height: 205,
+  marginLeft: 66,
+  marginBottom: 30,
+  x: {label: "энергия, МэВ", domain: [1.8, 8.0], grid: true},
+  y: {label: "события в бине", grid: true},
+  marks: [
+    Plot.rectY(oscSpectrumRows, {x1: "e1", x2: "e2", y: "n", fill: "#d9d9d9", fillOpacity: 0.75}),
+    Plot.line(oscSpectrumRows, {x: "e", y: "muNoOsc", stroke: "#8fd3ff", strokeWidth: 2.4, strokeDasharray: "6,4"}),
+    Plot.line(oscSpectrumRows, {x: "e", y: "muTrue", stroke: "#00d084", strokeWidth: 2.5, strokeDasharray: "5,4"}),
+    Plot.line(oscSpectrumRows, {x: "e", y: "muBest", stroke: "#ffb347", strokeWidth: 3})
+  ]
+})
+
+oscProfileAPlot = Plot.plot({
+  width: 700,
+  height: 205,
+  marginLeft: 66,
+  marginBottom: 30,
+  x: {label: "A = sin² 2θ", domain: [0, 0.20], grid: true},
+  y: {label: "q_p(A)", domain: [0, 9], grid: true},
+  marks: [
+    Plot.line(oscFit.profileA, {x: "A", y: "q", stroke: "#ffb347", strokeWidth: 3}),
+    Plot.ruleY([1], {stroke: "#999", strokeDasharray: "5,5"}),
+    Plot.ruleX([oscATrue], {stroke: "#00d084", strokeDasharray: "5,4"}),
+    Plot.ruleX([oscFit.best.A], {stroke: "#ffb347"})
+  ]
+})
+
+oscProfileDmPlot = Plot.plot({
+  width: 700,
+  height: 205,
+  marginLeft: 66,
+  marginBottom: 30,
+  x: {label: "Δm² × 10³, эВ²", domain: [1.6, 3.4], grid: true},
+  y: {label: "q_p(Δm²)", domain: [0, 9], grid: true},
+  marks: [
+    Plot.line(oscFit.profileDm, {x: "dm", y: "q", stroke: "#4ea1ff", strokeWidth: 3}),
+    Plot.ruleY([1], {stroke: "#999", strokeDasharray: "5,5"}),
+    Plot.ruleX([oscDmTrue], {stroke: "#00d084", strokeDasharray: "5,4"}),
+    Plot.ruleX([oscFit.best.dm], {stroke: "#ffb347"})
+  ]
+})
+
+html`
+<style>
+.osc-widget input[type="number"] {
+  min-width: 6.8rem !important;
+  width: 6.8rem !important;
+}
+.osc-widget input[type="range"] {
+  min-width: 17rem;
+}
+.osc-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 0.75rem;
+  align-items: start;
+  justify-items: center;
+}
+.osc-controls {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.12rem;
+  width: 520px;
+  margin-bottom: 0.35rem;
+}
+.osc-controls form,
+.osc-controls label {
+  margin: 0 !important;
+}
+.osc-controls button {
+  font-size: 0.82em;
+  padding: 0.15rem 0.45rem;
+}
+.osc-right {
+  display: flex;
+  flex-direction: column;
+  gap: 0.03rem;
+}
+</style>
+<div class="clt-panel" style="margin-top:0.3rem;">
+  <div class="osc-layout">
+    <div>
+      <div class="osc-controls">
+        ${oscExposureInput}
+        ${oscATrueInput}
+        ${oscDmTrueInput}
+        ${oscNBinsInput}
+        ${oscRegenerateInput}
+      </div>
+      ${oscMapPlot}
+    </div>
+    <div class="osc-right">
+      ${oscSpectrumPlot}
+      ${oscProfileAPlot}
+      ${oscProfileDmPlot}
+    </div>
+  </div>
+  <div class="clt-summary" style="font-size:0.66em; line-height:1.08; margin-top:0.02rem;">
+    <span>зелёная — генерация</span>
+    <span>оранжевая — максимум</span>
+    <span>N = ${oscObservedTotal}</span>
+    <span>Nbins = ${oscNBins}</span>
+    <span>Â = ${oscFit.best.A.toFixed(3)}, Δm̂² = ${oscFit.best.dm.toFixed(2)}·10⁻³ эВ²</span>
+  </div>
+</div>
+`
+```
+:::
+
+## Что показывает пример с осцилляциями
+
+::: incremental
+1. Даже в простой модели параметры не измеряются независимо: похожие спектры могут получаться при разных $(A,\Delta m^2)$.
+2. Совместная область показывает эту связь напрямую.
+3. Одномерная ошибка для $A$ получается из профильной кривой $q_{\mathrm p}(A)$, где для каждого $A$ заново выбирается лучшее $\Delta m^2$.
+4. Аналогично, ошибка для $\Delta m^2$ получается из $q_{\mathrm p}(\Delta m^2)$.
+5. Это тот же принцип, что в абстрактном аплете, но теперь профиль появляется из физической модели спектра.
+:::
+
+
+# Правдоподобие для примеров анализа данных
+
+## Ограничивающая информация
+
+Мешающий параметр часто имеет внешнее измерение:
+$$
+\eta_{\mathrm{всп}}\sim\mathrm N(\eta,\sigma_\eta^2).
+$$
+
+Тогда полное правдоподобие содержит два множителя:
+$$
+\boxed{
+L_{\mathrm{полн}}(\theta,\eta)
+=
+L_{\mathrm{данные}}(\theta,\eta)
+\,
+L_{\mathrm{всп}}(\eta).
+}
+$$
+
+::: incremental
+- Основные данные измеряют $\theta$ и одновременно ограничивают $\eta$.
+- Вспомогательное измерение добавляет независимую информацию об $\eta$.
+- Слово «ограничение» не означает произвольный штраф: это часть вероятностной модели данных.
+:::
+
+## Расширенное правдоподобие
+
+Если модель предсказывает и число событий $\nu(\theta)$, и распределение их признаков $f(x\mid\theta)$, используют
+$$
+\boxed{
+L_{\mathrm{расш}}(\theta)
+=
+\operatorname{Pois}(N\mid\nu(\theta))
+\prod_{i=1}^{N} f(x_i\mid\theta).
+}
+$$
+
+::: incremental
+- Пуассоновский множитель использует информацию о полном числе событий.
+- Произведение плотностей использует форму распределения.
+- Для смеси сигнала и фона в $f(x\mid\theta)$ входят оба компонента.
+:::
+
+## Бинированное пуассоновское правдоподобие
+
+Если данные представлены числами событий $n_j$ в независимых бинах, а модель предсказывает $\nu_j(\boldsymbol\theta)$:
+$$
+\boxed{
+L(\boldsymbol\theta)
+=
+\prod_j
+\operatorname{Pois}
+\!\left(
+n_j\mid\nu_j(\boldsymbol\theta)
+\right).
+}
+$$
+
+Соответствующий логарифм правдоподобия:
+$$
+\ell(\boldsymbol\theta)
+=
+\sum_j
+\left[
+n_j\ln\nu_j(\boldsymbol\theta)
+-
+\nu_j(\boldsymbol\theta)
+-
+\ln n_j!
+\right].
+$$
+
+## Инвариантность оценки максимального правдоподобия
+
+Если
+$$
+\widehat\theta_{\mathrm{ММП}}
+=
+\underset{\theta}{\operatorname{arg\,max}}\,L(\theta),
+$$
+а $\phi=g(\theta)$ — взаимно однозначное преобразование, то
+$$
+\boxed{
+\widehat\phi_{\mathrm{ММП}}
+=
+g(\widehat\theta_{\mathrm{ММП}}).
+}
+$$
+
+::: incremental
+- Можно подгонять удобную параметризацию.
+- Результат затем переводится в физически интересующую величину.
+- Но ошибка при нелинейном преобразовании обычно становится асимметричной.
+:::
+
+## Практический алгоритм подгонки
+
+::: incremental
+1. Явно записать вероятностную модель всех наблюдений.
+2. Определить параметры интереса, мешающие параметры и физические границы.
+3. Реализовать устойчивый логарифм правдоподобия.
+4. Найти совместный максимум несколькими начальными приближениями.
+5. Проверить градиенты, сходимость и положение относительно границ.
+6. Построить одномерные и двумерные сканы правдоподобия.
+7. Проверить процедуру на псевдоэкспериментах.
+8. Сравнить подогнанную модель с данными.
+:::
+
+## Что проверять на псевдоэкспериментах
+
+Для известных истинных параметров $\boldsymbol\theta_0$:
+
+::: incremental
+- распределение $\widehat{\boldsymbol\theta}$;
+- смещение и дисперсию оценки;
+- частоту попадания подгонки в границы;
+- устойчивость оптимизатора;
+- покрытие интервалов;
+- распределение статистик отношения правдоподобия;
+- влияние ошибочной модели.
+:::
+
+::: {.fragment .callout-note .thmbox appearance="simple"}
+Формула правдоподобия задаёт статистическую модель. Псевдоэксперименты проверяют, как ведёт себя вся процедура анализа.
+:::
+
+## Типичные проблемы
+
+| Проблема | Симптом |
+|---|---|
+| локальный максимум | результат зависит от начальной точки |
+| параметр на границе | несимметричное правдоподобие, неверная ошибка по кривизне |
+| слабая идентифицируемость | длинная плоская долина правдоподобия |
+| сильная корреляция | нестабильная подгонка, большая профильная ошибка |
+| неверная модель | смещение и плохое согласие с данными |
+| численная нестабильность | `NaN`, бесконечности, ложная сходимость |
+
+## Минимизатор сообщил успех. Достаточно?
+
+Нет. После численной оптимизации необходимо проверить:
+
+::: incremental
+- действительно ли найден максимум, а не седловая точка;
+- устойчив ли результат к начальному приближению;
+- не упираются ли параметры в границы;
+- гладок ли профиль правдоподобия;
+- воспроизводится ли истина в псевдоэкспериментах;
+- описывает ли подогнанная модель наблюдаемые данные.
+:::
+
+---
+
+# Что важно запомнить
+
+## Резюме
+
+::: incremental
+- Оценка — случайная функция данных; оценённое значение — её реализация.
+- Правдоподобие рассматривает вероятностную модель как функцию неизвестных параметров при фиксированных данных.
+- Оценка максимального правдоподобия выбирает параметры, максимизирующие правдоподобие.
+- Хорошую оценку характеризуют смещение, дисперсия, средний квадрат ошибки, состоятельность и эффективность.
+- Кривизна логарифма правдоподобия даёт локальную оценку точности только в регулярном почти гауссовом случае.
+- Профилирование учитывает компенсацию между параметром интереса и мешающими параметрами.
+- Подгонку в анализе данных необходимо проверять сканами, диагностикой оптимизатора и псевдоэкспериментами.
+:::

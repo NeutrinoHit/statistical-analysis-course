@@ -2,6 +2,7 @@ project:
   type: website
   output-dir: _site
   resources:
+    - applets.html
     - shared/figures/**
     - shared/reveal/**
   render:
@@ -11,17 +12,15 @@ project:
     - 02_characteristic_functions.qmd
     - 03_central_limit_theorem.qmd
     - 04_non_gaussian_clt_violations.qmd
-    - 05_error_propagation_and_covariance.qmd
-    - 06_monte_carlo_method.qmd
-    - 07_parameter_estimation_and_maximum_likelihood.qmd
-    - 08_method_of_least_squares.qmd
-    - 09_statistical_tests_basics.qmd
-    - 10_test_statistics_and_multivariate_methods.qmd
-    - 11_goodness_of_fit_and_significance.qmd
-    - 12_feldman_cousins_and_cls.qmd
-    - 13_interval_estimation_and_limits.qmd
-    - 14_nuisance_parameters_and_systematics.qmd
-    - 15_bayesian_examples.qmd
+    - 05_error_propagation.qmd
+    - 06_two_dimensional_gaussian.qmd
+    - 07_monte_carlo_method.qmd
+    - 08_maximum_likelihood.qmd
+    - 09_estimator_properties_profile_likelihood.qmd
+    - 10_least_squares_linear_fit.qmd
+    - 11_least_squares_systematics.qmd
+    - 12_goodness_of_fit_and_significance.qmd
+    - notebooks/mc_vegas_notebook.qmd
     - exercises/index.qmd
     - exam_projects/index.qmd
     - exercises/00_introduction_exercises.qmd
@@ -34,12 +33,6 @@ project:
     - exercises/07_parameter_estimation_and_maximum_likelihood_exercises.qmd
     - exercises/08_method_of_least_squares_exercises.qmd
     - exercises/09_statistical_tests_basics_exercises.qmd
-    - exercises/10_test_statistics_and_multivariate_methods_exercises.qmd
-    - exercises/11_goodness_of_fit_and_significance_exercises.qmd
-    - exercises/12_feldman_cousins_and_cls_exercises.qmd
-    - exercises/13_interval_estimation_and_limits_exercises.qmd
-    - exercises/14_nuisance_parameters_and_systematics_exercises.qmd
-    - exercises/15_bayesian_examples_exercises.qmd
 
 website:
   title: "Статистический анализ данных: слайды"

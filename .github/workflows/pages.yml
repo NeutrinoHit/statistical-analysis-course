@@ -49,9 +49,12 @@ jobs:
         run: |
           ls -la .make-tmp/pages-site
           test -f .make-tmp/pages-site/index.html
+          test -f .make-tmp/pages-site/applets.html
           test -f .make-tmp/pages-site/ru/book/index.html
           test -f .make-tmp/pages-site/en/book/index.html
           test -f .make-tmp/pages-site/ru/slides/index.html
+          test -f .make-tmp/pages-site/ru/slides/applets.html
+          test -f .make-tmp/pages-site/ru/slides/12_goodness_of_fit_and_significance.html
           test -f .make-tmp/pages-site/en/slides/index.html
 
       - name: Upload Pages artifact
