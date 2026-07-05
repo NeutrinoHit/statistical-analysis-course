@@ -83,5 +83,5 @@ format:
     toc-title: "Lecture Plan"
     include-after-body:
       - text: |
-          <script data-external="1" data-context-home="index.html" data-context-home-label="Course home page" src="shared/reveal/neutrinohit-reveal-footer.js"></script>
+          <script data-external="1" data-context-home="https://neutrinohit.github.io/en/education.html#stat" data-context-home-label="Statistics course map" src="shared/reveal/neutrinohit-reveal-footer.js"></script>
       - analytics/cloudflare-web-analytics.html
