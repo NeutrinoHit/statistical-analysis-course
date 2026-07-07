@@ -8,7 +8,13 @@ format:
     toc: true
 ---
 
-# Lecture Slides (EN)
+# Course Materials (EN)
+
+## Interactive Applets
+
+- [Bertrand's Paradox: online game](bertrand_paradox.qmd)
+
+## Lecture Slides
 
 - [Lecture 1. Motivation and course overview](lecture-01-introduction.qmd)
 - [Lecture 2. Probability and Bayes' theorem](lecture-02-probability-bayes.qmd)

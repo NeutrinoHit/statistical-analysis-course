@@ -1,0 +1,1181 @@
+---
+title: "Парадокс Бертрана"
+subtitle: "Онлайн игра"
+author: "Дмитрий В. Наумов"
+lang: ru
+format:
+  html:
+    toc: false
+    page-layout: full
+---
+
+```{=html}
+<style>
+  .bertrand-page {
+    width: min(1160px, calc(100% - 2rem));
+    margin: 0 auto 4rem;
+    color: #25313a;
+  }
+
+  .quarto-title-block .quarto-title-meta {
+    display: none !important;
+  }
+
+  .bertrand-page * {
+    box-sizing: border-box;
+  }
+
+  .bertrand-page .cell,
+  .bertrand-page .cell-output,
+  .bertrand-page .cell-output-display,
+  .bertrand-page .observablehq,
+  .bertrand-page [data-nodetype] {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .bertrand-page .code-copy-outer-scaffold,
+  .bertrand-page .cell-code {
+    display: none !important;
+  }
+
+  .bertrand-intro {
+    max-width: 900px;
+    margin: 0 0 1.35rem;
+  }
+
+  .bertrand-intro p {
+    margin: 0.55rem 0 0;
+    color: #53616f;
+    line-height: 1.55;
+  }
+
+  .bertrand-intro a,
+  .bertrand-final a {
+    color: #1f6f8b;
+    font-weight: 720;
+    text-decoration: none;
+  }
+
+  .bertrand-intro a:hover,
+  .bertrand-final a:hover {
+    text-decoration: underline;
+  }
+
+  .bertrand-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 1rem 0 1.5rem;
+  }
+
+  .bertrand-nav a,
+  .bertrand-widget button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 2.35rem;
+    padding: 0.5rem 0.78rem;
+    border: 1px solid #bdcad4;
+    border-radius: 7px;
+    background: #ffffff;
+    color: #27475d;
+    font: 740 0.92rem/1.1 "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif;
+    text-decoration: none;
+  }
+
+  .bertrand-nav a:hover,
+  .bertrand-widget button:hover {
+    border-color: #1f6f8b;
+    color: #175873;
+  }
+
+  .bertrand-widget button {
+    cursor: pointer;
+  }
+
+  .bertrand-widget button:disabled {
+    cursor: default;
+    opacity: 0.55;
+  }
+
+  .bertrand-widget button.primary {
+    border-color: #1f6f8b;
+    background: #1f6f8b;
+    color: #ffffff;
+  }
+
+  .bertrand-widget button.ghost {
+    background: #f8fafc;
+  }
+
+  .bertrand-widget button.is-correct {
+    border-color: #13805d;
+    background: #e1f4ec;
+    color: #0e6148;
+  }
+
+  .bertrand-widget button.is-wrong {
+    border-color: #c7472f;
+    background: #fff0eb;
+    color: #9f3523;
+  }
+
+  .bertrand-widget {
+    display: grid;
+    width: 100% !important;
+    max-width: 100% !important;
+    gap: 1rem;
+  }
+
+  .bertrand-card {
+    min-width: 0;
+    border: 1px solid rgba(43, 67, 91, 0.16);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.93);
+    box-shadow: 0 10px 26px rgba(43, 67, 91, 0.06);
+    padding: clamp(0.9rem, 2vw, 1.25rem);
+  }
+
+  .bertrand-card h2,
+  .bertrand-card h3 {
+    margin: 0;
+    color: #25313a;
+    line-height: 1.12;
+  }
+
+  .bertrand-card h2 {
+    font-size: clamp(1.45rem, 3vw, 2rem);
+  }
+
+  .bertrand-card h3 {
+    font-size: 1.02rem;
+  }
+
+  .bertrand-kicker {
+    margin: 0 0 0.35rem;
+    color: #1f6f8b;
+    font: 760 0.78rem/1.15 "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif;
+    letter-spacing: 0;
+    text-transform: uppercase;
+  }
+
+  .bertrand-copy {
+    margin: 0.55rem 0 0;
+    color: #53616f;
+    line-height: 1.5;
+  }
+
+  .bertrand-stage-head {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 0.9rem;
+    align-items: start;
+  }
+
+  .bertrand-progress {
+    display: flex;
+    gap: 0.4rem;
+    align-items: center;
+    margin-top: 0.1rem;
+  }
+
+  .bertrand-dot {
+    width: 0.75rem;
+    height: 0.75rem;
+    border: 1px solid #9fb1bf;
+    border-radius: 50%;
+    background: #ffffff;
+  }
+
+  .bertrand-dot.is-current {
+    border-color: #1f6f8b;
+    background: #1f6f8b;
+  }
+
+  .bertrand-dot.is-done {
+    border-color: #13805d;
+    background: #13805d;
+  }
+
+  .bertrand-algorithm {
+    margin-top: 0.95rem;
+    padding: 0.85rem 0.95rem;
+    border-left: 4px solid #1f6f8b;
+    background: #edf5f9;
+    color: #334554;
+    line-height: 1.5;
+  }
+
+  .bertrand-visual-grid {
+    display: grid;
+    grid-template-columns: minmax(320px, 1fr) minmax(260px, 0.45fr);
+    gap: 1rem;
+    align-items: stretch;
+    margin-top: 1rem;
+  }
+
+  .bertrand-canvas {
+    display: block;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    border: 1px solid rgba(43, 67, 91, 0.16);
+    border-radius: 8px;
+    background: #f8fafc;
+  }
+
+  .bertrand-assist {
+    min-width: 0;
+    padding: 0.85rem;
+    border: 1px solid rgba(43, 67, 91, 0.13);
+    border-radius: 8px;
+    background: #fbfcfd;
+  }
+
+  .bertrand-actions,
+  .bertrand-answer-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+  }
+
+  .bertrand-answer-grid {
+    padding-top: 0.8rem;
+    border-top: 1px solid rgba(43, 67, 91, 0.12);
+  }
+
+  .bertrand-answer-grid button {
+    min-width: 5.4rem;
+  }
+
+  .bertrand-histogram {
+    display: grid;
+    gap: 0.65rem;
+    margin-top: 0.85rem;
+  }
+
+  .bertrand-hist-row {
+    display: grid;
+    grid-template-columns: 5.8rem minmax(0, 1fr) 3.2rem;
+    gap: 0.55rem;
+    align-items: center;
+    color: #334554;
+    font: 690 0.86rem/1.2 "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif;
+  }
+
+  .bertrand-bar-track {
+    height: 0.76rem;
+    border-radius: 99px;
+    background: rgba(43, 67, 91, 0.1);
+    overflow: hidden;
+  }
+
+  .bertrand-bar {
+    display: block;
+    width: 0%;
+    height: 100%;
+    border-radius: inherit;
+  }
+
+  .bertrand-bar.long {
+    background: #229c6b;
+  }
+
+  .bertrand-bar.short {
+    background: #d86752;
+  }
+
+  .bertrand-readouts {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+  }
+
+  .bertrand-readout {
+    min-width: 0;
+    padding: 0.62rem;
+    border: 1px solid rgba(43, 67, 91, 0.12);
+    border-radius: 7px;
+    background: #ffffff;
+  }
+
+  .bertrand-readout span {
+    display: block;
+    color: #697684;
+    font: 720 0.71rem/1.15 "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif;
+    text-transform: uppercase;
+  }
+
+  .bertrand-readout strong {
+    display: block;
+    margin-top: 0.25rem;
+    color: #25313a;
+    font: 780 1.08rem/1.05 "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif;
+    overflow-wrap: anywhere;
+  }
+
+  .bertrand-message {
+    min-height: 2.5rem;
+    margin-top: 0.8rem;
+    padding: 0.72rem 0.85rem;
+    border-left: 4px solid #1f6f8b;
+    background: #edf5f9;
+    color: #334554;
+    line-height: 1.45;
+  }
+
+  .bertrand-reveal {
+    margin-top: 0.85rem;
+    padding: 0.9rem 1rem;
+    border-left: 4px solid #13805d;
+    background: #eff8f3;
+    color: #334554;
+    line-height: 1.48;
+  }
+
+  .bertrand-reveal strong {
+    color: #1f352f;
+  }
+
+  .bertrand-final {
+    margin-top: 0.9rem;
+    padding: 0.95rem 1rem;
+    border-left: 4px solid #c7472f;
+    background: #fff6f3;
+    color: #4d3b35;
+    line-height: 1.5;
+  }
+
+  .bertrand-summary {
+    display: grid;
+    gap: 0.55rem;
+    margin: 0.8rem 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .bertrand-summary li {
+    display: grid;
+    grid-template-columns: minmax(9rem, 0.8fr) minmax(0, 1fr);
+    gap: 0.65rem;
+    align-items: baseline;
+    color: #53616f;
+    line-height: 1.35;
+  }
+
+  .bertrand-summary strong {
+    color: #25313a;
+  }
+
+  .bertrand-hidden {
+    display: none !important;
+  }
+
+  @media (max-width: 920px) {
+    .bertrand-visual-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .bertrand-readouts {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 620px) {
+    .bertrand-page {
+      width: min(100%, 1160px);
+      max-width: calc(100vw - 1rem);
+      overflow-x: hidden;
+    }
+
+    .bertrand-stage-head,
+    .bertrand-summary li,
+    .bertrand-hist-row,
+    .bertrand-readouts {
+      grid-template-columns: 1fr;
+    }
+
+    .bertrand-progress {
+      order: -1;
+    }
+
+    .bertrand-visual-grid {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+</style>
+```
+
+<div class="bertrand-page">
+
+::: {.bertrand-intro}
+Жозеф Бертран предложил задачу: «Дана окружность, в которую вписан
+равносторонний треугольник. Какова вероятность того, что случайно выбранная
+хорда окажется больше его стороны?»
+:::
+
+```{=html}
+<nav class="bertrand-nav" aria-label="Навигация по курсу">
+  <a href="index.html">К лекциям</a>
+  <a href="applets.html">К апплетам</a>
+  <a href="../book/">К книге</a>
+</nav>
+
+<div id="bertrand-game-host"></div>
+```
+
+```{=html}
+<script>
+(() => {
+  const html = (strings, ...values) => {
+    const template = document.createElement("template");
+    template.innerHTML = String.raw(strings, ...values);
+    return template.content.firstElementChild;
+  };
+
+  const answers = [
+    {key: "half", label: "1/2"},
+    {key: "quarter", label: "1/4"},
+    {key: "third", label: "1/3"},
+    {key: "depends", label: "нет правильного ответа"}
+  ];
+
+  const steps = [
+    {
+      kind: "start",
+      id: "start",
+      kicker: "Вопрос Бертрана",
+      title: "Случайная хорда",
+      algorithmLabel: "Задача:",
+      algorithm: "Дана окружность, в которую вписан равносторонний треугольник. Случайно выбранная хорда сравнивается со стороной этого треугольника.",
+      question: "Выберите ответ:",
+      correct: "depends",
+      answerText: "нет правильного ответа",
+      assist: "Сначала ответьте как кажется. Если ответ окажется неверным, разберём задачу на трёх естественных способах выбирать хорду.",
+      explanation: "Давайте решим эту задачку: дальше мы явно зададим три алгоритма выбора хорды и увидим, какие ответы они дают."
+    },
+    {
+      kind: "algorithm",
+      id: "points",
+      kicker: "Алгоритм 1 из 3",
+      title: "Две случайные точки",
+      algorithm: "Независимо и равномерно выбираем две точки на окружности. Хорда соединяет эти две точки.",
+      question: "Какова вероятность, что такая хорда окажется длиннее стороны вписанного равностороннего треугольника?",
+      correct: "third",
+      answerText: "1/3",
+      assist: "Для рисунка первая точка закреплена сверху: из-за симметрии это не меняет вероятность. Вторая точка гуляет по окружности; зелёная дуга даёт длинные хорды.",
+      explanation: "Если одну точку закрепить, вторая должна попасть на противоположную дугу длиной ровно треть окружности. Поэтому вероятность равна 1/3."
+    },
+    {
+      kind: "algorithm",
+      id: "line",
+      kicker: "Алгоритм 2 из 3",
+      title: "Точка на радиусе",
+      algorithm: "Пусть у нас есть зафиксированный радиус, который перпендикулярен стороне треугольника. Выберем любую точку на этом радиусе и проведём через неё хорду, параллельную стороне. Если эта хорда выше стороны, то она больше; если ниже, то меньше.",
+      question: "Какова вероятность, что хорда из этого алгоритма будет длиннее стороны вписанного равностороннего треугольника?",
+      correct: "half",
+      answerText: "1/2",
+      assist: "Пунктирные хорды параллельны стороне треугольника. Зелёные проходят выше этой стороны, красные ниже.",
+      explanation: "Сторона треугольника делит выбранный радиус пополам. Точки в верхней половине радиуса дают хорды длиннее стороны, точки в нижней половине дают хорды короче. Ответ: 1/2."
+    },
+    {
+      kind: "algorithm",
+      id: "midpoint",
+      kicker: "Алгоритм 3 из 3",
+      title: "Случайная середина",
+      algorithm: "Выберем произвольную точку внутри круга и построим хорду с центром в этой точке. Оказывается, хорда будет длиннее стороны треугольника, только если выбранная точка находится внутри окружности, вписанной в равносторонний треугольник.",
+      question: "Какова вероятность, что такая хорда будет длиннее стороны вписанного равностороннего треугольника?",
+      correct: "quarter",
+      answerText: "1/4",
+      assist: "Малый круг — это окружность, вписанная в равносторонний треугольник. Зелёные хорды получаются, когда середина попала внутрь него.",
+      explanation: "Вписанная окружность имеет радиус R/2. Её площадь равна четверти площади исходного круга, поэтому вероятность попадания середины внутрь неё равна 1/4."
+    },
+    {
+      kind: "final",
+      id: "final",
+      kicker: "Что же получается?",
+      title: "Три разных ответа",
+      algorithmLabel: "Итог:",
+      algorithm: "Три разных алгоритма дали три разных ответа, и все три правильны внутри своих правил.",
+      question: "Как вы ответите теперь на вопрос Бертрана?",
+      correct: "depends",
+      answerText: "ответ зависит от выбора алгоритма",
+      assist: "Сравните три результата и решите, можно ли назвать одно число, если алгоритм выбора хорды не задан.",
+      explanation: "Ответ зависит от выбора алгоритма. Одного слова «случайная» недостаточно: разные естественные процедуры задают разные распределения на множестве хорд."
+    }
+  ];
+
+  const root = html`<div class="bertrand-widget">
+    <section class="bertrand-card" aria-label="Игра с парадоксом Бертрана">
+      <div class="bertrand-stage-head">
+        <div>
+          <p class="bertrand-kicker" data-stage-kicker></p>
+          <h2 data-stage-title></h2>
+          <p class="bertrand-copy" data-stage-question></p>
+        </div>
+        <div class="bertrand-progress" aria-label="Прогресс">
+          <span class="bertrand-dot" data-dot="0"></span>
+          <span class="bertrand-dot" data-dot="1"></span>
+          <span class="bertrand-dot" data-dot="2"></span>
+          <span class="bertrand-dot" data-dot="3"></span>
+          <span class="bertrand-dot" data-dot="4"></span>
+        </div>
+      </div>
+
+      <div class="bertrand-algorithm">
+        <strong data-algorithm-label>Алгоритм:</strong>
+        <span data-stage-algorithm></span>
+      </div>
+
+      <div class="bertrand-visual-grid">
+        <canvas class="bertrand-canvas" data-main-canvas aria-label="Геометрическая подсказка к парадоксу Бертрана"></canvas>
+
+        <div class="bertrand-assist">
+          <p class="bertrand-kicker">Подсказка</p>
+          <h3 data-assist-title>Симуляция</h3>
+          <p class="bertrand-copy" data-assist-copy></p>
+
+          <div data-simulation-panel>
+            <div class="bertrand-actions">
+              <button type="button" class="primary" data-add-samples="30">Разыграть 30</button>
+              <button type="button" data-add-samples="100">+100</button>
+              <button type="button" class="ghost" data-reset-samples>Сбросить</button>
+            </div>
+
+            <div class="bertrand-readouts" aria-live="polite">
+              <div class="bertrand-readout"><span>Всего</span><strong data-total>0</strong></div>
+              <div class="bertrand-readout"><span>Длинных</span><strong data-long>0</strong></div>
+              <div class="bertrand-readout"><span>Доля</span><strong data-rate>--</strong></div>
+            </div>
+
+            <div class="bertrand-histogram" aria-label="Гистограмма длинных и коротких хорд">
+              <div class="bertrand-hist-row">
+                <span>длиннее</span>
+                <span class="bertrand-bar-track"><span class="bertrand-bar long" data-long-bar></span></span>
+                <strong data-long-count>0</strong>
+              </div>
+              <div class="bertrand-hist-row">
+                <span>короче</span>
+                <span class="bertrand-bar-track"><span class="bertrand-bar short" data-short-bar></span></span>
+                <strong data-short-count>0</strong>
+              </div>
+            </div>
+          </div>
+
+          <ul class="bertrand-summary bertrand-hidden" data-final-summary></ul>
+        </div>
+      </div>
+
+      <div class="bertrand-answer-grid" role="group" aria-label="Ответ на вопрос">
+        <button type="button" data-answer="half">1/2</button>
+        <button type="button" data-answer="quarter">1/4</button>
+        <button type="button" data-answer="third">1/3</button>
+        <button type="button" data-answer="depends">нет правильного ответа</button>
+      </div>
+
+      <div class="bertrand-message" data-message></div>
+
+      <div class="bertrand-reveal bertrand-hidden" data-reveal></div>
+
+      <div class="bertrand-actions">
+        <button type="button" data-show-answer>Показать ответ</button>
+        <button type="button" class="primary bertrand-hidden" data-next-step>Следующий алгоритм</button>
+        <button type="button" class="ghost" data-restart>Начать заново</button>
+      </div>
+    </section>
+
+  </div>`;
+
+  const canvas = root.querySelector("[data-main-canvas]");
+  const maxSamples = 180;
+  const thresholdLength = Math.sqrt(3);
+  const completed = Array(steps.length).fill(null);
+  let state = freshState(0);
+
+  function freshState(index) {
+    return {
+      index,
+      total: 0,
+      long: 0,
+      samples: [],
+      selected: null,
+      wrong: 0,
+      revealed: false,
+      correct: false,
+      message: null
+    };
+  }
+
+  function step() {
+    return steps[state.index];
+  }
+
+  function answerLabel(key) {
+    if (key === "depends" && step().kind === "final") {
+      return "ответ зависит от выбора алгоритма";
+    }
+    const defaultAnswer = answers.find((answer) => answer.key === key);
+    return (defaultAnswer && defaultAnswer.label) || key;
+  }
+
+  function nextButtonText() {
+    const current = step();
+    if (current.kind === "start") return "Разобрать алгоритмы";
+    if (current.kind === "final") return "Начать заново";
+    return state.index === 3 ? "Что же получается?" : "Следующий алгоритм";
+  }
+
+  function formatRate() {
+    return state.total ? (state.long / state.total).toFixed(3) : "--";
+  }
+
+  function chordLength(chord) {
+    return Math.hypot(chord.b.x - chord.a.x, chord.b.y - chord.a.y);
+  }
+
+  function completeChord(chord) {
+    const length = chordLength(chord);
+    return {...chord, length, isLong: length > thresholdLength};
+  }
+
+  function generateChord(methodId) {
+    if (methodId === "points") {
+      const fixed = Math.PI / 2;
+      const moving = 2 * Math.PI * Math.random();
+      return completeChord({
+        a: {x: Math.cos(fixed), y: Math.sin(fixed)},
+        b: {x: Math.cos(moving), y: Math.sin(moving)}
+      });
+    }
+
+    if (methodId === "line") {
+      const y = -Math.random();
+      const half = Math.sqrt(Math.max(0, 1 - y * y));
+      return completeChord({
+        a: {x: -half, y},
+        b: {x: half, y},
+        midpoint: {x: 0, y}
+      });
+    }
+
+    const r = Math.sqrt(Math.random());
+    const theta = 2 * Math.PI * Math.random();
+    const mx = r * Math.cos(theta);
+    const my = r * Math.sin(theta);
+    const ux = -Math.sin(theta);
+    const uy = Math.cos(theta);
+    const half = Math.sqrt(Math.max(0, 1 - r * r));
+    return completeChord({
+      a: {x: mx - half * ux, y: my - half * uy},
+      b: {x: mx + half * ux, y: my + half * uy},
+      midpoint: {x: mx, y: my}
+    });
+  }
+
+  function addSamples(count) {
+    const current = step();
+    if (current.kind !== "algorithm") return;
+    for (let i = 0; i < count; ++i) {
+      const chord = generateChord(current.id);
+      state.total += 1;
+      if (chord.isLong) state.long += 1;
+      state.samples.push(chord);
+    }
+    if (state.samples.length > maxSamples) {
+      state.samples.splice(0, state.samples.length - maxSamples);
+    }
+    if (!state.revealed) {
+      state.message =
+        state.total < 80
+          ? "Теперь можно прикинуть ответ по рисунку и гистограмме. При малом N доля заметно шумит."
+          : "Доля уже должна тянуться к одному из трёх чисел: 1/4, 1/3 или 1/2.";
+    }
+    render();
+  }
+
+  function canvasGeometry() {
+    const rect = canvas.getBoundingClientRect();
+    const cssWidth = Math.max(300, rect.width || canvas.clientWidth || 560);
+    const cssHeight = Math.max(300, rect.height || cssWidth);
+    const ratio = window.devicePixelRatio || 1;
+    canvas.width = Math.round(cssWidth * ratio);
+    canvas.height = Math.round(cssHeight * ratio);
+    const ctx = canvas.getContext("2d");
+    ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+    const size = Math.min(cssWidth, cssHeight);
+    return {
+      ctx,
+      width: cssWidth,
+      height: cssHeight,
+      cx: cssWidth / 2,
+      cy: cssHeight / 2,
+      r: size * 0.39
+    };
+  }
+
+  function mapPoint(point, geom) {
+    return {
+      x: geom.cx + point.x * geom.r,
+      y: geom.cy - point.y * geom.r
+    };
+  }
+
+  function pointAt(angle, geom, scale = 1) {
+    return mapPoint({x: scale * Math.cos(angle), y: scale * Math.sin(angle)}, geom);
+  }
+
+  function clearCanvas(geom) {
+    const {ctx, width, height} = geom;
+    ctx.clearRect(0, 0, width, height);
+    ctx.fillStyle = "#f8fafc";
+    ctx.fillRect(0, 0, width, height);
+  }
+
+  function drawCircle(geom, radiusScale = 1, color = "#25313a", width = 2.2, fill = null) {
+    const {ctx, cx, cy, r} = geom;
+    ctx.beginPath();
+    ctx.arc(cx, cy, r * radiusScale, 0, 2 * Math.PI);
+    if (fill) {
+      ctx.fillStyle = fill;
+      ctx.fill();
+    }
+    ctx.strokeStyle = color;
+    ctx.lineWidth = width;
+    ctx.setLineDash([]);
+    ctx.stroke();
+  }
+
+  function drawSegment(geom, a, b, color, width = 2, dash = []) {
+    const {ctx} = geom;
+    const pa = mapPoint(a, geom);
+    const pb = mapPoint(b, geom);
+    ctx.beginPath();
+    ctx.moveTo(pa.x, pa.y);
+    ctx.lineTo(pb.x, pb.y);
+    ctx.strokeStyle = color;
+    ctx.lineWidth = width;
+    ctx.setLineDash(dash);
+    ctx.stroke();
+    ctx.setLineDash([]);
+  }
+
+  function drawArc(geom, start, end, color, width = 4) {
+    const {ctx} = geom;
+    ctx.beginPath();
+    const stepsCount = 90;
+    for (let i = 0; i <= stepsCount; ++i) {
+      const angle = start + (end - start) * i / stepsCount;
+      const p = pointAt(angle, geom, 1.01);
+      if (i === 0) ctx.moveTo(p.x, p.y);
+      else ctx.lineTo(p.x, p.y);
+    }
+    ctx.strokeStyle = color;
+    ctx.lineWidth = width;
+    ctx.setLineDash([]);
+    ctx.stroke();
+  }
+
+  function drawReferenceTriangle(geom, color = "rgba(37, 49, 58, 0.78)") {
+    const {ctx} = geom;
+    const vertices = [0, 1, 2].map((i) => pointAt(Math.PI / 2 + i * 2 * Math.PI / 3, geom));
+    ctx.beginPath();
+    vertices.forEach((point, i) => {
+      if (i === 0) ctx.moveTo(point.x, point.y);
+      else ctx.lineTo(point.x, point.y);
+    });
+    ctx.closePath();
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 2.2;
+    ctx.setLineDash([]);
+    ctx.stroke();
+  }
+
+  function drawSamples(geom, samples, options = {}) {
+    const {ctx} = geom;
+    const alphaBase = Math.max(0.18, Math.min(0.55, 48 / Math.max(70, samples.length + 8)));
+    samples.forEach((chord) => {
+      const a = mapPoint(chord.a, geom);
+      const b = mapPoint(chord.b, geom);
+      ctx.beginPath();
+      ctx.moveTo(a.x, a.y);
+      ctx.lineTo(b.x, b.y);
+      ctx.strokeStyle = chord.isLong
+        ? `rgba(34, 156, 107, ${Math.min(0.82, alphaBase + 0.22)})`
+        : `rgba(216, 103, 82, ${alphaBase})`;
+      ctx.lineWidth = chord.isLong ? 2.2 : 1.7;
+      ctx.setLineDash([5, 6]);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      if (options.midpoints && chord.midpoint) {
+        const m = mapPoint(chord.midpoint, geom);
+        ctx.beginPath();
+        ctx.arc(m.x, m.y, 2.3, 0, 2 * Math.PI);
+        ctx.fillStyle = chord.isLong ? "#229c6b" : "#d86752";
+        ctx.fill();
+      }
+    });
+  }
+
+  function drawCenter(geom) {
+    const {ctx, cx, cy} = geom;
+    ctx.beginPath();
+    ctx.arc(cx, cy, 3.5, 0, 2 * Math.PI);
+    ctx.fillStyle = "#25313a";
+    ctx.fill();
+  }
+
+  function drawPointsGuide(geom) {
+    const fixed = Math.PI / 2;
+    const left = fixed + 2 * Math.PI / 3;
+    const right = fixed + 4 * Math.PI / 3;
+    drawArc(geom, right, left + 2 * Math.PI, "#d86752", 5);
+    drawArc(geom, left, right, "#229c6b", 5);
+    drawSegment(
+      geom,
+      {x: Math.cos(fixed), y: Math.sin(fixed)},
+      {x: Math.cos(left), y: Math.sin(left)},
+      "#25313a",
+      2.2
+    );
+    drawSegment(
+      geom,
+      {x: Math.cos(fixed), y: Math.sin(fixed)},
+      {x: Math.cos(right), y: Math.sin(right)},
+      "#25313a",
+      2.2
+    );
+    const {ctx} = geom;
+    [fixed, left, right].forEach((angle) => {
+      const p = pointAt(angle, geom);
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, 4.2, 0, 2 * Math.PI);
+      ctx.fillStyle = "#25313a";
+      ctx.fill();
+    });
+  }
+
+  function drawLineGuide(geom) {
+    const {ctx} = geom;
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(geom.cx, geom.cy, geom.r, 0, 2 * Math.PI);
+    ctx.clip();
+    const centerY = mapPoint({x: 0, y: 0}, geom).y;
+    const sideY = mapPoint({x: 0, y: -0.5}, geom).y;
+    const bottomY = mapPoint({x: 0, y: -1}, geom).y;
+    ctx.fillStyle = "rgba(34, 156, 107, 0.08)";
+    ctx.fillRect(geom.cx - geom.r, centerY, 2 * geom.r, sideY - centerY);
+    ctx.fillStyle = "rgba(216, 103, 82, 0.06)";
+    ctx.fillRect(geom.cx - geom.r, sideY, 2 * geom.r, bottomY - sideY);
+    ctx.restore();
+
+    const longEdge = Math.sqrt(1 - 0.25 * 0.25);
+    const shortEdge = Math.sqrt(1 - 0.75 * 0.75);
+    drawSegment(geom, {x: -longEdge, y: -0.25}, {x: longEdge, y: -0.25}, "#229c6b", 2.6);
+    drawSegment(geom, {x: -shortEdge, y: -0.75}, {x: shortEdge, y: -0.75}, "#d86752", 2.6);
+    drawSegment(geom, {x: 0, y: 0}, {x: 0, y: -1}, "#25313a", 2);
+    const c = mapPoint({x: 0, y: 0}, geom);
+    const h = mapPoint({x: 0, y: -0.5}, geom);
+    ctx.beginPath();
+    ctx.moveTo(c.x + 8, c.y);
+    ctx.lineTo(c.x + 8, h.y);
+    ctx.strokeStyle = "#25313a";
+    ctx.lineWidth = 1.7;
+    ctx.stroke();
+    ctx.fillStyle = "#25313a";
+    ctx.font = "760 14px Avenir Next, Segoe UI, sans-serif";
+    ctx.textAlign = "left";
+    ctx.fillText("R/2", c.x + 13, (c.y + h.y) / 2 + 5);
+    ctx.fillStyle = "#16734f";
+    ctx.textAlign = "right";
+    ctx.fillText("выше стороны", geom.cx - geom.r * 0.08, mapPoint({x: 0, y: -0.22}, geom).y - 8);
+    ctx.fillStyle = "#a54535";
+    ctx.fillText("ниже стороны", geom.cx - geom.r * 0.08, mapPoint({x: 0, y: -0.75}, geom).y + 18);
+  }
+
+  function drawMidpointGuide(geom) {
+    drawCircle(geom, 0.5, "rgba(34, 156, 107, 0.72)", 2.2, "rgba(34, 156, 107, 0.08)");
+    const {ctx} = geom;
+    ctx.fillStyle = "#16734f";
+    ctx.font = "760 15px Avenir Next, Segoe UI, sans-serif";
+    ctx.textAlign = "center";
+    ctx.fillText("середина внутри", geom.cx, geom.cy - geom.r * 0.56);
+    ctx.fillText("площади 1/4", geom.cx, geom.cy + geom.r * 0.62);
+  }
+
+  function drawMainCanvas() {
+    const current = step();
+    const geom = canvasGeometry();
+    clearCanvas(geom);
+
+    if (current.kind === "start") {
+      drawCircle(geom, 1, "#25313a", 2.3);
+      drawReferenceTriangle(geom, "rgba(37, 49, 58, 0.72)");
+      const {ctx} = geom;
+      ctx.fillStyle = "#25313a";
+      ctx.font = "800 48px Avenir Next, Segoe UI, sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText("?", geom.cx, geom.cy + 16);
+      drawCenter(geom);
+      return;
+    }
+
+    if (current.kind === "final") {
+      drawCircle(geom, 1, "#25313a", 2.3);
+      drawReferenceTriangle(geom, "rgba(37, 49, 58, 0.45)");
+      const {ctx} = geom;
+      ctx.fillStyle = "#25313a";
+      ctx.font = "800 44px Avenir Next, Segoe UI, sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText("?", geom.cx, geom.cy + 13);
+      ctx.font = "760 16px Avenir Next, Segoe UI, sans-serif";
+      ctx.fillStyle = "#53616f";
+      ctx.fillText("ответ зависит от алгоритма", geom.cx, geom.cy + geom.r * 0.58);
+      drawArc(geom, Math.PI * 0.1, Math.PI * 0.55, "#229c6b", 5);
+      drawArc(geom, Math.PI * 0.75, Math.PI * 1.1, "#d86752", 5);
+      drawArc(geom, Math.PI * 1.25, Math.PI * 1.72, "#1f6f8b", 5);
+      drawCenter(geom);
+      return;
+    }
+
+    drawCircle(geom, 1, "#25313a", 2.3);
+    drawReferenceTriangle(geom);
+    if (current.id === "points") {
+      drawSamples(geom, state.samples);
+      drawPointsGuide(geom);
+    } else if (current.id === "line") {
+      drawSamples(geom, state.samples);
+      drawLineGuide(geom);
+    } else {
+      drawSamples(geom, state.samples, {midpoints: true});
+      drawMidpointGuide(geom);
+    }
+    drawCircle(geom, 1, "#25313a", 2.3);
+    drawCenter(geom);
+  }
+
+  function recordCompletion() {
+    completed[state.index] = {
+      selected: state.selected,
+      correct: state.correct,
+      total: state.total,
+      long: state.long
+    };
+  }
+
+  function reveal(correct) {
+    state.revealed = true;
+    state.correct = correct;
+    recordCompletion();
+    render();
+  }
+
+  function chooseAnswer(key) {
+    if (state.revealed) return;
+    const current = step();
+    state.selected = key;
+    if (current.kind === "start") {
+      state.message = key === current.correct
+        ? "Верно! Но давайте всё равно решим эту задачку и увидим, почему так."
+        : "Неправильно! Давайте решим эту задачку!";
+      reveal(key === current.correct);
+      return;
+    }
+    if (key === current.correct) {
+      state.message =
+        current.kind === "final"
+          ? "Верно. Ответ зависит от того, как именно выбирается хорда."
+          : state.index === 3
+            ? "Верно. Теперь сравним все три ответа."
+            : "Верно. Теперь можно открыть следующий алгоритм.";
+      reveal(true);
+      return;
+    }
+    state.wrong += 1;
+    state.message =
+      current.kind === "final"
+        ? "Теперь это не одно из чисел: мы уже видели, что разные алгоритмы дают разные ответы."
+        : state.wrong === 1
+          ? "Это не тот ответ. Попробуйте добавить симуляцию или выбрать другой вариант."
+          : "Похоже, нужна подсказка сильнее: можно открыть ответ и разобрать геометрию.";
+    render();
+  }
+
+  function showAnswer() {
+    if (state.revealed) return;
+    const current = step();
+    state.selected = state.selected || "not-answered";
+    state.message =
+      current.kind === "start"
+        ? "Давайте решим эту задачку."
+        : current.kind === "final"
+          ? "Ответ открыт. Теперь видна мораль парадокса."
+          : "Ответ открыт. После разбора можно перейти к следующему шагу.";
+    reveal(false);
+  }
+
+  function moveNext() {
+    if (!state.revealed) return;
+    if (state.index < steps.length - 1) {
+      state = freshState(state.index + 1);
+      render();
+      return;
+    }
+    restart();
+  }
+
+  function restart() {
+    for (let i = 0; i < completed.length; ++i) completed[i] = null;
+    state = freshState(0);
+    render();
+  }
+
+  function renderProgress() {
+    steps.forEach((_, i) => {
+      const dot = root.querySelector(`[data-dot="${i}"]`);
+      dot.classList.toggle("is-current", i === state.index);
+      dot.classList.toggle("is-done", Boolean(completed[i]));
+    });
+  }
+
+  function renderSummary() {
+    const lines = steps.slice(1, 4).map((item, offset) => {
+      const index = offset + 1;
+      const done = completed[index];
+      const value = done
+        ? `${item.answerText}${done.correct ? "" : " после подсказки"}`
+        : "ещё не открыт";
+      return `<li><strong>${item.title}</strong><span>${value}</span></li>`;
+    });
+    root.querySelector("[data-final-summary]").innerHTML = lines.join("");
+  }
+
+  function renderHistogram() {
+    const short = Math.max(0, state.total - state.long);
+    const longPct = state.total ? 100 * state.long / state.total : 0;
+    const shortPct = state.total ? 100 * short / state.total : 0;
+    root.querySelector("[data-total]").textContent = String(state.total);
+    root.querySelector("[data-long]").textContent = String(state.long);
+    root.querySelector("[data-rate]").textContent = formatRate();
+    root.querySelector("[data-long-count]").textContent = String(state.long);
+    root.querySelector("[data-short-count]").textContent = String(short);
+    root.querySelector("[data-long-bar]").style.width = `${longPct}%`;
+    root.querySelector("[data-short-bar]").style.width = `${shortPct}%`;
+  }
+
+  function renderReveal() {
+    const current = step();
+    const revealBox = root.querySelector("[data-reveal]");
+    revealBox.classList.toggle("bertrand-hidden", !state.revealed);
+    if (!state.revealed) {
+      revealBox.innerHTML = "";
+      return;
+    }
+
+    if (current.kind === "start") {
+      revealBox.innerHTML = `
+        <strong>${state.correct ? "Верно." : "Неправильно!"}</strong>
+        <p>${current.explanation}</p>
+      `;
+      return;
+    }
+
+    const sampleText = current.kind === "algorithm" && state.total
+      ? `<p>В вашей симуляции: N = ${state.total}, длинных = ${state.long}, доля = ${formatRate()}. Небольшие отклонения от ответа нормальны: это случайная выборка.</p>`
+      : "";
+    const finalText = current.kind === "final"
+      ? `<div class="bertrand-final"><strong>Мораль.</strong> Её суть показывает, что в задачах с непрерывным, бесконечным выбором вероятности не имеют смысла, если строго не определить сам процесс выбора.</div>`
+      : "";
+    revealBox.innerHTML = `
+      <strong>Ответ: ${current.answerText}.</strong>
+      <p>${current.explanation}</p>
+      ${sampleText}
+      ${finalText}
+    `;
+  }
+
+  function renderAnswers() {
+    root.querySelectorAll("[data-answer]").forEach((button) => {
+      const key = button.dataset.answer;
+      button.textContent = answerLabel(key);
+      button.disabled = state.revealed;
+      button.classList.toggle("is-correct", state.revealed && key === step().correct);
+      button.classList.toggle("is-wrong", !state.revealed && state.selected === key && key !== step().correct);
+    });
+  }
+
+  function render() {
+    const current = step();
+    root.querySelector("[data-stage-kicker]").textContent = current.kicker;
+    root.querySelector("[data-stage-title]").textContent = current.title;
+    root.querySelector("[data-stage-question]").textContent = current.question;
+    root.querySelector("[data-algorithm-label]").textContent = current.algorithmLabel || "Алгоритм:";
+    root.querySelector("[data-stage-algorithm]").textContent = ` ${current.algorithm}`;
+    root.querySelector("[data-assist-copy]").textContent = current.assist;
+    root.querySelector("[data-assist-title]").textContent =
+      current.kind === "final" ? "Итоги трёх алгоритмов" : current.kind === "start" ? "Первый ответ" : "Симуляция";
+
+    const simulationPanel = root.querySelector("[data-simulation-panel]");
+    const finalSummary = root.querySelector("[data-final-summary]");
+    simulationPanel.classList.toggle("bertrand-hidden", current.kind !== "algorithm");
+    finalSummary.classList.toggle("bertrand-hidden", current.kind !== "final");
+
+    const message = root.querySelector("[data-message]");
+    const defaultMessage = current.kind === "start"
+      ? "Сначала выберите один из вариантов."
+      : current.kind === "algorithm"
+        ? "Сначала попробуйте ответить. Если не видно, разыграйте хорды: зелёные длиннее стороны треугольника, красные короче."
+        : "Теперь у нас есть три правильных численных ответа. Как отвечать на исходный вопрос?";
+    message.textContent = state.message || defaultMessage;
+
+    root.querySelector("[data-show-answer]").disabled = state.revealed;
+    const next = root.querySelector("[data-next-step]");
+    next.classList.toggle("bertrand-hidden", !state.revealed);
+    next.textContent = nextButtonText();
+    root.querySelector("[data-restart]").classList.toggle(
+      "bertrand-hidden",
+      state.index === steps.length - 1 && state.revealed
+    );
+
+    renderProgress();
+    renderSummary();
+    renderHistogram();
+    renderReveal();
+    renderAnswers();
+    drawMainCanvas();
+  }
+
+  root.querySelectorAll("[data-answer]").forEach((button) => {
+    button.addEventListener("click", () => chooseAnswer(button.dataset.answer));
+  });
+
+  root.querySelectorAll("[data-add-samples]").forEach((button) => {
+    button.addEventListener("click", () => addSamples(Number(button.dataset.addSamples)));
+  });
+
+  root.querySelector("[data-reset-samples]").addEventListener("click", () => {
+    state.total = 0;
+    state.long = 0;
+    state.samples = [];
+    if (!state.revealed) state.selected = null;
+    if (!state.revealed) state.message = null;
+    if (!state.revealed) state.wrong = 0;
+    render();
+  });
+
+  root.querySelector("[data-show-answer]").addEventListener("click", showAnswer);
+  root.querySelector("[data-next-step]").addEventListener("click", moveNext);
+  root.querySelector("[data-restart]").addEventListener("click", restart);
+  window.addEventListener("resize", drawMainCanvas);
+
+  render();
+  document.getElementById("bertrand-game-host").replaceChildren(root);
+})();
+</script>
+```
+
+</div>

@@ -7,6 +7,7 @@ project:
     - shared/reveal/**
   render:
     - index.qmd
+    - bertrand_paradox.qmd
     - 00_introduction.qmd
     - 01_random_distributions.qmd
     - 02_characteristic_functions.qmd

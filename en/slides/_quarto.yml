@@ -6,6 +6,7 @@ project:
     - shared/reveal/**
   render:
     - index.qmd
+    - bertrand_paradox.qmd
     - lecture-01-introduction.qmd
     - lecture-02-probability-bayes.qmd
     - lecture-03-random-variables-and-densities.qmd
@@ -28,6 +29,8 @@ website:
     left:
       - href: index.qmd
         text: Course Index
+      - href: bertrand_paradox.qmd
+        text: Bertrand's Paradox
   sidebar:
     style: docked
     collapse-level: 1
@@ -36,6 +39,8 @@ website:
         contents:
           - text: "Index"
             href: index.qmd
+          - text: "Bertrand's Paradox"
+            href: bertrand_paradox.qmd
       - section: "Lectures"
         contents:
           - text: "Lecture 1. Motivation"

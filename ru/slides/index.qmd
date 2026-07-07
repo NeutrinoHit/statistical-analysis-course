@@ -25,7 +25,8 @@ format:
     </p>
     <div class="lecture-links">
       <a href="https://neutrinohit.github.io/lectures.html">Все курсы лекций</a>
-      <a href="applets.html">Аплеты</a>
+      <a href="bertrand_paradox.html">Парадокс Бертрана</a>
+      <a href="applets.html">Апплеты</a>
       <a href="exercises/index.html">Все задачи</a>
       <a href="exam_projects/index.html">Экзаменационные проекты</a>
     </div>
