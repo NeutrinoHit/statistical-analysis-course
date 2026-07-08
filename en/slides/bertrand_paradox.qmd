@@ -449,12 +449,12 @@ than a side of the triangle?"
       kicker: "Bertrand's question",
       title: "A random chord",
       algorithmLabel: "Problem:",
-      algorithm: "A circle has an equilateral triangle inscribed in it. A randomly chosen chord is compared with a side of this triangle.",
+      algorithm: "A circle has an equilateral triangle inscribed in it. Find the probability that the length of a randomly chosen chord is greater than a side of this triangle.",
       question: "Choose an answer:",
       correct: "depends",
       answerText: "no correct answer",
       assist: "First answer as it seems to you. If the answer is wrong, we will solve the problem using three natural ways to choose a chord.",
-      explanation: "Let's solve the problem: next we will state three explicit algorithms for choosing a chord and see which answers they give."
+      explanation: "Next we will state three explicit algorithms for choosing a chord and see which answers they give."
     },
     {
       kind: "algorithm",
@@ -1077,7 +1077,6 @@ than a side of the triangle?"
 
     if (current.kind === "start") {
       revealBox.innerHTML = `
-        <strong>${state.correct ? "Correct." : "Incorrect!"}</strong>
         <p>${current.explanation}</p>
       `;
       return;
