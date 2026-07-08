@@ -497,14 +497,14 @@ format:
       kind: "final",
       id: "final",
       kicker: "Что же получается?",
-      title: "Три разных ответа",
+      title: "Три разных числа",
       algorithmLabel: "Итог:",
-      algorithm: "Три разных алгоритма дали три разных ответа, и все три правильны внутри своих правил.",
+      algorithm: "Три разных алгоритма дали три разных числа, и каждое правильно внутри своих правил.",
       question: "Как вы ответите теперь на вопрос Бертрана?",
       correct: "depends",
-      answerText: "ответ зависит от выбора алгоритма",
+      answerText: "вероятность зависит от способа выбора хорды",
       assist: "Сравните три результата и решите, можно ли назвать одно число, если алгоритм выбора хорды не задан.",
-      explanation: "Ответ зависит от выбора алгоритма. Одного слова «случайная» недостаточно: разные естественные процедуры задают разные распределения на множестве хорд."
+      explanation: "Одного слова «случайная» недостаточно: разные естественные процедуры задают разные распределения на множестве хорд."
     }
   ];
 
@@ -615,7 +615,7 @@ format:
 
   function answerLabel(key) {
     if (key === "depends" && step().kind === "final") {
-      return "ответ зависит от выбора алгоритма";
+      return "зависит от способа выбора";
     }
     const defaultAnswer = answers.find((answer) => answer.key === key);
     return (defaultAnswer && defaultAnswer.label) || key;
@@ -934,7 +934,7 @@ format:
       ctx.fillText("?", geom.cx, geom.cy + 13);
       ctx.font = "760 16px Avenir Next, Segoe UI, sans-serif";
       ctx.fillStyle = "#53616f";
-      ctx.fillText("ответ зависит от алгоритма", geom.cx, geom.cy + geom.r * 0.58);
+      ctx.fillText("зависит от способа выбора", geom.cx, geom.cy + geom.r * 0.58);
       drawArc(geom, Math.PI * 0.1, Math.PI * 0.55, "#229c6b", 5);
       drawArc(geom, Math.PI * 0.75, Math.PI * 1.1, "#d86752", 5);
       drawArc(geom, Math.PI * 1.25, Math.PI * 1.72, "#1f6f8b", 5);
@@ -988,9 +988,9 @@ format:
     if (key === current.correct) {
       state.message =
         current.kind === "final"
-          ? "Верно. Ответ зависит от того, как именно выбирается хорда."
+          ? "Верно. Без способа выбора хорды одного числа нет."
           : state.index === 3
-            ? "Верно. Теперь сравним все три ответа."
+            ? "Верно. Теперь сравним все три числа."
             : "Верно. Теперь можно открыть следующий алгоритм.";
       reveal(true);
       return;
@@ -998,7 +998,7 @@ format:
     state.wrong += 1;
     state.message =
       current.kind === "final"
-        ? "Теперь это не одно из чисел: мы уже видели, что разные алгоритмы дают разные ответы."
+        ? "Теперь это не одно из чисел: мы уже видели, что разные алгоритмы дают разные числа."
         : state.wrong === 1
           ? "Это не тот ответ. Попробуйте добавить симуляцию или выбрать другой вариант."
           : "Похоже, нужна подсказка сильнее: можно открыть ответ и разобрать геометрию.";
@@ -1013,7 +1013,7 @@ format:
       current.kind === "start"
         ? "Давайте решим эту задачку."
         : current.kind === "final"
-          ? "Ответ открыт. Теперь видна мораль парадокса."
+          ? "Итог открыт. Теперь видна мораль парадокса."
           : "Ответ открыт. После разбора можно перейти к следующему шагу.";
     reveal(false);
   }
@@ -1089,8 +1089,9 @@ format:
     const finalText = current.kind === "final"
       ? `<div class="bertrand-final"><strong>Мораль.</strong> Её суть показывает, что в задачах с непрерывным, бесконечным выбором вероятности не имеют смысла, если строго не определить сам процесс выбора.</div>`
       : "";
+    const resultLabel = current.kind === "final" ? "Итог" : "Ответ";
     revealBox.innerHTML = `
-      <strong>Ответ: ${current.answerText}.</strong>
+      <strong>${resultLabel}: ${current.answerText}.</strong>
       <p>${current.explanation}</p>
       ${sampleText}
       ${finalText}
@@ -1128,10 +1129,12 @@ format:
       ? "Сначала выберите один из вариантов."
       : current.kind === "algorithm"
         ? "Сначала попробуйте ответить. Если не видно, разыграйте хорды: зелёные длиннее стороны треугольника, красные короче."
-        : "Теперь у нас есть три правильных численных ответа. Как отвечать на исходный вопрос?";
+        : "Теперь у нас есть три правильных числа. Как отвечать на исходный вопрос?";
     message.textContent = state.message || defaultMessage;
 
-    root.querySelector("[data-show-answer]").disabled = state.revealed;
+    const show = root.querySelector("[data-show-answer]");
+    show.disabled = state.revealed;
+    show.textContent = current.kind === "final" ? "Показать итог" : "Показать ответ";
     const next = root.querySelector("[data-next-step]");
     next.classList.toggle("bertrand-hidden", !state.revealed);
     next.textContent = nextButtonText();

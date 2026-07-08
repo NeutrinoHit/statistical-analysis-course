@@ -496,14 +496,14 @@ than a side of the triangle?"
       kind: "final",
       id: "final",
       kicker: "What do we get?",
-      title: "Three different answers",
+      title: "Three different numbers",
       algorithmLabel: "Conclusion:",
-      algorithm: "Three different algorithms gave three different answers, and all three are correct within their own rules.",
+      algorithm: "Three different algorithms gave three different numbers, and each is correct within its own rules.",
       question: "How would you answer Bertrand's question now?",
       correct: "depends",
-      answerText: "the answer depends on the algorithm",
+      answerText: "the probability depends on how the chord is chosen",
       assist: "Compare the three results and decide whether one number can be named when the chord-selection algorithm is not specified.",
-      explanation: "The answer depends on the algorithm. The single word 'random' is not enough: different natural procedures define different distributions on the set of chords."
+      explanation: "The single word 'random' is not enough: different natural procedures define different distributions on the set of chords."
     }
   ];
 
@@ -614,7 +614,7 @@ than a side of the triangle?"
 
   function answerLabel(key) {
     if (key === "depends" && step().kind === "final") {
-      return "the answer depends on the algorithm";
+      return "depends on the choice rule";
     }
     const defaultAnswer = answers.find((answer) => answer.key === key);
     return (defaultAnswer && defaultAnswer.label) || key;
@@ -933,7 +933,7 @@ than a side of the triangle?"
       ctx.fillText("?", geom.cx, geom.cy + 13);
       ctx.font = "760 16px Avenir Next, Segoe UI, sans-serif";
       ctx.fillStyle = "#53616f";
-      ctx.fillText("answer depends on algorithm", geom.cx, geom.cy + geom.r * 0.58);
+      ctx.fillText("depends on choice rule", geom.cx, geom.cy + geom.r * 0.58);
       drawArc(geom, Math.PI * 0.1, Math.PI * 0.55, "#229c6b", 5);
       drawArc(geom, Math.PI * 0.75, Math.PI * 1.1, "#d86752", 5);
       drawArc(geom, Math.PI * 1.25, Math.PI * 1.72, "#1f6f8b", 5);
@@ -987,9 +987,9 @@ than a side of the triangle?"
     if (key === current.correct) {
       state.message =
         current.kind === "final"
-          ? "Correct. The answer depends on exactly how the chord is chosen."
+          ? "Correct. Without a choice rule, there is no single number."
           : state.index === 3
-            ? "Correct. Now compare all three answers."
+            ? "Correct. Now compare all three numbers."
             : "Correct. Now you can open the next algorithm.";
       reveal(true);
       return;
@@ -997,7 +997,7 @@ than a side of the triangle?"
     state.wrong += 1;
     state.message =
       current.kind === "final"
-        ? "Now it is not one of the numbers: we have already seen that different algorithms give different answers."
+        ? "Now it is not one of the numbers: we have already seen that different algorithms give different numbers."
         : state.wrong === 1
           ? "That is not the answer. Try adding a simulation or choosing another option."
           : "It looks like a stronger hint is needed: you can reveal the answer and inspect the geometry.";
@@ -1012,7 +1012,7 @@ than a side of the triangle?"
       current.kind === "start"
         ? "Let's solve this problem."
         : current.kind === "final"
-          ? "The answer is revealed. The moral of the paradox is now visible."
+          ? "The conclusion is revealed. The moral of the paradox is now visible."
           : "The answer is revealed. After reading it you can move to the next step.";
     reveal(false);
   }
@@ -1088,8 +1088,9 @@ than a side of the triangle?"
     const finalText = current.kind === "final"
       ? `<div class="bertrand-final"><strong>Moral.</strong> In problems with continuous, infinite choice, probabilities do not have a well-defined meaning unless the selection process itself is specified strictly.</div>`
       : "";
+    const resultLabel = current.kind === "final" ? "Conclusion" : "Answer";
     revealBox.innerHTML = `
-      <strong>Answer: ${current.answerText}.</strong>
+      <strong>${resultLabel}: ${current.answerText}.</strong>
       <p>${current.explanation}</p>
       ${sampleText}
       ${finalText}
@@ -1127,10 +1128,12 @@ than a side of the triangle?"
       ? "First choose one of the options."
       : current.kind === "algorithm"
         ? "First try to answer. If it is not clear, simulate chords: green ones are longer than the triangle side, red ones are shorter."
-        : "Now we have three correct numerical answers. How should the original question be answered?";
+        : "Now we have three correct numbers. How should the original question be answered?";
     message.textContent = state.message || defaultMessage;
 
-    root.querySelector("[data-show-answer]").disabled = state.revealed;
+    const show = root.querySelector("[data-show-answer]");
+    show.disabled = state.revealed;
+    show.textContent = current.kind === "final" ? "Show conclusion" : "Show answer";
     const next = root.querySelector("[data-next-step]");
     next.classList.toggle("bertrand-hidden", !state.revealed);
     next.textContent = nextButtonText();
