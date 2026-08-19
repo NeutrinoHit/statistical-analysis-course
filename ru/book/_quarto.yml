@@ -69,9 +69,28 @@ format:
     fig-responsive: true
   pdf:
     documentclass: scrbook
-    toc: true
+    classoption: [a4paper, openany]
+    papersize: a4
+    fontsize: 12pt
+    # Printed TOC is inserted by book-pdf-style.tex immediately after the title page.
+    toc: false
+    toc-depth: 1
+    toc-title: "Содержание"
     number-sections: true
+    number-depth: 3
+    colorlinks: true
     pdf-engine: lualatex
+    keep-tex: true
+    geometry:
+      - inner=25mm
+      - outer=25mm
+      - top=22mm
+      - bottom=24mm
+      - headheight=13pt
+      - headsep=8mm
+    filters:
+      - assets/filters/book-pdf-style.lua
     include-in-header:
       - ../../shared/latex/common-pdf.tex
       - ../../shared/latex/ru-lang.tex
+      - assets/latex/book-pdf-style.tex
