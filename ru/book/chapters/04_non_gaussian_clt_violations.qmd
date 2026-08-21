@@ -3,19 +3,793 @@ title: "Когда не возникает гауссового распреде
 description: "Границы применимости центральной предельной теоремы и негауссовские данные."
 ---
 
-::: {.chapter-opening}
-<span>Статус главы</span>
+::: chapter-opening
+[Главная мысль]{style="color: darkred"}
 
-Глава подготовлена как каркас по материалам пятой лекции. Полный текст и
-практические примеры будут добавлены позднее.
+Большое число наблюдений само по себе не гарантирует распределение Гаусса в предельном случае. Центральная предельная теорема опирается на независимость вкладов, конечность их дисперсий, отсутствие доминирующих слагаемых и линейное суммирование. Тяжёлые хвосты, корреляции и систематические ошибки, смеси разных классов событий и нелинейные преобразования могут сохранять негауссову форму или дополнительную ширину даже при очень большой статистике.
 :::
 
 ## План главы
 
-- тяжёлые хвосты и отсутствие конечной дисперсии;
-- корреляции и нарушение независимости;
-- смеси распределений, пороги и отбор;
-- малые счёты и диагностика негауссовости.
+- Где в центральной предельной теореме спрятаны ограничения
+- Распределение Коши и отсутствие сужения среднего
+- Энергетические потери и распределение Ландау
+- Коррелированные слагаемые и систематическая ошибка
+- Смесь распределений и скрытые классы событий
+- Пример жидкого сцинтиллятора
+- Отношение случайных величин
+- Практическая проверка применимости приближения Гаусса
+
+## Когда центральная предельная теорема требует осторожности
+
+В главе про ЦПТ было показано, как сумма бесконечного числа независимых вкладов описывается гауссовым распределением. Но в реальной жизни оно не всегда возникает. Рассмотрим сумму: $$S_n=\sum_{i=1}^{n}X_i.$$ Если случайные величины независимы, имеют конечные средние и дисперсии: $$\mathbb{E}[X_i]=\mu_i,
+\qquad
+\mathrm{Var}(X_i)=\sigma_i^2<\infty,$$ то нормированная сумма $$Z_n=
+\frac{S_n-\mathbb{E}[S_n]}
+{\sqrt{\mathrm{Var}(S_n)}}$$ при выполнении необходимых условий стремится к стандартному нормальному распределению. Для одинаково распределённых величин с $$\mathbb{E}[X_i]=\mu,
+\qquad
+\mathrm{Var}(X_i)=\sigma^2$$ эту запись удобно переписать как: $$\boxed{
+Z_n=
+\frac{S_n/n-\mu}{\sigma/\sqrt n}.
+}$$ Среднее $S_n/n$ стремится к $\mu$, а характерный масштаб его статистических отклонений имеет порядок $\sigma/\sqrt n$. Тогда $Z_n$ стремится к стандартному гауссу при $n \rightarrow \infty$: $$\lim_{n\rightarrow\infty}Z_n\Rightarrow N(0,1).$$
+
+### Где спрятаны условия
+
+::: book-note
+Для гауссова предела необходимо выполнение нескольких условий:
+
+- сумма должна состоять из большого числа малых вкладов;
+- ни один отдельный вклад не должен доминировать над остальными;
+- распределения не должны иметь бесконечно тяжёлых хвостов;
+- между слагаемыми должны отсутствовать корреляций;
+- нужно рассматривать именно сумму, а не произвольную нелинейную функцию суммы.
+:::
+
+Напомним, что для суммы $S_n$ дисперсия имеет следующий общий вид: $$\mathrm{Var}(S_n)
+=
+\sum_i\mathrm{Var}(X_i)
++2\sum_{i<j}\mathrm{cov}(X_i,X_j).$$ Если ковариации равны нулю, дисперсии просто складываются. Если ковариации велики, само увеличение числа слагаемых уже ничего не гарантирует. Если дисперсия отдельного вклада не существует, стандартная нормировка через $\sqrt n$ также теряет привычный смысл.
+
+## Распределение Коши и центральная предельная теорема
+
+Стандартное распределение Коши имеет плотность: $$f(x)=\frac{1}{\pi}\frac{1}{1+x^2}.$$ Его кумулятивная функция распределения (CDF): $$F(x)=\frac12+\frac{1}{\pi}\arctan x.$$ Обратная CDF позволяет генерировать случайные значения с таким распределением из равномерно распределённой величины $u$ : $$F^{-1}(u)
+=
+\tan\!\left[\pi\left(u-\frac12\right)\right].$$
+
+::: book-note
+Обратите внимание, у распределения Коши расходятся моменты, необходимые для обычной центральной предельной теоремы. В частности, $$\mathbb{E}[|X|]=\infty,
+\qquad
+\mathbb{E}[X^2]=\infty.$$ Среднее и дисперсия в обычном смысле не определены.
+:::
+
+### Среднее Коши не сужается с ростом числа наблюдений
+
+Пусть случайные величины $$X_1,\ldots,X_n\sim\mathrm{Cauchy}(0,1)$$ независимы. Тогда, как мы видели в главе про характеристические функции, их сумма $$S_n=\sum_{i=1}^{n}X_i$$ имеет распределение: $$S_n\sim\mathrm{Cauchy}(0,n).$$ После деления на $n$ масштаб снова становится единичным: $$\boxed{
+\frac{S_n}{n}\sim\mathrm{Cauchy}(0,1).
+}$$ Это означает, что распределение среднего не сужается при увеличении $n$. В отличие от обычного случая с конечной дисперсией, накопление всё большего числа случайных величин Коши не превращает среднее в узкий гауссовский пик.
+
+:::: {.content-visible when-format="html:js"}
+::: clt-widget
+```{ojs}
+//| echo: false
+
+viewof nCauchy = Inputs.range([1, 200], {
+  value: 1,
+  step: 1,
+  label: "n"
+})
+
+viewof sampleCauchy = Inputs.range([1000, 50000], {
+  value: 15000,
+  step: 1000,
+  label: "N"
+})
+
+viewof regenerateCauchy = Inputs.button("Новая статистика")
+
+randnCauchy = () => {
+  let u = 0;
+  let v = 0;
+  while (u === 0) u = Math.random();
+  while (v === 0) v = Math.random();
+  return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
+}
+
+cauchyRandom = () => Math.tan(Math.PI * (Math.random() - 0.5))
+
+cauchyMeans = {
+  regenerateCauchy;
+  const values = new Array(sampleCauchy);
+  for (let i = 0; i < sampleCauchy; ++i) {
+    let sum = 0;
+    for (let j = 0; j < nCauchy; ++j) sum += cauchyRandom();
+    values[i] = sum / nCauchy;
+  }
+  return values;
+}
+
+gaussMeans = {
+  regenerateCauchy;
+  const values = new Array(sampleCauchy);
+  for (let i = 0; i < sampleCauchy; ++i) {
+    let sum = 0;
+    for (let j = 0; j < nCauchy; ++j) sum += randnCauchy();
+    values[i] = sum / Math.sqrt(nCauchy);
+  }
+  return values;
+}
+
+histogramCauchy = (values, bins, min, max) => {
+  const width = (max - min) / bins;
+  const counts = Array(bins).fill(0);
+  for (const value of values) {
+    if (value < min || value >= max) continue;
+    counts[Math.floor((value - min) / width)] += 1;
+  }
+  return counts.map((count, i) => ({
+    x0: min + i * width,
+    x1: min + (i + 1) * width,
+    density: count / (values.length * width)
+  }));
+}
+
+histCauchy = histogramCauchy(cauchyMeans, 100, -10, 10)
+histGaussMean = histogramCauchy(gaussMeans, 100, -10, 10)
+
+cauchyTheory = Array.from({length: 501}, (_, i) => {
+  const x = -10 + 20 * i / 500;
+  return {x, y: 1 / (Math.PI * (1 + x * x))};
+})
+
+cauchyPlot = Plot.plot({
+  width: 760,
+  height: 390,
+  marginLeft: 55,
+  x: {label: "x", domain: [-10, 10]},
+  y: {label: "density", domain: [0, 0.38]},
+  grid: true,
+  marks: [
+    Plot.rectY(histGaussMean, {
+      x1: "x0", x2: "x1", y: "density",
+      fill: "#9be564", fillOpacity: 0.40
+    }),
+    Plot.rectY(histCauchy, {
+      x1: "x0", x2: "x1", y: "density",
+      fill: "#4ea1ff", fillOpacity: 0.68
+    }),
+    Plot.line(cauchyTheory, {x: "x", y: "y", stroke: "#ffb347", strokeWidth: 2.7})
+  ]
+})
+
+html`
+<div class="clt-panel">
+  ${cauchyPlot}
+  <div class="clt-summary">
+    <span> Синим цветом обозначено среднее для Коши,</span>
+    <span> а зелёным - нормированная сумма для гауссовых распределений. </span>
+    <span> Текущее n = ${nCauchy}.</span>
+  </div>
+</div>
+`
+```
+:::
+::::
+
+::::: {.content-visible when-format="pdf"}
+::: figure-panel
+![При $n=1$ распределение среднего Коши совпадает со стандартным распределением Коши. Для сравнения показана нормированная сумма гауссовых величин.](../assets/figures/cauchy_mean_n1.png)
+:::
+
+::: figure-panel
+![Даже при $n=100$ среднее Коши не сужается: синяя гистограмма остаётся распределением Коши, тогда как нормированная сумма гауссовых величин сохраняет нормальную форму.](../assets/figures/cauchy_mean_n100.png)
+:::
+:::::
+
+В физике высоких энергий распределение Коши известно как кривая Брейта-Вигнера и используется при описании резонансов – нестабильных частиц, проявляющихся как пики в спектрах инвариантной массы.
+
+Возникает естественный вопрос: если среднее Коши не сужается, означает ли это, что накопление данных бесполезно? Такой вывод неверен. Ответ требует перехода от простого среднего к задаче оценивания параметров распределения, которая рассматривается отдельно.
+
+## Энергетические потери в тонком слое вещества
+
+Заряженная частица теряет энергию в веществе во множестве актов ионизации и возбуждения. Полную потерю энергии можно описать как сумму: $$\Delta=\omega_1+\omega_2+\cdots+\omega_N.$$ На первый взгляд такая запись напоминает условия центральной предельной теоремы. Существенное отличие состоит в том, что отдельные передачи энергии $\omega_a$ не обязаны быть одинаково малыми. Редкий акт может передать электрону большую энергию и заметно изменить всю сумму. Такие высокоэнергичные электроны называют $\delta$-электронами.
+
+### Медленно убывающий хвост от редких больших передач энергии
+
+Для быстрой заряженной частицы сечение передачи энергии электрону имеет приближённый вид: $$\frac{d\sigma}{d\omega}\propto\frac{1}{\omega^2}.$$
+
+::: book-derivation
+#### Вероятность большой передачи энергии
+
+Вероятность передачи энергии больше некоторого порога $W$ оценивается интегралом: $$P(\omega>W)
+\propto
+\int_W^{W_{\max}}\frac{d\omega}{\omega^2}.$$ Интегрирование даёт: $$P(\omega>W)\propto
+\left[-\frac{1}{\omega}\right]_{W}^{W_{\max}}=
+\frac{1}{W}-\frac{1}{W_{\max}}.$$ Если $W_{\max}$ достаточно велик по сравнению с рассматриваемым $W$, вторым членом можно пренебречь: $$\boxed{
+P(\omega>W)\propto\frac{1}{W}.
+}\quad\blacksquare$$
+:::
+
+Хвост $1/W$ убывает медленно. В результате среди большого числа малых энергетических потерь может встретиться один редкий большой вклад, который заметно определит полную потерю энергии.
+
+## Распределение Ландау
+
+В тонком слое потеря энергии описывается Ландау-подобным распределением: $$\boxed{
+p(\Delta)
+=
+\frac{1}{\xi}
+L\!\left(\frac{\Delta-\Delta_p}{\xi}\right),
+}$$ где $\Delta_p$ – наиболее вероятная потеря энергии, а $\xi$ задаёт характерный масштаб. Для частицы с зарядом $z$ в слое толщины $x$ этот масштаб записывается как: $$\xi=
+\frac{K}{2}
+\frac{Z}{A}
+\frac{z^2}{\beta^2}
+\rho x.$$ Функция Ландау не имеет простого определения и может быть задана интегрально: $$L(\lambda)
+=
+\frac{1}{\pi}
+\int_0^{+\infty}
+\exp[-u\ln u-\lambda u]\sin(\pi u)\,du.$$ Её главный физический признак – длинный правый хвост: $$L(\lambda)\sim\frac{1}{\lambda^2},
+\qquad
+\lambda\to+\infty.$$ Наиболее вероятное значение при этом конечно, а среднее и дисперсия не определены.
+
+### Где нарушается условие центральной предельной теоремы
+
+Обычная форма центральной предельной теоремы требует конечной дисперсии отдельного вклада: $$\mathrm{Var}(\omega)<\infty.$$ Но хвост вида: $$p(\omega)\propto\frac{1}{\omega^2}$$ дает логарифмически расходящиеся моменты. Например, вклад во второй момент (дисперсию) ведёт себя как: $$\int^{\infty}
+\omega^2\frac{d\omega}{\omega^2}
+=
+\int^{\infty}d\omega
+=
+\infty.$$ Таким образом, стандартная нормировка суммы через $\sqrt n$ не приводит автоматически к гауссовскому пределу.
+
+:::: {.content-visible when-format="html:js"}
+::: clt-widget
+```{ojs}
+//| echo: false
+
+viewof sampleLandau = Inputs.range([1000, 50000], {
+  value: 15000,
+  step: 1000,
+  label: "N"
+})
+
+viewof landauScale = Inputs.range([0.3, 2.5], {
+  value: 1.0,
+  step: 0.05,
+  label: "scale"
+})
+
+viewof landauShift = Inputs.range([-3.0, 3.0], {
+  value: 0.0,
+  step: 0.1,
+  label: "shift"
+})
+
+viewof regenerateLandau = Inputs.button("Новая статистика")
+
+randnLandau = () => {
+  let u = 0;
+  let v = 0;
+  while (u === 0) u = Math.random();
+  while (v === 0) v = Math.random();
+  return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
+}
+
+histogramLandau = (values, bins, min, max) => {
+  const width = (max - min) / bins;
+  const counts = Array(bins).fill(0);
+  for (const value of values) {
+    if (value < min || value >= max) continue;
+    counts[Math.floor((value - min) / width)] += 1;
+  }
+  return counts.map((count, i) => ({
+    x0: min + i * width,
+    x1: min + (i + 1) * width,
+    density: count / (values.length * width)
+  }));
+}
+
+// Landau-подобная случайная величина.
+// Это alpha-stable распределение с alpha = 1 и максимальной правой асимметрией.
+// Оно имеет тот же физический смысл: длинный правый хвост и отсутствие обычной дисперсии.
+landauStableRandom = () => {
+  const beta = 1.0;
+  const V = Math.PI * (Math.random() - 0.5);
+  let W = 0;
+  while (W === 0) W = -Math.log(Math.random());
+
+  return (2 / Math.PI) * (
+    (Math.PI / 2 + beta * V) * Math.tan(V)
+    - beta * Math.log(
+      (Math.PI / 2 * W * Math.cos(V)) /
+      (Math.PI / 2 + beta * V)
+    )
+  );
+}
+
+landauValues = {
+  regenerateLandau;
+  const values = new Array(sampleLandau);
+  for (let i = 0; i < sampleLandau; ++i) {
+    values[i] = landauShift + landauScale * landauStableRandom();
+  }
+  return values;
+}
+
+landauSorted = [...landauValues].sort((a, b) => a - b)
+
+quantileLandau = (arr, q) => {
+  const pos = q * (arr.length - 1);
+  const lo = Math.floor(pos);
+  const hi = Math.ceil(pos);
+  const h = pos - lo;
+  return arr[lo] * (1 - h) + arr[hi] * h;
+}
+
+landauMedian = quantileLandau(landauSorted, 0.50)
+landauQ16 = quantileLandau(landauSorted, 0.16)
+landauQ84 = quantileLandau(landauSorted, 0.84)
+landauRobustSigma = 0.5 * (landauQ84 - landauQ16)
+
+histLandau = histogramLandau(landauValues, 120, -8, 25)
+
+normalForComparison = Array.from({length: 501}, (_, i) => {
+  const x = -8 + 33 * i / 500;
+  const z = (x - landauMedian) / landauRobustSigma;
+  return {
+    x,
+    y: Math.exp(-0.5 * z * z) / (landauRobustSigma * Math.sqrt(2 * Math.PI))
+  };
+})
+
+landauPlot = Plot.plot({
+  width: 760,
+  height: 390,
+  marginLeft: 55,
+  x: {label: "energy loss variable", domain: [-8, 25]},
+  y: {label: "density", domain: [0, 0.42]},
+  grid: true,
+  marks: [
+    Plot.rectY(histLandau, {
+      x1: "x0",
+      x2: "x1",
+      y: "density",
+      fill: "#4ea1ff",
+      fillOpacity: 0.70,
+      stroke: "white"
+    }),
+    Plot.line(normalForComparison, {
+      x: "x",
+      y: "y",
+      stroke: "#ffb347",
+      strokeWidth: 2.8
+    })
+  ]
+})
+
+html`
+<div class="clt-panel">
+  ${landauPlot}
+  <div class="clt-summary">
+    <span> Синий: Landau-like stable law;</span>
+    <span> оранжевый: Gaussian с той же медианой и центральной шириной;</span>
+    <span> median = ${landauMedian.toFixed(2)};</span>
+    <span> central sigma = ${landauRobustSigma.toFixed(2)}.</span>
+  </div>
+</div>
+`
+```
+:::
+::::
+
+:::: {.content-visible when-format="pdf"}
+::: figure-panel
+![Ландау-подобное распределение с длинным правым хвостом и гауссовская кривая, построенная по той же медиане и центральной ширине.](../assets/figures/landau_like_default.png)
+:::
+::::
+
+### Физические примеры и границы приближения
+
+- $dE/dx$ в тонких кремниевых сенсорах;
+
+- Потери энергии в газовых трековых сенсорах;
+
+- ТРС: усечённое среднее используют именно для подавления длинного хвоста;
+
+- Калориметрические флуктуации с редкими большими локальными потерями.
+
+::: book-note
+Распределение Ландау – приближённая асимптотическая модель для тонкого слоя вещества, где полная потеря энергии складывается из многих независимых кулоновских столкновений, а спектр одиночных передач имеет длинный хвост $\propto1/\varepsilon^2$. Именно этот хвост делает распределение полной потери энергии асимметричным и негауссовым.
+
+В реальном веществе хвост ограничен кинематикой и атомной структурой. При более точном описании возникает распределение Вавилова, которое в пределе большой толщины переходит к распределению Гаусса.
+:::
+
+## Коррелированные слагаемые
+
+Независимость случайных величин – не формальное украшение центральной предельной теоремы. Для суммы $$S_n=\sum_{i=1}^{n}X_i$$ дисперсия содержит ковариационные члены: $$\mathrm{Var}(S_n)
+=
+\sum_i\sigma_i^2
++2\sum_{i<j}\mathrm{cov}(X_i,X_j).$$ Если слагаемые независимы, ковариации равны нулю. При наличии корреляций дисперсия может масштабироваться с ростом $n$ совершенно иначе.
+
+### Усреднение одинаково коррелированных величин
+
+Пусть $$\mathrm{Var}(X_i)=\sigma^2,
+\qquad
+\mathrm{corr}(X_i,X_j)=\rho,
+\qquad i\ne j.$$ Выведем дисперсию для среднего: $$\overline X=\frac1n\sum_{i=1}^{n}X_i.$$
+
+::: book-derivation
+#### Дисперсия среднего при общей корреляции $\rho$
+
+Согласно общей формуле: $$\mathrm{Var}(\overline X)
+=
+\frac{1}{n^2}
+\left(
+\sum_i\sigma^2
++2\sum_{i<j}\mathrm{cov}(X_i,X_j)
+\right).$$ Если коэффициент корреляции для любой пары равен $\rho$, то $$\mathrm{cov}(X_i,X_j)=\rho\sigma^2.$$ Число пар с $i<j$ равно: $$\frac{n(n-1)}{2}.$$ Тогда $$\mathrm{Var}(\overline X)=\frac{1}{n^2}\left[ n\sigma^2+2\frac{n(n-1)}{2}\rho\sigma^2\right]=
+\frac{\sigma^2}{n}
+\left[1+(n-1)\rho\right].$$ При $\rho=0$ остаётся привычное $\sigma^2/n$. Если $\rho\ne0$, то $$\boxed{
+\mathrm{Var}(\overline X)
+\xrightarrow[n\to\infty]{}
+\rho\sigma^2.
+}\quad\blacksquare$$
+:::
+
+Коррелированная часть не исчезает даже при бесконечном увеличении числа измерений.
+
+## Общий сдвиг как систематическая ошибка
+
+Рассмотрим случайную величину: $$X_i=\mu+C+\epsilon_i,$$ где общая для всех измерений величина $C$ и независимые статистические флуктуации $\epsilon_i$ имеют распределения: $$C\sim\mathrm{N}(0,\sigma_C^2),
+\qquad
+\epsilon_i\sim\mathrm{N}(0,\sigma_\epsilon^2).$$ Среднее значение $X_i$ по $n$ измерениям равно: $$\overline X
+=
+\mu+C+\frac1n\sum_i\epsilon_i.$$
+
+::: book-derivation
+#### Дисперсия среднего при общей систематической составляющей
+
+Общий сдвиг $C$ присутствует одинаково во всех измерениях и при усреднении не уменьшается. Независимая часть усредняется обычным образом: $$\mathrm{Var}\!\left(\frac1n\sum_i\epsilon_i\right)
+=
+\frac{\sigma_\epsilon^2}{n}.$$ Так как $C$ и статистическая часть независимы, получим $$\boxed{
+\mathrm{Var}(\overline X)
+=
+\sigma_C^2
++
+\frac{\sigma_\epsilon^2}{n}.
+}\quad\blacksquare$$
+:::
+
+При $n\to\infty$ статистический член исчезает, но $\sigma_C^2$ остаётся.\\
+С физической точки зрения таким общим сдвигом могут быть:
+
+- ошибка энергетической шкалы детектора;
+- общая ошибка калибровки усиления;
+- неопределённость световыхода или коэффициента пересчёта АЦП в энергию;
+- общая ошибка нормировки потока, светимости или активности источника;
+- дрейф температуры, давления, высокого напряжения или усиления во время набора данных;
+- неопределённость нормировки общего фона;
+- общий временной сдвиг в измерениях времени пролёта.
+
+Во всех этих случаях увеличение статистики уменьшает только независимую часть ошибки. Общая систематическая составляющая при усреднении не исчезает.
+
+:::: {.content-visible when-format="html:js"}
+::: clt-widget
+```{ojs}
+//| echo: false
+
+viewof nCorr = Inputs.range([1, 500], {value: 10, step: 1, label: "n"})
+viewof sigmaCommon = Inputs.range([0, 2.0], {value: 0.6, step: 0.05, label: "sigma common"})
+viewof sigmaStat = Inputs.range([0.1, 2.0], {value: 1.0, step: 0.05, label: "sigma stat"})
+viewof sampleCorr = Inputs.range([1000, 30000], {value: 12000, step: 1000, label: "N"})
+viewof regenerateCorr = Inputs.button("Новая статистика")
+
+corrMeans = {
+  regenerateCorr;
+  const values = new Array(sampleCorr);
+  for (let i = 0; i < sampleCorr; ++i) {
+    const c = sigmaCommon * randnCauchy();
+    let sum = 0;
+    for (let j = 0; j < nCorr; ++j) sum += c + sigmaStat * randnCauchy();
+    values[i] = sum / nCorr;
+  }
+  return values;
+}
+
+corrTheorySigma = Math.sqrt(sigmaCommon * sigmaCommon + sigmaStat * sigmaStat / nCorr)
+
+histCorr = histogramCauchy(corrMeans, 90, -4, 4)
+normalCorr = Array.from({length: 401}, (_, i) => {
+  const z = -4 + 8 * i / 400;
+  return {z, density: Math.exp(-0.5 * z * z / (corrTheorySigma * corrTheorySigma)) / (corrTheorySigma * Math.sqrt(2 * Math.PI))};
+})
+
+corrPlot = Plot.plot({
+  width: 760,
+  height: 390,
+  marginLeft: 55,
+  x: {label: "mean", domain: [-4, 4]},
+  y: {label: "density", domain: [0, 1.4]},
+  grid: true,
+  marks: [
+    Plot.rectY(histCorr, {x1: "x0", x2: "x1", y: "density", fill: "#4ea1ff", fillOpacity: 0.70, stroke: "white"}),
+    Plot.line(normalCorr, {x: "z", y: "density", stroke: "#ffb347", strokeWidth: 2.8})
+  ]
+})
+
+html`
+<div class="clt-panel">
+  ${corrPlot}
+  <div class="clt-summary">
+    <span> Var(mean) = sigma_common² + sigma_stat²/n; </span>
+    <span> sigma(mean) = ${corrTheorySigma.toFixed(3)}; </span>
+    <span> n = ${nCorr}.</span>
+  </div>
+</div>
+`
+```
+:::
+::::
+
+::::: {.content-visible when-format="pdf"}
+::: figure-panel
+![При отсутствии общей ошибки, $\sigma_C=0$, ширина среднего при $n=100$ определяется только статистической частью и заметно уменьшается.](../assets/figures/correlated_error_sigma0.png)
+:::
+
+::: figure-panel
+![При той же статистике, но $\sigma_C=0.6$, общая составляющая доминирует в ширине распределения среднего и не исчезает при усреднении.](../assets/figures/correlated_error_sigma06.png)
+:::
+:::::
+
+Обратите внимание: итоговая форма при этом вполне может оставаться визуально гауссовой. Проблема состоит не обязательно в форме распределения, а в том, что его ширина содержит компоненту, не уменьшающуюся с ростом статистики.
+
+## Смеси распределений
+
+### Сумма и смесь – разные операции
+
+Пусть имеются две независимые пуассоновские величины: $$N_1\sim\mathrm{Pois}(1000),
+\qquad
+N_2\sim\mathrm{Pois}(100).$$ Если в каждом событии наблюдаются оба вклада и они складываются, $$N=N_1+N_2,$$ то для их суммы будет справедливо: $$\boxed{N\sim\mathrm{Pois}(1100).}$$ Смесь устроена иначе: каждое отдельное событие принадлежит только одному из нескольких классов. Сумма описывает сложение вкладов внутри события, а смесь – объединение различных типов событий в одной выборке.
+
+### Скрытый класс события
+
+Пусть существует скрытая переменная $\theta$, выбирающая механизм: $$\theta=
+\begin{cases}
+1, & \text{первый класс},\\
+2, & \text{второй класс}.
+\end{cases}$$ Условно на класс распределения могут быть: $$N\mid\theta=1\sim\mathrm{Pois}(1000),
+\qquad
+N\mid\theta=2\sim\mathrm{Pois}(100).$$ Наблюдатель видит только $N$, но не знает $\theta$. Внутри каждого класса распределение может быть узким, тогда как объединённая выборка оказывается широкой или даже многопиковой.
+
+### Условный гаусс не означает безусловный гаусс
+
+Пусть при фиксированном скрытом параметре $\theta$ $$X\mid\theta
+\sim
+\mathrm{N}(\mu_\theta,\sigma_\theta^2),$$ Тогда, если $\theta$ не наблюдается, то полная плотность равна: $$p(x)
+=
+\int p(\theta)\,
+\mathrm{N}(x;\mu_\theta,\sigma_\theta^2)\,d\theta.$$ Это смесь распределений Гаусса, которая в общем случае не обязана быть одним гауссом.
+
+::: book-note
+Полная дисперсия смеси состоит из двух частей: $$\boxed{
+\mathrm{Var}(X)
+=
+\mathbb{E}_\theta\!\left[\mathrm{Var}(X\mid\theta)\right]
++
+\mathrm{Var}_\theta\!\left(\mathbb{E}[X\mid\theta]\right).
+}$$ Для условных гауссовых распределений: $$\boxed{
+\mathrm{Var}(X)
+=
+\mathbb{E}_\theta[\sigma_\theta^2]
++
+\mathrm{Var}_\theta(\mu_\theta).
+}$$ Первое слагаемое – средняя ширина распределений внутри классов. Второе – разброс средних между классами.
+:::
+
+### Численный пример: два пуассоновских класса
+
+Пусть два класса равновероятны: $$N\mid\theta=1\sim\mathrm{Pois}(1000),
+\qquad
+N\mid\theta=2\sim\mathrm{Pois}(100).$$ Средняя внутриклассовая дисперсия равна: $$\mathbb{E}_\theta[\mathrm{Var}(N\mid\theta)]
+=
+\frac{1000+100}{2}
+=550.$$ Разброс средних классов: $$\mathrm{Var}_\theta(\mathbb{E}[N\mid\theta])
+=
+\frac{(1000-550)^2+(100-550)^2}{2}
+=202500.$$ Полная дисперсия оказывается: $$\boxed{\mathrm{Var}(N)=550+202500=203050.}$$ Большая итоговая ширина в этом примере возникает не из-за больших флуктуаций каждого отдельного класса, а из-за того, что два класса имеют очень разные средние (скрытая неоднородность выборки).
+
+:::: {.content-visible when-format="html:js"}
+::: clt-widget
+```{ojs}
+//| echo: false
+
+viewof mixWeight = Inputs.range([0.0, 1.0], {value: 0.5, step: 0.02, label: "weight"})
+viewof mixSeparation = Inputs.range([0.0, 6.0], {value: 2.5, step: 0.1, label: "separation"})
+viewof mixSigma2 = Inputs.range([0.2, 2.5], {value: 1.0, step: 0.05, label: "sigma 2"})
+viewof sampleMix = Inputs.range([1000, 40000], {value: 15000, step: 1000, label: "N"})
+viewof regenerateMix = Inputs.button("Новая статистика")
+
+mixValues = {
+  regenerateMix;
+  const values = new Array(sampleMix);
+  const mu1 = -mixSeparation / 2;
+  const mu2 = mixSeparation / 2;
+  for (let i = 0; i < sampleMix; ++i) {
+    if (Math.random() < mixWeight) values[i] = mu1 + randnCauchy();
+    else values[i] = mu2 + mixSigma2 * randnCauchy();
+  }
+  return values;
+}
+
+mixMean = mixValues.reduce((s, x) => s + x, 0) / mixValues.length
+mixVar = mixValues.reduce((s, x) => s + (x - mixMean) ** 2, 0) / mixValues.length
+mixSigma = Math.sqrt(mixVar)
+
+histMix = histogramCauchy(mixValues, 100, -8, 8)
+normalMix = Array.from({length: 401}, (_, i) => {
+  const x = -8 + 16 * i / 400;
+  return {x, y: Math.exp(-0.5 * (x - mixMean) ** 2 / mixVar) / (mixSigma * Math.sqrt(2 * Math.PI))};
+})
+
+mixPlot = Plot.plot({
+  width: 760,
+  height: 390,
+  marginLeft: 55,
+  x: {label: "x", domain: [-8, 8]},
+  y: {label: "density", domain: [0, 0.55]},
+  grid: true,
+  marks: [
+    Plot.rectY(histMix, {x1: "x0", x2: "x1", y: "density", fill: "#4ea1ff", fillOpacity: 0.70, stroke: "white"}),
+    Plot.line(normalMix, {x: "x", y: "y", stroke: "#ffb347", strokeWidth: 2.8})
+  ]
+})
+
+html`
+<div class="clt-panel">
+  ${mixPlot}
+  <div class="clt-summary">
+    <span> Синим цветом показана смесь,</span>
+    <span> оранжевым - гаусс с теми же mean и variance: </span>
+    <span> mean = ${mixMean.toFixed(2)}, </span>
+    <span> sigma = ${mixSigma.toFixed(2)}.</span>
+  </div>
+</div>
+`
+```
+:::
+::::
+
+:::::: {.content-visible when-format="pdf"}
+::: figure-panel
+![При нулевом расстоянии между средними смесь двух одинаковых гауссов визуально совпадает с одним гауссом.](../assets/figures/gaussian_mixture_sep0.png)
+:::
+
+::: figure-panel
+![При умеренном разделении двух классов смесь всё ещё может выглядеть почти однопиковой, но её ширина уже содержит вклад разброса средних классов.](../assets/figures/gaussian_mixture_sep1_9.png)
+:::
+
+::: figure-panel
+![При большом расстоянии между средними скрытая двухклассовая структура становится явно двухпиковой.](../assets/figures/gaussian_mixture_sep5.png)
+:::
+::::::
+
+Даже если каждый класс сам по себе узок и хорошо описывается нормальным распределением, их смесь может быть широкой, асимметричной или многопиковой.
+
+## Пример: жидкий сцинтиллятор
+
+В жидком сцинтилляторе измеряемую величину можно схематично представить как: $$Q
+=
+Q(E,\theta)
++
+\text{фотонная статистика}
++
+\text{электроника},$$ где $\theta$ описывает скрытые детали события: к примеру, тип частицы, топологию, позицию, вклад от Черенковского излучения, гашение или оптический путь. Например, для $\gamma$-кванта энергия сначала передаётся вторичным электронам: $$\gamma\to e_1+e_2+\cdots+e_m,$$ причём $$E_\gamma=\sum_{a=1}^{m}E_a.$$ Полная энергия может быть одинаковой в разных событиях, но световой выход нелинеен. Если $L(E)$ – световой отклик на электрон с энергией $E$, то $$Q\simeq\sum_a L(E_a),$$ и в общем случае: $$\boxed{
+Q\ne C\sum_aE_a.
+}$$ Таким образом, наблюдаемый отклик зависит не только от полной энергии $E_\gamma$, но и от того, как эта энергия распределилась между вторичными частицами. Разные скрытые механизмы могут создавать дополнительный вклад в энергетическое разрешение.
+
+## Нелинейные преобразования: отношение случайных величин
+
+Гауссова форма исходных величин не гарантирует гауссову форму произвольной функции от них. Пусть две независимые величины имеют стандартные нормальные распределения: $$X,Y\sim\mathrm{N}(0,1).$$ Рассмотрим их отношение: $$R=\frac{X}{Y}.$$ Оказывается, оно имеет стандартное распределение Коши:
+
+::: book-note
+$$\boxed{
+f_R(r)=\frac{1}{\pi(1+r^2)}.}$$ То есть отношение двух независимых стандартных гауссовых величин уже не является гауссовой величиной.
+:::
+
+Такие отношения возникают при нормировке на контрольную область, в отношении двух скоростей счёта, в поправках на эффективность, асимметриях вида: $$\frac{N_1-N_2}{N_1+N_2},$$ а также при восстановлении величины через деление на малую или шумную оценку.
+
+:::: {.content-visible when-format="html:js"}
+::: clt-widget
+```{ojs}
+//| echo: false
+
+viewof muDenom = Inputs.range([0.0, 5.0], {value: 0.0, step: 0.1, label: "mean denominator"})
+viewof sigmaDenom = Inputs.range([0.1, 2.0], {value: 1.0, step: 0.05, label: "sigma denominator"})
+viewof sampleRatio = Inputs.range([1000, 40000], {value: 15000, step: 1000, label: "N"})
+viewof regenerateRatio = Inputs.button("Новая статистика")
+
+ratioValues = {
+  regenerateRatio;
+  const values = [];
+  for (let i = 0; i < sampleRatio; ++i) {
+    const x = randnCauchy();
+    const y = muDenom + sigmaDenom * randnCauchy();
+    const r = x / y;
+    if (Number.isFinite(r)) values.push(r);
+  }
+  return values;
+}
+
+histRatio = histogramCauchy(ratioValues, 120, -20, 20)
+cauchyRatio = Array.from({length: 501}, (_, i) => {
+  const x = -20 + 40 * i / 500;
+  return {x, y: 1 / (Math.PI * (1 + x * x))};
+})
+
+ratioPlot = Plot.plot({
+  width: 760,
+  height: 390,
+  marginLeft: 55,
+  x: {label: "R = X/Y", domain: [-20, 20]},
+  y: {label: "density", domain: [0, 0.35]},
+  grid: true,
+  marks: [
+    Plot.rectY(histRatio, {x1: "x0", x2: "x1", y: "density", fill: "#4ea1ff", fillOpacity: 0.70, stroke: "white"}),
+    Plot.line(cauchyRatio, {x: "x", y: "y", stroke: "#ffb347", strokeWidth: 2.6})
+  ]
+})
+
+html`
+<div class="clt-panel">
+  ${ratioPlot}
+  <div class="clt-summary">
+    <span>X ~ N(0,1);</span>
+    <span> Y ~ N(${muDenom.toFixed(1)}, ${sigmaDenom.toFixed(2)}).</span>
+    <span> Оранжевым цветом обозначено Cauchy для Y ~ N(0,1).</span>
+  </div>
+</div>
+`
+```
+:::
+::::
+
+:::: {.content-visible when-format="pdf"}
+::: figure-panel
+![Отношение двух независимых стандартных гауссовых величин воспроизводит распределение Коши.](../assets/figures/ratio_gaussians_cauchy.png)
+:::
+::::
+
+## Сводная карта причин
+
+| Механизм | Что нарушено | Типичный симптом |
+|:----------------:|:-------------------------:|:-------------------------:|
+| Коши | нет конечной дисперсии | среднее не стабилизируется |
+| Тяжёлые хвосты | медленная асимптотика | редкие большие выбросы |
+| Доминирующий вклад | нет малости отдельных вкладов | хвост задаётся одним механизмом |
+| Корреляции | нарушена независимость | ошибка не падает как $1/\sqrt n$ |
+| Смесь классов | разные $\mu_\theta$ и $\sigma_\theta$ | асимметрия, хвосты, несколько пиков |
+| Нелинейность | рассматривается не сумма, а функция $f(X)$ | асимметрия, границы |
+
+## Практический алгоритм
+
+Перед тем как автоматически использовать распределение Гаусса, полезно последовательно проверить физический смысл наблюдаемой величины:
+
+1.  Какая случайная величина на самом деле суммируется?
+2.  Действительно ли отдельные вклады независимы?
+3.  Конечна ли дисперсия и нет ли тяжёлых хвостов?
+4.  Не существует ли скрытых классов событий?
+5.  Не применено ли нелинейное преобразование случайных величин?
+
+Если после этих проверок гауссово приближение выглядит сомнительно, это не означает, что анализ невозможен. Не нужно заранее навязывать данным нормальную форму. Распределение можно получать моделированием, в частности методом Монте-Карло, и использовать полученную форму при построении функции правдоподобия.
+
+::: chapter-summary
+## Итоги главы
+
+- Центральная предельная теорема требует не просто большого числа слагаемых, а конкретных условий на их дисперсии, независимость и относительный размер вкладов.
+- Среднее независимых величин Коши не сужается при росте $n$ и сохраняет распределение Коши.
+- Редкие большие энергетические потери создают длинный хвост распределения Ландау и нарушают обычный механизм гауссова предела.
+- Корреляции и общие систематические ошибки оставляют вклад в дисперсию, который не исчезает при увеличении статистики.
+- Смесь разных классов событий принципиально отличается от суммы случайных вкладов и может создавать дополнительную дисперсию или многопиковость.
+- Нелинейные преобразования способны радикально менять форму распределения: отношение двух стандартных гауссовых величин имеет распределение Коши.
+- Перед использованием приближения Гаусса нужно проверить физический механизм образования наблюдаемой величины, а при сомнениях опираться на моделирование распределения, а не на автоматическое предположение нормальности.
+:::
 
 ## Материалы курса
 
