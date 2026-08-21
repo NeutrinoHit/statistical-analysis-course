@@ -1,6 +1,6 @@
 project:
   type: website
-  output-dir: _site
+  output-dir: ../../_site/ru/slides
   resources:
     - applets.html
     - shared/figures/**
