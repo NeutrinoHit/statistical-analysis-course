@@ -39,7 +39,7 @@ site: check-env ## Собрать полный сайт в _site
 	mkdir -p _site/shared
 	cp pages/index.html pages/applets.html pages/robots.txt _site/
 	$(PYTHON) scripts/build_figures.py
-	cp -R shared/analytics shared/figures shared/styles _site/shared/
+	cp -R shared/analytics shared/styles _site/shared/
 	$(QUARTO) render $(BOOK_RU_DIR) --to html
 	$(QUARTO) render $(BOOK_EN_DIR) --to html
 	$(QUARTO) render $(SLIDES_RU_DIR)
