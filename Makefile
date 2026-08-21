@@ -15,7 +15,7 @@ BOOK_EN_DIR := en/book
 SLIDES_RU_DIR := ru/slides
 SLIDES_EN_DIR := en/slides
 
-.PHONY: help check-env site all books notebooks figures slides \
+.PHONY: help check-env ci-setup site all books notebooks figures slides \
 	ru-slides en-slides \
 	ru ru-html ru-pdf en en-html en-pdf \
 	ru-notebooks en-notebooks ru-notebook en-notebook \
@@ -33,6 +33,10 @@ check-env: ## Проверить Quarto и Python
 	@if ! command -v "$(PYTHON)" >/dev/null 2>&1 && [ ! -x "$(PYTHON)" ]; then \
 	  echo "Не найден Python: $(PYTHON)"; exit 1; \
 	fi
+
+ci-setup: check-env ## Установить Python-зависимости для CI
+	$(PYTHON) -m pip install --upgrade pip
+	$(PYTHON) -m pip install -r requirements.txt
 
 site: check-env ## Собрать полный сайт в _site
 	rm -rf _site $(BOOK_RU_DIR)/_book $(BOOK_EN_DIR)/_book $(SLIDES_RU_DIR)/_site $(SLIDES_EN_DIR)/_site
