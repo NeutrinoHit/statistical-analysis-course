@@ -35,32 +35,22 @@ description: "Вероятностное описание случайных в�
 
 Эксперимент наблюдает не «идеальное ожидание» , а конкретную реализацию со статическими флуктуациями. Поэтому сравнение модели с данными всегда формулируется на языке вероятности.
 
-**Случайная величина** $X:$
-
-:   Экспериментально измеряемая величина, которая не может быть предсказана до проведения эксперимента.
+**Случайная величина** $X$ -- экспериментально измеряемая величина, которая не может быть предсказана до проведения эксперимента.
 
 **Дискретная** $X$ описывается ***функцией вероятности (PMF – probability mass function):***
-
 $$p_k=P(X=x_k), \quad \sum_k p_k=1.$$
 
 **Непрерывная** $X$ — ***плотностью вероятности*** ***(PDF – probability density function):***
-
 $$P(x\leq X<x+dx)=f(x)dx, \quad \int_{-\infty}^{+\infty}f(x)dx=1.$$
-
 В обеих записях последние выражения являются соответсвующими условиями нормировки.
 
 ### Кумулятивная функция распределения (CDF)
 
 Для непрерывной $X$:
-
 $$F(a)=P(X<a)=\int_{-\infty}^a f(x)dx.$$
-
 С математической точки зрения, CDF отражает вероятность того, что $X<a.$ $F(a)$ монотонно возрастает от 0 до 1 при изменении $a \in (-\infty,\infty)$. Заметим, что для непрерывных распределений справедливо следующее свойство:
-
 $$F'(a)=f(a).$$
-
 При помощи кумулятивной функции распределения легко вычислить ***вероятность попасть в интервал*** $[a,b):$
-
 $$P(a\leq X<b)=F(b)-F(a).$$
 
 ## Средние, дисперсии и моменты
@@ -68,9 +58,7 @@ $$P(a\leq X<b)=F(b)-F(a).$$
 ### Моменты распределения
 
 ***Момент функции***:
-
-:   $$\langle x^n\rangle=\mathbb{E}[X^n]=\int_{-\infty}^\infty x^nf(x)dx.$$
-
+$$\langle x^n\rangle=\mathbb{E}[X^n]=\int_{-\infty}^\infty x^nf(x)dx.$$
 Если известны все моменты $\langle x^n\rangle$, то можно восстановить $f(x)$, но это распространяется не на все функции.
 
 ### Практически важные моменты
@@ -109,22 +97,16 @@ $$P(a\leq X<b)=F(b)-F(a).$$
 
 ::: book-note
 Если в $n$ независимых испытаниях вероятность успеха равна $p$, то
-
 $$P(K=k)=\begin{pmatrix} n\\k\end{pmatrix}p^k(1-p)^{n-k}, \quad k=0,\dots,n,$$
-
 где
-
 $$\begin{pmatrix} n\\k\end{pmatrix}=\frac{n!}{k!(n-k)!}$$
-
 это число способов выбрать $k$ успехов среди $n$ испытаний.
 :::
 
 ### Пример биномиального распределения
 
 Пронаблюдаем $n$ распадов $W^{\pm}$. Число распадов $W\to\mu\nu$:
-
 $$k\sim\mathrm{Bin}(n,p),$$
-
 где $p$ — вероятность такого распада. Построим на одних осях три случая: $n=5,20,100$ при $p=0.3$.
 
 ```{python}
@@ -157,27 +139,16 @@ for n in [5, 20, 100]:
 #### **Вывод** $\mathbb{E}[K]$
 
 По определению:
-
 $$\mathbb{E}[K]=\sum_{k=0}^n kP(K=k)=\sum_{k=0}^n k \begin{pmatrix} n\\k\end{pmatrix} p^k(1-p)^{n-k}.$$
-
 Используя тождество:
-
 $$k \begin{pmatrix} n\\k\end{pmatrix}=k\frac{n!}{k!(n-k)!}=n\frac{(n-1)!}{(k-1)!(n-k)!}=n\begin{pmatrix} n-1\\k-1\end{pmatrix},$$
-
 получим
-
 $$\mathbb{E}[K]=np\sum_{k=1}^n \begin{pmatrix} n-1\\k-1\end{pmatrix}p^{k-1}(1-p)^{n-k}.$$
-
 Положим $j=k-1$:
-
 $$\mathbb{E}[K]=np\sum_{j=0}^{n-1} \begin{pmatrix} n-1\\j\end{pmatrix}p^{j}(1-p)^{(n-1)-j},$$
-
 тогда по биному Ньютона:
-
 $$\sum_{j=0}^{n-1} \begin{pmatrix} n-1\\j\end{pmatrix}p^{j}(1-p)^{(n-1)-j}=(p+(1-p))^{n-1}=1.$$
-
 Итог:
-
 $$\mathbb{E}[K]=np. \quad \blacksquare$$
 :::
 
@@ -185,31 +156,18 @@ $$\mathbb{E}[K]=np. \quad \blacksquare$$
 #### **Вывод** $Var(K)$
 
 Начнем со второго факториального момента:
-
 $$\mathbb{E}[K(K-1)]=\sum_{k=0}^n k(k-1) \begin{pmatrix} n\\k\end{pmatrix} p^k(1-p)^{n-k}.$$
-
 Используя тождество:
-
 $$k(k-1) \begin{pmatrix} n\\k\end{pmatrix}=k(k-1)\frac{n!}{k!(n-k)!}=n(n-1)\frac{(n-2)!}{(k-2)!(n-k)!}=n(n-1)\begin{pmatrix} n-2\\k-2\end{pmatrix},$$
-
 получим
-
 $$\mathbb{E}[K(K-1)]=n(n-1)p^2\sum_{k=2}^n \begin{pmatrix} n-2\\k-2\end{pmatrix} p^{k-2}(1-p)^{n-k}=n(n-1)p^2.$$
-
 Воспользуемся разложением $K^2$:
-
 $$K^2=K(K-1)+K,$$
-
 тогда
-
 $$\mathbb{E}[K^2]=\mathbb{E}[K(K-1)]+\mathbb{E}[K]=n(n-1)p^2+np.$$
-
 Таким образом, вариацию $Var(K)$ можно записать в виде:
-
 $$Var(K)=\mathbb{E}[K^2]-\mathbb{E}[K]^2=\left(n(n-1)p^2+np\right)-(np)^2.$$
-
 Итог:
-
 $$Var(K)=np(1-p). \quad \blacksquare$$
 :::
 
@@ -219,18 +177,14 @@ $$Var(K)=np(1-p). \quad \blacksquare$$
 **Распределение Пуассона** моделирует число событий в фиксированном интервале времени или пространства при постоянной средней интенсивности $λ$ и независимых событиях.
 
 Вероятность наблюдения $N=k$ событий при среднем числе событий $λ$:
-
 $$P(N=k)=\frac{\lambda^k e^{-\lambda}}{k!}, \quad k=0,1,2,\dots$$
-
 Пример: число распадов радиоактивного источника за 1 минуту.
 :::
 
 ### Пример распределения Пуассона
 
 Посчитаем число событий $N$ за фиксированное время. Если среднее число событий равно $\lambda$, то
-
 $$N\sim \mathrm{Pois}(\lambda).$$
-
 Построим на одних осях три случая: $\lambda=1,4,10$.
 
 ```{python}
@@ -260,19 +214,12 @@ for lam in [1, 4, 10]:
 #### **Вывод** $\mathbb{E}[N]$
 
 По определению:
-
 $$\mathbb{E}[N]=\sum_{k=0}^\infty k\frac{\lambda^k e^{-\lambda}}{k!}.$$
-
 Вынесем множитель за сумму:
-
 $$\mathbb{E}[N]=\lambda e^{-\lambda}\sum_{k=1}^\infty \frac{\lambda^{k-1} }{(k-1)!}.$$
-
 Сдвинем индекс $j=k-1$, не забыв разложение экспоненты в ряд Тейлора :
-
 $$\mathbb{E}[N]=\lambda e^{-\lambda}\sum_{j=0}^\infty \frac{\lambda^{j} }{j!}=\lambda e^{-\lambda}e^{\lambda}=\lambda.$$
-
 Итог:
-
 $$\mathbb{E}[N]=\lambda. \quad \blacksquare$$
 :::
 
@@ -280,31 +227,18 @@ $$\mathbb{E}[N]=\lambda. \quad \blacksquare$$
 #### **Вывод** $Var(N)$
 
 Воспользуемся уже знакомым вторым факториальным моментом:
-
 $$\mathbb{E}[N(N-1)]=\sum_{k=0}^\infty k(k-1)\frac{\lambda^k e^{-\lambda}}{k!}.$$
-
 Поскольку
-
 $$\frac{k(k-1)}{k!}=\frac{1}{(k-2)!},$$
-
 то можно преобразовать выражение для момента:
-
 $$\mathbb{E}[N(N-1)]=\lambda^2 e^{-\lambda}\sum_{k=2}^\infty \frac{\lambda^{k-2} }{(k-2)!}=\lambda^2 e^{-\lambda}\sum_{j=0}^\infty \frac{\lambda^{j} }{j!}=\lambda^2.$$
-
 Используя связь:
-
 $$N^2=N(N-1)+N,$$
-
 получим
-
 $$\mathbb{E}[N^2]=\mathbb{E}[N(N-1)]+\mathbb{E}[N]=\lambda^2+\lambda.$$
-
 Таким образом, вариацию $Var(N)$ можно записать в виде:
-
 $$Var(N)=\mathbb{E}[N^2]-\mathbb{E}[N]^2=(\lambda^2+\lambda)-\lambda^2=\lambda.$$
-
 Итог:
-
 $$Var(N)=\lambda. \quad \blacksquare$$
 :::
 
@@ -315,9 +249,7 @@ $$Var(N)=\lambda. \quad \blacksquare$$
 
 $$f(x;\mu,\sigma)=\frac{1}{\sigma (2\pi)^{1/2}}\exp\left[-\frac{(x-\mu)^2}{2\sigma^2}\right],$$
 
-где $\mu$ – среднее значение, $\sigma$ - дисперсия случайной величины.
-
-Оно часто представимо в виде суммы многих малых независимых вкладов.
+где $\mu$ – среднее значение, $\sigma$ - дисперсия случайной величины. Оно часто представимо в виде суммы многих малых независимых вкладов.
 :::
 
 Так почему же распределение «нормальное»?
@@ -356,19 +288,13 @@ for mu, sigma in [(0, 1), (0, 2), (2, 1)]:
 #### **Вывод** $\mathbb{E}[X]$
 
 По определению:
-
 $$\mathbb{E}[X]=\int_{-\infty}^\infty x\frac{1}{\sigma (2\pi)^{1/2}}\exp\left[-\frac{(x-\mu)^2}{2\sigma^2}\right]dx.$$
-
 Перейдем к стандартной нормали: $z=(x−μ)/σ,~x=μ+σz,~dx=σdz:$
-
 $$\mathbb{E}[X]=\int_{-\infty}^\infty (\mu+\sigma z)\varphi(z)dz, \quad \varphi(z)=\frac{1}{\sqrt{2\pi}}e^{-z^2/2}.$$
-
 $$\mathbb{E}[X]=\mu\int_{-\infty}^\infty \varphi(z)dz+\sigma\int_{-\infty}^\infty z\varphi(z)dz=\mu\cdot1+\sigma\cdot 0=\mu,$$
-
 так как $z\varphi(z)$ нечётная функция.
 
 Итог:
-
 $$\mathbb{E}[X]=\mu. \quad \blacksquare$$
 :::
 
@@ -376,19 +302,12 @@ $$\mathbb{E}[X]=\mu. \quad \blacksquare$$
 #### **Вывод** $Var(X)$
 
 По определению:
-
 $$Var(X)=\mathbb{E}\left[(X-\mu)^2\right]=\int_{-\infty}^\infty (x-\mu)^2 f(x)dx.$$
-
 Делая замену переменных $z=(x-\mu)/\sigma,$ получим:
-
 $$Var(X)=\sigma^2\int_{-\infty}^\infty z^2 \varphi(z) dz=\sigma^2 \mathbb{E}\left[Z^2\right], \quad Z\sim N(0,1),$$
-
 где
-
 $$\mathbb{E}\left[Z^2\right]=\int_{-\infty}^\infty z^2 \varphi(z)dz=\left[-z\varphi(z)\right]^{\infty}_{-\infty}+\int_{-\infty}^\infty \varphi(z)dz=1.$$
-
 Итог:
-
 $$Var(X)=\sigma^2. \quad \blacksquare$$
 :::
 
