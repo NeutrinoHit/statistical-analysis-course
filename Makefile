@@ -48,6 +48,9 @@ site: check-env ## Собрать полный сайт в _site
 	$(QUARTO) render $(BOOK_EN_DIR) --to html
 	$(QUARTO) render $(SLIDES_RU_DIR)
 	$(QUARTO) render $(SLIDES_EN_DIR)
+	test -s _site/index.html
+	test -s _site/ru/book/index.html
+	test -s _site/en/book/index.html
 
 all: figures books ## Собрать фигуры и обе книги
 
