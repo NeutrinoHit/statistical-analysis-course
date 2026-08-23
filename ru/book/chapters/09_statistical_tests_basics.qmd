@@ -4,10 +4,9 @@ description: "Гипотезы, ошибки решений, мощность т
 ---
 
 ::: {.chapter-opening}
-<span>Статус главы</span>
+<span>Аннотация</span>
 
-Глава подготовлена как каркас по материалам десятой лекции. Полный текст,
-примеры и интерактивные тесты будут добавлены позднее.
+Глава формулирует задачу статистической проверки гипотез. Нулевая и альтернативная гипотезы, ошибки первого и второго рода, мощность, критическая область и $p$-value собраны в единую процедуру принятия решения.
 :::
 
 ## План главы
@@ -17,7 +16,6 @@ description: "Гипотезы, ошибки решений, мощность т
 - мощность и критическая область;
 - статистика теста и $p$-value.
 
-## Материалы курса
+## Задачи
 
-- [Слайды лекции](https://neutrinohit.github.io/statistical-analysis-course/ru/slides/09_statistical_tests_basics.html)
-- [Задачи](https://neutrinohit.github.io/statistical-analysis-course/ru/slides/exercises/09_statistical_tests_basics_exercises.html)
+{{< include ../../../_includes/exercises/09_statistical_tests_basics-ru.qmd >}}

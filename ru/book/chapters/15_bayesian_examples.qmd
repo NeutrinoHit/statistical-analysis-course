@@ -4,10 +4,9 @@ description: "Априорные распределения, апостерио�
 ---
 
 ::: {.chapter-opening}
-<span>Статус главы</span>
+<span>Аннотация</span>
 
-Глава подготовлена как каркас по материалам шестнадцатой лекции. Полный текст,
-вычислительные примеры и сравнение подходов будут добавлены позднее.
+Глава строит байесовский вывод из априорного распределения, правдоподобия и апостериорного распределения. На практических примерах обсуждаются выбор prior, credible intervals, предсказательные распределения и связь с частотными процедурами.
 :::
 
 ## План главы
@@ -17,7 +16,6 @@ description: "Априорные распределения, апостерио�
 - credible intervals и предсказательные распределения;
 - практические примеры и сравнение с частотным выводом.
 
-## Материалы курса
+## Задачи
 
-- [Слайды лекции](https://neutrinohit.github.io/statistical-analysis-course/ru/slides/15_bayesian_examples.html)
-- [Задачи](https://neutrinohit.github.io/statistical-analysis-course/ru/slides/exercises/15_bayesian_examples_exercises.html)
+{{< include ../../../_includes/exercises/15_bayesian_examples-ru.qmd >}}

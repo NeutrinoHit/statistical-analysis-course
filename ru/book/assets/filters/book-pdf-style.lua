@@ -125,7 +125,7 @@ function Div(div)
   if FORMAT ~= "latex" then return nil end
 
   if has_class(div, "chapter-opening") then
-    -- The first short paragraph/span is the box label ("Главная мысль", etc.).
+    -- The first short paragraph/span is the box label ("Аннотация").
     return title_box(div, "bookchapteropening", nil, true, true)
   end
 
@@ -168,4 +168,3 @@ function Div(div)
 
   return nil
 end
-

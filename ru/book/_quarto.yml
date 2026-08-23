@@ -4,6 +4,7 @@ project:
 
 book:
   title: "Статистический анализ данных"
+  output-file: statistical-data-analysis
   subtitle: "От вероятности к физическому результату"
   author: "Дмитрий В. Наумов"
   site-url: "https://neutrinohit.github.io/statistical-analysis-course/ru/book/"
@@ -12,13 +13,13 @@ book:
   repo-actions: [source, issue]
   search: true
   reader-mode: true
+  downloads: [pdf, epub]
   page-footer:
     left: "© Дмитрий В. Наумов"
     right: "NeutrinoHit · Статистический анализ данных"
   chapters:
     - index.qmd
     - preface.qmd
-    - syllabus.qmd
     - part: "I. Вероятностный язык"
       chapters:
         - chapters/why_statistics.qmd
@@ -46,6 +47,19 @@ book:
 
 bibliography: ../../shared/bib/references.bib
 lang: ru
+jupyter: python3
+
+# Quarto exposes both parts and chapters as level-1 headers to Lua filters.
+# The shared book layer uses this profile data to reserve chapter-only furniture.
+book-part-titles:
+  - "I. Вероятностный язык"
+  - "II. Моделирование и оценивание"
+  - "III. Статистический вывод"
+  - "IV. Неопределённости и альтернативный вывод"
+
+filters:
+  - assets/filters/hide-book-index.lua
+  - assets/filters/neutrinohit-book.lua
 
 format:
   html:
@@ -57,7 +71,9 @@ format:
       body-width: 1050px
       margin-width: 230px
       gutter-width: 1rem
-    css: assets/styles/book.css
+    css:
+      - assets/styles/neutrinohit-book.css
+      - assets/styles/book.css
     include-in-header:
       - ../../shared/html/mathjax.html
     include-after-body: analytics/cloudflare-web-analytics.html
@@ -69,9 +85,10 @@ format:
     fig-responsive: true
   pdf:
     documentclass: scrbook
-    classoption: [a4paper, openany]
+    classoption:
+      - open=any
     papersize: a4
-    fontsize: 12pt
+    fontsize: 11pt
     # Printed TOC is inserted by book-pdf-style.tex immediately after the title page.
     toc: false
     toc-depth: 1
@@ -82,15 +99,25 @@ format:
     pdf-engine: lualatex
     keep-tex: true
     geometry:
-      - inner=25mm
-      - outer=25mm
-      - top=22mm
-      - bottom=24mm
-      - headheight=13pt
-      - headsep=8mm
+      - top=18mm
+      - bottom=20mm
+      - inner=20mm
+      - outer=50mm
+      - marginparwidth=36mm
+      - marginparsep=6mm
+      - headheight=6mm
+      - headsep=5mm
+      - footskip=9mm
     filters:
       - assets/filters/book-pdf-style.lua
     include-in-header:
-      - ../../shared/latex/common-pdf.tex
+      - ../../shared/latex/neutrinohit-book.tex
       - ../../shared/latex/ru-lang.tex
       - assets/latex/book-pdf-style.tex
+  epub:
+    toc: true
+    toc-depth: 2
+    number-sections: true
+    css:
+      - assets/styles/neutrinohit-book.css
+      - assets/styles/book.css

@@ -1,8 +1,10 @@
 ---
 page-layout: article
-toc: false
-number-sections: false
 body-classes: book-home
+format:
+  html:
+    toc: false
+    number-sections: false
 ---
 
 # Статистический анализ данных {.unnumbered}
@@ -21,7 +23,6 @@ body-classes: book-home
     <div class="book-landing-actions">
       <a class="book-button book-button-primary" href="chapters/why_statistics.html">Начать чтение</a>
       <a class="book-button" href="../slides/">Слайды курса</a>
-      <a class="book-button" href="syllabus.html">Посмотреть маршрут</a>
     </div>
   </div>
   <div class="book-author">
@@ -54,32 +55,3 @@ body-classes: book-home
   </div>
 </section>
 ```
-
-## Как читать эту книгу {.book-section-heading}
-
-Книга следует естественной логике анализа данных: от языка вероятностей и
-случайных величин к оцениванию параметров, проверке гипотез и полноценному
-экспериментальному результату. Материал можно читать последовательно или
-использовать как справочник.
-
-```{=html}
-<div class="book-route">
-  <section>
-    <h3>Сейчас готово</h3>
-    <p><a href="chapters/why_statistics.html">Первая глава</a> объясняет, зачем
-    статистика нужна физику, вводит основной язык курса и завершает путь от
-    псевдоданных до первого фита.</p>
-  </section>
-  <section>
-    <h3>Дальше</h3>
-    <p>Следующие главы постепенно переводятся из лекций в книжный формат.
-    Каркас всех шестнадцати глав уже доступен из оглавления, а каждая заготовка
-    содержит ссылки на соответствующие слайды и задачи.</p>
-  </section>
-</div>
-```
-
-::: {.book-note}
-**Статус проекта.** Это живая онлайн-книга. Текст, интерактивы и примеры будут
-уточняться вместе с развитием курса.
-:::

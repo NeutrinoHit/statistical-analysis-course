@@ -4,13 +4,13 @@
 $$
 N\sim\operatorname{Pois}(\mu s+b),
 \qquad
-B_{\rm aux}\sim\mathrm N(b,\sigma_b^2).
+B_{\mathrm{aux}}\sim\mathrm N(b,\sigma_b^2).
 $$
 
 1. Запишите полный likelihood.
 2. Найдите профильный likelihood по $b$ для фиксированного $\mu$.
 3. Постройте $q(\mu)$ численно.
-4. Сравните с fit при фиксированном $b=b_{\rm aux}$.
+4. Сравните с fit при фиксированном $b=b_{\mathrm{aux}}$.
 5. Исследуйте зависимость интервала от $\sigma_b$.
 
 ## Задача 2. Gaussian и log-normal constraints
@@ -71,7 +71,7 @@ $$
 Для совместного likelihood:
 
 1. найдите best fit;
-2. зафиксируйте каждый nuisance на $\widehat\theta_j\pm\sigma_j^{\rm post}$;
+2. зафиксируйте каждый nuisance на $\widehat\theta_j\pm\sigma_j^{\mathrm{post}}$;
 3. повторите fit параметра интереса;
 4. постройте ranking impacts;
 5. сравните с наивным квадратурным разложением.
@@ -93,7 +93,7 @@ $$
 
 Пусть фон в signal region связан с control region через
 $$
-b_{\rm SR}=T b_{\rm CR}.
+b_{\mathrm{SR}}=T b_{\mathrm{CR}}.
 $$
 
 1. Постройте likelihood для SR и CR.

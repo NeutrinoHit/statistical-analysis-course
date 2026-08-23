@@ -4,10 +4,9 @@ description: "От отношения правдоподобий к многом
 ---
 
 ::: {.chapter-opening}
-<span>Статус главы</span>
+<span>Аннотация</span>
 
-Глава подготовлена как каркас по материалам одиннадцатой лекции. Полный текст,
-примеры и практические рекомендации будут добавлены позднее.
+Глава переходит от отношения правдоподобий и профильных статистик к многомерным дискриминантам. Особое внимание уделено асимптотическим результатам, ROC-кривым, переобучению и независимой валидации.
 :::
 
 ## План главы
@@ -17,7 +16,6 @@ description: "От отношения правдоподобий к многом
 - многомерные дискриминанты и ROC-кривые;
 - переобучение, калибровка и валидация.
 
-## Материалы курса
+## Задачи
 
-- [Слайды лекции](https://neutrinohit.github.io/statistical-analysis-course/ru/slides/10_test_statistics_and_multivariate_methods.html)
-- [Задачи](https://neutrinohit.github.io/statistical-analysis-course/ru/slides/exercises/10_test_statistics_and_multivariate_methods_exercises.html)
+{{< include ../../../_includes/exercises/10_test_statistics_and_multivariate_methods-ru.qmd >}}

@@ -4,10 +4,9 @@ description: "Построение Неймана, unified intervals и огра
 ---
 
 ::: {.chapter-opening}
-<span>Статус главы</span>
+<span>Аннотация</span>
 
-Глава подготовлена как каркас по материалам тринадцатой лекции. Полный текст,
-численные построения и примеры будут добавлены позднее.
+Глава сравнивает процедуры построения интервалов и ограничений вблизи физической границы. Построение Неймана, единые интервалы Фельдмана–Казинса и метод $CL_s$ различаются правилом упорядочения и поведением при слабой чувствительности эксперимента.
 :::
 
 ## План главы
@@ -17,7 +16,6 @@ description: "Построение Неймана, unified intervals и огра
 - unified intervals Фельдмана–Казинса;
 - метод $CL_s$ и ожидаемые ограничения.
 
-## Материалы курса
+## Задачи
 
-- [Слайды лекции](https://neutrinohit.github.io/statistical-analysis-course/ru/slides/12_feldman_cousins_and_cls.html)
-- [Задачи](https://neutrinohit.github.io/statistical-analysis-course/ru/slides/exercises/12_feldman_cousins_and_cls_exercises.html)
+{{< include ../../../_includes/exercises/12_feldman_cousins_and_cls-ru.qmd >}}

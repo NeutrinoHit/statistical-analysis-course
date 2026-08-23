@@ -4,10 +4,9 @@ description: "Goodness-of-fit, калибровка p-value и статисти�
 ---
 
 ::: {.chapter-opening}
-<span>Статус главы</span>
+<span>Аннотация</span>
 
-Глава подготовлена как каркас по материалам двенадцатой лекции. Полный текст,
-примеры и интерактивы будут добавлены позднее.
+Глава разделяет качество описания данных и значимость поиска. Статистики Пирсона, deviance и анализ остатков проверяют согласие модели с данными, а локальная и глобальная значимости учитывают объём выполненного поиска.
 :::
 
 ## План главы
@@ -17,7 +16,6 @@ description: "Goodness-of-fit, калибровка p-value и статисти�
 - калибровка $p$-value;
 - локальная, глобальная значимость и look-elsewhere effect.
 
-## Материалы курса
+## Задачи
 
-- [Слайды лекции](https://neutrinohit.github.io/statistical-analysis-course/ru/slides/11_goodness_of_fit_and_significance.html)
-- [Задачи](https://neutrinohit.github.io/statistical-analysis-course/ru/slides/exercises/11_goodness_of_fit_and_significance_exercises.html)
+{{< include ../../../_includes/exercises/11_goodness_of_fit_and_significance-ru.qmd >}}

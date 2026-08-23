@@ -33,10 +33,10 @@ $$
 
 Эффективность определяется отношением
 $$
-\varepsilon=\frac{N_{\rm selected}}{N_{\rm total}}.
+\varepsilon=\frac{N_{\mathrm{selected}}}{N_{\mathrm{total}}}.
 $$
 
-1. Выведите линейную формулу для $\sigma_\varepsilon$, предполагая известные $\sigma_{\rm selected}$, $\sigma_{\rm total}$ и корреляцию $\rho$.
+1. Выведите линейную формулу для $\sigma_\varepsilon$, предполагая известные $\sigma_{\mathrm{selected}}$, $\sigma_{\mathrm{total}}$ и корреляцию $\rho$.
 2. Объясните, почему предположение о независимости числителя и знаменателя обычно неверно.
 3. Сравните ответы для $\rho=0$ и $\rho>0$.
 

@@ -15,6 +15,8 @@
   --book-gold-soft: #fbf3e4;
   --book-sky-soft: #b8d3f4;
   --book-blue: #2a5ea8;
+  --book-biography: #465b8c;
+  --book-biography-soft: #f0f2f8;
   --book-shadow: 0 18px 42px -34px rgba(24, 38, 47, 0.5);
   --book-serif: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, serif;
   --book-sans: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif;
@@ -164,14 +166,103 @@ main.content .sourceCode {
   line-height: 1.35;
 }
 
-.chapter-number {
-  display: block;
+.quarto-title .chapter-number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.55rem;
+  height: 2.55rem;
   margin-bottom: 0.7rem;
-  color: var(--book-coral);
-  font-size: 0.82rem;
+  border-radius: 50%;
+  background: var(--book-teal);
+  color: #fff;
+  font-size: 1.05rem;
   font-weight: 800;
-  letter-spacing: 0.1em;
+  line-height: 1;
+}
+
+.biography {
+  clear: both;
+  display: flex;
+  align-items: stretch;
+  gap: 1.25rem;
+  margin: 2rem 0;
+  padding: 1.15rem 1.25rem;
+  border-left: 5px solid var(--book-biography);
+  background: var(--book-biography-soft);
+  box-shadow: 0 14px 30px -28px rgba(30, 44, 70, 0.7);
+}
+
+.biography-photo {
+  flex: 0 0 min(29%, 12rem);
+  align-self: stretch;
+}
+
+.biography-photo a {
+  display: block;
+  height: 100%;
+}
+
+.biography-portrait {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 11rem;
+  max-height: 17rem;
+  border: 1px solid rgba(70, 91, 140, 0.2);
+  object-fit: cover;
+  object-position: center top;
+}
+
+.biography-copy {
+  flex: 1 1 auto;
+  align-self: center;
+  min-width: 0;
+}
+
+.biography-label,
+.biography-name,
+.biography-years,
+.biography-sources {
+  font-family: var(--book-sans);
+}
+
+.biography-label {
+  margin-bottom: 0.15rem;
+  color: var(--book-biography);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.11em;
   text-transform: uppercase;
+}
+
+.biography-name {
+  color: var(--book-ink);
+  font-size: 1.35rem;
+  font-weight: 750;
+  line-height: 1.16;
+}
+
+.biography-years {
+  margin-top: 0.18rem;
+  color: var(--book-muted);
+  font-size: 0.9rem;
+}
+
+.biography-copy > p {
+  margin: 0.75rem 0 0;
+  line-height: 1.55;
+}
+
+.biography-sources {
+  margin-top: 0.8rem;
+  color: var(--book-muted);
+  font-size: 0.76rem;
+  line-height: 1.4;
+}
+
+.biography-sources p {
+  margin: 0;
 }
 
 .sidebar {
@@ -927,6 +1018,20 @@ body:has(.book-landing) #title-block-header {
 }
 
 @media (max-width: 560px) {
+  .biography {
+    flex-direction: column;
+  }
+
+  .biography-photo {
+    width: min(13rem, 72%);
+    flex-basis: auto;
+  }
+
+  .biography-portrait {
+    height: auto;
+    min-height: 0;
+  }
+
   .analysis-pipeline {
     grid-template-columns: 1fr;
   }

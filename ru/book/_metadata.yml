@@ -5,11 +5,21 @@ format:
   html:
     toc: true
     number-sections: true
-    css: assets/styles/book.css
+    css:
+      - assets/styles/neutrinohit-book.css
+      - assets/styles/book.css
     include-in-header:
       - ../../shared/html/mathjax.html
   pdf:
     pdf-engine: lualatex
     include-in-header:
+      - ../../shared/latex/neutrinohit-book.tex
       - ../../shared/latex/common-pdf.tex
       - ../../shared/latex/ru-lang.tex
+  epub:
+    toc: true
+    toc-depth: 2
+    number-sections: true
+    css:
+      - assets/styles/neutrinohit-book.css
+      - assets/styles/book.css

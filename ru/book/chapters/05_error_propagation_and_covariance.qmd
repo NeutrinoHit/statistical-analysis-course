@@ -4,10 +4,9 @@ description: "Распространение неопределённостей,
 ---
 
 ::: {.chapter-opening}
-<span>Статус главы</span>
+<span>Аннотация</span>
 
-Глава подготовлена как каркас по материалам шестой лекции. Полный текст,
-физические примеры и интерактивы будут добавлены позднее.
+Глава объясняет, как неопределённости исходных величин переходят в неопределённость функции. Ковариационная матрица связывает алгебраические формулы с геометрией многомерного гауссова распределения.
 :::
 
 ## План главы
@@ -17,7 +16,6 @@ description: "Распространение неопределённостей,
 - ковариационная матрица;
 - двумерный гаусс, контуры и вероятностные эллипсы.
 
-## Материалы курса
+## Задачи
 
-- [Слайды лекции](https://neutrinohit.github.io/statistical-analysis-course/ru/slides/05_error_propagation_and_covariance.html)
-- [Задачи](https://neutrinohit.github.io/statistical-analysis-course/ru/slides/exercises/05_error_propagation_and_covariance_exercises.html)
+{{< include ../../../_includes/exercises/05_error_propagation_and_covariance-ru.qmd >}}

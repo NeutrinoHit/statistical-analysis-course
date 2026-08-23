@@ -4,10 +4,9 @@ description: "Интервальные процедуры, profile likelihood, b
 ---
 
 ::: {.chapter-opening}
-<span>Статус главы</span>
+<span>Аннотация</span>
 
-Глава подготовлена как каркас по материалам четырнадцатой лекции. Полный текст,
-сравнение процедур и вычислительные примеры будут добавлены позднее.
+Глава сопоставляет классические интервалы, интервалы Вальда и Уилсона, профильное правдоподобие и bootstrap. Каждая процедура оценивается по покрытию, поведению на границах и пригодности для односторонних ограничений.
 :::
 
 ## План главы
@@ -17,7 +16,6 @@ description: "Интервальные процедуры, profile likelihood, b
 - profile likelihood и многомерные контуры;
 - bootstrap, односторонние ограничения и coverage.
 
-## Материалы курса
+## Задачи
 
-- [Слайды лекции](https://neutrinohit.github.io/statistical-analysis-course/ru/slides/13_interval_estimation_and_limits.html)
-- [Задачи](https://neutrinohit.github.io/statistical-analysis-course/ru/slides/exercises/13_interval_estimation_and_limits_exercises.html)
+{{< include ../../../_includes/exercises/13_interval_estimation_and_limits-ru.qmd >}}

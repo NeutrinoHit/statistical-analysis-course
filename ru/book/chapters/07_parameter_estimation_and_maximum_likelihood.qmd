@@ -4,10 +4,9 @@ description: "Точечные оценки, функция правдоподо
 ---
 
 ::: {.chapter-opening}
-<span>Статус главы</span>
+<span>Аннотация</span>
 
-Глава подготовлена как каркас по материалам восьмой лекции. Полный текст,
-выводы и примеры оценивания будут добавлены позднее.
+Глава различает параметр модели и его оценку, вводит функцию правдоподобия и метод её максимума. Свойства оценок, информация Фишера и профильное правдоподобие показывают, как оценить точность фита и проверить его поведение.
 :::
 
 ## План главы
@@ -17,7 +16,6 @@ description: "Точечные оценки, функция правдоподо
 - информация Фишера и точность оценки;
 - профильное правдоподобие и диагностика фита.
 
-## Материалы курса
+## Задачи
 
-- [Слайды лекции](https://neutrinohit.github.io/statistical-analysis-course/ru/slides/07_parameter_estimation_and_maximum_likelihood.html)
-- [Задачи](https://neutrinohit.github.io/statistical-analysis-course/ru/slides/exercises/07_parameter_estimation_and_maximum_likelihood_exercises.html)
+{{< include ../../../_includes/exercises/07_parameter_estimation_and_maximum_likelihood-ru.qmd >}}

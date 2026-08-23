@@ -30,6 +30,8 @@
 \definecolor{BookGold}{HTML}{B97817}
 \definecolor{BookGoldSoft}{HTML}{FBF3E4}
 \definecolor{BookBlue}{HTML}{2A5EA8}
+\definecolor{BookBiography}{HTML}{465B8C}
+\definecolor{BookBiographySoft}{HTML}{F0F2F8}
 % The HTML page uses a stronger sky blue. The reference PDF intentionally uses
 % a paler fill for long derivations, so that equations remain comfortable to read.
 \definecolor{BookBlueSoftPDF}{HTML}{EEF4FB}
@@ -63,14 +65,18 @@
 \setkomafont{subsection}{\sffamily\bfseries\fontsize{11.3}{14}\selectfont\color{BookInk}}
 \setkomafont{subsubsection}{\sffamily\bfseries\fontsize{10.3}{13}\selectfont\color{BookInk}}
 
-\renewcommand*{\chapterformat}{%
-  {\color{BookTeal}\thechapter\enskip}%
+\renewcommand{\bookchaptercolor}{%
+  \ifcase\value{part}BookTeal%
+  \or BookTeal%
+  \or BookGold%
+  \or BookBlue%
+  \or BookCoral%
+  \else BookTeal\fi
 }
-
-\RedeclareSectionCommand[
-  beforeskip=16mm,
-  afterskip=8mm
-]{chapter}
+\renewcommand{\BookChapterLabel}{Глава}
+\renewcommand{\BookPartLabel}{РАЗДЕЛ КНИГИ}
+\renewcommand{\BookPartContentsLabel}{Главы}
+\renewcommand{\BookTocChapterLabel}{Глава}
 \RedeclareSectionCommand[
   beforeskip=1.55\baselineskip,
   afterskip=0.45\baselineskip
@@ -83,20 +89,6 @@
   beforeskip=0.95\baselineskip,
   afterskip=0.2\baselineskip
 ]{subsubsection}
-
-% -----------------------------------------------------------------------------
-% Running heads, thin gray rule, chapter title + page number
-% -----------------------------------------------------------------------------
-\clearpairofpagestyles
-\automark[chapter]{chapter}
-\ihead{\headmark}
-\ohead{\pagemark}
-\setkomafont{pageheadfoot}{\sffamily\fontsize{8.5}{10}\selectfont\color{BookMuted}}
-\setkomafont{pagenumber}{\sffamily\fontsize{8.5}{10}\selectfont\color{BookInk}}
-\KOMAoptions{headsepline=0.35pt}
-\renewcommand*{\chaptermarkformat}{\thechapter\enskip}
-\renewcommand*{\chapterpagestyle}{empty}
-\pagestyle{scrheadings}
 
 % -----------------------------------------------------------------------------
 % Links and captions
@@ -306,6 +298,16 @@
   fontupper=\sffamily\bfseries\color{BookTealDark}
 }
 
+\newtcolorbox{bookbiography}{
+  bookbox,
+  colback=BookBiographySoft,
+  colframe=BookBiography!60,
+  borderline west={3.2pt}{0pt}{BookBiography},
+  boxrule=0.25pt,
+  breakable=false,
+  shadow={0mm}{0mm}{0mm}{white}
+}
+
 % A reusable caption for figures which the Lua filter deliberately takes out of
 % floating figure environments so that they can safely live inside tcolorboxes.
 \newcommand{\BookInlineFigureCaption}[1]{%
@@ -370,10 +372,12 @@
 % -----------------------------------------------------------------------------
 % TOC and chapter-entry color accents
 % -----------------------------------------------------------------------------
+\RedeclareSectionCommand[tocbeforeskip=0.12\baselineskip]{chapter}
+\RedeclareSectionCommand[tocbeforeskip=0.55\baselineskip]{part}
+
 \AtBeginDocument{%
   \addtokomafont{partentry}{\sffamily\bfseries\color{BookTeal}}%
   \addtokomafont{partentrypagenumber}{\sffamily\bfseries\color{BookInk}}%
   \addtokomafont{chapterentry}{\sffamily\bfseries\color{BookTeal}}%
   \addtokomafont{chapterentrypagenumber}{\sffamily\bfseries\color{BookInk}}%
 }
-

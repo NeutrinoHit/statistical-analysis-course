@@ -4,10 +4,9 @@ description: "Линейные и нелинейные подгонки, кор�
 ---
 
 ::: {.chapter-opening}
-<span>Статус главы</span>
+<span>Аннотация</span>
 
-Глава подготовлена как каркас по материалам девятой лекции. Полный текст,
-вычислительные примеры и интерактивы будут добавлены позднее.
+Глава выводит метод наименьших квадратов из гауссова правдоподобия. Линейные и нелинейные подгонки, коррелированные ошибки и анализ остатков дают рабочую схему для оценки параметров и качества модели.
 :::
 
 ## План главы
@@ -17,7 +16,6 @@ description: "Линейные и нелинейные подгонки, кор�
 - коррелированные неопределённости;
 - остатки и качество подгонки.
 
-## Материалы курса
+## Задачи
 
-- [Слайды лекции](https://neutrinohit.github.io/statistical-analysis-course/ru/slides/08_method_of_least_squares.html)
-- [Задачи](https://neutrinohit.github.io/statistical-analysis-course/ru/slides/exercises/08_method_of_least_squares_exercises.html)
+{{< include ../../../_includes/exercises/08_method_of_least_squares-ru.qmd >}}

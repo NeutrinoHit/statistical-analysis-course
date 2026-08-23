@@ -17,7 +17,7 @@ SLIDES_EN_DIR := en/slides
 
 .PHONY: help check-env ci-setup site all books notebooks figures slides \
 	ru-slides en-slides \
-	ru ru-html ru-pdf en en-html en-pdf \
+	ru ru-html ru-pdf ru-epub en en-html en-pdf en-epub \
 	ru-notebooks en-notebooks ru-notebook en-notebook \
 	clean clean-site clean-ru clean-en clean-notebooks clean-figures clean-cache
 
@@ -76,11 +76,17 @@ ru-html: check-env ## Собрать HTML русской книги
 ru-pdf: check-env ## Собрать PDF русской книги
 	$(QUARTO) render $(BOOK_RU_DIR) --to pdf
 
+ru-epub: check-env ## Собрать EPUB русской книги
+	$(QUARTO) render $(BOOK_RU_DIR) --to epub
+
 en-html: check-env ## Собрать HTML английской книги
 	$(QUARTO) render $(BOOK_EN_DIR) --to html
 
 en-pdf: check-env ## Собрать PDF английской книги
 	$(QUARTO) render $(BOOK_EN_DIR) --to pdf
+
+en-epub: check-env ## Собрать EPUB английской книги
+	$(QUARTO) render $(BOOK_EN_DIR) --to epub
 
 figures: check-env ## Сгенерировать общие фигуры
 	$(PYTHON) scripts/build_figures.py

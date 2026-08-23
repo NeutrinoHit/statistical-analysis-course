@@ -4,10 +4,9 @@ description: "Включение систематических эффектов
 ---
 
 ::: {.chapter-opening}
-<span>Статус главы</span>
+<span>Аннотация</span>
 
-Глава подготовлена как каркас по материалам пятнадцатой лекции. Полный текст,
-практические модели и примеры будут добавлены позднее.
+Глава включает систематические эффекты в статистическую модель через nuisance-параметры, ограничивающие члены и ковариационные матрицы. Профилирование и маргинализация показывают два способа учесть эти параметры в итоговом выводе.
 :::
 
 ## План главы
@@ -17,7 +16,6 @@ description: "Включение систематических эффектов
 - профилирование и маргинализация;
 - влияние систематических неопределённостей на результат.
 
-## Материалы курса
+## Задачи
 
-- [Слайды лекции](https://neutrinohit.github.io/statistical-analysis-course/ru/slides/14_nuisance_parameters_and_systematics.html)
-- [Задачи](https://neutrinohit.github.io/statistical-analysis-course/ru/slides/exercises/14_nuisance_parameters_and_systematics_exercises.html)
+{{< include ../../../_includes/exercises/14_nuisance_parameters_and_systematics-ru.qmd >}}
