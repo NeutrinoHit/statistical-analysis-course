@@ -21,7 +21,8 @@ format:
     <h1>Статистический анализ данных</h1>
     <p>
       Практический курс для физики высоких энергий, астрофизики и анализа
-      экспериментальных данных. Материалы добавляются по мере готовности.
+      экспериментальных данных. Опубликованы тринадцать лекций; для каждой
+      темы доступны слайды и задачи.
     </p>
     <div class="lecture-links">
       <a href="https://neutrinohit.github.io/lectures.html">Все курсы лекций</a>
@@ -35,7 +36,7 @@ format:
   <section class="lecture-accordion" aria-label="Лекции курса">
     <details class="lecture-row">
       <summary>
-        <span class="lecture-index">00</span>
+        <span class="lecture-index">01</span>
         <span>Мотивация и обзор курса</span>
       </summary>
       <div class="lecture-row-body">
@@ -50,7 +51,7 @@ format:
 
     <details class="lecture-row">
       <summary>
-        <span class="lecture-index">01</span>
+        <span class="lecture-index">02</span>
         <span>Случайные величины, распределения, моменты</span>
       </summary>
       <div class="lecture-row-body">
@@ -65,7 +66,7 @@ format:
 
     <details class="lecture-row">
       <summary>
-        <span class="lecture-index">02</span>
+        <span class="lecture-index">03</span>
         <span>Характеристические функции и суммы случайных величин</span>
       </summary>
       <div class="lecture-row-body">
@@ -80,7 +81,7 @@ format:
 
     <details class="lecture-row">
       <summary>
-        <span class="lecture-index">03</span>
+        <span class="lecture-index">04</span>
         <span>Центральная предельная теорема и нормальное распределение</span>
       </summary>
       <div class="lecture-row-body">
@@ -95,7 +96,7 @@ format:
 
     <details class="lecture-row">
       <summary>
-        <span class="lecture-index">04</span>
+        <span class="lecture-index">05</span>
         <span>Когда гаусс не возникает</span>
       </summary>
       <div class="lecture-row-body">
@@ -110,7 +111,7 @@ format:
 
     <details class="lecture-row">
       <summary>
-        <span class="lecture-index">05</span>
+        <span class="lecture-index">06</span>
         <span>Распространение ошибок</span>
       </summary>
       <div class="lecture-row-body">
@@ -125,7 +126,7 @@ format:
 
     <details class="lecture-row">
       <summary>
-        <span class="lecture-index">06</span>
+        <span class="lecture-index">07</span>
         <span>Двумерный гаусс</span>
       </summary>
       <div class="lecture-row-body">
@@ -140,7 +141,7 @@ format:
 
     <details class="lecture-row">
       <summary>
-        <span class="lecture-index">07</span>
+        <span class="lecture-index">08</span>
         <span>Метод Монте-Карло и псевдоэксперименты</span>
       </summary>
       <div class="lecture-row-body">
@@ -156,7 +157,7 @@ format:
 
     <details class="lecture-row">
       <summary>
-        <span class="lecture-index">08</span>
+        <span class="lecture-index">09</span>
         <span>Правдоподобие и оценки максимального правдоподобия</span>
       </summary>
       <div class="lecture-row-body">
@@ -171,7 +172,7 @@ format:
 
     <details class="lecture-row">
       <summary>
-        <span class="lecture-index">09</span>
+        <span class="lecture-index">10</span>
         <span>Свойства оценок, профильное правдоподобие и примеры анализа данных</span>
       </summary>
       <div class="lecture-row-body">
@@ -186,7 +187,7 @@ format:
 
     <details class="lecture-row">
       <summary>
-        <span class="lecture-index">10</span>
+        <span class="lecture-index">11</span>
         <span>Метод наименьших квадратов и линейная подгонка</span>
       </summary>
       <div class="lecture-row-body">
@@ -201,7 +202,7 @@ format:
 
     <details class="lecture-row">
       <summary>
-        <span class="lecture-index">11</span>
+        <span class="lecture-index">12</span>
         <span>χ²-интервалы, систематики и практический рецепт МНК</span>
       </summary>
       <div class="lecture-row-body">
@@ -216,7 +217,7 @@ format:
 
     <details class="lecture-row">
       <summary>
-        <span class="lecture-index">12</span>
+        <span class="lecture-index">13</span>
         <span>Качество согласия и статистическая значимость</span>
       </summary>
       <div class="lecture-row-body">
