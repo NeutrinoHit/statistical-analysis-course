@@ -9,6 +9,10 @@ format:
 
 [← Вернуться к курсу](../index.html){.exercise-back-link}
 
+Домашние задания:
+
+- [Лекции 1–6](homework_lectures_01_06.html)
+
 Материалы к готовым лекциям:
 
 00. [Мотивация и обзор курса](00_introduction_exercises.html)

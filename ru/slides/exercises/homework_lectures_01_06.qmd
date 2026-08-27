@@ -1,0 +1,16 @@
+---
+title: "Домашние задания к лекциям 1–6"
+subtitle: "Статистический анализ данных"
+author: "Дмитрий В. Наумов"
+format:
+  html:
+    toc: true
+    toc-depth: 2
+    number-sections: false
+---
+
+[← Вернуться к курсу](../index.html){.exercise-back-link}
+
+# Домашние задания
+
+{{< include ../../../_includes/exercises/homework_lectures_01_06-ru.qmd >}}

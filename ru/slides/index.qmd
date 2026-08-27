@@ -29,6 +29,7 @@ format:
       <a href="bertrand_paradox.html">Парадокс Бертрана</a>
       <a href="applets.html">Апплеты</a>
       <a href="exercises/index.html">Все задачи</a>
+      <a href="exercises/homework_lectures_01_06.html">Домашние задания 1–6</a>
       <a href="exam_projects/index.html">Экзаменационные проекты</a>
     </div>
   </section>

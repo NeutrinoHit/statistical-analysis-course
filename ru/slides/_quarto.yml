@@ -24,6 +24,7 @@ project:
     - notebooks/mc_vegas_notebook.qmd
     - exercises/index.qmd
     - exam_projects/index.qmd
+    - exercises/homework_lectures_01_06.qmd
     - exercises/00_introduction_exercises.qmd
     - exercises/01_random_distributions_exercises.qmd
     - exercises/02_characteristic_functions_exercises.qmd
