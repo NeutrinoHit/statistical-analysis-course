@@ -251,7 +251,7 @@ $$
 
 ![](shared/figures/generated/clt_uniform_sum_m10.png){width=72% .nostretch}
 
-## Интерактив: ЦПТ
+## Интерактив: ЦПТ {#applet-clt}
 
 ::: {.clt-widget}
 ```{ojs}
@@ -728,7 +728,7 @@ z_{\rm obs}
 $$
 :::
 
-## Алгоритм проверки совместимости двух измерений
+## Алгоритм проверки совместимости двух измерений {#applet-measurement-compatibility}
 
 ::::: {.columns}
 

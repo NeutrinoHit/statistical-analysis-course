@@ -4,5 +4,6 @@
 /*_files/
 /_freeze/
 /*.html
+!/applets.html
 /*.pdf
 .DS_Store

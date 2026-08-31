@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex,nofollow,noarchive">
   <title>Статистические аплеты</title>
+  <link rel="stylesheet" href="../../shared/applets/lecture-applets.css">
   <style>
     :root {
       --bg-1: #f5f1e8;
@@ -401,6 +402,7 @@
       <a class="link" href="index.html">К лекциям</a>
       <a class="link" href="bertrand_paradox.html">Парадокс Бертрана</a>
       <a class="link" href="exercises/index.html">К задачам</a>
+      <a class="link" href="../../en/slides/applets.html" lang="en">English</a>
       <a class="link primary" href="../book/">К книге</a>
     </div>
 
@@ -597,6 +599,16 @@
           </div>
         </div>
       </details>
+    </section>
+
+    <section class="lecture-applets-section" aria-labelledby="lecture-applets-title">
+      <p class="eyebrow">Интерактивы лекций</p>
+      <h2 id="lecture-applets-title">Все лекционные апплеты</h2>
+      <p>
+        Апплет загружается только после раскрытия строки. Это тот же интерактивный
+        слайд, что и в лекции: исправления в лекции автоматически появляются здесь.
+      </p>
+      <div class="lecture-applet-catalog" data-lecture-applets data-locale="ru" data-slide-base="./"></div>
     </section>
   </main>
 
@@ -1028,5 +1040,6 @@
     updateNorm();
     updateBinomial();
   </script>
+  <script src="../../shared/applets/lecture-applets.js"></script>
 </body>
 </html>

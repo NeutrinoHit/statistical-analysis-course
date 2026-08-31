@@ -265,7 +265,7 @@ Published in: Phys.Rev.Lett. 133 (2024) 5, 051801
 - The best-fit value of $\sigma$ minimizes $\chi^2$.
 :::
 
-## Pseudo-data and fit
+## Pseudo-data and fit {#applet-gaussian-fit}
 
 ::: {.fit-widget}
 ```{ojs}

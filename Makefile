@@ -43,7 +43,7 @@ site: check-env ## Собрать полный сайт в _site
 	mkdir -p _site/shared
 	cp pages/index.html pages/applets.html pages/robots.txt _site/
 	$(PYTHON) scripts/build_figures.py
-	cp -R shared/analytics shared/styles _site/shared/
+	cp -R shared/analytics shared/styles shared/applets _site/shared/
 	$(QUARTO) render $(BOOK_RU_DIR) --to html
 	$(QUARTO) render $(BOOK_EN_DIR) --to html
 	$(QUARTO) render $(SLIDES_RU_DIR)
@@ -60,9 +60,13 @@ slides: ru-slides en-slides ## Собрать сайты со слайдами R
 
 ru-slides: check-env ## Собрать русские слайды
 	$(QUARTO) render $(SLIDES_RU_DIR)
+	mkdir -p _site/shared
+	cp -R shared/applets _site/shared/
 
 en-slides: check-env ## Собрать английские слайды
 	$(QUARTO) render $(SLIDES_EN_DIR)
+	mkdir -p _site/shared
+	cp -R shared/applets _site/shared/
 
 ru: check-env ## Собрать русскую книгу целиком
 	$(QUARTO) render $(BOOK_RU_DIR)

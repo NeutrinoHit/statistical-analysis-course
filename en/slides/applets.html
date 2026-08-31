@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Statistical applets</title>
+  <link rel="stylesheet" href="../../shared/applets/lecture-applets.css">
+  <style>
+    :root {
+      --bg-1: #f5f1e8;
+      --bg-2: #ffffff;
+      --card: rgba(255, 255, 255, 0.9);
+      --line: rgba(28, 66, 92, 0.18);
+      --line-strong: rgba(28, 66, 92, 0.32);
+      --ink: #1b2731;
+      --muted: #546371;
+      --accent: #1f5f8b;
+      --accent-2: #174c70;
+      --sans: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif;
+      --serif: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      padding: 24px;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top left, rgba(31, 95, 139, 0.12), transparent 28rem),
+        radial-gradient(circle at bottom right, rgba(125, 72, 44, 0.10), transparent 30rem),
+        linear-gradient(135deg, var(--bg-1), var(--bg-2));
+      font-family: var(--serif);
+    }
+
+    main {
+      width: min(1120px, 100%);
+      margin: 0 auto;
+      padding: 32px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--card);
+      box-shadow: 0 24px 60px -40px rgba(24, 46, 66, 0.5);
+    }
+
+    .eyebrow {
+      margin: 0 0 12px;
+      color: var(--accent);
+      font: 750 0.82rem/1.2 var(--sans);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0 0 14px;
+      font-size: clamp(2rem, 5vw, 3.4rem);
+      line-height: 1;
+    }
+
+    p {
+      margin: 0;
+      max-width: 72ch;
+      color: var(--muted);
+      font-size: 1.04rem;
+      line-height: 1.62;
+    }
+
+    .top-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 2.65rem;
+      padding: 0.62rem 0.9rem;
+      border: 1px solid rgba(31, 95, 139, 0.22);
+      border-radius: 8px;
+      background: #ffffff;
+      color: var(--accent-2);
+      text-decoration: none;
+      font: 700 0.94rem/1.1 var(--sans);
+    }
+
+    .link.primary {
+      border-color: var(--accent);
+      background: var(--accent);
+      color: #ffffff;
+    }
+
+    .language-note {
+      margin-top: 18px;
+      padding: 12px 14px;
+      border-left: 4px solid var(--accent);
+      background: rgba(31, 95, 139, 0.07);
+    }
+
+    @media (max-width: 640px) {
+      body { padding: 10px; }
+      main { padding: 22px 16px; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <p class="eyebrow">Statistical data analysis</p>
+    <h1>Lecture applets</h1>
+    <p>
+      The interactive examples from the published course lectures are collected
+      here. An applet is loaded only when you expand its row.
+    </p>
+    <div class="top-actions">
+      <a class="link" href="index.html">Course index</a>
+      <a class="link" href="bertrand_paradox.html">Bertrand's paradox</a>
+      <a class="link" href="../../ru/slides/applets.html" lang="ru">Русская версия</a>
+      <a class="link primary" href="../book/">Book</a>
+    </div>
+    <p class="language-note">
+      The catalogue is in English. The first applet already has an English slide;
+      the others use the live versions from the current Russian lecture deck, so
+      their control labels remain in Russian.
+    </p>
+
+    <section class="lecture-applets-section" aria-labelledby="lecture-applets-title">
+      <p class="eyebrow">Interactive lectures</p>
+      <h2 id="lecture-applets-title">All lecture applets</h2>
+      <div class="lecture-applet-catalog" data-lecture-applets data-locale="en" data-slide-base="../../ru/slides/" data-local-slide-base="./"></div>
+    </section>
+  </main>
+  <script src="../../shared/applets/lecture-applets.js"></script>
+</body>
+</html>

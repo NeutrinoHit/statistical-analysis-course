@@ -12,6 +12,7 @@ format:
 
 ## Interactive Applets
 
+- [All lecture applets](applets.html)
 - [Bertrand's Paradox: online game](bertrand_paradox.qmd)
 
 ## Lecture Slides
