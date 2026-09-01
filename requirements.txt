@@ -3,4 +3,5 @@ jupyter>=1.1
 numpy>=2.0
 pandas>=2.2
 matplotlib>=3.8
+pypdf>=5.0
 vegas>=6.4

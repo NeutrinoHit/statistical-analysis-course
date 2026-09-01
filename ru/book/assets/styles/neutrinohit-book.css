@@ -499,6 +499,105 @@ section.level3:has(> h3.exercise-heading) {
   background: #fff;
 }
 
+.process-flow {
+  display: grid;
+  grid-template-columns: repeat(var(--process-columns, 1), minmax(0, 1fr));
+  gap: 1.5rem;
+  clear: both;
+  margin: 2rem 0;
+}
+
+.process-step {
+  position: relative;
+  min-width: 0;
+  padding: 1rem 1.05rem 1.1rem;
+  border: 1px solid var(--book-line-strong);
+  border-top: 4px solid var(--book-teal);
+  background: var(--book-paper);
+  box-shadow: 0 14px 28px -28px rgba(24, 38, 47, 0.75);
+}
+
+.process-step:not(:last-child)::after {
+  content: "→";
+  position: absolute;
+  z-index: 1;
+  top: 50%;
+  left: calc(100% + 0.08rem);
+  width: 1.35rem;
+  color: var(--book-teal);
+  font-family: var(--book-sans);
+  font-size: 1.35rem;
+  font-weight: 800;
+  line-height: 1;
+  text-align: center;
+  transform: translateY(-50%);
+}
+
+.process-flow-vertical {
+  grid-template-columns: 1fr;
+  gap: 1.7rem;
+}
+
+.process-flow-vertical .process-step:not(:last-child)::after {
+  content: "↓";
+  top: calc(100% + 0.25rem);
+  left: 50%;
+  width: 1.4rem;
+  transform: translateX(-50%);
+}
+
+.process-step-label,
+.process-step-title {
+  font-family: var(--book-sans);
+}
+
+.process-step-label {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.15rem;
+  min-height: 2.15rem;
+  margin-bottom: 0.9rem;
+  padding: 0.25rem;
+  border-radius: 50%;
+  background: var(--book-teal);
+  color: #fff;
+  font-size: 0.76rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.process-step-title {
+  color: var(--book-ink);
+  font-size: 1rem;
+  line-height: 1.25;
+}
+
+.process-step-body {
+  margin-top: 0.45rem;
+  color: var(--book-muted);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.process-step-body > :first-child { margin-top: 0; }
+.process-step-body > :last-child { margin-bottom: 0; }
+
+@media (max-width: 900px) {
+  .process-flow {
+    grid-template-columns: 1fr;
+    gap: 1.7rem;
+  }
+
+  .process-step:not(:last-child)::after {
+    content: "↓";
+    top: calc(100% + 0.25rem);
+    left: 50%;
+    width: 1.4rem;
+    transform: translateX(-50%);
+  }
+}
+
 @media (max-width: 700px) {
   aside.biography,
   div.biography {

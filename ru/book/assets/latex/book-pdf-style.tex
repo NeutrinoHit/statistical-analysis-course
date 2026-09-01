@@ -118,6 +118,7 @@
   font=small,
   labelfont=bf,
   textfont=it,
+  labelsep=space,
   justification=centering,
   singlelinecheck=false,
   skip=7pt
@@ -125,8 +126,16 @@
 \captionsetup[table]{
   font=small,
   labelfont=bf,
+  labelsep=space,
   justification=raggedright,
   singlelinecheck=false
+}
+
+% Per-chapter bibliographies should remain with the chapter instead of leaving
+% a nearly empty continuation page for a few long DOI and URL lines.
+\AtBeginEnvironment{CSLReferences}{%
+  \footnotesize
+  \setlength{\emergencystretch}{2em}%
 }
 
 % -----------------------------------------------------------------------------
@@ -312,7 +321,9 @@
 % floating figure environments so that they can safely live inside tcolorboxes.
 \newcommand{\BookInlineFigureCaption}[1]{%
   \par\vspace{0.45em}%
-  {\centering\sffamily\fontsize{8.5}{10}\selectfont\color{BookMuted}#1\par}%
+  \refstepcounter{figure}%
+  {\centering\sffamily\fontsize{8.5}{10}\selectfont\color{BookMuted}%
+    \figurename~\thefigure\enspace #1\par}%
 }
 
 % -----------------------------------------------------------------------------

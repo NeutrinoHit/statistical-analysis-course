@@ -71,6 +71,92 @@ local function latex_box(blocks, identifier, options)
   return result
 end
 
+local function process_step_title(step)
+  return value(step.attributes.title)
+end
+
+local function process_step_label(step, index)
+  local label = value(step.attributes.label)
+  if label ~= "" then
+    return label
+  end
+  return string.format("%02d", index)
+end
+
+local function render_process_flow(div)
+  local steps = {}
+  for _, block in ipairs(div.content) do
+    if block.t == "Div" and has_class(block, "process-step") then
+      steps[#steps + 1] = block
+    end
+  end
+
+  if FORMAT:match("latex") then
+    local blocks = {}
+    if div.identifier ~= "" then
+      blocks[#blocks + 1] = pandoc.RawBlock(
+        "latex", "\\hypertarget{" .. div.identifier .. "}{}"
+      )
+    end
+    blocks[#blocks + 1] = pandoc.RawBlock("latex", "\\begin{bookprocessflow}")
+    for index, step in ipairs(steps) do
+      local label = latex_escape(process_step_label(step, index))
+      local title = latex_escape(process_step_title(step))
+      blocks[#blocks + 1] = pandoc.RawBlock(
+        "latex", "\\begin{bookprocessstep}[" .. label .. "]{" .. title .. "}"
+      )
+      for _, block in ipairs(step.content) do
+        blocks[#blocks + 1] = block
+      end
+      blocks[#blocks + 1] = pandoc.RawBlock("latex", "\\end{bookprocessstep}")
+      if index < #steps then
+        blocks[#blocks + 1] = pandoc.RawBlock("latex", "\\BookProcessConnector")
+      end
+    end
+    blocks[#blocks + 1] = pandoc.RawBlock("latex", "\\end{bookprocessflow}")
+    return blocks
+  end
+
+  div.attributes.role = "list"
+  local layout = value(div.attributes.layout)
+  local columns = #steps <= 4 and #steps or 1
+  if layout == "vertical" then
+    columns = 1
+    add_class(div, "process-flow-vertical")
+  end
+  local style = value(div.attributes.style)
+  if style ~= "" and not style:match(";%s*$") then
+    style = style .. ";"
+  end
+  div.attributes.style = style .. "--process-columns: " .. tostring(columns) .. ";"
+  div.attributes.layout = nil
+  for index, step in ipairs(steps) do
+    local label = process_step_label(step, index)
+    local title = process_step_title(step)
+    local body = pandoc.Div(
+      step.content, pandoc.Attr("", {"process-step-body"})
+    )
+    local content = {
+      pandoc.Div(
+        {pandoc.Plain({pandoc.Str(label)})},
+        pandoc.Attr("", {"process-step-label"})
+      )
+    }
+    if title ~= "" then
+      content[#content + 1] = pandoc.Div(
+        {pandoc.Plain({pandoc.Strong({pandoc.Str(title)})})},
+        pandoc.Attr("", {"process-step-title"})
+      )
+    end
+    content[#content + 1] = body
+    step.content = pandoc.Blocks(content)
+    step.attributes.label = nil
+    step.attributes.title = nil
+    step.attributes.role = "listitem"
+  end
+  return div
+end
+
 local function biography_sources(div)
   local source = value(div.attributes.source)
   local source_label = value(div.attributes["source-label"])
@@ -246,6 +332,18 @@ local function render_animation(div)
         '<video controls="controls" loop="loop" muted="muted" playsinline="playsinline" preload="metadata"%s><source src="%s" type="video/mp4" /></video>',
         poster, html_escape(browser_src)
       )
+    elseif FORMAT:match("epub") and browser_poster ~= "" then
+      local image = string.format(
+        '<img src="%s" alt="%s" />',
+        html_escape(browser_poster), html_escape(title)
+      )
+      if url ~= "" then
+        media = string.format(
+          '<a href="%s">%s</a>', html_escape(url), image
+        )
+      else
+        media = image
+      end
     elseif url ~= "" then
       media = string.format(
         '<iframe class="animation-embed" src="%s" title="%s" loading="lazy" allowfullscreen="allowfullscreen"></iframe>',
@@ -337,6 +435,9 @@ local semantic_labels = {
 }
 
 function Div(div)
+  if has_class(div, "process-flow") then
+    return render_process_flow(div)
+  end
   if has_class(div, "biography") then
     return render_biography(div)
   end

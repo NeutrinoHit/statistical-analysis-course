@@ -44,6 +44,8 @@ format:
         <div class="lecture-links">
           <a href="00_introduction.html">Открыть лекцию</a>
           <a href="exercises/00_introduction_exercises.html">Задачи</a>
+          <a href="../book/chapters/why_statistics.pdf">Конспект PDF</a>
+          <a href="../book/chapters/why_statistics.html">Глава в онлайн-книге</a>
           <span class="lecture-link-pending">Видео появится позже</span>
         </div>
       </div>

@@ -3,6 +3,7 @@
 QUARTO ?= quarto
 PYTHON ?= $(shell pyenv which python 2>/dev/null || command -v python3)
 QUARTO_PYTHON ?= $(PYTHON)
+CHAPTER_PYTHON ?= $(PYTHON)
 
 -include Makefile.local
 
@@ -14,10 +15,11 @@ BOOK_RU_DIR := ru/book
 BOOK_EN_DIR := en/book
 SLIDES_RU_DIR := ru/slides
 SLIDES_EN_DIR := en/slides
+RU_PDF_CHAPTERS := why_statistics
 
 .PHONY: help check-env ci-setup site all books notebooks figures slides \
 	ru-slides en-slides \
-	ru ru-html ru-pdf ru-epub en en-html en-pdf en-epub \
+	ru ru-html ru-pdf ru-chapters ru-epub en en-html en-pdf en-epub \
 	ru-notebooks en-notebooks ru-notebook en-notebook \
 	clean clean-site clean-ru clean-en clean-notebooks clean-figures clean-cache
 
@@ -45,6 +47,8 @@ site: check-env ## Собрать полный сайт в _site
 	$(PYTHON) scripts/build_figures.py
 	cp -R shared/analytics shared/styles shared/applets _site/shared/
 	$(QUARTO) render $(BOOK_RU_DIR) --to html
+	$(QUARTO) render $(BOOK_RU_DIR) --to pdf
+	$(CHAPTER_PYTHON) scripts/render_book_chapters.py ru $(RU_PDF_CHAPTERS)
 	$(QUARTO) render $(BOOK_EN_DIR) --to html
 	$(QUARTO) render $(SLIDES_RU_DIR)
 	$(QUARTO) render $(SLIDES_EN_DIR)
@@ -79,6 +83,9 @@ ru-html: check-env ## Собрать HTML русской книги
 
 ru-pdf: check-env ## Собрать PDF русской книги
 	$(QUARTO) render $(BOOK_RU_DIR) --to pdf
+
+ru-chapters: ru-pdf ## Собрать отдельные PDF готовых русских глав
+	$(CHAPTER_PYTHON) scripts/render_book_chapters.py ru $(RU_PDF_CHAPTERS)
 
 ru-epub: check-env ## Собрать EPUB русской книги
 	$(QUARTO) render $(BOOK_RU_DIR) --to epub

@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<style xmlns="http://purl.org/net/xbiblio/csl" version="1.0" class="in-text" default-locale="ru-RU">
+  <info>
+    <title>NeutrinoHit numeric</title>
+    <id>https://neutrinohit.github.io/styles/neutrinohit-numeric</id>
+    <link href="https://neutrinohit.github.io/styles/neutrinohit-numeric" rel="self"/>
+    <updated>2026-09-01T00:00:00+00:00</updated>
+  </info>
+
+  <macro name="author">
+    <names variable="author">
+      <name initialize-with=". " name-as-sort-order="all" delimiter=", " and="text"/>
+      <substitute>
+        <names variable="editor"/>
+        <text variable="publisher"/>
+        <text variable="title"/>
+      </substitute>
+    </names>
+  </macro>
+
+  <macro name="title">
+    <choose>
+      <if type="book" match="any">
+        <text variable="title" font-style="italic"/>
+      </if>
+      <else>
+        <text variable="title"/>
+      </else>
+    </choose>
+  </macro>
+
+  <macro name="container">
+    <choose>
+      <if type="article-journal" match="any">
+        <group delimiter=", ">
+          <text variable="container-title" font-style="italic"/>
+          <text variable="volume" font-weight="bold"/>
+          <text variable="page"/>
+        </group>
+      </if>
+      <else-if type="book" match="any">
+        <text variable="publisher"/>
+      </else-if>
+    </choose>
+  </macro>
+
+  <macro name="issued">
+    <date variable="issued">
+      <date-part name="year"/>
+    </date>
+  </macro>
+
+  <macro name="access">
+    <group delimiter=". ">
+      <text variable="DOI" prefix="doi:"/>
+      <text variable="URL"/>
+    </group>
+  </macro>
+
+  <citation collapse="citation-number">
+    <sort>
+      <key variable="citation-number"/>
+    </sort>
+    <layout prefix="[" suffix="]" delimiter=", ">
+      <text variable="citation-number"/>
+    </layout>
+  </citation>
+
+  <bibliography et-al-min="8" et-al-use-first="6" entry-spacing="0" line-spacing="1">
+    <sort>
+      <key variable="citation-number"/>
+    </sort>
+    <layout suffix=".">
+      <text variable="citation-number" prefix="[" suffix="] "/>
+      <group delimiter=". ">
+        <text macro="author"/>
+        <text macro="title"/>
+        <text macro="container"/>
+        <text macro="issued"/>
+        <text macro="access"/>
+      </group>
+    </layout>
+  </bibliography>
+</style>

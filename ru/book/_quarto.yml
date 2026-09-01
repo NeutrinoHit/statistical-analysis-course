@@ -46,6 +46,8 @@ book:
         - chapters/15_bayesian_examples.qmd
 
 bibliography: ../../shared/bib/references.bib
+csl: ../../shared/bib/neutrinohit-numeric.csl
+link-citations: true
 lang: ru
 jupyter: python3
 

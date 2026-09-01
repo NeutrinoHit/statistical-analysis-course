@@ -85,6 +85,59 @@
   #1
 }
 
+% Reusable ordered process. Source nodes are generic process-flow/process-step
+% Divs; the Lua filter maps them to these vertical PDF cards.
+\newenvironment{bookprocessflow}{%
+  \par\vspace{2mm}\begingroup
+  \setlength{\parindent}{0pt}%
+}{%
+  \endgroup\par\vspace{2mm}%
+}
+
+\newcommand{\BookProcessBadge}[1]{%
+  \tikz[baseline=(bookprocessnumber.base)]{%
+    \node[
+      circle,
+      fill=BookTeal,
+      text=white,
+      minimum size=8mm,
+      inner sep=0pt,
+      font=\sffamily\bfseries\footnotesize
+    ] (bookprocessnumber) {#1};%
+  }%
+}
+
+\newtcolorbox{bookprocessstep}[2][]{
+  enhanced,
+  breakable,
+  sharp corners,
+  colback=BookPaper,
+  colframe=BookLineStrong,
+  boxrule=0.35pt,
+  borderline west={1.2mm}{0pt}{BookTeal},
+  left=4mm,
+  right=3mm,
+  top=2mm,
+  bottom=2mm,
+  before skip=2pt,
+  after skip=2pt,
+  title={\BookProcessBadge{#1}\hspace{2.5mm}#2},
+  colbacktitle=BookPaper,
+  coltitle=BookInk,
+  fonttitle=\sffamily\bfseries,
+  titlerule=0pt
+}
+
+\newcommand{\BookProcessConnector}{%
+  \par\nopagebreak[4]
+  \begin{center}
+    \vspace{-1mm}%
+    {\color{BookTeal}\Large$\downarrow$}%
+    \vspace{-1mm}%
+  \end{center}
+  \nopagebreak[4]
+}
+
 % Public labels and colour hook. A book changes these without copying the
 % layout machinery: for example, "Лекция" in the neutrino book and "Глава"
 % in the statistics book.

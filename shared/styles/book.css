@@ -517,47 +517,6 @@ body:has(.book-landing) #title-block-header {
   text-transform: uppercase;
 }
 
-.analysis-pipeline {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 0;
-  margin: 2rem 0;
-  padding: 0;
-  border-top: 1px solid var(--book-line);
-  border-bottom: 1px solid var(--book-line);
-  list-style: none;
-}
-
-.analysis-pipeline li {
-  padding: 1.3rem 1rem 1.4rem;
-  border-right: 1px solid var(--book-line);
-}
-
-.analysis-pipeline li:last-child {
-  border-right: 0;
-}
-
-.analysis-pipeline span {
-  display: block;
-  margin-bottom: 1.5rem;
-  color: var(--book-coral);
-  font-family: var(--book-sans);
-  font-size: 0.76rem;
-  font-weight: 800;
-}
-
-.analysis-pipeline strong {
-  font-family: var(--book-sans);
-  font-size: 1rem;
-}
-
-.analysis-pipeline p {
-  margin: 0.45rem 0 0;
-  color: var(--book-muted);
-  font-size: 0.85rem;
-  line-height: 1.48;
-}
-
 .figure-panel {
   margin: 2rem 0;
   padding: 1.2rem;
@@ -813,18 +772,6 @@ body:has(.book-landing) #title-block-header {
     border-left: 0;
   }
 
-  .analysis-pipeline {
-    grid-template-columns: 1fr 1fr;
-  }
-
-  .analysis-pipeline li:nth-child(2) {
-    border-right: 0;
-  }
-
-  .analysis-pipeline li:nth-child(-n + 2) {
-    border-bottom: 1px solid var(--book-line);
-  }
-
   .result-gallery img {
     height: auto;
     max-height: 360px;
@@ -834,20 +781,6 @@ body:has(.book-landing) #title-block-header {
 @media (max-width: 560px) {
   .book-landing h1 {
     font-size: 3rem;
-  }
-
-  .analysis-pipeline {
-    grid-template-columns: 1fr;
-  }
-
-  .analysis-pipeline li,
-  .analysis-pipeline li:nth-child(2) {
-    border-right: 0;
-    border-bottom: 1px solid var(--book-line);
-  }
-
-  .analysis-pipeline li:last-child {
-    border-bottom: 0;
   }
 
   .book-roadmap section {
