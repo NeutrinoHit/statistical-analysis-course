@@ -604,6 +604,20 @@ body:has(.book-landing) #title-block-header {
   box-shadow: none;
 }
 
+.book-video-panel video {
+  display: block;
+  width: 90%;
+  max-width: 1000px;
+  height: auto;
+  margin: 0 auto;
+}
+
+@media (max-width: 768px) {
+  .book-video-panel video {
+    width: 100%;
+  }
+}
+
 .book-note p:last-child,
 .chapter-opening p:last-child,
 .chapter-summary p:last-child {

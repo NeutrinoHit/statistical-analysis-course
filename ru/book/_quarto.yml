@@ -1,6 +1,8 @@
 project:
   type: book
   output-dir: ../../_site/ru/book
+  resources:
+    - assets/video/**
 
 book:
   title: "Статистический анализ данных"
