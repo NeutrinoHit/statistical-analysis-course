@@ -36,9 +36,14 @@ check-env: ## Проверить Quarto и Python
 	  echo "Не найден Python: $(PYTHON)"; exit 1; \
 	fi
 
-ci-setup: check-env ## Установить Python-зависимости для CI
+ci-setup: check-env ## Установить зависимости для CI
 	$(PYTHON) -m pip install --upgrade pip
 	$(PYTHON) -m pip install -r requirements.txt
+	@if command -v lualatex >/dev/null 2>&1; then \
+	  echo 'LuaLaTeX уже установлен.'; \
+	else \
+	  $(QUARTO) install tinytex --no-prompt; \
+	fi
 
 site: check-env ## Собрать полный сайт в _site
 	rm -rf _site $(BOOK_RU_DIR)/_book $(BOOK_EN_DIR)/_book $(SLIDES_RU_DIR)/_site $(SLIDES_EN_DIR)/_site
