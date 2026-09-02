@@ -1,0 +1,41 @@
+viewof likeN = Inputs.range([1, 200], {value: 20, step: 1, label: "N"})
+viewof likeK = Inputs.range([0, likeN], {value: Math.round(0.35 * likeN), step: 1, label: "k"})
+
+likePGrid = Array.from({length: 499}, (_, i) => 0.002 + 0.996 * i / 498)
+likePhat = likeK / likeN
+likeLog = p => likeK * Math.log(p) + (likeN - likeK) * Math.log(1 - p)
+likeLogMax = likeK === 0
+  ? 0
+  : likeK === likeN
+    ? 0
+    : likeLog(likePhat)
+likeCurve = likePGrid.map(p => ({
+  p,
+  relative: Math.exp(likeLog(p) - likeLogMax),
+  q: -2 * (likeLog(p) - likeLogMax)
+}))
+
+likePlot = Plot.plot({
+  width: 940,
+  height: 430,
+  marginLeft: 70,
+  x: {label: "p", domain: [0, 1], grid: true},
+  y: {label: "L(p) / L(p̂)", domain: [0, 1.05], grid: true},
+  marks: [
+    Plot.line(likeCurve, {x: "p", y: "relative", stroke: "#4ea1ff", strokeWidth: 4}),
+    Plot.ruleX([likePhat], {stroke: "#ffb347", strokeWidth: 4}),
+    Plot.ruleY([Math.exp(-0.5)], {stroke: "#999", strokeDasharray: "6,5"})
+  ]
+})
+
+html`
+<div class="book-applet-panel">
+  ${likePlot}
+  <div class="book-applet-summary">
+    <span>N — число испытаний, k — число успехов</span>
+    <span>p̂ = k/N = ${likePhat.toFixed(3)}</span>
+    <span>стандартная ошибка ≈ ${Math.sqrt(likePhat * (1 - likePhat) / likeN).toFixed(3)}</span>
+    <span>увеличение N сужает максимум</span>
+  </div>
+</div>
+`

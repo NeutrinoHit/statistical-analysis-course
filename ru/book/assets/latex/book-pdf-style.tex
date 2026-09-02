@@ -37,7 +37,6 @@
 \definecolor{BookBlueSoftPDF}{HTML}{EEF4FB}
 \definecolor{BookFigureSoft}{HTML}{F9FBFB}
 \definecolor{BookGallerySoft}{HTML}{FBFCFC}
-\definecolor{BookNotebookSoft}{HTML}{F1F5FA}
 \definecolor{BookTableStripe}{HTML}{F7F9FA}
 
 % -----------------------------------------------------------------------------
@@ -241,15 +240,6 @@
   shadow={0mm}{0mm}{0mm}{white}
 }
 
-\newtcolorbox{bookfigurepanel}{
-  bookbox,
-  colback=BookFigureSoft,
-  colframe=BookLine,
-  borderline west={2.3pt}{0pt}{BookTeal},
-  boxrule=0.35pt,
-  shadow={0mm}{0mm}{0mm}{white}
-}
-
 \newtcolorbox{bookgalleryitem}{
   enhanced,
   breakable,
@@ -276,35 +266,6 @@
   coltitle=BookInk,
   fonttitle=\sffamily\bfseries\large,
   titlerule=0pt
-}
-
-\newtcolorbox{booknotebook}[1][]{
-  bookbox,
-  colback=BookNotebookSoft,
-  colframe=BookLine,
-  borderline west={2.5pt}{0pt}{BookBlue},
-  title={#1},
-  colbacktitle=BookNotebookSoft,
-  coltitle=BookInk,
-  fonttitle=\sffamily\bfseries\large,
-  titlerule=0pt,
-  shadow={0mm}{0mm}{0mm}{white}
-}
-
-\newtcolorbox{booknextchapter}{
-  enhanced,
-  breakable,
-  colback=white,
-  colframe=BookLineStrong,
-  boxrule=0.35pt,
-  arc=1mm,
-  left=3.2mm,
-  right=3.2mm,
-  top=2.4mm,
-  bottom=2.4mm,
-  before skip=8pt,
-  after skip=8pt,
-  fontupper=\sffamily\bfseries\color{BookTealDark}
 }
 
 \newtcolorbox{bookbiography}{

@@ -1,8 +1,6 @@
 project:
   type: book
   output-dir: ../../_site/ru/book
-  resources:
-    - assets/video/**
 
 book:
   title: "Статистический анализ данных"
@@ -49,7 +47,10 @@ book:
 
 bibliography: ../../shared/bib/references.bib
 csl: ../../shared/bib/neutrinohit-numeric.csl
-link-citations: true
+# Each chapter has its own numbered list of sources. Citation links are disabled
+# because duplicate reference anchors in a multi-page book otherwise point to
+# the first chapter in which a source appears.
+link-citations: false
 lang: ru
 jupyter: python3
 

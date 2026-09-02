@@ -1,0 +1,47 @@
+twoSideGaussZ = 2
+twoSideGaussPdf = z => Math.exp(-0.5 * z * z) / Math.sqrt(2 * Math.PI)
+twoSideGaussData = Array.from({length: 900}, (_, i) => {
+  const z = -4.5 + 9 * i / 899;
+  return {
+    z,
+    y: twoSideGaussPdf(z),
+    leftTail: z <= -twoSideGaussZ,
+    rightTail: z >= twoSideGaussZ
+  };
+})
+twoSideGaussLeftTail = twoSideGaussData.filter(d => d.leftTail)
+twoSideGaussRightTail = twoSideGaussData.filter(d => d.rightTail)
+
+twoSideGaussPlot = Plot.plot({
+  width: 1050,
+  height: 420,
+  marginLeft: 70,
+  marginBottom: 55,
+  x: {label: "Z", domain: [-4.5, 4.5], grid: true},
+  y: {label: "f_Z(z)", domain: [0, 0.43], grid: true},
+  marks: [
+    Plot.areaY(twoSideGaussLeftTail, {x: "z", y: "y", fill: "#ff4f5e", fillOpacity: 0.65}),
+    Plot.areaY(twoSideGaussRightTail, {x: "z", y: "y", fill: "#ff4f5e", fillOpacity: 0.65}),
+    Plot.line(twoSideGaussData, {x: "z", y: "y", stroke: "#6ea8ff", strokeWidth: 4}),
+    Plot.ruleX([-twoSideGaussZ, twoSideGaussZ], {stroke: "#ffb347", strokeWidth: 4}),
+    Plot.text([
+      {z: -2.85, y: 0.055, text: "p/2"},
+      {z: 2.85, y: 0.055, text: "p/2"}
+    ], {
+      x: "z",
+      y: "y",
+      text: "text",
+      fill: "#ffffff",
+      fontSize: 26
+    })
+  ]
+})
+
+html`
+<div class="book-applet-panel">
+  <div class="book-applet-center">${twoSideGaussPlot}</div>
+  <div class="book-applet-summary">
+    <span>двусторонний перевод: p = P(|Z_G| ≥ Z)</span>
+    <span>для одного параметра затем получается Δχ² = Z²</span>
+  </div>
+</div>`

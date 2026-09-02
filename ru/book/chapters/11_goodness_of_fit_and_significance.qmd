@@ -11,7 +11,7 @@ description: "Распределение χ², число степеней св�
 
 ## После подгонки
 
-К этому этапу анализа уже известна вероятностная модель и правило подгонки. Для независимых измерений с гауссовыми ошибками параметры находят из минимума: $$\chi^2(\boldsymbol\theta)=\sum_{i=1}^{N}\frac{[y_i-f(x_i;\boldsymbol\theta)]^2}{\sigma_i^2},$$ а оценка параметров имеет вид: $$\widehat{\boldsymbol\theta}=\operatorname*{arg\,min}_{\boldsymbol\theta}\chi^2(\boldsymbol\theta).$$ Минимум существует почти всегда. Даже модель, которая плохо описывает данные, обычно имеет некоторый набор параметров, для которого несогласие минимально. В итоге само существование $\widehat{\boldsymbol\theta}$ ещё ничего не говорит о качестве модели.
+К этому этапу анализа уже известна вероятностная модель и правило подгонки. Для независимых измерений с гауссовыми ошибками параметры находят из минимума: $$\chi^2(\boldsymbol\theta)=\sum_{i=1}^{N}\frac{[y_i-f(x_i;\boldsymbol\theta)]^2}{\sigma_i^2},$$ а оценка параметров имеет вид: $$\widehat{\boldsymbol\theta}=\operatorname*{arg\,min}_{\boldsymbol\theta}\chi^2(\boldsymbol\theta).$$ Минимум существует почти всегда. Даже модель, которая плохо описывает данные, обычно имеет некоторый набор параметров, для которого несогласие минимально. Само существование $\widehat{\boldsymbol\theta}$ ещё ничего не говорит о качестве модели.
 
 ::: book-note
 **Подгонка и проверка качества согласия — разные задачи.** Подгонка отвечает на вопрос, какие параметры лучше всего описывают данные внутри выбранной модели. Проверка качества согласия отвечает на вопрос, типичны ли наблюдаемые отклонения, если эта модель верна.
@@ -23,15 +23,15 @@ description: "Распределение χ², число степеней св�
 
 ### Статистика как случайная величина
 
-До проведения эксперимента значения $y_i$ случайны. Следовательно, случайны и подогнанные параметры, и величина $\chi^2_{\min}$. Она является **статистикой** — числовой функцией выборки, построенной по данным. Чтобы понять, является ли наблюдённое $\chi^2_{\min}$ обычным или редким, необходимо знать его распределение при условии справедливости модели.
+До проведения эксперимента значения $y_i$ случайны. Следовательно, случайны и подогнанные параметры, и величина $\chi^2_{\min}$. Она является **статистикой** — числовой функцией выборки, построенной по данным. Чтобы понять, является ли полученное $\chi^2_{\min}$ обычным или редким, необходимо знать его распределение при условии справедливости модели.
 
 ::: book-note
-Нельзя судить о качестве согласия только по числу $\chi^2_{\min}$. Одно и то же значение может быть обычным для одной размерности задачи и крайне редким для другой. Ключевую роль играет распределение статистики.
+Нельзя судить о качестве согласия только по числу $\chi^2_{\min}$. Одно и то же значение может быть обычным для одной размерности задачи и крайне редким для другой. Интерпретацию определяет распределение статистики.
 :::
 
 ## Почему правило $\chi^2/\nu\approx1$ недостаточно
 
-В физическом фольклоре часто встречается правило: $$\frac{\chi^2_{\min}}{\nu}\approx1\quad\Longrightarrow\quad\text{согласие хорошее},$$ где $\nu$ — число степеней свободы. Само по себе это правило неверно: вероятность одного и того же отношения зависит от $\nu$. Рассмотрим два случая: $$\chi^2_{\min}=12,\quad \nu=10,$$ и $$\chi^2_{\min}=1200,\quad \nu=1000.$$ В обоих случаях отношение равно $1.2$, но первое отклонение вполне типично, а второе находится далеко в хвосте распределения. Чтобы понять различие, нужно вывести распределение $\chi^2$.
+В физическом фольклоре часто встречается правило: $$\frac{\chi^2_{\min}}{\nu}\approx1\quad\Longrightarrow\quad\text{согласие хорошее},$$ где $\nu$ — число степеней свободы. Это правило без указания числа степеней свободы неверно: вероятность одного и того же отношения зависит от $\nu$. Рассмотрим два случая: $$\chi^2_{\min}=12,\quad \nu=10,$$ и $$\chi^2_{\min}=1200,\quad \nu=1000.$$ В обоих случаях отношение равно $1.2$, но первое отклонение вполне типично, а второе находится далеко в хвосте распределения. Чтобы понять различие, нужно вывести распределение $\chi^2$.
 
 ## Распределение $\chi^2$
 
@@ -57,7 +57,17 @@ $$f_T(t)
 ::: book-derivation
 #### Геометрический вывод формы $\chi^2_\nu$
 
-Вероятность попасть в тонкий сферический слой радиуса $r$ содержит гауссов множитель и объём слоя: $$e^{-r^2/2}\,r^{\nu-1}dr.$$ Переходим к $t=r^2$. Тогда $$r=\sqrt t,\qquad dr=\frac{dt}{2\sqrt t},$$ и $$r^{\nu-1}dr=\frac12t^{\nu/2-1}dt.$$ Следовательно, $$f(t;\nu)\propto t^{\nu/2-1}e^{-t/2}.$$ После нормировки получаем: $$\boxed{f(t;\nu)=\frac{1}{2^{\nu/2}\Gamma(\nu/2)}t^{\nu/2-1}e^{-t/2},\qquad t\ge0.}\quad\blacksquare$$
+Вероятность попасть в тонкий сферический слой радиуса $r$ содержит гауссов множитель и объём слоя: $$e^{-r^2/2}\,r^{\nu-1}dr.$$ Переходим к $t=r^2$. Тогда $$r=\sqrt t,\qquad dr=dt/(2\sqrt t),$$ и $$r^{\nu-1}dr=\tfrac12t^{\nu/2-1}dt.$$ Поэтому $$f(t;\nu)\propto t^{\nu/2-1}e^{-t/2}.$$ После нормировки получаем
+
+$$
+\boxed{
+f(t;\nu)=\frac{1}{2^{\nu/2}\Gamma(\nu/2)}
+t^{\nu/2-1}e^{-t/2},\qquad t\ge0.
+}
+\quad\blacksquare
+$$ {#eq-chi-square-density}
+
+Плотность @eq-chi-square-density зависит от единственного параметра $\nu$ — числа степеней свободы.
 :::
 
 Здесь гамма-функция определяется как: $$\Gamma(a)=\int_0^\infty u^{a-1}e^{-u}\,du,$$ а для целых аргументов связана с факториалом: $$\Gamma(n)=(n-1)!,\qquad \Gamma(1/2)=\sqrt\pi.$$
@@ -67,94 +77,28 @@ $$f_T(t)
 ::: book-derivation
 #### Математическое ожидание распределения $\chi^2$
 
-Используем плотность: $$f(t;\nu)=\frac{1}{2^{\nu/2}\Gamma(\nu/2)}t^{\nu/2-1}e^{-t/2}.$$ Тогда $$\mathbb E[T]=\frac{1}{2^{\nu/2}\Gamma(\nu/2)}\int_0^\infty t^{\nu/2}e^{-t/2}\,dt.$$ При подстановке $t=2u$ получаем: $$\mathbb E[T]=2\frac{\Gamma(\nu/2+1)}{\Gamma(\nu/2)}=\nu.$$ Таким образом: $$\boxed{\mathbb E[\chi^2_\nu]=\nu.}\quad\blacksquare$$
+Используем плотность: $$f(t;\nu)=\frac{1}{2^{\nu/2}\Gamma(\nu/2)}t^{\nu/2-1}e^{-t/2}.$$ Тогда $$\mathbb E[T]=\frac{1}{2^{\nu/2}\Gamma(\nu/2)}\int_0^\infty t^{\nu/2}e^{-t/2}\,dt.$$ При подстановке $t=2u$ получаем: $$\mathbb E[T]=2\frac{\Gamma(\nu/2+1)}{\Gamma(\nu/2)}=\nu.$$ Отсюда $$\boxed{\mathbb E[\chi^2_\nu]=\nu.}\quad\blacksquare$$
 :::
 
 ::: book-derivation
 #### Дисперсия распределения $\chi^2$
 
-Аналогично для второго момента: $$\mathbb E[T^2]=4\frac{\Gamma(\nu/2+2)}{\Gamma(\nu/2)}=\nu(\nu+2).$$ Следовательно, $$\operatorname{Var}(T)=\mathbb E[T^2]-\mathbb E[T]^2=\nu(\nu+2)-\nu^2=2\nu.$$ Таким образом, получаем: $$\boxed{\mathbb E[\chi^2_\nu]=\nu,\qquad \operatorname{Var}(\chi^2_\nu)=2\nu.}\quad\blacksquare$$
+Аналогично для второго момента: $$\mathbb E[T^2]=4\frac{\Gamma(\nu/2+2)}{\Gamma(\nu/2)}=\nu(\nu+2).$$ Следовательно, $$\operatorname{Var}(T)=\mathbb E[T^2]-\mathbb E[T]^2=\nu(\nu+2)-\nu^2=2\nu.$$ Получаем $$\boxed{\mathbb E[\chi^2_\nu]=\nu,\qquad \operatorname{Var}(\chi^2_\nu)=2\nu.}\quad\blacksquare$$
 :::
 
-Среднее растёт как $\nu$, а стандартное отклонение равно $\sqrt{2\nu}$. Для отношения $\chi^2/\nu$ стандартное отклонение равно $\sqrt{2/\nu}$. В итоге при больших $\nu$ даже небольшое относительное превышение единицы может соответствовать многим стандартным отклонениям.
+Среднее растёт как $\nu$, а стандартное отклонение равно $\sqrt{2\nu}$. Для отношения $\chi^2/\nu$ стандартное отклонение равно $\sqrt{2/\nu}$. При больших $\nu$ даже небольшое относительное превышение единицы может соответствовать многим стандартным отклонениям.
 
-### Как меняется форма распределения
+### Как меняется форма распределения {#interactive-goodness-chi2-shape}
 
-:::: {.content-visible when-format="html:js"}
-::: clt-widget
 ```{ojs}
 //| echo: false
-
-viewof chiDistNu = Inputs.range([1, 80], {value: 10, step: 1, label: "ν"})
-
-chiDistGamma = (z) => {
-  const p = [
-    676.5203681218851,
-    -1259.1392167224028,
-    771.32342877765313,
-    -176.61502916214059,
-    12.507343278686905,
-    -0.13857109526572012,
-    9.9843695780195716e-6,
-    1.5056327351493116e-7
-  ];
-  z -= 1;
-  let x = 0.99999999999980993;
-  for (let i = 0; i < p.length; i++) x += p[i] / (z + i + 1);
-  const t = z + p.length - 0.5;
-  return Math.sqrt(2 * Math.PI) * t ** (z + 0.5) * Math.exp(-t) * x;
-}
-
-chiDistPdf = (x, nu) => {
-  if (x <= 0) return nu === 1 ? Infinity : 0;
-  return x ** (nu / 2 - 1) * Math.exp(-x / 2) /
-    (2 ** (nu / 2) * chiDistGamma(nu / 2));
-}
-
-chiDistXmax = Math.max(8, chiDistNu + 5 * Math.sqrt(2 * chiDistNu));
-chiDistData = Array.from({length: 700}, (_, i) => {
-  const x = 1e-4 + chiDistXmax * i / 699;
-  return {x, y: chiDistPdf(x, chiDistNu)};
-})
-chiDistMean = chiDistNu;
-chiDistSigma = Math.sqrt(2 * chiDistNu);
-chiDistScaleY = Math.max(...chiDistData.filter(d => Number.isFinite(d.y)).map(d => d.y));
-
-chiDistPlot = Plot.plot({
-  width: 1050,
-  height: 500,
-  marginLeft: 70,
-  marginBottom: 50,
-  x: {label: "t", domain: [0, chiDistXmax], grid: true},
-  y: {label: "f(t; ν)", domain: [0, 1.08 * chiDistScaleY], grid: true},
-  marks: [
-    Plot.areaY(chiDistData, {x: "x", y: "y", fill: "#4ea1ff", fillOpacity: 0.22}),
-    Plot.line(chiDistData, {x: "x", y: "y", stroke: "#4ea1ff", strokeWidth: 4}),
-    Plot.ruleX([chiDistMean], {stroke: "#ffb347", strokeWidth: 4}),
-    Plot.ruleX(
-      [chiDistMean - chiDistSigma, chiDistMean + chiDistSigma].filter(x => x > 0),
-      {stroke: "#f2f2f2", strokeDasharray: "6,5", strokeWidth: 2}
-    )
-  ]
-})
-
-html`
-<div class="clt-panel">
-  <div style="display:flex; justify-content:center;">${chiDistPlot}</div>
-  <div class="clt-summary">
-    <span>ν = ${chiDistNu}; </span>
-    <span> E[χ²] = ${chiDistMean.toFixed(1)}. </span>
-    <span> Стандартное отклонение χ² = √(2ν) = ${chiDistSigma.toFixed(2)}.</span>
-    <span> Стандартное отклонение χ²/ν = √(2/ν) = ${Math.sqrt(2 / chiDistNu).toFixed(3)}.</span>
-  </div>
-</div>`
+//| classes: book-applet
+{{< include ../assets/applets/goodness-chi2-shape.ojs >}}
 ```
-:::
-::::
 
-:::: {.content-visible when-format="pdf"}
-::: figure-panel
-![Распределение $\chi^2$ при $\nu=10$. Вертикальная линия показывает среднее $\nu$, а соседние отметки соответствуют расстоянию $\sqrt{2\nu}$.](../assets/figures/gof_chi2_nu10.png)
+:::: {.content-visible unless-format="html:js"}
+::: {.animation title="Как меняется форма распределения" poster="../assets/figures/gof_chi2_nu10.png" url="https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/11_goodness_of_fit_and_significance.html#interactive-goodness-chi2-shape" qr="../assets/qr/goodness-chi2-shape.png"}
+Распределение $\chi^2$ при $\nu=10$. Вертикальная линия показывает среднее $\nu$, а соседние отметки соответствуют расстоянию $\sqrt{2\nu}$.
 :::
 ::::
 
@@ -162,7 +106,7 @@ html`
 
 ## Коррелированные ошибки и число степеней свободы
 
-Если ошибки наблюдений коррелированы, критерий записывается через ковариационную матрицу: $$\chi^2=(\mathbf y-\boldsymbol\lambda)^{\mathsf T}V^{-1}(\mathbf y-\boldsymbol\lambda).$$ Корреляции сами по себе не означают уменьшение числа независимых направлений, если $V$ невырождена.
+Если ошибки наблюдений коррелированы, критерий записывается через ковариационную матрицу: $$\chi^2=(\mathbf y-\boldsymbol\lambda)^{\mathsf T}V^{-1}(\mathbf y-\boldsymbol\lambda).$$ Корреляции не уменьшают число независимых направлений, если $V$ невырождена.
 
 ::: book-derivation
 #### Диагонализация ковариационной формы
@@ -180,7 +124,7 @@ html`
 
 ### Пример: подгонка константы
 
-Пусть $$y_i=\mu+\varepsilon_i,\qquad \varepsilon_i\sim\mathrm N(0,\sigma^2).$$ Если $\mu$ известна заранее, то $$\chi^2(\mu)=\sum_{i=1}^{N}\frac{(y_i-\mu)^2}{\sigma^2}\sim\chi^2_N.$$ Если же $\mu$ оценивается по тем же данным, $$\widehat\mu=\frac1N\sum_i y_i,$$ то остатки удовлетворяют точному условию: $$\sum_i(y_i-\widehat\mu)=0.$$ Это одно линейное ограничение: вектор остатков лежит в гиперплоскости размерности $N-1$. В итоге: $$\boxed{\chi^2_{\min}\sim\chi^2_{N-1}.}$$
+Пусть $$y_i=\mu+\varepsilon_i,\qquad \varepsilon_i\sim\mathrm N(0,\sigma^2).$$ Если $\mu$ известна заранее, то $$\chi^2(\mu)=\sum_{i=1}^{N}\frac{(y_i-\mu)^2}{\sigma^2}\sim\chi^2_N.$$ Если же $\mu$ оценивается по тем же данным, $$\widehat\mu=\frac1N\sum_i y_i,$$ то остатки удовлетворяют точному условию: $$\sum_i(y_i-\widehat\mu)=0.$$ Это одно линейное ограничение: вектор остатков лежит в гиперплоскости размерности $N-1$. Отсюда $$\boxed{\chi^2_{\min}\sim\chi^2_{N-1}.}$$
 
 ### Когда правило $\chi^2_{\min}\sim\chi^2_\nu$ может не работать
 
@@ -188,186 +132,47 @@ html`
 
 ## $p$-уровень значимости
 
-Пусть после подгонки наблюдено значение $\chi^2_{\mathrm{obs}}$. Если распределение $\chi^2_\nu$ применимо, правый хвост определяет $p$-уровень: $$\boxed{p=\int_{\chi^2_{\mathrm{obs}}}^{\infty}f(t;\nu)\,dt.}$$ Это вероятность при справедливости модели получить такое же или ещё большее несогласие. Чем меньше $p$, тем менее типично наблюдённое значение статистики.
+Пусть после подгонки получено значение $\chi^2_{\mathrm{obs}}$. Если распределение $\chi^2_\nu$ применимо, правый хвост определяет $p$-уровень:
+
+$$
+\boxed{
+p=\int_{\chi^2_{\mathrm{obs}}}^{\infty}f(t;\nu)\,dt.
+}
+$$ {#eq-chi-square-p-value}
+
+В @eq-chi-square-p-value вычисляется вероятность при справедливости модели получить такое же или ещё большее несогласие. Чем меньше $p$, тем менее типично полученное значение статистики.
 
 ::: book-note
 $p$-уровень не является вероятностью истинности модели. Неверно писать $p=P(H_0\mid\text{данные})$ или утверждать, что модель неверна с вероятностью $1-p$. Правильная интерпретация: при условии справедливости модели вероятность получить такие или более несогласованные данные равна $p$.
 :::
 
-### Правый хвост на графике
+### Правый хвост на графике {#interactive-goodness-pvalue-tail}
 
-:::: {.content-visible when-format="html:js"}
-::: clt-widget
 ```{ojs}
 //| echo: false
-
-viewof pLevelNu = Inputs.range([1, 120], {value: 50, step: 1, label: "ν"})
-viewof pLevelObs = Inputs.range([0, 180], {value: 70, step: 0.5, label: "χ²_obs"})
-
-pLevelXmax = Math.max(12, pLevelObs + 8 * Math.sqrt(2 * pLevelNu), pLevelNu + 8 * Math.sqrt(2 * pLevelNu));
-pLevelData = Array.from({length: 1400}, (_, i) => {
-  const x = 1e-4 + pLevelXmax * i / 1399;
-  return {x, y: chiDistPdf(x, pLevelNu)};
-});
-pLevelTailData = pLevelData.filter(d => d.x >= pLevelObs);
-pLevelTailArea = pLevelTailData.slice(1).reduce((s, d, i) => {
-  const p = pLevelTailData[i];
-  return s + 0.5 * (d.y + p.y) * (d.x - p.x);
-}, 0);
-pLevelYmax = 1.08 * Math.max(...pLevelData.filter(d => Number.isFinite(d.y)).map(d => d.y));
-
-pLevelPlot = Plot.plot({
-  width: 1050,
-  height: 430,
-  marginLeft: 70,
-  marginBottom: 50,
-  x: {label: "χ²", domain: [0, pLevelXmax], grid: true},
-  y: {label: "f(χ²; ν)", domain: [0, pLevelYmax], grid: true},
-  marks: [
-    Plot.line(pLevelData, {x: "x", y: "y", stroke: "#6ea8ff", strokeWidth: 5}),
-    Plot.areaY(pLevelTailData, {x: "x", y: "y", fill: "#ff4d4d", fillOpacity: 0.62}),
-    Plot.ruleX([pLevelObs], {stroke: "#ff4d4d", strokeWidth: 3}),
-    Plot.text([{x: Math.min(pLevelObs + 0.12 * pLevelXmax, 0.88 * pLevelXmax), y: 0.35 * pLevelYmax, label: "p"}],
-      {x: "x", y: "y", text: "label", fill: "#ffffff", fontSize: 26, fontWeight: 700})
-  ]
-});
-
-html`
-<div class="clt-panel">
-  <div style="display:flex; justify-content:center;">${pLevelPlot}</div>
-  <div class="clt-summary">
-    <span>ν = ${pLevelNu}</span>
-    <span>χ²_obs = ${pLevelObs.toFixed(1)}</span>
-    <span>p ≈ ${pLevelTailArea < 1e-3 ? pLevelTailArea.toExponential(2) : pLevelTailArea.toFixed(3)}</span>
-  </div>
-</div>`
+//| classes: book-applet
+{{< include ../assets/applets/goodness-pvalue-tail.ojs >}}
 ```
+
+:::: {.content-visible unless-format="html:js"}
+::: {.animation title="Правый хвост на графике" poster="../assets/figures/gof_pvalue_nu50_obs70.png" url="https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/11_goodness_of_fit_and_significance.html#interactive-goodness-pvalue-tail" qr="../assets/qr/goodness-pvalue-tail.png"}
+Правый хвост распределения $\chi^2$ при $\nu=50$ и наблюдаемом значении $\chi^2_{\mathrm{obs}}=70$. Площадь хвоста равна $p$-уровню.
 :::
 ::::
 
-:::: {.content-visible when-format="pdf"}
-::: figure-panel
-![Правый хвост распределения $\chi^2$ при $\nu=50$ и наблюдаемом значении $\chi^2_{\mathrm{obs}}=70$. Площадь хвоста равна $p$-уровню.](../assets/figures/gof_pvalue_nu50_obs70.png)
-:::
-::::
+### Проверка калибровки на псевдоэкспериментах {#interactive-goodness-pvalue-calibration}
 
-### Проверка калибровки на псевдоэкспериментах
+Есть простой способ проверить, что $p$ вычисляется корректно. Сначала генерируется большой набор значений статистики из модели и строится её калибровочное распределение. Затем независимо генерируются новые псевдоданные. Для каждого значения $t$ считается доля калибровочной выборки справа от него. Для непрерывной статистики и точного калибровочного распределения $p$-уровни равномерны на отрезке от нуля до единицы. Для дискретной статистики они принимают конечный набор значений и обычно имеют консервативное распределение [@cowan1998].
 
-Есть простой способ проверить, что $p$ вычисляется корректно. Сначала генерируется большой набор значений статистики из модели и строится её калибровочное распределение. Затем независимо генерируются новые псевдонаблюдения. Для каждого наблюдённого значения $t$ считается доля калибровочной выборки справа от него. Если псевдоданные и калибровочное распределение получены из одной модели, итоговые $p$-уровни должны быть равномерно распределены на отрезке от нуля до единицы.
-
-:::: {.content-visible when-format="html:js"}
-::: clt-widget
 ```{ojs}
 //| echo: false
-
-pUniformRandomFactory = () => {
-  let state = 246813579;
-  return () => {
-    state = (1664525 * state + 1013904223) >>> 0;
-    return state / 4294967296;
-  };
-}
-
-pUniformNormal = (rand) => {
-  const u1 = Math.max(rand(), 1e-12);
-  const u2 = rand();
-  return Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
-}
-
-pUniformChi2Sample = (count, nu, rand) => {
-  const out = [];
-  for (let b = 0; b < count; b++) {
-    let t = 0;
-    for (let i = 0; i < nu; i++) {
-      const z = pUniformNormal(rand);
-      t += z * z;
-    }
-    out.push(t);
-  }
-  return out;
-}
-
-pUniformSamples = {
-  const rand = pUniformRandomFactory();
-  const nu = 10;
-  const calibration = pUniformChi2Sample(20000, nu, rand).sort((a, b) => a - b);
-  const observed = pUniformChi2Sample(5000, nu, rand);
-  return {nu, calibration, observed};
-}
-
-pUniformLowerBound = (arr, x) => {
-  let lo = 0;
-  let hi = arr.length;
-  while (lo < hi) {
-    const mid = Math.floor((lo + hi) / 2);
-    if (arr[mid] < x) {
-      lo = mid + 1;
-    } else {
-      hi = mid;
-    }
-  }
-  return lo;
-}
-
-pUniformValues = {
-  const calibration = pUniformSamples.calibration;
-  const nCal = calibration.length;
-  return pUniformSamples.observed.map(t => {
-    const left = pUniformLowerBound(calibration, t);
-    const nRight = nCal - left;
-    return nRight / nCal;
-  });
-}
-
-pUniformHistogram = {
-  const nBins = 20;
-  const bins = Array.from({length: nBins}, () => 0);
-  for (const p of pUniformValues) {
-    const i = Math.min(nBins - 1, Math.floor(p * nBins));
-    bins[i] += 1;
-  }
-  return bins.map((n, i) => ({
-    x1: i / nBins,
-    x2: (i + 1) / nBins,
-    y: n / pUniformValues.length * nBins
-  }));
-}
-
-pUniformPlot = Plot.plot({
-  width: 1050,
-  height: 430,
-  marginLeft: 70,
-  marginBottom: 55,
-  x: {label: "p", domain: [0, 1], grid: true},
-  y: {label: "плотность", domain: [0, 1.45], grid: true},
-  marks: [
-    Plot.rectY(pUniformHistogram, {
-      x1: "x1",
-      x2: "x2",
-      y: "y",
-      fill: "#6ea8ff",
-      fillOpacity: 0.70
-    }),
-    Plot.ruleY([1], {stroke: "#ffb347", strokeWidth: 4, strokeDasharray: "8,7"})
-  ]
-})
-
-html`
-<div class="clt-panel">
-  <div style="display:flex; justify-content:center;">${pUniformPlot}</div>
-  <div class="clt-summary">
-    <span>${pUniformSamples.calibration.length} значений для калибровки; </span>
-    <span>${pUniformSamples.observed.length} псевдонаблюдений.</span>
-    <span> Ожидаемая плотность равна 1. </span>
-  </div>
-</div>`
+//| classes: book-applet
+{{< include ../assets/applets/goodness-pvalue-calibration.ojs >}}
 ```
-:::
-::::
 
-:::: {.content-visible when-format="pdf"}
-::: figure-panel
-![Распределение $p$-уровней для независимых псевдонаблюдений, сгенерированных из той же модели, что и калибровочная выборка. Ожидаемая плотность равна единице.](../assets/figures/gof_p_uniform.png)
+:::: {.content-visible unless-format="html:js"}
+::: {.animation title="Проверка калибровки на псевдоэкспериментах" poster="../assets/figures/gof_p_uniform.png" url="https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/11_goodness_of_fit_and_significance.html#interactive-goodness-pvalue-calibration" qr="../assets/qr/goodness-pvalue-calibration.png"}
+Распределение $p$-уровней для независимых псевдоданных, сгенерированных из той же непрерывной модели, что и калибровочная выборка. Ожидаемая плотность равна единице.
 :::
 ::::
 
@@ -377,67 +182,19 @@ html`
 
 В физике удобно выражать малые $p$-уровни через число стандартных отклонений $Z$ стандартной нормальной величины. При этом необходимо заранее понимать, идёт речь об одностороннем или двустороннем соглашении.
 
-### Односторонний перевод
+### Односторонний перевод {#interactive-goodness-p-to-z-one-sided}
 
 Для одностороннего хвоста: $$p=P(Z_{\mathrm G}\ge Z)=1-\Phi(Z),$$ следовательно, $$\boxed{Z=\Phi^{-1}(1-p).}$$ Здесь $\Phi$ — функция распределения стандартной нормальной величины.
 
-:::: {.content-visible when-format="html:js"}
-::: clt-widget
 ```{ojs}
 //| echo: false
-
-oneSideGaussZ = 2
-oneSideGaussPdf = z => Math.exp(-0.5 * z * z) / Math.sqrt(2 * Math.PI)
-oneSideGaussData = Array.from({length: 900}, (_, i) => {
-  const z = -4.5 + 9 * i / 899;
-  return {z, y: oneSideGaussPdf(z), tail: z >= oneSideGaussZ};
-})
-oneSideGaussTail = oneSideGaussData.filter(d => d.tail)
-
-oneSideGaussPlot = Plot.plot({
-  width: 1050,
-  height: 420,
-  marginLeft: 70,
-  marginBottom: 55,
-  x: {label: "Z", domain: [-4.5, 4.5], grid: true},
-  y: {label: "f_Z(z)", domain: [0, 0.43], grid: true},
-  marks: [
-    Plot.areaY(oneSideGaussTail, {x: "z", y: "y", fill: "#ff4f5e", fillOpacity: 0.65}),
-    Plot.line(oneSideGaussData, {x: "z", y: "y", stroke: "#6ea8ff", strokeWidth: 4}),
-    Plot.ruleX([oneSideGaussZ], {stroke: "#ffb347", strokeWidth: 4}),
-    Plot.text([{z: oneSideGaussZ, y: 0.37, text: "Z"}], {
-      x: "z",
-      y: "y",
-      text: "text",
-      fill: "#ffffff",
-      fontSize: 24,
-      dy: -4
-    }),
-    Plot.text([{z: 2.95, y: 0.055, text: "p"}], {
-      x: "z",
-      y: "y",
-      text: "text",
-      fill: "#ffffff",
-      fontSize: 28
-    })
-  ]
-})
-
-html`
-<div class="clt-panel">
-  <div style="display:flex; justify-content:center;">${oneSideGaussPlot}</div>
-  <div class="clt-summary">
-    <span>односторонний перевод: p = P(Z_G ≥ Z)</span>
-    <span>площадь правого хвоста равна p-уровню</span>
-  </div>
-</div>`
+//| classes: book-applet
+{{< include ../assets/applets/goodness-p-to-z-one-sided.ojs >}}
 ```
-:::
-::::
 
-:::: {.content-visible when-format="pdf"}
-::: figure-panel
-![Односторонний перевод $p\leftrightarrow Z$: $p$ является площадью правого хвоста стандартного нормального распределения.](../assets/figures/gof_p_to_z_one_sided.png)
+:::: {.content-visible unless-format="html:js"}
+::: {.animation title="Односторонний перевод" poster="../assets/figures/gof_p_to_z_one_sided.png" url="https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/11_goodness_of_fit_and_significance.html#interactive-goodness-p-to-z-one-sided" qr="../assets/qr/goodness-p-to-z-one-sided.png"}
+Односторонний перевод $p\leftrightarrow Z$: $p$ является площадью правого хвоста стандартного нормального распределения.
 :::
 ::::
 
@@ -451,71 +208,23 @@ html`
 | $4\sigma$ | $3.17\cdot10^{-5}$ |                  $17.31$ |
 | $5\sigma$ | $2.87\cdot10^{-7}$ |                  $26.34$ |
 
+: Односторонний перевод $p$-уровня в гауссову значимость {#tbl-p-to-z-one-sided}
+
 Порог открытия в физике частиц обычно связывают с односторонним уровнем $5\sigma$.
 
-### Двусторонний перевод
+### Двусторонний перевод {#interactive-goodness-p-to-z-two-sided}
 
 Если интересуют отклонения в обе стороны, используется: $$p=P(|Z_{\mathrm G}|\ge Z)=2[1-\Phi(Z)].$$ Для одного параметра в локальном квадратичном приближении $$\Delta\chi^2=\chi^2(\theta)-\chi^2(\widehat\theta)\simeq\frac{(\theta-\widehat\theta)^2}{\sigma_\theta^2},$$ и потому $$\boxed{\Delta\chi^2=Z^2.}$$ Отсюда уровни $1\sigma$, $2\sigma$, $3\sigma$ соответствуют $\Delta\chi^2=1,4,9$.
 
-:::: {.content-visible when-format="html:js"}
-::: clt-widget
 ```{ojs}
 //| echo: false
-
-twoSideGaussZ = 2
-twoSideGaussPdf = z => Math.exp(-0.5 * z * z) / Math.sqrt(2 * Math.PI)
-twoSideGaussData = Array.from({length: 900}, (_, i) => {
-  const z = -4.5 + 9 * i / 899;
-  return {
-    z,
-    y: twoSideGaussPdf(z),
-    leftTail: z <= -twoSideGaussZ,
-    rightTail: z >= twoSideGaussZ
-  };
-})
-twoSideGaussLeftTail = twoSideGaussData.filter(d => d.leftTail)
-twoSideGaussRightTail = twoSideGaussData.filter(d => d.rightTail)
-
-twoSideGaussPlot = Plot.plot({
-  width: 1050,
-  height: 420,
-  marginLeft: 70,
-  marginBottom: 55,
-  x: {label: "Z", domain: [-4.5, 4.5], grid: true},
-  y: {label: "f_Z(z)", domain: [0, 0.43], grid: true},
-  marks: [
-    Plot.areaY(twoSideGaussLeftTail, {x: "z", y: "y", fill: "#ff4f5e", fillOpacity: 0.65}),
-    Plot.areaY(twoSideGaussRightTail, {x: "z", y: "y", fill: "#ff4f5e", fillOpacity: 0.65}),
-    Plot.line(twoSideGaussData, {x: "z", y: "y", stroke: "#6ea8ff", strokeWidth: 4}),
-    Plot.ruleX([-twoSideGaussZ, twoSideGaussZ], {stroke: "#ffb347", strokeWidth: 4}),
-    Plot.text([
-      {z: -2.85, y: 0.055, text: "p/2"},
-      {z: 2.85, y: 0.055, text: "p/2"}
-    ], {
-      x: "z",
-      y: "y",
-      text: "text",
-      fill: "#ffffff",
-      fontSize: 26
-    })
-  ]
-})
-
-html`
-<div class="clt-panel">
-  <div style="display:flex; justify-content:center;">${twoSideGaussPlot}</div>
-  <div class="clt-summary">
-    <span>двусторонний перевод: p = P(|Z_G| ≥ Z)</span>
-    <span>для одного параметра затем получается Δχ² = Z²</span>
-  </div>
-</div>`
+//| classes: book-applet
+{{< include ../assets/applets/goodness-p-to-z-two-sided.ojs >}}
 ```
-:::
-::::
 
-:::: {.content-visible when-format="pdf"}
-::: figure-panel
-![Двусторонний перевод: $p$ складывается из двух хвостов стандартного нормального распределения за пределами $\pm Z$.](../assets/figures/gof_p_to_z_two_sided.png)
+:::: {.content-visible unless-format="html:js"}
+::: {.animation title="Двусторонний перевод" poster="../assets/figures/gof_p_to_z_two_sided.png" url="https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/11_goodness_of_fit_and_significance.html#interactive-goodness-p-to-z-two-sided" qr="../assets/qr/goodness-p-to-z-two-sided.png"}
+Двусторонний перевод: $p$ складывается из двух хвостов стандартного нормального распределения за пределами $\pm Z$.
 :::
 ::::
 
@@ -528,6 +237,8 @@ html`
 | $3\sigma$ | $2.70\cdot10^{-3}$ |            $9$ |
 | $4\sigma$ | $6.33\cdot10^{-5}$ |           $16$ |
 | $5\sigma$ | $5.73\cdot10^{-7}$ |           $25$ |
+
+: Двусторонний перевод $p$-уровня в гауссову значимость {#tbl-p-to-z-two-sided}
 
 ::: book-note
 Одностороннее и двустороннее соглашения нельзя смешивать. Уровень открытия обычно формулируют односторонне, а симметричный интервал для одного параметра — двусторонне.
@@ -542,27 +253,31 @@ html`
 | $12$ | $10$ | $1.20$ | $0.45$ | $0.285$ |
 | $1200$ | $1000$ | $1.20$ | $4.47$ | $1.2\cdot10^{-5}$ |
 
+: Одинаковое отношение $\chi^2/\nu$ при разном числе степеней свободы {#tbl-chi2-ratio-examples}
+
 В первом случае наблюдаемая статистика находится в обычной области распределения. Во втором то же относительное превышение среднего оказывается крайне большим по сравнению с шириной распределения. Корректно сообщать само значение и число степеней свободы, например: $$\chi^2_{\min}/\mathrm{ndf}=1200/1000,$$ а интерпретацию качества согласия делать по соответствующему $p$-уровню.
 
 ## Статистическая значимость на примере поиска сигнала
 
-Графики $p$-уровня используются не только для качества подгонки. При поиске нового сигнала можно перебрать значение некоторого параметра, например массу гипотетической частицы, и в каждой точке вычислять локальный $p$-уровень фоновой гипотезы. Такой график является **проверкой гипотезы**, а не $p$-уровнем качества согласия всей модели. Горизонтальные линии, помеченные $1\sigma,\ldots,5\sigma$, лишь переводят $p$ в шкалу $Z$.
+Графики $p$-уровня используются для оценки качества подгонки и при поиске нового сигнала. В задаче поиска можно перебрать значение некоторого параметра, например массу гипотетической частицы, и в каждой точке вычислять локальный $p$-уровень фоновой гипотезы. Здесь проверяется фоновая гипотеза; это другая задача, чем оценка качества согласия всей модели. Горизонтальные линии, помеченные $1\sigma,\ldots,5\sigma$, лишь переводят $p$ в шкалу $Z$.
 
 ::: figure-panel
-![Локальный $p$-уровень фоновой гипотезы в зависимости от проверяемой массы в примере ATLAS. Глубокий минимум показывает область, где фон сам по себе редко даёт наблюдаемые данные.](../assets/figures/gof_atlas_pvalue.png)
+![Локальный $p$-уровень фоновой гипотезы в зависимости от проверяемой массы в результате ATLAS. Глубокий минимум показывает область, где фоновая модель редко даёт столь сильное отклонение.](../assets/figures/gof_atlas_pvalue.png){#fig-goodness-atlas-pvalue}
 :::
 
 ::: figure-panel
-![Локальный $p$-уровень фоновой гипотезы в зависимости от проверяемой массы в примере CMS.](../assets/figures/gof_cms_pvalue.png)
+![Локальный $p$-уровень фоновой гипотезы в зависимости от проверяемой массы в результате CMS.](../assets/figures/gof_cms_pvalue.png){#fig-goodness-cms-pvalue}
 :::
+
+На @fig-goodness-atlas-pvalue и @fig-goodness-cms-pvalue показаны кривые из публикаций ATLAS [@atlas2012higgs] и CMS [@cms2012higgs]. Эти результаты стали экспериментальным основанием Нобелевской премии по физике 2013 года, присуждённой Франсуа Энглеру и Питеру Хиггсу [@nobel2013higgs].
 
 ::: book-note
-Низкий $p$-уровень сам по себе означает несогласие с конкретной проверяемой гипотезой. Он не является автоматическим доказательством произвольной альтернативной модели.
+Низкий $p$-уровень означает несогласие с конкретной проверяемой гипотезой. Он не является автоматическим доказательством произвольной альтернативной модели.
 :::
 
 ## Когда аналитической формулы недостаточно
 
-Если известно, что $$\chi^2_{\min}\sim\chi^2_{N-m},$$ $p$ можно вычислить аналитически. Но если такое распределение не гарантировано, бессмысленно подбирать новое число степеней свободы только ради удобной формулы. Нужно построить распределение **той же статистики и той же процедуры анализа** на псевдоэкспериментах и спросить: как часто верная модель сама рождает значение не меньше наблюдённого?
+Если известно, что $$\chi^2_{\min}\sim\chi^2_{N-m},$$ $p$ можно вычислить аналитически. Но если такое распределение не гарантировано, бессмысленно подбирать новое число степеней свободы только ради удобной формулы. Нужно построить распределение **той же статистики и той же процедуры анализа** на псевдоэкспериментах и спросить: как часто верная модель сама рождает значение не меньше полученного?
 
 ### Пример с малыми пуассоновскими бинами
 
@@ -571,141 +286,19 @@ html`
 &3.568,3.330,2.899,2.355,1.785,1.263,0.833,0.513,0.295,0.158).
 \end{aligned}$$ Случайны здесь именно $n_i$, а $\nu_i$ — фиксированные ожидания модели.
 
-### Калибровка по псевдоэкспериментам
+### Калибровка по псевдоэкспериментам {#interactive-goodness-low-count-calibration}
 
 Для каждого псевдоэксперимента генерируются двадцать пуассоновских счётов с заданными средними, после чего вычисляется точно та же статистика Пирсона. Повторение процедуры строит её реальное распределение при этой модели. Для наблюдаемого значения $$T_{\mathrm{obs}}=29.8$$ моделирование даёт приблизительно: $$p_{\mathrm{model}}\approx0.11,$$ тогда как формальное $\chi^2_{20}$-приближение даёт около: $$p_{\chi^2}\approx0.073.$$ Различие возникает именно потому, что часть ожиданий мала и асимптотическая форма статистики ещё недостаточно точна.
 
-:::: {.content-visible when-format="html:js"}
-::: clt-widget
 ```{ojs}
 //| echo: false
-
-viewof cowanObs = Inputs.range([0, 60], {value: 29.8, step: 0.1, label: "χ²_obs"})
-
-cowanNuModel = [
-  0.158, 0.295, 0.513, 0.833, 1.263,
-  1.785, 2.355, 2.899, 3.330, 3.568,
-  3.568, 3.330, 2.899, 2.355, 1.785,
-  1.263, 0.833, 0.513, 0.295, 0.158
-]
-
-cowanRandomFactory = () => {
-  let state = 123456789;
-  return () => {
-    state = (1664525 * state + 1013904223) >>> 0;
-    return state / 4294967296;
-  };
-}
-
-cowanPoisson = (lambda, rand) => {
-  const l = Math.exp(-lambda);
-  let k = 0;
-  let p = 1;
-  do {
-    k += 1;
-    p *= rand();
-  } while (p > l);
-  return k - 1;
-}
-
-cowanToyStats = {
-  const rand = cowanRandomFactory();
-  const out = [];
-  const bCount = 80000;
-  for (let b = 0; b < bCount; b++) {
-    let t = 0;
-    for (const mu of cowanNuModel) {
-      const n = cowanPoisson(mu, rand);
-      const d = n - mu;
-      t += d * d / mu;
-    }
-    out.push(t);
-  }
-  return out;
-}
-
-cowanHistogram = {
-  const binWidth = 1;
-  const bins = Array.from({length: 60}, () => 0);
-  for (const t of cowanToyStats) {
-    if (t >= 0 && t < 60) bins[Math.floor(t / binWidth)] += 1;
-  }
-  return bins.map((n, i) => ({
-    x1: i * binWidth,
-    x2: (i + 1) * binWidth,
-    y: n / (cowanToyStats.length * binWidth)
-  }));
-}
-
-cowanChi2Data = Array.from({length: 1200}, (_, i) => {
-  const x = 1e-4 + 60 * i / 1199;
-  return {x, y: chiDistPdf(x, 20)};
-})
-
-cowanChi2Tail = {
-  const xmax = 90;
-  const nStep = 1800;
-  let s = 0;
-  let x0 = cowanObs;
-  let y0 = chiDistPdf(x0, 20);
-  for (let i = 1; i <= nStep; i++) {
-    const x1 = cowanObs + (xmax - cowanObs) * i / nStep;
-    const y1 = chiDistPdf(x1, 20);
-    s += 0.5 * (y0 + y1) * (x1 - x0);
-    x0 = x1;
-    y0 = y1;
-  }
-  return s;
-}
-
-cowanModelP = cowanToyStats.filter(t => t >= cowanObs).length / cowanToyStats.length;
-cowanFmtP = (p) => p < 1e-3 ? p.toExponential(2) : p.toFixed(3);
-
-cowanPlot = Plot.plot({
-  width: 1050,
-  height: 455,
-  marginLeft: 70,
-  marginBottom: 50,
-  x: {label: "T", domain: [0, 60], grid: true},
-  y: {label: "плотность", domain: [0, 0.10], grid: true},
-  color: {legend: true},
-  marks: [
-    Plot.rectY(cowanHistogram, {
-      x1: "x1",
-      x2: "x2",
-      y: "y",
-      fill: "#b8b8b8",
-      fillOpacity: 0.62
-    }),
-    Plot.line(cowanChi2Data, {
-      x: "x",
-      y: "y",
-      stroke: "#6ea8ff",
-      strokeWidth: 4
-    }),
-    Plot.ruleX([cowanObs], {stroke: "#ff4d4d", strokeWidth: 4}),
-    Plot.text([{x: Math.min(cowanObs + 5, 52), y: 0.075, label: "χ²_obs"}],
-      {x: "x", y: "y", text: "label", fill: "#ffffff", fontSize: 22})
-  ]
-})
-
-html`
-<div class="clt-panel">
-  <div style="display:flex; justify-content:center;">${cowanPlot}</div>
-  <div class="clt-summary">
-    <span>20 пуассоновских бинов; </span>
-    <span> χ²_obs = ${cowanObs.toFixed(1)};</span>
-    <span> p из моделирования ≈ ${cowanFmtP(cowanModelP)};</span>
-    <span> p по χ²₂₀ ≈ ${cowanFmtP(cowanChi2Tail)}</span>
-  </div>
-</div>`
+//| classes: book-applet
+{{< include ../assets/applets/goodness-low-count-calibration.ojs >}}
 ```
-:::
-::::
 
-:::: {.content-visible when-format="pdf"}
-::: figure-panel
-![Распределение статистики Пирсона в псевдоэкспериментах с малыми пуассоновскими ожиданиями и аналитическая кривая $\chi^2_{20}$. Красная вертикальная линия соответствует $T_{\mathrm{obs}}=29.8$.](../assets/figures/gof_low_count_toys.png)
+:::: {.content-visible unless-format="html:js"}
+::: {.animation title="Калибровка по псевдоэкспериментам" poster="../assets/figures/gof_low_count_toys.png" url="https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/11_goodness_of_fit_and_significance.html#interactive-goodness-low-count-calibration" qr="../assets/qr/goodness-low-count-calibration.png"}
+Распределение статистики Пирсона в псевдоэкспериментах с малыми пуассоновскими ожиданиями и аналитическая кривая $\chi^2_{20}$. Красная вертикальная линия соответствует $T_{\mathrm{obs}}=29.8$.
 :::
 ::::
 
@@ -722,7 +315,7 @@ html`
 ::: chapter-summary
 ## Итоги главы
 
-- Минимум функции $\chi^2$ даёт наилучшие параметры внутри модели, но сам по себе не доказывает, что модель хорошо описывает данные.
+- Минимум функции $\chi^2$ даёт наилучшие параметры внутри модели, но не доказывает, что модель хорошо описывает данные.
 - $\chi^2_{\min}$ является случайной статистикой, и её наблюдаемое значение нужно сравнивать с распределением при справедливости модели.
 - Квадрат одной стандартной гауссовой величины имеет распределение $\chi^2_1$, а сумма квадратов $\nu$ независимых стандартных гауссовых величин — распределение $\chi^2_\nu$.
 - Для $\chi^2_\nu$ математическое ожидание равно $\nu$, а дисперсия — $2\nu$; именно поэтому одинаковое отношение $\chi^2/\nu$ может иметь совершенно разную статистическую интерпретацию при разных $\nu$.
@@ -730,7 +323,7 @@ html`
 - В линейной гауссовой задаче подгонка $m$ параметров уменьшает число степеней свободы до $\nu=N-m$.
 - Распределение $\chi^2_{N-m}$ может нарушаться при нелинейности, физических границах, параметрически зависимых ошибках, малых пуассоновских счётах и вырожденных ограничениях.
 - $p$-уровень — это вероятность получить такое же или более сильное несогласие при условии справедливости модели; он не является вероятностью истинности модели.
-- Если модель и калибровка совпадают, $p$-уровни независимых псевдоэкспериментов распределены равномерно на $[0,1]$.
+- Для непрерывной статистики и точной калибровки $p$-уровни равномерны на $[0,1]$; дискретная статистика требует отдельной проверки распределения.
 - Перевод $p\leftrightarrow Z$ может быть односторонним или двусторонним; эти соглашения нельзя смешивать.
 - Локальный $p$-уровень при поиске сигнала является проверкой конкретной гипотезы и не тождественен $p$-уровню качества подгонки.
 - Если аналитическое распределение статистики ненадёжно, его следует получать псевдоэкспериментами, полностью повторяющими применяемую процедуру анализа.
@@ -740,3 +333,8 @@ html`
 ## Задачи
 
 {{< include ../../../_includes/exercises/11_goodness_of_fit_and_significance-ru.qmd >}}
+
+## Литература {.unnumbered}
+
+::: {#refs}
+:::

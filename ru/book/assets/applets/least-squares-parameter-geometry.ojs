@@ -1,0 +1,111 @@
+viewof geomXbar = Inputs.range([-3, 3], {value: 1.8, step: 0.1, label: "центр x̄_w"})
+viewof geomSpread = Inputs.range([0.45, 2.5], {value: 1.0, step: 0.05, label: "разброс по x"})
+
+geomS = 18
+geomQx = geomS * geomSpread * geomSpread
+geomSigmaB = 1 / Math.sqrt(geomQx)
+geomSigmaA = Math.sqrt(1 / geomS + geomXbar * geomXbar / geomQx)
+geomCovAB = -geomXbar / geomQx
+geomCorrAB = geomCovAB / (geomSigmaA * geomSigmaB)
+
+geomA0 = 1.0
+geomB0 = 0.55
+geomYbar = geomA0 + geomB0 * geomXbar
+geomSlopeSteps = [-1, 0, 1]
+geomLineData = geomSlopeSteps.flatMap(k => {
+  const b = geomB0 + k * geomSigmaB;
+  const a = geomYbar - b * geomXbar;
+  return Array.from({length: 121}, (_, i) => {
+    const x = -4.5 + 9 * i / 120;
+    return {x, y: a + b * x, k};
+  });
+})
+geomFanLineData = geomLineData.filter(d => d.k !== 0)
+geomBestLineData = geomLineData.filter(d => d.k === 0)
+
+geomOffsets = [-1.55, -1.05, -0.55, -0.12, 0.35, 0.82, 1.28, 1.62]
+geomPointSigma = Math.sqrt(geomOffsets.length / geomS)
+geomResidualPattern = [0.09, -0.04, 0.06, -0.08, 0.02, 0.07, -0.05, -0.07]
+geomPoints = geomOffsets.map((u, i) => {
+  const x = geomXbar + geomSpread * u;
+  return {x, y: geomA0 + geomB0 * x + geomResidualPattern[i]};
+})
+
+geomCenterPoint = [{x: geomXbar, y: geomYbar}]
+geomLabels = [
+  {x: 0, y: 3.25, text: "x = 0"},
+  {x: geomXbar, y: 3.0, text: "центр данных"}
+]
+
+geomDataPlot = Plot.plot({
+  width: 650,
+  height: 420,
+  marginLeft: 58,
+  marginBottom: 46,
+  x: {label: "x", domain: [-4.5, 4.5], grid: true},
+  y: {label: "y", domain: [-2.0, 3.5], grid: true},
+  marks: [
+    Plot.ruleX([0], {stroke: "#aaa", strokeDasharray: "6,5"}),
+    Plot.ruleX([geomXbar], {stroke: "#ffb347", strokeWidth: 3}),
+    Plot.line(geomFanLineData, {x: "x", y: "y", z: "k", stroke: "#70b7ff", strokeWidth: 2.4, strokeOpacity: 0.58}),
+    Plot.line(geomBestLineData, {x: "x", y: "y", stroke: "#ffb347", strokeWidth: 4}),
+    Plot.ruleX(geomPoints, {x: "x", y1: d => d.y - geomPointSigma, y2: d => d.y + geomPointSigma, stroke: "#aaa", strokeOpacity: 0.65}),
+    Plot.dot(geomPoints, {x: "x", y: "y", r: 6, fill: "#4ea1ff", fillOpacity: 0.82}),
+    Plot.dot(geomCenterPoint, {x: "x", y: "y", r: 8, fill: "#ffb347", stroke: "#111", strokeWidth: 1}),
+    Plot.text(geomLabels, {x: "x", y: "y", text: "text", fill: "#f2f2f2", fontSize: 16, dy: -8})
+  ]
+})
+
+geomSa2 = geomSigmaA * geomSigmaA
+geomSb2 = geomSigmaB * geomSigmaB
+geomL11 = geomSigmaA
+geomL21 = geomCovAB / geomL11
+geomL22 = Math.sqrt(Math.max(geomSb2 - geomL21 * geomL21, 0))
+geomLevel = Math.sqrt(2.30)
+geomEllipse = Array.from({length: 241}, (_, i) => {
+  const t = 2 * Math.PI * i / 240;
+  const z1 = geomLevel * Math.cos(t);
+  const z2 = geomLevel * Math.sin(t);
+  return {
+    da: geomL11 * z1,
+    db: geomL21 * z1 + geomL22 * z2
+  };
+})
+geomDaMax = Math.max(0.55, 1.18 * Math.max(...geomEllipse.map(d => Math.abs(d.da))))
+geomDbMax = Math.max(0.42, 1.18 * Math.max(...geomEllipse.map(d => Math.abs(d.db))))
+geomCompLine = [
+  {db: -geomDbMax, da: geomXbar * geomDbMax},
+  {db: geomDbMax, da: -geomXbar * geomDbMax}
+]
+
+geomParamPlot = Plot.plot({
+  width: 560,
+  height: 420,
+  marginLeft: 66,
+  marginBottom: 46,
+  x: {label: "δa", domain: [-geomDaMax, geomDaMax], grid: true},
+  y: {label: "δb", domain: [-geomDbMax, geomDbMax], grid: true},
+  marks: [
+    Plot.ruleX([0], {stroke: "#888"}),
+    Plot.ruleY([0], {stroke: "#888"}),
+    Plot.line(geomEllipse, {x: "da", y: "db", stroke: "#ffb347", strokeWidth: 4}),
+    Plot.line(geomCompLine, {x: "da", y: "db", stroke: "#70b7ff", strokeWidth: 3, strokeDasharray: "7,5"}),
+    Plot.dot([{da: 0, db: 0}], {x: "da", y: "db", r: 6, fill: "#f2f2f2"})
+  ]
+})
+
+html`
+<div class="book-applet-panel">
+  <div class="book-applet-row">
+    ${geomDataPlot}
+    ${geomParamPlot}
+  </div>
+  <div class="book-applet-summary">
+    <span>Q_x = ${geomQx.toFixed(1)}</span>
+    <span>σ_y фиксирована: ${geomPointSigma.toFixed(2)}</span>
+    <span>σ_b = ${geomSigmaB.toFixed(3)}</span>
+    <span>σ_a = ${geomSigmaA.toFixed(3)}</span>
+    <span>corr(a,b) = ${geomCorrAB.toFixed(2)}</span>
+  </div>
+</div>
+`

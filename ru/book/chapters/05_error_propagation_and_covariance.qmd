@@ -4,7 +4,7 @@ description: "Линейное распространение неопредел
 ---
 
 ::: chapter-opening
-Аннотация
+[Аннотация]{.chapter-opening-label}
 
 Глава объясняет, как неопределённости исходных величин переходят в неопределённость функции. Ковариационная матрица связывает алгебраические формулы с геометрией многомерного гауссова распределения.
 :::
@@ -24,9 +24,9 @@ description: "Линейное распространение неопредел
 Во всех этих случаях неопределённости исходных измерений нужно перенести на итоговый результат.
 :::
 
-Основная идея состоит в локальной линеаризации. Если ошибки достаточно малы, функцию можно заменить касательной в окрестности среднего значения: $$\boxed{
+Линейное распространение ошибок основано на разложении функции в окрестности среднего значения. Если ошибки достаточно малы, достаточно оставить касательную: $$\boxed{
 f(X)\approx f(\mu_X)+f'(\mu_X)(X-\mu_X).
-}$$ Случайное отклонение $X-\mu_X$ тогда преобразуется почти линейно, и его дисперсию можно вычислить аналитически. Это приближение называется **линейным распространением ошибок**.
+}$$ Случайное отклонение $X-\mu_X$ тогда преобразуется почти линейно, и его дисперсию можно вычислить аналитически. Это приближение называется **линейным распространением ошибок** [@jcgm2008gum].
 
 ## Одна измеряемая величина
 
@@ -53,7 +53,12 @@ f'(\mu_X)(X-\mu_X).$$ Возводя это выражение в квадрат
 &=
 \left[f'(\mu_X)\right]^2
 \mathbb E[(X-\mu_X)^2].
-\end{aligned}$$ Следовательно, $$\boxed{
+\end{aligned}$$
+
+Следовательно,
+
+$$
+\boxed{
 \sigma_Y^2
 \approx
 \left[f'(\mu_X)\right]^2\sigma_X^2,
@@ -62,10 +67,11 @@ f'(\mu_X)(X-\mu_X).$$ Возводя это выражение в квадрат
 \approx
 \left|f'(\mu_X)\right|\sigma_X.
 }
-\quad\blacksquare$$
+\quad\blacksquare
+$$ {#eq-error-propagation-one-variable}
 :::
 
-Формула показывает локальный смысл распространения ошибки: чем быстрее меняется функция около измеренного значения, тем сильнее та же самая исходная флуктуация $X$ влияет на результат $Y$.
+В @eq-error-propagation-one-variable производная показывает, насколько исходная флуктуация $X$ усиливается при переходе к $Y$.
 
 ### Пример: степенная зависимость
 
@@ -82,6 +88,8 @@ f'(\mu_X)(X-\mu_X).$$ Возводя это выражение в квадрат
 | $Y=1/X$   | $\sigma_Y/|Y|\approx \sigma_X/|X|$    |
 | $Y=\ln X$ | $\sigma_Y\approx \sigma_X/|X|$        |
 | $Y=e^X$   | $\sigma_Y/|Y|\approx \sigma_X$        |
+
+: Линейное распространение ошибки для часто встречающихся функций {#tbl-error-propagation-functions}
 
 ::: book-note
 Эти формулы являются локальными. Производная не должна заметно изменяться на масштабе исходной неопределённости. Если функция сильно искривлена внутри области, где находится существенная часть распределения $X$, линейная формула может стать неточной.
@@ -122,9 +130,9 @@ f'(\mu_X)(X-\mu_X).$$ Возводя это выражение в квадрат
 - функция имеет порог, особенность или физическую границу;
 - после преобразования распределение становится заметно асимметричным.
 
-Простейший пример: $Y=X^2$ при $\mu_X=0$. Производная $dY/dX=2X$ в точке среднего равна нулю, поэтому линейная формула формально даёт $\sigma_Y\approx0$, хотя сама величина $X^2$ очевидно флуктуирует.
+Простейший пример: $Y=X^2$ при $\mu_X=0$. Производная $dY/dX=2X$ в точке среднего равна нулю, поэтому линейная формула формально даёт $\sigma_Y\approx0$, хотя дисперсия $X^2$ положительна.
 
-### Нелинейное преобразование $Y=X+aX^2$
+### Нелинейное преобразование $Y=X+aX^2$ {#interactive-error-propagation-nonlinear}
 
 Рассмотрим $$X\sim\mathrm N(1,\sigma_X^2),
 \qquad
@@ -138,104 +146,19 @@ Y=X+aX^2.$$ Линейное приближение около $\mu_X=1$ пре�
 \sigma_Y^2=(1+2a)^2\sigma_X^2+2a^2\sigma_X^4.
 }$$ Отброшенные квадратичные члены создают одновременно смещение среднего и дополнительную дисперсию.
 
-:::: {.content-visible when-format="html:js"}
-::: clt-widget
 ```{ojs}
 //| echo: false
-
-viewof propSigma = Inputs.range([0.05, 1.5], {value: 0.35, step: 0.05, label: "sigma_X"})
-viewof propCurvature = Inputs.range([0, 1.5], {value: 0.35, step: 0.05, label: "кривизна a"})
-viewof regenerateProp = Inputs.button("Новая выборка")
-
-randnProp = () => {
-  const u1 = Math.max(Math.random(), 1e-12);
-  const u2 = Math.random();
-  return Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
-}
-
-propSample = {
-  regenerateProp;
-  const n = 18000;
-  const values = new Array(n);
-  for (let i = 0; i < n; ++i) {
-    const x = 1 + propSigma * randnProp();
-    values[i] = x + propCurvature * x * x;
-  }
-  return values;
-}
-
-histProp = {
-  const bins = 80;
-  const lo = Math.min(...propSample);
-  const hi = Math.max(...propSample);
-  const width = (hi - lo) / bins;
-  const counts = Array(bins).fill(0);
-  for (const y of propSample) {
-    const j = Math.min(bins - 1, Math.max(0, Math.floor((y - lo) / width)));
-    counts[j] += 1;
-  }
-  return counts.map((count, j) => ({
-    x0: lo + j * width,
-    x1: lo + (j + 1) * width,
-    density: count / (propSample.length * width)
-  }));
-}
-
-propMeanLinear = 1 + propCurvature
-propSigmaLinear = Math.abs(1 + 2 * propCurvature) * propSigma
-propMeanExact = 1 + propCurvature + propCurvature * propSigma * propSigma
-propSigmaExact = Math.sqrt(
-  (1 + 2 * propCurvature) ** 2 * propSigma ** 2
-  + 2 * propCurvature ** 2 * propSigma ** 4
-)
-normalProp = Array.from({length: 401}, (_, i) => {
-  const lo = histProp[0].x0;
-  const hi = histProp[histProp.length - 1].x1;
-  const y = lo + (hi - lo) * i / 400;
-  const z = (y - propMeanLinear) / propSigmaLinear;
-  return {
-    y,
-    density: Math.exp(-0.5 * z * z) / (propSigmaLinear * Math.sqrt(2 * Math.PI))
-  };
-})
-
-propActualMean = propSample.reduce((a, b) => a + b, 0) / propSample.length
-propActualSigma = Math.sqrt(propSample.reduce((s, y) => s + (y - propActualMean) ** 2, 0) / propSample.length)
-
-propPlot = Plot.plot({
-  width: 940,
-  height: 410,
-  marginLeft: 70,
-  x: {label: "Y = X + aX^2", grid: true},
-  y: {label: "плотность", grid: true},
-  marks: [
-    Plot.rectY(histProp, {x1: "x0", x2: "x1", y: "density", fill: "#4ea1ff", fillOpacity: 0.7}),
-    Plot.line(normalProp, {x: "y", y: "density", stroke: "#ffb347", strokeWidth: 3})
-  ]
-})
-
-html`
-<div class="clt-panel">
-  ${propPlot}
-  <div class="clt-summary">
-    <span> Линейно: mean = ${propMeanLinear.toFixed(3)}, sigma = ${propSigmaLinear.toFixed(3)}; </span>
-    <span> Точно: mean = ${propMeanExact.toFixed(3)}, sigma = ${propSigmaExact.toFixed(3)}; </span>
-    <span> Монте-Карло: mean = ${propActualMean.toFixed(3)}, sigma = ${propActualSigma.toFixed(3)}; </span>
-    <span> Синим цветом отображено Монте-Карло; оранжевым - линейное приближение.</span>
-  </div>
-</div>
-`
+//| classes: book-applet
+{{< include ../assets/applets/error-propagation-nonlinear.ojs >}}
 ```
-:::
-::::
 
-::::: {.content-visible when-format="pdf"}
-::: figure-panel
-![При $\sigma_X=0.35$ и $a=0.35$ линейное приближение ещё хорошо описывает центральную часть распределения, хотя точное среднее уже немного смещено.](../assets/figures/error_propagation_nonlinear_default.png)
+::::: {.content-visible unless-format="html:js"}
+::: {.animation title="Нелинейное преобразование $Y=X+aX^2$" poster="../assets/figures/error_propagation_nonlinear_default.png" url="https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/05_error_propagation_and_covariance.html#interactive-error-propagation-nonlinear" qr="../assets/qr/error-propagation-nonlinear.png"}
+При $\sigma_X=0.35$ и $a=0.35$ линейное приближение ещё хорошо описывает центральную часть распределения, хотя точное среднее уже немного смещено.
 :::
 
 ::: figure-panel
-![При больших $\sigma_X$ и $a$ нелинейность становится существенной: распределение $Y$ заметно асимметрично, а линейный гауссовский прогноз уже не описывает его форму.](../assets/figures/error_propagation_nonlinear_strong.png)
+![При больших $\sigma_X$ и $a$ нелинейность становится существенной: распределение $Y$ заметно асимметрично, а линейный гауссовский прогноз уже не описывает его форму.](../assets/figures/error_propagation_nonlinear_strong.png){#fig-error-propagation-nonlinear-strong}
 :::
 :::::
 
@@ -252,7 +175,7 @@ html`
 \frac{1}{N-1}\sum_{k=1}^{N}(X_k-\widehat\mu)^2,$$ и $$\widehat\sigma=\sqrt{\widehat{\sigma^2}}.$$
 
 ::: book-note
-Величины $\widehat\mu$, $\widehat{\sigma^2}$ и $\widehat\sigma$ сами являются случайными. Если повторить весь эксперимент много раз, в каждом повторении получится своё значение оценки. Значит, можно обсуждать не только оценку дисперсии, но и **дисперсию самой оценки**.
+Величины $\widehat\mu$, $\widehat{\sigma^2}$ и $\widehat\sigma$ сами являются случайными. Если повторить весь эксперимент много раз, в каждом повторении получится своё значение оценки. Поэтому у оценки дисперсии тоже можно вычислить дисперсию.
 :::
 
 Для среднего при независимых гауссовых измерениях истинная дисперсия равна: $$\operatorname{Var}(\widehat\mu)=\frac{\sigma^2}{N}.$$ Поскольку истинное $\sigma^2$ обычно неизвестно, на практике используют: $$\widehat{\operatorname{Var}}(\widehat\mu)
@@ -467,7 +390,7 @@ $$\operatorname{Var}(\widehat\sigma)
 =
 \frac{\sigma^2}{2(N-1)}.$$
 
-Таким образом,
+После подстановки получаем
 
 $$\boxed{
 \frac{\operatorname{Var}(\widehat\sigma)}{\sigma^2}
@@ -503,88 +426,17 @@ $$\widehat{\operatorname{Var}}(\widehat\sigma)
 \frac{\widehat{\sigma^2}}{2(N-1)}.$$
 :::
 
-### Интерактив: десять гауссовских измерений
+### Интерактив: десять гауссовских измерений {#interactive-error-propagation-sample-variance}
 
-:::: {.content-visible when-format="html:js"}
-::: clt-widget
 ```{ojs}
 //| echo: false
-
-viewof pars = Inputs.form({
-  mu: Inputs.range([-5, 5], {value: 0.8, step: 0.1, label: "μ"}),
-  sigma: Inputs.range([0.2, 5], {value: 1.5, step: 0.1, label: "σ"}),
-  seed: Inputs.range([1, 1000], {value: 123, step: 1, label: "seed"})
-})
-
-muTrue = pars.mu
-sigmaTrue = pars.sigma
-seed = pars.seed
-N = 10
-
-mulberry32 = function(a) {
-  return function() {
-    let t = a += 0x6D2B79F5
-    t = Math.imul(t ^ t >>> 15, t | 1)
-    t ^= t + Math.imul(t ^ t >>> 7, t | 61)
-    return ((t ^ t >>> 14) >>> 0) / 4294967296
-  }
-}
-
-normal01 = function(rng) {
-  const u1 = Math.max(rng(), 1e-12)
-  const u2 = rng()
-  return Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2)
-}
-
-rng = mulberry32(seed)
-X = Array.from({length: N}, () => muTrue + sigmaTrue * normal01(rng))
-xbar = X.reduce((a, b) => a + b, 0) / N
-shat2 = X.map(x => (x - xbar) ** 2).reduce((a, b) => a + b, 0) / (N - 1)
-shat = Math.sqrt(shat2)
-varMeanHat = shat2 / N
-sigmaMeanHat = shat / Math.sqrt(N)
-varSHat = shat2 / (2 * (N - 1))
-sigmaSHat = shat / Math.sqrt(2 * (N - 1))
-fmt = x => Number(x).toFixed(3)
-
-html`
-<style>
-.gauss-box { font-size: 0.78em; line-height: 1.15; }
-.gauss-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.1em; align-items: start; }
-.gauss-table { border-collapse: collapse; width: 100%; font-size: 0.9em; }
-.gauss-table th, .gauss-table td { padding: 0.2em 0.45em; border-bottom: 1px solid #999; text-align: right; }
-.gauss-table th:first-child, .gauss-table td:first-child { text-align: center; }
-.gauss-panel { display: grid; gap: 0.35em; }
-.gauss-result { margin-top: 0.4em; padding: 0.45em 0.65em; border: 1px solid #999; border-radius: 0.35em; }
-@media (max-width: 800px) { .gauss-grid { grid-template-columns: 1fr; } }
-</style>
-<div class="gauss-box">
-  <div class="gauss-grid">
-    <div>
-      <table class="gauss-table">
-        <thead><tr><th>k</th><th>X_k</th><th>X_k - X̄</th><th>(X_k - X̄)^2</th></tr></thead>
-        <tbody>
-          ${X.map((x, i) => html`<tr><td>${i + 1}</td><td>${fmt(x)}</td><td>${fmt(x - xbar)}</td><td>${fmt((x - xbar) ** 2)}</td></tr>`)}
-        </tbody>
-      </table>
-    </div>
-    <div class="gauss-panel">
-      <div>Истинные параметры: μ = ${fmt(muTrue)}, σ = ${fmt(sigmaTrue)}, N = ${N}</div>
-      <div class="gauss-result"><div>Оценка среднего:</div><div>X̄ = ${fmt(xbar)}</div></div>
-      <div class="gauss-result"><div>Оценка разброса:</div><div>ŝ² = ${fmt(shat2)}</div><div>ŝ = ${fmt(shat)}</div></div>
-      <div class="gauss-result"><div>Неопределённость среднего:</div><div>ŝ / √N = ${fmt(sigmaMeanHat)}</div><div>Vâr(X̄) = ${fmt(varMeanHat)}</div></div>
-      <div class="gauss-result"><div>Неопределённость оценки ŝ:</div><div>ŝ / √[2(N−1)] = ${fmt(sigmaSHat)}</div><div>Vâr(ŝ) ≈ ${fmt(varSHat)}</div></div>
-    </div>
-  </div>
-</div>
-`
+//| classes: book-applet
+{{< include ../assets/applets/error-propagation-sample-variance.ojs >}}
 ```
-:::
-::::
 
-:::: {.content-visible when-format="pdf"}
-::: figure-panel
-![Один из возможных наборов десяти измерений для $\mu=0.8$ и $\sigma=1.5$. Вместе с исходными значениями показаны выборочное среднее, выборочная дисперсия и оценки неопределённостей.](../assets/figures/error_propagation_sample10.png)
+:::: {.content-visible unless-format="html:js"}
+::: {.animation title="Интерактив: десять гауссовских измерений" poster="../assets/figures/error_propagation_sample10.png" url="https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/05_error_propagation_and_covariance.html#interactive-error-propagation-sample-variance" qr="../assets/qr/error-propagation-sample-variance.png"}
+Один из возможных наборов десяти измерений для $\mu=0.8$ и $\sigma=1.5$. Вместе с исходными значениями показаны выборочное среднее, выборочная дисперсия и оценки неопределённостей.
 :::
 ::::
 
@@ -619,7 +471,7 @@ $$\boxed{
 - $\operatorname{Cov}(X,Y)<0$: отклонения обычно направлены в противоположные стороны;
 - $\operatorname{Cov}(X,Y)=0$: линейной связи нет.
 
-Независимость влечёт нулевую ковариацию, но нулевая ковариация сама по себе в общем случае не означает независимость.
+Независимость влечёт нулевую ковариацию. Обратное утверждение в общем случае неверно.
 :::
 
 Чтобы убрать размерность ковариации, вводят коэффициент корреляции: $$\boxed{
@@ -682,7 +534,8 @@ $$\begin{aligned}
 
 По определению ковариации получаем
 
-$$\boxed{
+$$
+\boxed{
 \operatorname{Var}(F)
 \approx
 \sum_{i,j}
@@ -690,10 +543,11 @@ $$\boxed{
 \operatorname{Cov}(X_i,X_j)
 \frac{\partial f}{\partial x_j}.
 }
-\quad\blacksquare$$
+\quad\blacksquare
+$$ {#eq-error-propagation-covariance}
 :::
 
-Для двух переменных $F=f(X,Y)$ формула принимает вид: $$\boxed{
+В @eq-error-propagation-covariance учтены как дисперсии исходных величин, так и их ковариации. Для двух переменных $F=f(X,Y)$ формула принимает вид: $$\boxed{
 \sigma_F^2\approx{}
 \left(\frac{\partial f}{\partial x}\right)^2\sigma_X^2
 +\left(\frac{\partial f}{\partial y}\right)^2\sigma_Y^2
@@ -703,63 +557,21 @@ $$\boxed{
 \sigma_X\sigma_Y.
 }$$ Все производные вычисляются в точке центральных значений.
 
-### Интерактив: вклад корреляции в дисперсию
+### Интерактив: вклад корреляции в дисперсию {#interactive-error-propagation-correlation}
 
-:::: {.content-visible when-format="html:js"}
-::: clt-widget
 ```{ojs}
 //| echo: false
-
-viewof gradX = Inputs.range([-3, 3], {value: 1, step: 0.1, label: "df/dx"})
-viewof gradY = Inputs.range([-3, 3], {value: 1, step: 0.1, label: "df/dy"})
-viewof sigmaXCalc = Inputs.range([0.1, 2], {value: 1, step: 0.05, label: "sigma_X"})
-viewof sigmaYCalc = Inputs.range([0.1, 2], {value: 0.8, step: 0.05, label: "sigma_Y"})
-viewof rhoCalc = Inputs.range([-0.99, 0.99], {value: 0, step: 0.01, label: "rho"})
-
-termX = gradX * gradX * sigmaXCalc * sigmaXCalc
-termY = gradY * gradY * sigmaYCalc * sigmaYCalc
-termCorr = 2 * rhoCalc * gradX * gradY * sigmaXCalc * sigmaYCalc
-varianceCalc = Math.max(0, termX + termY + termCorr)
-
-contribData = [
-  {term: "X", value: termX, color: "#4ea1ff"},
-  {term: "Y", value: termY, color: "#ffb347"},
-  {term: "корреляция", value: termCorr, color: "#b388ff"}
-]
-
-contribPlot = Plot.plot({
-  width: 900,
-  height: 350,
-  marginLeft: 100,
-  x: {label: "вклад в дисперсию", grid: true},
-  y: {label: null},
-  marks: [
-    Plot.ruleX([0], {stroke: "#ddd"}),
-    Plot.barX(contribData, {x: "value", y: "term", fill: d => d.color})
-  ]
-})
-
-html`
-<div class="clt-panel">
-  ${contribPlot}
-  <div class="clt-summary">
-    <span>sigma_F^2 = ${varianceCalc.toFixed(3)}</span>
-    <span>sigma_F = ${Math.sqrt(varianceCalc).toFixed(3)}</span>
-    <span>корреляционный вклад = ${termCorr.toFixed(3)}</span>
-  </div>
-</div>
-`
+//| classes: book-applet
+{{< include ../assets/applets/error-propagation-correlation.ojs >}}
 ```
-:::
-::::
 
-::::: {.content-visible when-format="pdf"}
-::: figure-panel
-![При положительной корреляции $\rho=0.8$ корреляционный член увеличивает итоговую дисперсию для производных одного знака.](../assets/figures/error_propagation_corr_positive.png)
+::::: {.content-visible unless-format="html:js"}
+::: {.animation title="Интерактив: вклад корреляции в дисперсию" poster="../assets/figures/error_propagation_corr_positive.png" url="https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/05_error_propagation_and_covariance.html#interactive-error-propagation-correlation" qr="../assets/qr/error-propagation-correlation.png"}
+При положительной корреляции $\rho=0.8$ корреляционный член увеличивает итоговую дисперсию для производных одного знака.
 :::
 
 ::: figure-panel
-![При отрицательной корреляции $\rho=-0.8$ тот же корреляционный член вычитается из дисперсии и уменьшает итоговую ошибку.](../assets/figures/error_propagation_corr_negative.png)
+![При отрицательной корреляции $\rho=-0.8$ тот же корреляционный член вычитается из дисперсии и уменьшает итоговую ошибку.](../assets/figures/error_propagation_corr_negative.png){#fig-error-propagation-negative-correlation}
 :::
 :::::
 
@@ -854,7 +666,7 @@ V_U
 
 ## Двумерное гауссово распределение
 
-Ковариационная матрица не только переносит ошибки. Для гауссовских случайных величин она определяет всю геометрию совместного распределения.
+Ковариационная матрица переносит ошибки и определяет геометрию совместного гауссова распределения.
 
 ### Независимые гауссовы величины
 
@@ -916,7 +728,7 @@ y-\mu_Y
 \boldsymbol\delta^TV^{-1}\boldsymbol\delta
 =
 \frac{u^2-2\rho uv+v^2}{1-\rho^2}.
-}$$ Таким образом, запись через коэффициент корреляции и запись через $V^{-1}$ полностью эквивалентны.
+}$$ Запись через коэффициент корреляции и запись через $V^{-1}$ полностью эквивалентны.
 
 ### Почему $\rho$ действительно является корреляцией
 
@@ -982,95 +794,34 @@ f(\mathbf x)
 V^{-1}
 (\mathbf x-\boldsymbol\mu)
 \right].
-}$$ Величина $$\boxed{
+}$$ Величина
+
+$$
+\boxed{
 D^2
 =(\mathbf x-\boldsymbol\mu)^T
 V^{-1}
 (\mathbf x-\boldsymbol\mu)
-}$$ называется **квадратом расстояния Махаланобиса**.
+}
+$$ {#eq-mahalanobis-distance}
+
+называется **квадратом расстояния Махаланобиса**. Квадратичная форма в @eq-mahalanobis-distance измеряет отклонение с учётом масштаба и корреляций.
 
 ::: book-note
 Контуры $D^2=c$ являются эллипсами в двух измерениях и эллипсоидами в большей размерности. Собственные векторы $V$ задают направления главных осей, а собственные значения — квадраты характерных масштабов вдоль этих осей. Корреляция проявляется как поворот эллипса относительно исходных координат.
 :::
 
-### Интерактив: корреляция и эллипс
+### Интерактив: корреляция и эллипс {#interactive-gaussian-correlation-ellipse}
 
-:::: {.content-visible when-format="html:js"}
-::: clt-widget
 ```{ojs}
 //| echo: false
-
-viewof rhoEllipse = Inputs.range([-0.98, 0.98], {value: 0.65, step: 0.02, label: "rho"})
-viewof sigmaXEllipse = Inputs.range([0.4, 2.2], {value: 1.4, step: 0.05, label: "sigma_X"})
-viewof sigmaYEllipse = Inputs.range([0.4, 2.2], {value: 0.8, step: 0.05, label: "sigma_Y"})
-viewof regenerateEllipse = Inputs.button("Новое облако")
-
-randnEllipse = () => {
-  const u1 = Math.max(Math.random(), 1e-12);
-  const u2 = Math.random();
-  return Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
-}
-
-ellipseCloud = {
-  regenerateEllipse;
-  const points = [];
-  const s = Math.sqrt(1 - rhoEllipse * rhoEllipse);
-  for (let i = 0; i < 1200; ++i) {
-    const z1 = randnEllipse();
-    const z2 = randnEllipse();
-    points.push({
-      x: sigmaXEllipse * z1,
-      y: sigmaYEllipse * (rhoEllipse * z1 + s * z2)
-    });
-  }
-  return points;
-}
-
-ellipseContour = {
-  const q = Math.sqrt(2.30);
-  const s = Math.sqrt(1 - rhoEllipse * rhoEllipse);
-  return Array.from({length: 241}, (_, i) => {
-    const a = 2 * Math.PI * i / 240;
-    const z1 = q * Math.cos(a);
-    const z2 = q * Math.sin(a);
-    return {
-      x: sigmaXEllipse * z1,
-      y: sigmaYEllipse * (rhoEllipse * z1 + s * z2)
-    };
-  });
-}
-
-ellipsePlot = Plot.plot({
-  width: 860,
-  height: 500,
-  marginLeft: 70,
-  x: {label: "X", domain: [-4.5, 4.5], grid: true},
-  y: {label: "Y", domain: [-4, 4], grid: true},
-  marks: [
-    Plot.ruleX([0], {stroke: "#777"}),
-    Plot.ruleY([0], {stroke: "#777"}),
-    Plot.dot(ellipseCloud, {x: "x", y: "y", r: 2.2, fill: "#4ea1ff", fillOpacity: 0.35}),
-    Plot.line(ellipseContour, {x: "x", y: "y", stroke: "#ffb347", strokeWidth: 4})
-  ]
-})
-
-html`
-<div class="clt-panel">
-  ${ellipsePlot}
-  <div class="clt-summary">
-    <span>rho = ${rhoEllipse.toFixed(2)}</span>
-    <span>оранжевый эллипс: вероятность 68.3%</span>
-    <span>Delta chi^2 = 2.30</span>
-  </div>
-</div>
-`
+//| classes: book-applet
+{{< include ../assets/applets/gaussian-correlation-ellipse.ojs >}}
 ```
-:::
-::::
 
-:::: {.content-visible when-format="pdf"}
-::: figure-panel
-![Облако коррелированных гауссовских точек при $\rho=0.65$. Оранжевый эллипс соответствует области с вероятностью $68.3\%$, то есть $\Delta\chi^2=2.30$ в двумерном случае.](../assets/figures/gaussian2d_correlation_ellipse.png)
+:::: {.content-visible unless-format="html:js"}
+::: {.animation title="Интерактив: корреляция и эллипс" poster="../assets/figures/gaussian2d_correlation_ellipse.png" url="https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/05_error_propagation_and_covariance.html#interactive-gaussian-correlation-ellipse" qr="../assets/qr/gaussian-correlation-ellipse.png"}
+Облако коррелированных гауссовских точек при $\rho=0.65$. Оранжевый эллипс соответствует области с вероятностью $68.3\%$, то есть $\Delta\chi^2=2.30$ в двумерном случае.
 :::
 ::::
 
@@ -1102,74 +853,19 @@ c=-2\ln(1-P).
 |                     $95\%$ |           $5.99$ |
 |                     $99\%$ |           $9.21$ |
 
-### Интерактив: вероятность и размер контура
+: Вероятность внутри двумерного гауссова контура {#tbl-gaussian-contour-probability}
 
-:::: {.content-visible when-format="html:js"}
-::: clt-widget
+### Интерактив: вероятность и размер контура {#interactive-gaussian-probability-contour}
+
 ```{ojs}
 //| echo: false
-
-viewof contourProb = Inputs.range([0.1, 0.99], {value: 0.683, step: 0.001, label: "Вер. P"})
-viewof contourRho = Inputs.range([-0.95, 0.95], {value: -0.55, step: 0.05, label: "Корр. ρ"})
-
-contourC = -2 * Math.log(1 - contourProb)
-contourCurve = {
-  const q = Math.sqrt(contourC);
-  const sx = 1.5;
-  const sy = 0.8;
-  const s = Math.sqrt(1 - contourRho * contourRho);
-  return Array.from({length: 241}, (_, i) => {
-    const a = 2 * Math.PI * i / 240;
-    const z1 = q * Math.cos(a);
-    const z2 = q * Math.sin(a);
-    return {x: sx * z1, y: sy * (contourRho * z1 + s * z2)};
-  });
-}
-
-unitCurve = {
-  const q = 1;
-  const sx = 1.5;
-  const sy = 0.8;
-  const s = Math.sqrt(1 - contourRho * contourRho);
-  return Array.from({length: 241}, (_, i) => {
-    const a = 2 * Math.PI * i / 240;
-    const z1 = q * Math.cos(a);
-    const z2 = q * Math.sin(a);
-    return {x: sx * z1, y: sy * (contourRho * z1 + s * z2)};
-  });
-}
-
-contourPlot = Plot.plot({
-  width: 850,
-  height: 500,
-  marginLeft: 70,
-  x: {label: "X", domain: [-5, 5], grid: true},
-  y: {label: "Y", domain: [-4, 4], grid: true},
-  marks: [
-    Plot.ruleX([0], {stroke: "#777"}),
-    Plot.ruleY([0], {stroke: "#777"}),
-    Plot.line(unitCurve, {x: "x", y: "y", stroke: "#8ec5ff", strokeWidth: 3, strokeDasharray: "8,6"}),
-    Plot.line(contourCurve, {x: "x", y: "y", stroke: "#ffb347", strokeWidth: 5})
-  ]
-})
-
-html`
-<div class="clt-panel">
-  ${contourPlot}
-  <div class="clt-summary">
-    <span>оранжевый: P = ${(100 * contourProb).toFixed(1)}%</span>
-    <span>Delta chi^2 = ${contourC.toFixed(2)}</span>
-    <span>голубой пунктир: Delta chi^2 = 1, P = 39.3%</span>
-  </div>
-</div>
-`
+//| classes: book-applet
+{{< include ../assets/applets/gaussian-probability-contour.ojs >}}
 ```
-:::
-::::
 
-:::: {.content-visible when-format="pdf"}
-::: figure-panel
-![Два двумерных гауссовских контура при одинаковой корреляции: голубой пунктир отвечает $\Delta\chi^2=1$ и содержит $39.3\%$ вероятности, оранжевый контур с $\Delta\chi^2=2.30$ — $68.3\%$.](../assets/figures/gaussian2d_probability_contour.png)
+:::: {.content-visible unless-format="html:js"}
+::: {.animation title="Интерактив: вероятность и размер контура" poster="../assets/figures/gaussian2d_probability_contour.png" url="https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/05_error_propagation_and_covariance.html#interactive-gaussian-probability-contour" qr="../assets/qr/gaussian-probability-contour.png"}
+Два двумерных гауссовских контура при одинаковой корреляции: голубой пунктир отвечает $\Delta\chi^2=1$ и содержит $39.3\%$ вероятности, оранжевый контур с $\Delta\chi^2=2.30$ — $68.3\%$.
 :::
 ::::
 
@@ -1322,3 +1018,8 @@ m=9.78\pm0.30~\mathrm{GeV}.
 ## Задачи
 
 {{< include ../../../_includes/exercises/05_error_propagation_and_covariance-ru.qmd >}}
+
+## Литература {.unnumbered}
+
+::: {#refs}
+:::

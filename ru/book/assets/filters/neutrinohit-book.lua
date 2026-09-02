@@ -314,6 +314,7 @@ local function render_animation(div)
   local poster_html = value(div.attributes.poster)
   local poster_fixed = project_path(div.attributes.poster)
   local url = value(div.attributes.url)
+  local embed_url = value(div.attributes["embed-url"])
   local qr_fixed = project_path(div.attributes.qr)
 
   if FORMAT:match("html") or FORMAT:match("epub") then
@@ -332,22 +333,29 @@ local function render_animation(div)
         '<video controls="controls" loop="loop" muted="muted" playsinline="playsinline" preload="metadata"%s><source src="%s" type="video/mp4" /></video>',
         poster, html_escape(browser_src)
       )
-    elseif FORMAT:match("epub") and browser_poster ~= "" then
-      local image = string.format(
-        '<img src="%s" alt="%s" />',
-        html_escape(browser_poster), html_escape(title)
-      )
-      if url ~= "" then
-        media = string.format(
-          '<a href="%s">%s</a>', html_escape(url), image
+    elseif FORMAT:match("epub") then
+      if browser_poster ~= "" then
+        local image = string.format(
+          '<img src="%s" alt="%s" />',
+          html_escape(browser_poster), html_escape(title)
         )
-      else
-        media = image
+        if url ~= "" then
+          media = string.format(
+            '<a href="%s">%s</a>', html_escape(url), image
+          )
+        else
+          media = image
+        end
+      elseif url ~= "" then
+        media = string.format(
+          '<p class="animation-link"><a href="%s">Открыть интерактивный материал</a></p>',
+          html_escape(url)
+        )
       end
-    elseif url ~= "" then
+    elseif embed_url ~= "" or url ~= "" then
       media = string.format(
         '<iframe class="animation-embed" src="%s" title="%s" loading="lazy" allowfullscreen="allowfullscreen"></iframe>',
-        html_escape(url), html_escape(title)
+        html_escape(embed_url ~= "" and embed_url or url), html_escape(title)
       )
     elseif browser_poster ~= "" then
       media = string.format(
@@ -552,7 +560,17 @@ function Pandoc(doc)
   return doc
 end
 
+-- Quarto executes OJS cells only for JavaScript-capable HTML.  In PDF and
+-- EPUB the same source arrives at Pandoc as a regular code block; remove it
+-- here because every applet has a format-independent static counterpart.
+function CodeBlock(block)
+  if (FORMAT:match("latex") or FORMAT:match("epub"))
+      and (has_class(block, "ojs") or has_class(block, "{ojs}")) then
+    return {}
+  end
+end
+
 return {
   {Meta = configure_book_profile},
-  {Div = Div, Header = Header, Pandoc = Pandoc}
+  {CodeBlock = CodeBlock, Div = Div, Header = Header, Pandoc = Pandoc}
 }

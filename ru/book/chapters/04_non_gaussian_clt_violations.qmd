@@ -57,112 +57,13 @@ Z_n=
 \frac{S_n}{n}\sim\mathrm{Cauchy}(0,1).
 }$$ Это означает, что распределение среднего не сужается при увеличении $n$. В отличие от обычного случая с конечной дисперсией, накопление всё большего числа случайных величин Коши не превращает среднее в узкий гауссовский пик.
 
-:::: {.content-visible .clt-widget when-format="html:js"}
 ```{ojs}
 //| echo: false
-
-viewof nCauchy = Inputs.range([1, 200], {
-  value: 1,
-  step: 1,
-  label: "n"
-})
-
-viewof sampleCauchy = Inputs.range([1000, 50000], {
-  value: 15000,
-  step: 1000,
-  label: "N"
-})
-
-viewof regenerateCauchy = Inputs.button("Новая статистика")
-
-randnCauchy = () => {
-  let u = 0;
-  let v = 0;
-  while (u === 0) u = Math.random();
-  while (v === 0) v = Math.random();
-  return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
-}
-
-cauchyRandom = () => Math.tan(Math.PI * (Math.random() - 0.5))
-
-cauchyMeans = {
-  regenerateCauchy;
-  const values = new Array(sampleCauchy);
-  for (let i = 0; i < sampleCauchy; ++i) {
-    let sum = 0;
-    for (let j = 0; j < nCauchy; ++j) sum += cauchyRandom();
-    values[i] = sum / nCauchy;
-  }
-  return values;
-}
-
-gaussMeans = {
-  regenerateCauchy;
-  const values = new Array(sampleCauchy);
-  for (let i = 0; i < sampleCauchy; ++i) {
-    let sum = 0;
-    for (let j = 0; j < nCauchy; ++j) sum += randnCauchy();
-    values[i] = sum / Math.sqrt(nCauchy);
-  }
-  return values;
-}
-
-histogramCauchy = (values, bins, min, max) => {
-  const width = (max - min) / bins;
-  const counts = Array(bins).fill(0);
-  for (const value of values) {
-    if (value < min || value >= max) continue;
-    counts[Math.floor((value - min) / width)] += 1;
-  }
-  return counts.map((count, i) => ({
-    x0: min + i * width,
-    x1: min + (i + 1) * width,
-    density: count / (values.length * width)
-  }));
-}
-
-histCauchy = histogramCauchy(cauchyMeans, 100, -10, 10)
-histGaussMean = histogramCauchy(gaussMeans, 100, -10, 10)
-
-cauchyTheory = Array.from({length: 501}, (_, i) => {
-  const x = -10 + 20 * i / 500;
-  return {x, y: 1 / (Math.PI * (1 + x * x))};
-})
-
-cauchyPlot = Plot.plot({
-  width: 760,
-  height: 390,
-  marginLeft: 55,
-  x: {label: "x", domain: [-10, 10]},
-  y: {label: "density", domain: [0, 0.38]},
-  grid: true,
-  marks: [
-    Plot.rectY(histGaussMean, {
-      x1: "x0", x2: "x1", y: "density",
-      fill: "#9be564", fillOpacity: 0.40
-    }),
-    Plot.rectY(histCauchy, {
-      x1: "x0", x2: "x1", y: "density",
-      fill: "#4ea1ff", fillOpacity: 0.68
-    }),
-    Plot.line(cauchyTheory, {x: "x", y: "y", stroke: "#ffb347", strokeWidth: 2.7})
-  ]
-})
-
-html`
-<div class="clt-panel">
-  ${cauchyPlot}
-  <div class="clt-summary">
-    <span> Синим цветом обозначено среднее для Коши,</span>
-    <span> а зелёным - нормированная сумма для гауссовых распределений. </span>
-    <span> Текущее n = ${nCauchy}.</span>
-  </div>
-</div>
-`
+//| classes: book-applet
+{{< include ../assets/applets/cauchy-mean.ojs >}}
 ```
-::::
 
-:::: {.content-visible when-format="pdf"}
+:::: {.content-visible unless-format="html:js"}
 ::: {.animation title="Среднее распределения Коши" poster="../assets/figures/cauchy_mean_n100.png" url="https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/04_non_gaussian_clt_violations.html#interactive-cauchy-mean" qr="../assets/qr/cauchy_mean.png"}
 Меняя число наблюдений, можно сравнить среднее величин Коши с нормированной
 суммой гауссовых величин.
@@ -227,145 +128,13 @@ L\!\left(\frac{\Delta-\Delta_p}{\xi}\right),
 =
 \infty.$$ Таким образом, стандартная нормировка суммы через $\sqrt n$ не приводит автоматически к гауссовскому пределу.
 
-:::: {.content-visible .clt-widget when-format="html:js"}
 ```{ojs}
 //| echo: false
-
-viewof sampleLandau = Inputs.range([1000, 50000], {
-  value: 15000,
-  step: 1000,
-  label: "N"
-})
-
-viewof landauScale = Inputs.range([0.3, 2.5], {
-  value: 1.0,
-  step: 0.05,
-  label: "scale"
-})
-
-viewof landauShift = Inputs.range([-3.0, 3.0], {
-  value: 0.0,
-  step: 0.1,
-  label: "shift"
-})
-
-viewof regenerateLandau = Inputs.button("Новая статистика")
-
-randnLandau = () => {
-  let u = 0;
-  let v = 0;
-  while (u === 0) u = Math.random();
-  while (v === 0) v = Math.random();
-  return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
-}
-
-histogramLandau = (values, bins, min, max) => {
-  const width = (max - min) / bins;
-  const counts = Array(bins).fill(0);
-  for (const value of values) {
-    if (value < min || value >= max) continue;
-    counts[Math.floor((value - min) / width)] += 1;
-  }
-  return counts.map((count, i) => ({
-    x0: min + i * width,
-    x1: min + (i + 1) * width,
-    density: count / (values.length * width)
-  }));
-}
-
-// Landau-подобная случайная величина.
-// Это alpha-stable распределение с alpha = 1 и максимальной правой асимметрией.
-// Оно имеет тот же физический смысл: длинный правый хвост и отсутствие обычной дисперсии.
-landauStableRandom = () => {
-  const beta = 1.0;
-  const V = Math.PI * (Math.random() - 0.5);
-  let W = 0;
-  while (W === 0) W = -Math.log(Math.random());
-
-  return (2 / Math.PI) * (
-    (Math.PI / 2 + beta * V) * Math.tan(V)
-    - beta * Math.log(
-      (Math.PI / 2 * W * Math.cos(V)) /
-      (Math.PI / 2 + beta * V)
-    )
-  );
-}
-
-landauValues = {
-  regenerateLandau;
-  const values = new Array(sampleLandau);
-  for (let i = 0; i < sampleLandau; ++i) {
-    values[i] = landauShift + landauScale * landauStableRandom();
-  }
-  return values;
-}
-
-landauSorted = [...landauValues].sort((a, b) => a - b)
-
-quantileLandau = (arr, q) => {
-  const pos = q * (arr.length - 1);
-  const lo = Math.floor(pos);
-  const hi = Math.ceil(pos);
-  const h = pos - lo;
-  return arr[lo] * (1 - h) + arr[hi] * h;
-}
-
-landauMedian = quantileLandau(landauSorted, 0.50)
-landauQ16 = quantileLandau(landauSorted, 0.16)
-landauQ84 = quantileLandau(landauSorted, 0.84)
-landauRobustSigma = 0.5 * (landauQ84 - landauQ16)
-
-histLandau = histogramLandau(landauValues, 120, -8, 25)
-
-normalForComparison = Array.from({length: 501}, (_, i) => {
-  const x = -8 + 33 * i / 500;
-  const z = (x - landauMedian) / landauRobustSigma;
-  return {
-    x,
-    y: Math.exp(-0.5 * z * z) / (landauRobustSigma * Math.sqrt(2 * Math.PI))
-  };
-})
-
-landauPlot = Plot.plot({
-  width: 760,
-  height: 390,
-  marginLeft: 55,
-  x: {label: "energy loss variable", domain: [-8, 25]},
-  y: {label: "density", domain: [0, 0.42]},
-  grid: true,
-  marks: [
-    Plot.rectY(histLandau, {
-      x1: "x0",
-      x2: "x1",
-      y: "density",
-      fill: "#4ea1ff",
-      fillOpacity: 0.70,
-      stroke: "white"
-    }),
-    Plot.line(normalForComparison, {
-      x: "x",
-      y: "y",
-      stroke: "#ffb347",
-      strokeWidth: 2.8
-    })
-  ]
-})
-
-html`
-<div class="clt-panel">
-  ${landauPlot}
-  <div class="clt-summary">
-    <span> Синий: Landau-like stable law;</span>
-    <span> оранжевый: Gaussian с той же медианой и центральной шириной;</span>
-    <span> median = ${landauMedian.toFixed(2)};</span>
-    <span> central sigma = ${landauRobustSigma.toFixed(2)}.</span>
-  </div>
-</div>
-`
+//| classes: book-applet
+{{< include ../assets/applets/landau-tail.ojs >}}
 ```
-::::
 
-:::: {.content-visible when-format="pdf"}
+:::: {.content-visible unless-format="html:js"}
 ::: {.animation title="Длинный хвост распределения Ландау" poster="../assets/figures/landau_like_default.png" url="https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/04_non_gaussian_clt_violations.html#interactive-landau-tail" qr="../assets/qr/landau_tail.png"}
 Интерактив сопоставляет ландау-подобное распределение с гауссовой кривой,
 построенной по той же медиане и центральной ширине.
@@ -457,65 +226,13 @@ html`
 
 Во всех этих случаях увеличение статистики уменьшает только независимую часть ошибки. Общая систематическая составляющая при усреднении не исчезает.
 
-:::: {.content-visible when-format="html:js"}
-::: clt-widget
 ```{ojs}
 //| echo: false
-
-viewof nCorr = Inputs.range([1, 500], {value: 10, step: 1, label: "n"})
-viewof sigmaCommon = Inputs.range([0, 2.0], {value: 0.6, step: 0.05, label: "sigma common"})
-viewof sigmaStat = Inputs.range([0.1, 2.0], {value: 1.0, step: 0.05, label: "sigma stat"})
-viewof sampleCorr = Inputs.range([1000, 30000], {value: 12000, step: 1000, label: "N"})
-viewof regenerateCorr = Inputs.button("Новая статистика")
-
-corrMeans = {
-  regenerateCorr;
-  const values = new Array(sampleCorr);
-  for (let i = 0; i < sampleCorr; ++i) {
-    const c = sigmaCommon * randnCauchy();
-    let sum = 0;
-    for (let j = 0; j < nCorr; ++j) sum += c + sigmaStat * randnCauchy();
-    values[i] = sum / nCorr;
-  }
-  return values;
-}
-
-corrTheorySigma = Math.sqrt(sigmaCommon * sigmaCommon + sigmaStat * sigmaStat / nCorr)
-
-histCorr = histogramCauchy(corrMeans, 90, -4, 4)
-normalCorr = Array.from({length: 401}, (_, i) => {
-  const z = -4 + 8 * i / 400;
-  return {z, density: Math.exp(-0.5 * z * z / (corrTheorySigma * corrTheorySigma)) / (corrTheorySigma * Math.sqrt(2 * Math.PI))};
-})
-
-corrPlot = Plot.plot({
-  width: 760,
-  height: 390,
-  marginLeft: 55,
-  x: {label: "mean", domain: [-4, 4]},
-  y: {label: "density", domain: [0, 1.4]},
-  grid: true,
-  marks: [
-    Plot.rectY(histCorr, {x1: "x0", x2: "x1", y: "density", fill: "#4ea1ff", fillOpacity: 0.70, stroke: "white"}),
-    Plot.line(normalCorr, {x: "z", y: "density", stroke: "#ffb347", strokeWidth: 2.8})
-  ]
-})
-
-html`
-<div class="clt-panel">
-  ${corrPlot}
-  <div class="clt-summary">
-    <span> Var(mean) = sigma_common² + sigma_stat²/n; </span>
-    <span> sigma(mean) = ${corrTheorySigma.toFixed(3)}; </span>
-    <span> n = ${nCorr}.</span>
-  </div>
-</div>
-`
+//| classes: book-applet
+{{< include ../assets/applets/correlated-errors.ojs >}}
 ```
-:::
-::::
 
-:::: {.content-visible when-format="pdf"}
+:::: {.content-visible unless-format="html:js"}
 ::: {.animation title="Статистическая и общая ошибки" poster="../assets/figures/correlated_error_sigma06.png" url="https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/04_non_gaussian_clt_violations.html#interactive-correlated-errors" qr="../assets/qr/correlated_errors.png"}
 Меняйте статистическую и общую составляющие ошибки и следите за шириной
 распределения среднего при росте выборки.
@@ -581,68 +298,13 @@ N\mid\theta=2\sim\mathrm{Pois}(100).$$ Средняя внутриклассов
 \frac{(1000-550)^2+(100-550)^2}{2}
 =202500.$$ Полная дисперсия оказывается: $$\boxed{\mathrm{Var}(N)=550+202500=203050.}$$ Большая итоговая ширина в этом примере возникает не из-за больших флуктуаций каждого отдельного класса, а из-за того, что два класса имеют очень разные средние (скрытая неоднородность выборки).
 
-:::: {.content-visible when-format="html:js"}
-::: clt-widget
 ```{ojs}
 //| echo: false
-
-viewof mixWeight = Inputs.range([0.0, 1.0], {value: 0.5, step: 0.02, label: "weight"})
-viewof mixSeparation = Inputs.range([0.0, 6.0], {value: 2.5, step: 0.1, label: "separation"})
-viewof mixSigma2 = Inputs.range([0.2, 2.5], {value: 1.0, step: 0.05, label: "sigma 2"})
-viewof sampleMix = Inputs.range([1000, 40000], {value: 15000, step: 1000, label: "N"})
-viewof regenerateMix = Inputs.button("Новая статистика")
-
-mixValues = {
-  regenerateMix;
-  const values = new Array(sampleMix);
-  const mu1 = -mixSeparation / 2;
-  const mu2 = mixSeparation / 2;
-  for (let i = 0; i < sampleMix; ++i) {
-    if (Math.random() < mixWeight) values[i] = mu1 + randnCauchy();
-    else values[i] = mu2 + mixSigma2 * randnCauchy();
-  }
-  return values;
-}
-
-mixMean = mixValues.reduce((s, x) => s + x, 0) / mixValues.length
-mixVar = mixValues.reduce((s, x) => s + (x - mixMean) ** 2, 0) / mixValues.length
-mixSigma = Math.sqrt(mixVar)
-
-histMix = histogramCauchy(mixValues, 100, -8, 8)
-normalMix = Array.from({length: 401}, (_, i) => {
-  const x = -8 + 16 * i / 400;
-  return {x, y: Math.exp(-0.5 * (x - mixMean) ** 2 / mixVar) / (mixSigma * Math.sqrt(2 * Math.PI))};
-})
-
-mixPlot = Plot.plot({
-  width: 760,
-  height: 390,
-  marginLeft: 55,
-  x: {label: "x", domain: [-8, 8]},
-  y: {label: "density", domain: [0, 0.55]},
-  grid: true,
-  marks: [
-    Plot.rectY(histMix, {x1: "x0", x2: "x1", y: "density", fill: "#4ea1ff", fillOpacity: 0.70, stroke: "white"}),
-    Plot.line(normalMix, {x: "x", y: "y", stroke: "#ffb347", strokeWidth: 2.8})
-  ]
-})
-
-html`
-<div class="clt-panel">
-  ${mixPlot}
-  <div class="clt-summary">
-    <span> Синим цветом показана смесь,</span>
-    <span> оранжевым - гаусс с теми же mean и variance: </span>
-    <span> mean = ${mixMean.toFixed(2)}, </span>
-    <span> sigma = ${mixSigma.toFixed(2)}.</span>
-  </div>
-</div>
-`
+//| classes: book-applet
+{{< include ../assets/applets/gaussian-mixture.ojs >}}
 ```
-:::
-::::
 
-:::: {.content-visible when-format="pdf"}
+:::: {.content-visible unless-format="html:js"}
 ::: {.animation title="Смесь двух гауссовых классов" poster="../assets/figures/gaussian_mixture_sep1_9.png" url="https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/04_non_gaussian_clt_violations.html#interactive-gaussian-mixture" qr="../assets/qr/gaussian_mixture.png"}
 Интерактив показывает, как веса, ширины и расстояние между средними меняют
 форму смеси.
@@ -676,60 +338,13 @@ f_R(r)=\frac{1}{\pi(1+r^2)}.}$$ То есть отношение двух нез
 
 Линейное распространение ошибок для отношения работает, когда знаменатель с высокой вероятностью далёк от нуля и его относительная неопределённость мала. Редкие реализации с малым знаменателем создают длинные хвосты, которые не помещаются в симметричную запись $r\pm\sigma_r$. Среднее отношения может оказаться нестабильным, а гауссов доверительный интервал получить неверное покрытие.
 
-:::: {.content-visible .clt-widget when-format="html:js"}
 ```{ojs}
 //| echo: false
-
-viewof muDenom = Inputs.range([0.0, 5.0], {value: 0.0, step: 0.1, label: "mean denominator"})
-viewof sigmaDenom = Inputs.range([0.1, 2.0], {value: 1.0, step: 0.05, label: "sigma denominator"})
-viewof sampleRatio = Inputs.range([1000, 40000], {value: 15000, step: 1000, label: "N"})
-viewof regenerateRatio = Inputs.button("Новая статистика")
-
-ratioValues = {
-  regenerateRatio;
-  const values = [];
-  for (let i = 0; i < sampleRatio; ++i) {
-    const x = randnCauchy();
-    const y = muDenom + sigmaDenom * randnCauchy();
-    const r = x / y;
-    if (Number.isFinite(r)) values.push(r);
-  }
-  return values;
-}
-
-histRatio = histogramCauchy(ratioValues, 120, -20, 20)
-cauchyRatio = Array.from({length: 501}, (_, i) => {
-  const x = -20 + 40 * i / 500;
-  return {x, y: 1 / (Math.PI * (1 + x * x))};
-})
-
-ratioPlot = Plot.plot({
-  width: 760,
-  height: 390,
-  marginLeft: 55,
-  x: {label: "R = X/Y", domain: [-20, 20]},
-  y: {label: "density", domain: [0, 0.35]},
-  grid: true,
-  marks: [
-    Plot.rectY(histRatio, {x1: "x0", x2: "x1", y: "density", fill: "#4ea1ff", fillOpacity: 0.70, stroke: "white"}),
-    Plot.line(cauchyRatio, {x: "x", y: "y", stroke: "#ffb347", strokeWidth: 2.6})
-  ]
-})
-
-html`
-<div class="clt-panel">
-  ${ratioPlot}
-  <div class="clt-summary">
-    <span>X ~ N(0,1);</span>
-    <span> Y ~ N(${muDenom.toFixed(1)}, ${sigmaDenom.toFixed(2)}).</span>
-    <span> Оранжевым цветом обозначено Cauchy для Y ~ N(0,1).</span>
-  </div>
-</div>
-`
+//| classes: book-applet
+{{< include ../assets/applets/ratio-cauchy.ojs >}}
 ```
-::::
 
-:::: {.content-visible when-format="pdf"}
+:::: {.content-visible unless-format="html:js"}
 ::: {.animation title="Отношение гауссовых величин" poster="../assets/figures/ratio_gaussians_cauchy.png" url="https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/04_non_gaussian_clt_violations.html#interactive-ratio-cauchy" qr="../assets/qr/ratio_cauchy.png"}
 Меняйте среднее и ширину знаменателя и наблюдайте, когда у отношения появляются
 длинные хвосты распределения Коши.
@@ -751,7 +366,7 @@ html`
 
 Перед тем как автоматически использовать распределение Гаусса, полезно последовательно проверить физический смысл наблюдаемой величины:
 
-1.  Какая случайная величина на самом деле суммируется?
+1.  Какая случайная величина суммируется?
 2.  Действительно ли отдельные вклады независимы?
 3.  Конечна ли дисперсия и нет ли тяжёлых хвостов?
 4.  Не существует ли скрытых классов событий?

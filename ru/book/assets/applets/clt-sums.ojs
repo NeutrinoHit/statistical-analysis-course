@@ -1,0 +1,99 @@
+viewof m = Inputs.range([1, 50], {
+  value: 5,
+  step: 1,
+  label: "m"
+})
+
+viewof sampleSize = Inputs.range([100, 30000], {
+  value: 12000,
+  step: 1000,
+  label: "N"
+})
+
+viewof regenerate = Inputs.button("Новая статистика")
+
+zValues = {
+  regenerate;
+  const scale = Math.sqrt(m / 3);
+  const values = new Array(sampleSize);
+
+  for (let i = 0; i < sampleSize; ++i) {
+    let sum = 0;
+    for (let j = 0; j < m; ++j) {
+      sum += 2 * Math.random() - 1;
+    }
+    values[i] = sum / scale;
+  }
+
+  return values;
+}
+
+histogram = (values, bins, min, max) => {
+  const width = (max - min) / bins;
+  const counts = Array(bins).fill(0);
+
+  for (const value of values) {
+    if (value < min || value >= max) continue;
+    counts[Math.floor((value - min) / width)] += 1;
+  }
+
+  return counts.map((count, i) => ({
+    x0: min + i * width,
+    x1: min + (i + 1) * width,
+    density: count / (values.length * width)
+  }));
+}
+
+hist = histogram(zValues, 64, -4, 4)
+
+normalCurve = Array.from({length: 401}, (_, i) => {
+  const z = -4 + 8 * i / 400;
+  return {
+    z,
+    density: Math.exp(-0.5 * z * z) / Math.sqrt(2 * Math.PI)
+  };
+})
+
+zMean = zValues.reduce((sum, value) => sum + value, 0) / zValues.length
+
+zVariance = zValues.reduce(
+  (sum, value) => sum + (value - zMean) ** 2,
+  0
+) / zValues.length
+
+cltPlot = Plot.plot({
+  width: 960,
+  height: 580,
+  marginLeft: 55,
+  x: {label: "z", domain: [-4, 4]},
+  y: {label: "density", domain: [0, 0.55]},
+  grid: true,
+  marks: [
+    Plot.rectY(hist, {
+      x1: "x0",
+      x2: "x1",
+      y: "density",
+      fill: "#4ea1ff",
+      fillOpacity: 0.70,
+      stroke: "white"
+    }),
+    Plot.line(normalCurve, {
+      x: "z",
+      y: "density",
+      stroke: "#ffb347",
+      strokeWidth: 2.8
+    })
+  ]
+})
+
+html`
+<div class="book-applet-panel">
+  ${cltPlot}
+  <div class="book-applet-summary">
+    <span> Текущие параметры: z = (X1 + ... + Xm)/sqrt(m/3); </span>
+    <span> m = ${m}; </span>
+    <span> mean = ${zMean.toFixed(3)}; </span>
+    <span> variance = ${zVariance.toFixed(3)}. </span>
+  </div>
+</div>
+`

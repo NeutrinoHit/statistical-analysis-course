@@ -1,0 +1,111 @@
+viewof compatibilityAlpha = Inputs.range([0.001, 0.2], {
+  value: 0.1,
+  step: 0.001,
+  label: "Уровень значимости α"
+})
+
+viewof compatibilityZ = Inputs.range([-8, 8], {
+  value: 1.1,
+  step: 0.01,
+  label: "Нормированная разность z_obs"
+})
+
+function compatibilityErf(x) {
+  const sign = x < 0 ? -1 : 1;
+  const ax = Math.abs(x);
+  const t = 1 / (1 + 0.3275911 * ax);
+  const polynomial = (((((1.061405429 * t - 1.453152027) * t
+    + 1.421413741) * t - 0.284496736) * t + 0.254829592) * t);
+  return sign * (1 - polynomial * Math.exp(-ax * ax));
+}
+
+compatibilityPdf = (z) => Math.exp(-0.5 * z * z) / Math.sqrt(2 * Math.PI)
+
+compatibilityCdf = (z) => 0.5 * (1 + compatibilityErf(z / Math.SQRT2))
+
+function compatibilityQuantile(probability) {
+  let lower = -8;
+  let upper = 8;
+  for (let i = 0; i < 80; i += 1) {
+    const middle = 0.5 * (lower + upper);
+    if (compatibilityCdf(middle) < probability) lower = middle;
+    else upper = middle;
+  }
+  return 0.5 * (lower + upper);
+}
+
+compatibilityGamma = 1 - compatibilityAlpha
+
+compatibilityCritical = compatibilityQuantile(1 - compatibilityAlpha / 2)
+
+compatibilityPValue = Math.min(
+  1,
+  2 * (1 - compatibilityCdf(Math.abs(compatibilityZ)))
+)
+
+compatibilityAccepted = Math.abs(compatibilityZ) <= compatibilityCritical
+
+compatibilityCurve = Array.from({length: 641}, (_, i) => {
+  const z = -8 + 16 * i / 640;
+  return {z, density: compatibilityPdf(z)};
+})
+
+compatibilityPlot = Plot.plot({
+  width: 820,
+  height: 410,
+  marginLeft: 55,
+  x: {label: "z", domain: [-8, 8], grid: true},
+  y: {label: "плотность", domain: [0, 0.43], grid: true},
+  marks: [
+    Plot.areaY(
+      compatibilityCurve.filter((d) => d.z < -compatibilityCritical),
+      {x: "z", y: "density", fill: "#f4b9ad"}
+    ),
+    Plot.areaY(
+      compatibilityCurve.filter((d) => Math.abs(d.z) <= compatibilityCritical),
+      {x: "z", y: "density", fill: "#cce9df"}
+    ),
+    Plot.areaY(
+      compatibilityCurve.filter((d) => d.z > compatibilityCritical),
+      {x: "z", y: "density", fill: "#f4b9ad"}
+    ),
+    Plot.line(compatibilityCurve, {
+      x: "z",
+      y: "density",
+      stroke: "#174f5b",
+      strokeWidth: 2.5
+    }),
+    Plot.ruleX([-compatibilityCritical, compatibilityCritical], {
+      stroke: "#c17f12",
+      strokeWidth: 2,
+      strokeDasharray: "7,5"
+    }),
+    Plot.ruleX([compatibilityZ], {
+      stroke: "#c7472f",
+      strokeWidth: 2.5
+    }),
+    Plot.dot(
+      [{z: compatibilityZ, density: compatibilityPdf(compatibilityZ)}],
+      {x: "z", y: "density", fill: "#c7472f", r: 5}
+    )
+  ]
+})
+
+compatibilityProbability = compatibilityPValue < 0.001
+  ? compatibilityPValue.toExponential(2)
+  : compatibilityPValue.toFixed(3)
+
+html`
+<div class="book-applet-panel">
+  ${compatibilityPlot}
+  <div class="book-applet-summary">
+    <span>γ = ${compatibilityGamma.toFixed(3)}</span>
+    <span>α/2 = ${(compatibilityAlpha / 2).toFixed(4)}</span>
+    <span>c = ${compatibilityCritical.toFixed(3)}</span>
+    <span>p = ${compatibilityProbability}</span>
+    <strong>${compatibilityAccepted
+      ? "Совместимость не отвергается"
+      : "Измерения несовместимы на выбранном уровне α"}</strong>
+  </div>
+</div>
+`

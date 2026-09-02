@@ -1,0 +1,46 @@
+viewof muDenom = Inputs.range([0.0, 5.0], {value: 0.0, step: 0.1, label: "mean denominator"})
+viewof sigmaDenom = Inputs.range([0.1, 2.0], {value: 1.0, step: 0.05, label: "sigma denominator"})
+viewof sampleRatio = Inputs.range([1000, 40000], {value: 15000, step: 1000, label: "N"})
+viewof regenerateRatio = Inputs.button("Новая статистика")
+
+ratioValues = {
+  regenerateRatio;
+  const values = [];
+  for (let i = 0; i < sampleRatio; ++i) {
+    const x = randnCauchy();
+    const y = muDenom + sigmaDenom * randnCauchy();
+    const r = x / y;
+    if (Number.isFinite(r)) values.push(r);
+  }
+  return values;
+}
+
+histRatio = histogramCauchy(ratioValues, 120, -20, 20)
+cauchyRatio = Array.from({length: 501}, (_, i) => {
+  const x = -20 + 40 * i / 500;
+  return {x, y: 1 / (Math.PI * (1 + x * x))};
+})
+
+ratioPlot = Plot.plot({
+  width: 760,
+  height: 390,
+  marginLeft: 55,
+  x: {label: "R = X/Y", domain: [-20, 20]},
+  y: {label: "density", domain: [0, 0.35]},
+  grid: true,
+  marks: [
+    Plot.rectY(histRatio, {x1: "x0", x2: "x1", y: "density", fill: "#4ea1ff", fillOpacity: 0.70, stroke: "white"}),
+    Plot.line(cauchyRatio, {x: "x", y: "y", stroke: "#ffb347", strokeWidth: 2.6})
+  ]
+})
+
+html`
+<div class="book-applet-panel">
+  ${ratioPlot}
+  <div class="book-applet-summary">
+    <span>X ~ N(0,1);</span>
+    <span> Y ~ N(${muDenom.toFixed(1)}, ${sigmaDenom.toFixed(2)}).</span>
+    <span> Оранжевым цветом обозначено Cauchy для Y ~ N(0,1).</span>
+  </div>
+</div>
+`

@@ -1,0 +1,108 @@
+viewof lifeN = Inputs.range([3, 200], {value: 20, step: 1, label: "N"})
+viewof lifeTauTrue = Inputs.range([0.5, 5], {value: 2, step: 0.1, label: "τ0"})
+viewof lifeTauTry = Inputs.range([0.1, 20], {value: 2, step: 0.05, label: "τ"})
+viewof regenerateLife = Inputs.button("Новая выборка", {value: 0, reduce: () => Date.now()})
+viewof revealLifeInterval = Inputs.button("Найти интервал", {value: 0, reduce: () => Date.now()})
+
+lifeSample = {
+  regenerateLife;
+  const values = [];
+  for (let i = 0; i < lifeN; ++i) {
+    values.push(-lifeTauTrue * Math.log(Math.max(1e-12, 1 - Math.random())));
+  }
+  return values;
+}
+
+lifeNobs = lifeSample.length
+lifeSumT = lifeSample.reduce((s, t) => s + t, 0)
+lifeTauHat = lifeSumT / lifeNobs
+lifeLogLik = tau => -lifeNobs * Math.log(tau) - lifeSumT / tau
+lifeLogLikMax = lifeLogLik(lifeTauHat)
+lifeDeltaLog = tau => lifeLogLik(tau) - lifeLogLikMax
+lifeQ = tau => -2 * lifeDeltaLog(tau)
+lifeBisect = (lo, hi) => {
+  let flo = lifeQ(lo) - 1;
+  for (let i = 0; i < 70; ++i) {
+    const mid = 0.5 * (lo + hi);
+    const fmid = lifeQ(mid) - 1;
+    if (flo * fmid <= 0) {
+      hi = mid;
+    } else {
+      lo = mid;
+      flo = fmid;
+    }
+  }
+  return 0.5 * (lo + hi);
+}
+lifeRightHi = {
+  let hi = Math.max(1.2 * lifeTauHat, lifeTauHat + 0.1);
+  for (let i = 0; i < 40 && lifeQ(hi) < 1; ++i) hi *= 1.5;
+  return hi;
+}
+lifeLow = lifeBisect(Math.max(1e-6, lifeTauHat * 1e-6), lifeTauHat)
+lifeHigh = lifeBisect(lifeTauHat, lifeRightHi)
+lifeShowInterval = revealLifeInterval > regenerateLife
+lifeXmax = Math.max(
+  4 * lifeTauTrue,
+  3 * lifeTauHat,
+  1.15 * lifeTauTry,
+  lifeShowInterval ? 1.15 * lifeHigh : 0,
+  5
+)
+lifeGrid = Array.from({length: 600}, (_, i) => 1e-4 + (lifeXmax - 1e-4) * i / 599)
+lifeCurve = lifeGrid.map(tau => ({tau, dlog: lifeDeltaLog(tau), q: lifeQ(tau)}))
+lifeTryPoint = [{tau: lifeTauTry, dlog: lifeDeltaLog(lifeTauTry)}]
+lifeYmin = Math.floor(Math.max(
+  -20,
+  Math.min(-5, lifeDeltaLog(lifeTauTry)) - 0.5
+))
+lifeDataRows = lifeSample.map((t, i) => ({i: i + 1, t}))
+lifeDataXmax = Math.max(lifeXmax, Math.max(...lifeSample) * 1.05)
+lifeIntervalMarks = lifeShowInterval
+  ? [
+      Plot.ruleY([-0.5], {stroke: "#999", strokeDasharray: "7,5", strokeWidth: 3}),
+      Plot.ruleX([lifeLow, lifeHigh], {stroke: "#ff5f57", strokeDasharray: "8,6", strokeWidth: 3})
+    ]
+  : []
+
+lifePlot = Plot.plot({
+  width: 760,
+  height: 360,
+  marginLeft: 80,
+  x: {label: "время жизни τ", domain: [0, lifeXmax], grid: true},
+  y: {label: "ℓ(τ) − ℓmax", domain: [lifeYmin, 0.12], grid: true},
+  marks: [
+    Plot.line(lifeCurve, {x: "tau", y: "dlog", stroke: "#4ea1ff", strokeWidth: 4}),
+    Plot.ruleY([0], {stroke: "#777", strokeWidth: 2}),
+    Plot.ruleX([lifeTauTrue], {stroke: "#f2f2f2", strokeDasharray: "5,5", strokeWidth: 3}),
+    Plot.ruleX([lifeTauTry], {stroke: "#ffb347", strokeWidth: 4}),
+    Plot.dot(lifeTryPoint, {x: "tau", y: "dlog", fill: "#ffb347", r: 7}),
+    ...lifeIntervalMarks
+  ]
+})
+lifeDataPlot = Plot.plot({
+  width: 290,
+  height: 360,
+  marginLeft: 55,
+  x: {label: "измеренные времена tᵢ", domain: [0, lifeDataXmax], grid: true},
+  y: {label: "номер i", domain: [0, lifeN + 1]},
+  marks: [
+    Plot.dot(lifeDataRows, {x: "t", y: "i", fill: "#f2f2f2", fillOpacity: 0.72, r: 3}),
+    Plot.ruleX([lifeTauTrue], {stroke: "#f2f2f2", strokeDasharray: "5,5", strokeWidth: 2})
+  ]
+})
+
+html`
+<div class="book-applet-panel">
+  <div class="book-applet-row book-applet-row-start">
+    ${lifePlot}
+    ${lifeDataPlot}
+  </div>
+  <div class="book-applet-summary">
+    <span>τ0 задаёт генерацию; точки справа — сгенерированные времена распада;</span>
+    <span> выбранное τ = ${lifeTauTry.toFixed(2)}: ℓ−ℓmax = ${lifeDeltaLog(lifeTauTry).toFixed(2)}, q = ${lifeQ(lifeTauTry).toFixed(2)};</span>
+    <span>${lifeShowInterval ? `q=1: [${lifeLow.toFixed(2)}, ${lifeHigh.toFixed(2)}]` : "сначала найдите максимум, затем нажмите «Найти интервал»"}. </span>
+    <span> Интервал находится опусканием от максимума на 1/2: ℓ−ℓmax = −1/2.</span>
+  </div>
+</div>
+`

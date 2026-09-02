@@ -554,8 +554,6 @@ body:has(.book-landing) #title-block-header {
   margin-top: 1rem;
 }
 
-.book-route,
-.book-roadmap,
 .book-note,
 .book-derivation{
   margin: 1.75rem 0;
@@ -566,34 +564,11 @@ body:has(.book-landing) #title-block-header {
 }
 .chapter-opening,
 .chapter-summary,
-.next-chapter,
-.notebook-card,
 .book-applet {
   border: 1px solid var(--book-line);
   border-radius: 6px;
   background: var(--book-paper);
   box-shadow: var(--book-shadow);
-}
-
-.book-route {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0;
-  margin: 2rem 0;
-}
-
-.book-route > div,
-.book-route > section {
-  padding: 1.25rem 1.4rem;
-}
-
-.book-route > div + div,
-.book-route > section + section {
-  border-left: 1px solid var(--book-line);
-}
-
-.book-route h3 {
-  margin-top: 0;
 }
 
 .book-note {
@@ -604,60 +579,10 @@ body:has(.book-landing) #title-block-header {
   box-shadow: none;
 }
 
-.book-video-panel video {
-  display: block;
-  width: 90%;
-  max-width: 1000px;
-  height: auto;
-  margin: 0 auto;
-}
-
-@media (max-width: 768px) {
-  .book-video-panel video {
-    width: 100%;
-  }
-}
-
 .book-note p:last-child,
 .chapter-opening p:last-child,
 .chapter-summary p:last-child {
   margin-bottom: 0;
-}
-
-.book-roadmap {
-  margin: 2rem 0 2.5rem;
-  overflow: hidden;
-}
-
-.book-roadmap section {
-  display: grid;
-  grid-template-columns: 62px 1fr;
-  gap: 1rem;
-  align-items: start;
-  padding: 1.15rem 1.3rem;
-  border-bottom: 1px solid var(--book-line);
-}
-
-.book-roadmap section:last-child {
-  border-bottom: 0;
-}
-
-.book-roadmap span {
-  color: var(--book-coral);
-  font-family: var(--book-sans);
-  font-size: 1.2rem;
-  font-weight: 800;
-}
-
-.book-roadmap h3 {
-  margin: 0 0 0.2rem;
-  font-size: 1.05rem;
-}
-
-.book-roadmap p {
-  margin: 0;
-  color: var(--book-muted);
-  font-size: 0.95rem;
 }
 
 .chapter-opening {
@@ -746,6 +671,96 @@ body:has(.book-landing) #title-block-header {
   min-width: 0;
   margin: 0.35rem 0;
   font-family: var(--book-sans);
+}
+
+.book-applet-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  width: 100%;
+}
+
+.book-applet-summary {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.55rem 1rem;
+  width: 100%;
+  color: var(--book-muted);
+  font-family: var(--book-sans);
+  font-size: 0.86rem;
+  line-height: 1.35;
+}
+
+.book-applet-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+  align-items: start;
+  justify-items: center;
+}
+
+.book-applet-controls {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.12rem;
+  width: min(100%, 32rem);
+  margin-bottom: 0.35rem;
+}
+
+.book-applet-controls form,
+.book-applet-controls label {
+  margin: 0 !important;
+}
+
+.book-applet-controls button {
+  font-size: 0.82em;
+  padding: 0.15rem 0.45rem;
+}
+
+.book-applet-column {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.book-applet-row,
+.book-applet-center {
+  display: flex;
+  justify-content: center;
+}
+
+.book-applet-row {
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.book-applet-row-start {
+  align-items: flex-start;
+}
+
+.book-applet-metric {
+  padding: 1rem;
+  text-align: center;
+  font-size: 1.25em;
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+.book-applet-metric-value {
+  display: inline-block;
+  font-size: 1.7em;
+}
+
+@media (max-width: 64rem) {
+  .book-applet-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .book-applet-row {
+    flex-wrap: wrap;
+  }
 }
 
 .book-applet .cell,
@@ -850,71 +865,6 @@ body:has(.book-landing) #title-block-header {
   border: 0;
 }
 
-.next-chapter {
-  margin: 1.5rem 0;
-  padding: 0;
-  overflow: hidden;
-}
-
-.next-chapter a {
-  display: block;
-  padding: 1rem 1.2rem;
-  color: var(--book-teal-dark);
-  font-family: var(--book-sans);
-  font-weight: 750;
-  text-decoration: none;
-}
-
-.next-chapter a::after {
-  content: " →";
-  color: var(--book-coral);
-}
-
-.notebook-card {
-  margin: 1.75rem 0;
-  padding: 1.3rem 1.4rem;
-  border-left: 4px solid var(--book-blue);
-  background: #f1f5fa;
-}
-
-.notebook-card h3 {
-  margin-top: 0;
-  margin-bottom: 0.65rem;
-  color: var(--book-ink);
-}
-
-.notebook-card p:last-child {
-  margin-bottom: 0;
-}
-
-.notebook-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.65rem;
-  margin-top: 1rem;
-}
-
-.notebook-link {
-  display: inline-flex;
-  align-items: center;
-  min-height: 2.7rem;
-  padding: 0.6rem 0.9rem;
-  border: 1px solid var(--book-line-strong);
-  border-radius: 4px;
-  background: #fff;
-  color: var(--book-teal-dark);
-  font-family: var(--book-sans);
-  font-size: 0.9rem;
-  font-weight: 700;
-  text-decoration: none;
-}
-
-.notebook-link-primary {
-  border-color: var(--book-blue);
-  background: var(--book-blue);
-  color: #fff;
-}
-
 @media (max-width: 1180px) {
   .book-applet {
     margin-right: 0;
@@ -942,8 +892,7 @@ body:has(.book-landing) #title-block-header {
   }
 
   .book-principles,
-  .result-gallery,
-  .book-route {
+  .result-gallery {
     grid-template-columns: 1fr;
   }
 
@@ -962,12 +911,6 @@ body:has(.book-landing) #title-block-header {
 
   .book-principles > div:last-child {
     border-bottom: 0;
-  }
-
-  .book-route > div + div,
-  .book-route > section + section {
-    border-top: 1px solid var(--book-line);
-    border-left: 0;
   }
 
   .result-gallery img {
@@ -989,10 +932,6 @@ body:has(.book-landing) #title-block-header {
   .biography-portrait {
     height: auto;
     min-height: 0;
-  }
-
-  .book-roadmap section {
-    grid-template-columns: 42px 1fr;
   }
 
   .book-applet {

@@ -63,7 +63,7 @@ $$ {#eq-two-measurements}
 
 Параметр модели считаем фиксированным. При повторении опыта меняются данные и вычисленная по ним оценка $\widehat\theta(\mathbf d)$. Распределение таких оценок характеризует точность эксперимента.
 
-Статистическая неопределённость связана с конечным числом событий и обычно уменьшается по мере накопления данных. Систематическая неопределённость возникает из-за калибровки, оценки фона, эффективности регистрации и предположений модели. Увеличение выборки само по себе её не устраняет. Граница между двумя составляющими зависит от устройства анализа; к этому вопросу мы вернёмся при обсуждении мешающих параметров.
+Статистическая неопределённость связана с конечным числом событий и обычно уменьшается по мере накопления данных. Систематическая неопределённость возникает из-за калибровки, оценки фона, эффективности регистрации и предположений модели. Простое увеличение выборки её не устраняет. Граница между двумя составляющими зависит от устройства анализа; к этому вопросу мы вернёмся при обсуждении мешающих параметров.
 
 ## Язык физических результатов
 
@@ -138,7 +138,7 @@ $$ {#eq-bayes-theorem}
 Томас Байес — английский пресвитер и математик. Его работу об обратной вероятности опубликовали после смерти автора. Формула, получившая имя Байеса, связывает условные вероятности и лежит в основе байесовского вывода.
 :::
 
-![Визуальное доказательство теоремы Байеса](../assets/figures/bayes-theorem.svg){#fig-bayes-theorem fig-alt="Визуальное доказательство теоремы Байеса" fig-pos="H"}
+![Визуальное доказательство теоремы Байеса](../assets/figures/bayes-theorem.svg){#fig-bayes-theorem fig-pos="H"}
 
 @fig-bayes-theorem показывает, что обе части равенства $P(A\mid B)P(B)=P(B\mid A)P(A)$ описывают одну и ту же область пересечения $A\cap B$.
 
@@ -157,9 +157,9 @@ $$ {#eq-bayes-theorem}
 - Что такое $p$-значение?
 - Что означает статистическая значимость, выраженная в единицах $\sigma$?
 
-![Локальное $p$-значение фоновой гипотезы в результате ATLAS](../assets/figures/Atlas_pvalue.png){#fig-atlas-higgs-pvalue fig-alt="Локальное p-значение фоновой гипотезы в зависимости от проверяемой массы бозона Хиггса в результате ATLAS" fig-pos="H"}
+![Локальное $p$-значение фоновой гипотезы в результате ATLAS](../assets/figures/Atlas_pvalue.png){#fig-atlas-higgs-pvalue fig-pos="H"}
 
-![Локальное $p$-значение фоновой гипотезы в результате CMS](../assets/figures/CMS_pvalue.png){#fig-cms-higgs-pvalue fig-alt="Локальное p-значение фоновой гипотезы в зависимости от проверяемой массы бозона Хиггса в результате CMS" fig-pos="H"}
+![Локальное $p$-значение фоновой гипотезы в результате CMS](../assets/figures/CMS_pvalue.png){#fig-cms-higgs-pvalue fig-pos="H"}
 
 По горизонтали в обоих графиках перебирается масса $m_H$ гипотетического бозона. Для каждого значения массы проверяется фоновая гипотеза. По вертикали отложено локальное $p$-значение: вероятность при условии фоновой гипотезы получить такое же или более сильное отклонение. Чёрная сплошная линия построена по данным. Минимум около $125\,\text{ГэВ}$ показывает массу, при которой данные хуже всего согласуются с одним только фоном.
 
@@ -177,7 +177,7 @@ $$ {#eq-bayes-theorem}
 - Что означает *best fit*, то есть точка наилучшего согласия?
 - К какому утверждению относится статистическая значимость $5.2\sigma$?
 
-![Измерение ненулевого угла смешивания $\theta_{13}$ в Daya Bay](../assets/figures/DayaBayTheta13.png){#fig-daya-bay-theta13 fig-alt="Отношение измеренного числа антинейтрино к ожидаемому без осцилляций в трёх экспериментальных залах Daya Bay; во вставке показана зависимость хи-квадрат от sin squared 2 theta 13" fig-pos="H"}
+![Измерение ненулевого угла смешивания $\theta_{13}$ в Daya Bay](../assets/figures/DayaBayTheta13.png){#fig-daya-bay-theta13 fig-pos="H"}
 
 По вертикали отложено отношение измеренного числа антинейтрино к предсказанию без осцилляций, по горизонтали — эффективное расстояние от реакторов. Точки EH1 и EH2 получены в ближних залах, точки EH3 — в дальнем. Красная кривая показывает предсказание при значении $\sin^2 2\theta_{13}$, найденном из совместного фита.
 
@@ -192,7 +192,7 @@ $$ {#eq-bayes-theorem}
 - Что означает линия *FC sensitivity*?
 - Что такое $CL_s$?
 
-![Исключение области параметров стерильных нейтрино в Daya Bay](../assets/figures/DBSterile.png){#fig-daya-bay-sterile-exclusion fig-alt="Контуры исключения Daya Bay на плоскости амплитуды смешивания sin squared 2 theta 14 и разности квадратов масс delta m squared 41" fig-pos="H"}
+![Исключение области параметров стерильных нейтрино в Daya Bay](../assets/figures/DBSterile.png){#fig-daya-bay-sterile-exclusion fig-pos="H"}
 
 @fig-daya-bay-sterile-exclusion построен на плоскости двух параметров модели с одним стерильным состоянием: амплитуды смешивания $\sin^2 2\theta_{14}$ и разности квадратов масс $|\Delta m^2_{41}|$. Область справа от каждого контура исключена на уровне $95\%$. Синяя линия получена методом Фельдмана--Казинса, чёрная — методом $CL_s$.
 
@@ -249,172 +249,15 @@ $$ {#eq-poisson-deviance}
 @eq-poisson-deviance содержит логарифмическое слагаемое $n_i\ln[n_i/\mu_i(\sigma)]$. Для пустого интервала оно полагается равным нулю. Минимум $\chi^2(\sigma)$ определяет оценку $\widehat{\sigma}$ и точку наилучшего согласия модели с данными.
 
 
-:::: {.content-visible when-format="html:js"}
-::: book-applet
 ### Интерактив: найдите ширину распределения {#interactive-first-fit}
 
 Подберите значение $\sigma$ по виду гистограммы. После этого включите результат фита и значение $\sigma_{\mathrm{true}}$.
 
 ```{ojs}
 //| echo: false
-
-viewof trialSigma = Inputs.range([0.35, 1.8], {
-  value: 0.75,
-  step: 0.01,
-  label: "Пробное значение σ"
-})
-
-viewof nEvents = Inputs.range([250, 4000], {
-  value: 1200,
-  step: 250,
-  label: "Число событий"
-})
-
-viewof regenerate = Inputs.button("Новые псевдоданные")
-
-viewof showBest = Inputs.toggle({label: "Показать лучший фит", value: false})
-viewof showTruth = Inputs.toggle({label: "Показать истинное σ", value: false})
-
-function randnBook() {
-  const u = 1 - Math.random();
-  const v = Math.random();
-  return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
-}
-
-centers = Array.from({length: 25}, (_, i) => -3 + 0.25 * i)
-dxBook = 0.25
-xMinBook = centers[0] - dxBook / 2
-xMaxBook = centers[centers.length - 1] + dxBook / 2
-edgesBook = Array.from({length: centers.length + 1}, (_, i) => xMinBook + i * dxBook)
-curveXBook = Array.from({length: 401}, (_, i) => xMinBook + (xMaxBook - xMinBook) * i / 400)
-
-sigmaTrueBook = {
-  regenerate;
-  return 0.55 + 0.75 * Math.random();
-}
-
-function generateGaussianCountsBook(sigma, total) {
-  const counts = Array(centers.length).fill(0);
-  let accepted = 0;
-  while (accepted < total) {
-    const value = sigma * randnBook();
-    if (value < xMinBook || value >= xMaxBook) continue;
-    const index = Math.floor((value - xMinBook) / dxBook);
-    counts[Math.max(0, Math.min(centers.length - 1, index))] += 1;
-    accepted += 1;
-  }
-  return counts;
-}
-
-countsBook = {
-  regenerate;
-  nEvents;
-  return generateGaussianCountsBook(sigmaTrueBook, nEvents);
-}
-
-totalBook = countsBook.reduce((sum, value) => sum + value, 0)
-
-function erfBook(x) {
-  const sign = x < 0 ? -1 : 1;
-  const z = Math.abs(x);
-  const t = 1 / (1 + 0.3275911 * z);
-  const poly = (((((1.061405429 * t - 1.453152027) * t + 1.421413741) * t - 0.284496736) * t + 0.254829592) * t);
-  return sign * (1 - poly * Math.exp(-z * z));
-}
-
-normalCdfBook = (x, sigma) => 0.5 * (1 + erfBook(x / (Math.SQRT2 * sigma)))
-
-function expectedCountsBook(sigma) {
-  const raw = centers.map((_, i) =>
-    normalCdfBook(edgesBook[i + 1], sigma) - normalCdfBook(edgesBook[i], sigma)
-  );
-  const norm = raw.reduce((sum, value) => sum + value, 0);
-  return raw.map((value) => totalBook * value / norm);
-}
-
-function devianceBook(sigma) {
-  const expected = expectedCountsBook(sigma);
-  return countsBook.reduce((sum, observed, i) => {
-    const mean = Math.max(expected[i], 1e-12);
-    return observed > 0
-      ? sum + 2 * (mean - observed + observed * Math.log(observed / mean))
-      : sum + 2 * mean;
-  }, 0);
-}
-
-sigmaGridBook = Array.from({length: 291}, (_, i) => 0.35 + 0.005 * i)
-profileBook = sigmaGridBook.map((sigma) => ({sigma, chi2: devianceBook(sigma)}))
-bestBook = profileBook.reduce((a, b) => a.chi2 < b.chi2 ? a : b)
-trialChi2Book = devianceBook(trialSigma)
-
-function smoothCurveBook(sigma) {
-  const truncation = normalCdfBook(xMaxBook, sigma) - normalCdfBook(xMinBook, sigma);
-  const scale = totalBook * dxBook / (Math.sqrt(2 * Math.PI) * sigma * truncation);
-  return curveXBook.map((x) => ({
-    x,
-    y: scale * Math.exp(-(x * x) / (2 * sigma * sigma))
-  }));
-}
-
-fitPlotBook = Plot.plot({
-  width: 760,
-  height: 410,
-  marginLeft: 58,
-  x: {label: "x", grid: true},
-  y: {label: "число событий", grid: true},
-  marks: [
-    Plot.rectY(centers.map((x, i) => ({x, y: countsBook[i]})), {
-      x1: (d) => d.x - dxBook / 2,
-      x2: (d) => d.x + dxBook / 2,
-      y: "y",
-      fill: "#dce8ee",
-      stroke: "#486979"
-    }),
-    Plot.line(smoothCurveBook(trialSigma), {
-      x: "x", y: "y", stroke: "#c7472f", strokeWidth: 3
-    }),
-    ...(showBest ? [Plot.line(smoothCurveBook(bestBook.sigma), {
-      x: "x", y: "y", stroke: "#147d64", strokeWidth: 3, strokeDasharray: "7,5"
-    })] : []),
-    ...(showTruth ? [Plot.line(smoothCurveBook(sigmaTrueBook), {
-      x: "x", y: "y", stroke: "#2a5ea8", strokeWidth: 2.5
-    })] : [])
-  ]
-})
-
-profilePlotBook = Plot.plot({
-  width: 560,
-  height: 410,
-  marginLeft: 58,
-  x: {label: "σ", grid: true},
-  y: {label: "χ²(σ)", grid: true},
-  marks: [
-    Plot.line(profileBook, {x: "sigma", y: "chi2", stroke: "#486979", strokeWidth: 2.5}),
-    Plot.dot([{sigma: trialSigma, chi2: trialChi2Book}], {
-      x: "sigma", y: "chi2", fill: "#c7472f", r: 6
-    }),
-    ...(showBest ? [Plot.dot([bestBook], {
-      x: "sigma", y: "chi2", fill: "#147d64", r: 6
-    })] : [])
-  ]
-})
-
-html`
-<div class="book-fit-output">
-  <div class="book-fit-plots">
-    <figure>${fitPlotBook}<figcaption>Псевдоданные и пробная модель</figcaption></figure>
-    <figure>${profilePlotBook}<figcaption>Профиль функции χ²</figcaption></figure>
-  </div>
-  <div class="book-fit-readout">
-    <span><b>Ваш выбор</b> σ = ${trialSigma.toFixed(2)}, χ² = ${trialChi2Book.toFixed(1)}</span>
-    ${showBest ? `<span class="fit-best"><b>Результат фита</b> σ̂ = ${bestBook.sigma.toFixed(3)}</span>` : ``}
-    ${showTruth ? `<span class="fit-truth"><b>Истина</b> σ = ${sigmaTrueBook.toFixed(3)}</span>` : ``}
-  </div>
-</div>
-`
+//| classes: book-applet
+{{< include ../assets/applets/first-fit.ojs >}}
 ```
-:::
-::::
 
 :::: {.content-visible unless-format="html:js"}
 ::: {.animation title="Подбор ширины распределения" poster="../assets/figures/distribution_width.png" url="https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/why_statistics.html#interactive-first-fit" qr="../assets/qr/first_fit.png"}

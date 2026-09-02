@@ -1,0 +1,35 @@
+function mcRange(label, domain, options) {
+  const [min, max] = domain;
+  const value = options.value;
+  const step = options.step ?? 1;
+  const control = html`<label class="mc-range-control">
+    <span class="mc-range-label">${label}</span>
+    <input class="mc-range-number" type="number" min=${min} max=${max} step=${step} value=${value}>
+    <input class="mc-range-slider" type="range" min=${min} max=${max} step=${step} value=${value}>
+  </label>`;
+  const number = control.querySelector(".mc-range-number");
+  const slider = control.querySelector(".mc-range-slider");
+  control.value = Number(value);
+  const sync = event => {
+    const next = Number(event.target.value);
+    control.value = next;
+    number.value = next;
+    slider.value = next;
+    control.dispatchEvent(new CustomEvent("input", {bubbles: true}));
+  };
+  number.addEventListener("input", sync);
+  slider.addEventListener("input", sync);
+  return control;
+}
+
+viewof grid_m = mcRange("точек по каждой координате", [2, 12], {value: 5, step: 1})
+viewof grid_d = mcRange("размерность", [1, 12], {value: 8, step: 1})
+
+grid_points_text = {
+  const N = Math.pow(grid_m, grid_d);
+  return html`<div class="book-applet-metric">
+    <b>Регулярная сетка:</b><br>
+    ${grid_m} точек по каждой координате в ${grid_d}-мерном пространстве<br>
+    <span class="book-applet-metric-value">N = ${N.toLocaleString("ru-RU")}</span>
+  </div>`
+}

@@ -1,0 +1,44 @@
+viewof rejectN = Inputs.range([100, 6000], {value: 1200, step: 100, label: "N точек"})
+viewof regenerateReject = Inputs.button("Новое МК")
+
+rejectPoints = {
+  regenerateReject;
+  const values = [];
+  for (let i = 0; i < rejectN; ++i) {
+    const x = Math.random();
+    const y = 1.5 * Math.random();
+    values.push({x, y, accepted: y <= 6 * x * (1 - x)});
+  }
+  return values;
+}
+
+rejectCurve = Array.from({length: 301}, (_, i) => {
+  const x = i / 300;
+  return {x, y: 6 * x * (1 - x)};
+})
+
+acceptedReject = rejectPoints.filter(d => d.accepted)
+rejectRate = acceptedReject.length / rejectPoints.length
+
+rejectPlot = Plot.plot({
+  width: 820,
+  height: 430,
+  marginLeft: 65,
+  x: {label: "x", domain: [0, 1], grid: true},
+  y: {label: "y", domain: [0, 1.55], grid: true},
+  marks: [
+    Plot.dot(rejectPoints.filter(d => !d.accepted), {x: "x", y: "y", r: 2.2, fill: "#777", fillOpacity: 0.35}),
+    Plot.dot(acceptedReject, {x: "x", y: "y", r: 2.5, fill: "#4ea1ff", fillOpacity: 0.65}),
+    Plot.line(rejectCurve, {x: "x", y: "y", stroke: "#ffb347", strokeWidth: 4})
+  ]
+})
+
+html`
+<div class="book-applet-panel">
+  ${rejectPlot}
+  <div class="book-applet-summary">
+    <span> Принято: ${acceptedReject.length} из ${rejectPoints.length}; </span>
+    <span>эффективность = ${(100 * rejectRate).toFixed(1)} %</span>
+    <span> теоретическая эффективность = 66.7%</span>
+  </div>
+</div>`

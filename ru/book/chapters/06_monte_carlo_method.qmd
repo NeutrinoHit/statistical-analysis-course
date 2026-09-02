@@ -4,7 +4,7 @@ description: "Генерация случайных величин, числен
 ---
 
 ::: chapter-opening
-Аннотация
+[Аннотация]{.chapter-opening-label}
 
 Глава вводит случайное моделирование как численный инструмент. Метод Монте-Карло используется для интегрирования, распространения неопределённостей, моделирования отклика установки и построения псевдоэкспериментов.
 :::
@@ -14,7 +14,7 @@ description: "Генерация случайных величин, числен
 Для простых моделей аналитические выражения работают очень хорошо. В реальном эксперименте ситуация часто заметно сложнее: распределение результата может не иметь удобной замкнутой формы, измеряемые величины проходят через нелинейные преобразования, появляются пороги и отборы, а отклик установки становится многомерным. Численные интегралы также могут иметь высокую размерность, где прямое аналитическое или сеточное вычисление быстро становится непрактичным.
 
 ::: book-note
-**Основная идея метода Монте-Карло:** сложное аналитическое вычисление заменяется статистикой большого числа искусственно сгенерированных реализаций модели.
+Метод Монте-Карло заменяет сложное аналитическое вычисление статистикой большого числа реализаций заданной модели [@metropolisUlam1949].
 :::
 
 Пусть случайная величина $X$ распределена согласно плотности $f_X(x)$, а интересующая величина определяется как: $$Y=g(X).$$ Алгоритм состоит из трёх шагов:
@@ -55,7 +55,13 @@ description: "Генерация случайных величин, числен
 
 ## Генерация через обратную функцию распределения
 
-Пусть требуется получить случайную величину $X$ с плотностью $f_X(x)$. Её кумулятивная функция распределения равна: $$F_X(x)=\int_{-\infty}^{x}f_X(t)\,dt.$$ Она монотонно возрастает от $0$ до $1$. Если обратная функция $F_X^{-1}$ существует и её можно вычислить, достаточно взять равномерную величину $U\sim U(0,1)$ и определить: $$\boxed{X=F_X^{-1}(U).}$$
+Пусть требуется получить случайную величину $X$ с плотностью $f_X(x)$. Её кумулятивная функция распределения равна: $$F_X(x)=\int_{-\infty}^{x}f_X(t)\,dt.$$ Она монотонно возрастает от $0$ до $1$. Если обратная функция $F_X^{-1}$ существует и её можно вычислить, достаточно взять равномерную величину $U\sim U(0,1)$ и определить
+
+$$
+\boxed{X=F_X^{-1}(U).}
+$$ {#eq-inverse-transform-sampling}
+
+Формула @eq-inverse-transform-sampling задаёт метод обратной функции распределения.
 
 ::: book-derivation
 #### Почему работает обратная функция распределения
@@ -78,65 +84,19 @@ description: "Генерация случайных величин, числен
 
 Если $f$ и $g$ нормированы, средняя доля принятых событий равна $1/M$. Метод универсален, но неудачный выбор ограничивающего распределения приводит к низкой эффективности: большая часть вычислений просто отбрасывается.
 
-### Пример: распределение $6x(1-x)$
+### Пример: распределение $6x(1-x)$ {#interactive-monte-carlo-rejection-sampling}
 
 Рассмотрим $$f(x)=6x(1-x),\qquad 0\le x\le1.$$ Максимум этой функции достигается при $x=1/2$ и равен $1.5$. Можно равномерно генерировать точки в прямоугольнике $0\le x\le1$, $0\le y\le1.5$ и оставлять только точки, лежащие ниже кривой $y=f(x)$.
 
-:::: {.content-visible when-format="html:js"}
-::: clt-widget
 ```{ojs}
 //| echo: false
-viewof rejectN = Inputs.range([100, 6000], {value: 1200, step: 100, label: "N точек"})
-viewof regenerateReject = Inputs.button("Новое МК")
-
-rejectPoints = {
-  regenerateReject;
-  const values = [];
-  for (let i = 0; i < rejectN; ++i) {
-    const x = Math.random();
-    const y = 1.5 * Math.random();
-    values.push({x, y, accepted: y <= 6 * x * (1 - x)});
-  }
-  return values;
-}
-
-rejectCurve = Array.from({length: 301}, (_, i) => {
-  const x = i / 300;
-  return {x, y: 6 * x * (1 - x)};
-})
-
-acceptedReject = rejectPoints.filter(d => d.accepted)
-rejectRate = acceptedReject.length / rejectPoints.length
-
-rejectPlot = Plot.plot({
-  width: 820,
-  height: 430,
-  marginLeft: 65,
-  x: {label: "x", domain: [0, 1], grid: true},
-  y: {label: "y", domain: [0, 1.55], grid: true},
-  marks: [
-    Plot.dot(rejectPoints.filter(d => !d.accepted), {x: "x", y: "y", r: 2.2, fill: "#777", fillOpacity: 0.35}),
-    Plot.dot(acceptedReject, {x: "x", y: "y", r: 2.5, fill: "#4ea1ff", fillOpacity: 0.65}),
-    Plot.line(rejectCurve, {x: "x", y: "y", stroke: "#ffb347", strokeWidth: 4})
-  ]
-})
-
-html`
-<div class="clt-panel">
-  ${rejectPlot}
-  <div class="clt-summary">
-    <span> Принято: ${acceptedReject.length} из ${rejectPoints.length}; </span>
-    <span> эффективность = ${(100 * rejectRate).toFixed(1)}; %</span>
-    <span> теоретическая эффективность = 66.7%</span>
-  </div>
-</div>`
+//| classes: book-applet
+{{< include ../assets/applets/monte-carlo-rejection-sampling.ojs >}}
 ```
-:::
-::::
 
-:::: {.content-visible when-format="pdf"}
-::: figure-panel
-![Метод отбора для $f(x)=6x(1-x)$. Точки генерируются равномерно в прямоугольнике и принимаются, если лежат под кривой.](../assets/figures/mc_rejection_sampling.png)
+:::: {.content-visible unless-format="html:js"}
+::: {.animation title="Пример: распределение $6x(1-x)$" poster="../assets/figures/mc_rejection_sampling.png" url="https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/06_monte_carlo_method.html#interactive-monte-carlo-rejection-sampling" qr="../assets/qr/monte-carlo-rejection-sampling.png"}
+Метод отбора для $f(x)=6x(1-x)$. Точки генерируются равномерно в прямоугольнике и принимаются, если лежат под кривой.
 :::
 ::::
 
@@ -151,9 +111,17 @@ html`
 | Специальный алгоритм | может быть очень быстрым | требуется отдельная реализация |
 | Марковские цепи | позволяют работать со сложными многомерными плотностями | выборки коррелированы, сходимость нужно диагностировать |
 
+: Способы генерации случайных величин {#tbl-monte-carlo-generation-methods}
+
 ## Интегрирование методом Монте-Карло
 
-Одно из важных применений – численное вычисление интегралов, особенно многомерных. Начнём с одномерного случая: $$I=\int_a^b h(x)\,dx.$$ Пусть $U\sim U(a,b)$. Тогда $$\mathbb E[h(U)]=\frac{1}{b-a}\int_a^b h(x)\,dx,$$ а значит, $$I=(b-a)\mathbb E[h(U)].$$ Заменяя математическое ожидание выборочным средним по независимым точкам $U_k$, получаем оценку: $$\boxed{\widehat I_N=\frac{b-a}{N}\sum_{k=1}^{N}h(U_k).}$$
+Одно из важных применений – численное вычисление интегралов, особенно многомерных. Начнём с одномерного случая: $$I=\int_a^b h(x)\,dx.$$ Пусть $U\sim U(a,b)$. Тогда $$\mathbb E[h(U)]=\frac{1}{b-a}\int_a^b h(x)\,dx,$$ а значит, $$I=(b-a)\mathbb E[h(U)].$$ Заменяя математическое ожидание выборочным средним по независимым точкам $U_k$, получаем оценку
+
+$$
+\boxed{\widehat I_N=\frac{b-a}{N}\sum_{k=1}^{N}h(U_k).}
+$$ {#eq-monte-carlo-integral-estimator}
+
+Статистические свойства @eq-monte-carlo-integral-estimator определяются распределением $h(U)$.
 
 ### Статистическая ошибка интеграла
 
@@ -165,122 +133,41 @@ html`
 
 Сходимость $1/\sqrt N$ сравнительно медленная. Чтобы уменьшить статистическую ошибку в $10$ раз, требуется примерно в $100$ раз больше точек. При этом важное преимущество метода состоит в том, что этот закон почти не ухудшается при росте размерности интеграла.
 
-## Пример: оценка числа $\pi$
+## Пример: оценка числа $\pi$ {#interactive-monte-carlo-pi}
 
 Равномерно генерируем пары: $$(X,Y)\sim U([0,1]^2).$$ Точка лежит внутри четверти единичного круга, если $$X^2+Y^2\le1.$$ Площадь четверти круга равна $\pi/4$, значит вероятность попасть внутрь также равна $\pi/4$. Если $N_{\mathrm{in}}$ из $N$ точек оказались внутри, то $$\boxed{\widehat\pi=4\frac{N_{\mathrm{in}}}{N}.}$$
 
-:::: {.content-visible when-format="html:js"}
-::: clt-widget
 ```{ojs}
 //| echo: false
-viewof piN = Inputs.range([100, 12000], {value: 1200, step: 100, label: "число точек N"})
-viewof regeneratePi = Inputs.button("Новая выборка")
-
-piPoints = {
-  regeneratePi;
-  const values = [];
-  for (let i = 0; i < piN; ++i) {
-    const x = Math.random();
-    const y = Math.random();
-    values.push({x, y, inside: x * x + y * y <= 1});
-  }
-  return values;
-}
-
-piInside = piPoints.filter(d => d.inside)
-piEstimate = 4 * piInside.length / piPoints.length
-piSe = 4 * Math.sqrt((piInside.length / piPoints.length) * (1 - piInside.length / piPoints.length) / piPoints.length)
-quarterCircle = Array.from({length: 301}, (_, i) => {
-  const x = i / 300;
-  return {x, y: Math.sqrt(1 - x * x)};
-})
-
-piPlot = Plot.plot({
-  width: 620,
-  height: 560,
-  marginLeft: 55,
-  x: {label: "x", domain: [0, 1], grid: true},
-  y: {label: "y", domain: [0, 1], grid: true},
-  marks: [
-    Plot.dot(piPoints.filter(d => !d.inside), {x: "x", y: "y", r: 2, fill: "#ff6b6b", fillOpacity: 0.45}),
-    Plot.dot(piInside, {x: "x", y: "y", r: 2, fill: "#4ea1ff", fillOpacity: 0.50}),
-    Plot.line(quarterCircle, {x: "x", y: "y", stroke: "#ffb347", strokeWidth: 4})
-  ]
-})
-
-html`
-<div class="clt-panel">
-  ${piPlot}
-  <div class="clt-summary">
-    <span>pi по Монте-Карло = ${piEstimate.toFixed(5)}; </span>
-    <span> статистическая ошибка ≈ ${piSe.toFixed(5)}; </span>
-    <span> отклонение от pi = ${(piEstimate - Math.PI).toFixed(5)}</span>
-  </div>
-</div>`
+//| classes: book-applet
+{{< include ../assets/applets/monte-carlo-pi.ojs >}}
 ```
-:::
-::::
 
-:::: {.content-visible when-format="pdf"}
-::: figure-panel
-![Оценка числа $\pi$ методом Монте-Карло. Доля точек внутри четверти единичного круга оценивает $\pi/4$.](../assets/figures/mc_pi_estimate.png)
+:::: {.content-visible unless-format="html:js"}
+::: {.animation title="Пример: оценка числа $\pi$" poster="../assets/figures/mc_pi_estimate.png" url="https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/06_monte_carlo_method.html#interactive-monte-carlo-pi" qr="../assets/qr/monte-carlo-pi.png"}
+Оценка числа $\pi$ методом Монте-Карло. Доля точек внутри четверти единичного круга оценивает $\pi/4$.
 :::
 ::::
 
 При $N=1200$ типичная ошибка имеет порядок нескольких сотых. Если увеличить статистику примерно в десять раз, ошибка уменьшается приблизительно в $\sqrt{10}$ раз, что согласуется с законом $1/\sqrt N$.
 
-## Почему высокая размерность меняет выбор метода
+## Почему высокая размерность меняет выбор метода {#interactive-monte-carlo-grid-dimension}
 
 Для регулярной сетки с $m$ узлами по каждой координате в $d$ измерениях требуется $$\boxed{N_{\mathrm{grid}}=m^d}$$ вычислений функции. Даже очень грубая сетка быстро становится огромной. Например, $100$ точек по каждой из шести координат дают $100^6=10^{12}$ узлов.
 
-::: {.content-visible when-format="html:js"}
 ```{ojs}
 //| echo: false
-function mcRange(label, domain, options) {
-  const [min, max] = domain;
-  const value = options.value;
-  const step = options.step ?? 1;
-  const control = html`<label class="mc-range-control">
-    <span class="mc-range-label">${label}</span>
-    <input class="mc-range-number" type="number" min=${min} max=${max} step=${step} value=${value}>
-    <input class="mc-range-slider" type="range" min=${min} max=${max} step=${step} value=${value}>
-  </label>`;
-  const number = control.querySelector(".mc-range-number");
-  const slider = control.querySelector(".mc-range-slider");
-  control.value = Number(value);
-  const sync = event => {
-    const next = Number(event.target.value);
-    control.value = next;
-    number.value = next;
-    slider.value = next;
-    control.dispatchEvent(new CustomEvent("input", {bubbles: true}));
-  };
-  number.addEventListener("input", sync);
-  slider.addEventListener("input", sync);
-  return control;
-}
-
-viewof grid_m = mcRange("точек по каждой координате", [2, 12], {value: 5, step: 1})
-viewof grid_d = mcRange("размерность", [1, 12], {value: 8, step: 1})
-
-grid_points_text = {
-  const N = Math.pow(grid_m, grid_d);
-  return html`<div style="font-size:1.25em; line-height:1.5; text-align:center; padding:1rem">
-    <b>Регулярная сетка:</b><br>
-    ${grid_m} точек по каждой координате в ${grid_d}-мерном пространстве<br>
-    <span style="font-size:1.7em">N = ${N.toLocaleString("ru-RU")}</span>
-  </div>`
-}
+//| classes: book-applet
+{{< include ../assets/applets/monte-carlo-grid-dimension.ojs >}}
 ```
+
+::::: {.content-visible unless-format="html:js"}
+::: {.animation title="Почему высокая размерность меняет выбор метода" poster="../assets/figures/mc_grid_m5_d8.png" url="https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/06_monte_carlo_method.html#interactive-monte-carlo-grid-dimension" qr="../assets/qr/monte-carlo-grid-dimension.png"}
+Даже пять узлов по каждой из восьми координат требуют $5^8=390625$ вычислений.
 :::
 
-::::: {.content-visible when-format="pdf"}
 ::: figure-panel
-![Даже пять узлов по каждой из восьми координат требуют $5^8=390625$ вычислений.](../assets/figures/mc_grid_m5_d8.png)
-:::
-
-::: figure-panel
-![При двенадцати узлах по каждой из восьми координат число вычислений возрастает до $12^8=429981696$.](../assets/figures/mc_grid_m12_d8.png)
+![При двенадцати узлах по каждой из восьми координат число вычислений возрастает до $12^8=429981696$.](../assets/figures/mc_grid_m12_d8.png){#fig-monte-carlo-grid-growth}
 :::
 :::::
 
@@ -290,121 +177,46 @@ grid_points_text = {
 
 Равномерная генерация не знает, где находится основной вклад в интеграл. Если функция сосредоточена в небольшой области, большинство точек попадает туда, где вклад почти нулевой. Вместо равномерной выборки можно генерировать точки из другого распределения $q(x)$, которое чаще посещает важную область.
 
-Пусть требуется вычислить: $$I=\int h(x)f(x)\,dx.$$ Если $X\sim q(x)$, то тот же интеграл можно переписать как: $$\boxed{I=\mathbb E_q\!\left[h(X)\frac{f(X)}{q(X)}\right].}$$ Каждое событие получает вес: $$\boxed{w_k=\frac{f(X_k)}{q(X_k)},}$$ а оценка принимает вид: $$\widehat I=\frac1N\sum_{k=1}^{N}w_kh(X_k).$$
+Пусть требуется вычислить: $$I=\int h(x)f(x)\,dx.$$ Если $X\sim q(x)$, то тот же интеграл можно переписать как
+
+$$
+\boxed{I=\mathbb E_q\!\left[h(X)\frac{f(X)}{q(X)}\right].}
+$$ {#eq-importance-sampling}
+
+Каждое событие в @eq-importance-sampling получает вес: $$\boxed{w_k=\frac{f(X_k)}{q(X_k)},}$$ а оценка принимает вид: $$\widehat I=\frac1N\sum_{k=1}^{N}w_kh(X_k).$$
 
 ::: book-note
 Выборка по важности меняет место, где генерируются точки, а вес компенсирует это изменение. Хорошее распределение $q(x)$ даёт много точек в важных областях и сравнительно умеренные веса. Редкие очень большие веса увеличивают дисперсию оценки. Вес одного события не превращает его в большое число независимых событий.
 :::
 
-### Редкая область: равномерная генерация и выборка по важности
-
-::::: {.content-visible when-format="html:js"}
-::: mc-range-controls
-```{ojs}
-//| echo: false
-viewof rare_N = mcRange("число точек", [200, 6000], {value: 1500, step: 100})
-viewof rare_sigma = mcRange("ширина важной области", [0.02, 0.18], {value: 0.06, step: 0.005})
-```
-:::
+### Редкая область: равномерная генерация и выборка по важности {#interactive-monte-carlo-importance-sampling}
 
 ```{ojs}
 //| echo: false
-function rng32(seed) {
-  return function() {
-    seed |= 0; seed = seed + 0x6D2B79F5 | 0;
-    let t = Math.imul(seed ^ seed >>> 15, 1 | seed);
-    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
-    return ((t ^ t >>> 14) >>> 0) / 4294967296;
-  }
-}
-
-rare_canvas = {
-  const width = 720, height = 410;
-  const canvas = DOM.canvas(width, height);
-  const ctx = canvas.getContext("2d");
-  const rnd = rng32(20260618);
-  const L = 320, x0 = 50, y0 = 48;
-  const cx = x0 + 0.68 * L, cy = y0 + 0.42 * L, r = rare_sigma * L;
-  ctx.clearRect(0, 0, width, height);
-  ctx.strokeStyle = "#666"; ctx.lineWidth = 2; ctx.strokeRect(x0, y0, L, L);
-  ctx.beginPath(); ctx.arc(cx, cy, r, 0, 2 * Math.PI); ctx.strokeStyle = "#2163ff"; ctx.stroke();
-  let hit = 0;
-  for (let i = 0; i < rare_N; ++i) {
-    const x = rnd(), y = rnd();
-    const px = x0 + x * L, py = y0 + y * L;
-    const inside = (px-cx)**2 + (py-cy)**2 < r**2;
-    if (inside) hit += 1;
-    ctx.beginPath(); ctx.arc(px, py, inside ? 2.5 : 1.4, 0, 2*Math.PI);
-    ctx.fillStyle = inside ? "#2163ff" : "rgba(100,100,100,0.28)"; ctx.fill();
-  }
-  ctx.fillStyle = "#222"; ctx.font = "20px system-ui";
-  ctx.fillText(`равномерно: попало ${hit} из ${rare_N}`, 395, 180);
-  return canvas;
-}
+//| classes: book-applet
+{{< include ../assets/applets/monte-carlo-importance-sampling.ojs >}}
 ```
 
-::: mc-range-controls
-```{ojs}
-//| echo: false
-viewof imp_N = mcRange("число точек", [200, 6000], {value: 1500, step: 100})
-viewof imp_sigma = mcRange("ширина важной области", [0.02, 0.18], {value: 0.06, step: 0.005})
-```
-:::
-
-```{ojs}
-//| echo: false
-importance_canvas = {
-  const width = 720, height = 410;
-  const canvas = DOM.canvas(width, height);
-  const ctx = canvas.getContext("2d");
-  const rnd = rng32(424242);
-  function normal() {
-    const u1 = Math.max(rnd(), 1e-12), u2 = rnd();
-    return Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
-  }
-  const L = 320, x0 = 50, y0 = 48;
-  const cx = x0 + 0.68 * L, cy = y0 + 0.42 * L, r = imp_sigma * L;
-  ctx.clearRect(0, 0, width, height);
-  ctx.strokeStyle = "#666"; ctx.lineWidth = 2; ctx.strokeRect(x0, y0, L, L);
-  ctx.beginPath(); ctx.arc(cx, cy, r, 0, 2 * Math.PI); ctx.strokeStyle = "#2163ff"; ctx.stroke();
-  let hit = 0;
-  for (let i = 0; i < imp_N; ++i) {
-    const x = 0.68 + imp_sigma * normal();
-    const y = 0.42 + imp_sigma * normal();
-    if (x < 0 || x > 1 || y < 0 || y > 1) continue;
-    const px = x0 + x * L, py = y0 + y * L;
-    const inside = (px-cx)**2 + (py-cy)**2 < r**2;
-    if (inside) hit += 1;
-    ctx.beginPath(); ctx.arc(px, py, inside ? 2.5 : 1.5, 0, 2*Math.PI);
-    ctx.fillStyle = inside ? "#2163ff" : "rgba(100,100,100,0.28)"; ctx.fill();
-  }
-  ctx.fillStyle = "#222"; ctx.font = "20px system-ui";
-  ctx.fillText(`по важности: в области ${hit} точек`, 395, 180);
-  return canvas;
-}
-```
-:::::
-
-::::: {.content-visible when-format="pdf"}
-::: figure-panel
-![При равномерной генерации только малая доля точек попадает в узкую важную область.](../assets/figures/mc_rare_uniform.png)
+::::: {.content-visible unless-format="html:js"}
+::: {.animation title="Редкая область: равномерная генерация и выборка по важности" poster="../assets/figures/mc_rare_uniform.png" url="https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/06_monte_carlo_method.html#interactive-monte-carlo-importance-sampling" qr="../assets/qr/monte-carlo-importance-sampling.png"}
+При равномерной генерации только малая доля точек попадает в узкую важную область.
 :::
 
 ::: figure-panel
-![При выборке по важности точки концентрируются вблизи области, которая даёт основной вклад в интеграл.](../assets/figures/mc_importance_sampling.png)
+![При выборке по важности точки концентрируются вблизи области, которая даёт основной вклад в интеграл.](../assets/figures/mc_importance_sampling.png){#fig-monte-carlo-importance-sampling}
 :::
 :::::
 
 ::: figure-panel
-![Умеренные веса дают много сопоставимых вкладов. Если оценку определяют редкие события с очень большими весами, дисперсия возрастает.](../assets/figures/mc_weights_good_bad.png)
+![Умеренные веса дают много сопоставимых вкладов. Если оценку определяют редкие события с очень большими весами, дисперсия возрастает.](../assets/figures/mc_weights_good_bad.png){#fig-monte-carlo-weights}
 :::
 
 ## VEGAS: адаптивная выборка по важности
 
-Выборка по важности требует знать, где находится важная область. Алгоритм **VEGAS** решает эту задачу адаптивно. На первых итерациях он ещё не знает форму интегранда и делает пробную выборку. По полученным значениям он оценивает, где вклад велик, перестраивает разбиение координат и на следующих итерациях чаще генерирует точки в этих областях. Через несколько итераций выборка становится близкой к важностной.
+Выборка по важности требует знать, где находится важная область. Алгоритм **VEGAS** решает эту задачу адаптивно [@lepage1978vegas]. На первых итерациях он ещё не знает форму интегранда и делает пробную выборку. По полученным значениям он оценивает, где вклад велик, перестраивает разбиение координат и на следующих итерациях чаще генерирует точки в этих областях. Через несколько итераций выборка становится близкой к важностной.
 
 ::: figure-panel
-![Схема адаптации VEGAS: после нескольких итераций сетка становится более плотной в области, где сосредоточен основной вклад интеграла.](../assets/figures/mc_vegas_adaptation.png)
+![Схема адаптации VEGAS: после нескольких итераций сетка становится более плотной в области, где сосредоточен основной вклад интеграла.](../assets/figures/mc_vegas_adaptation.png){#fig-vegas-adaptation}
 :::
 
 ::: book-note
@@ -423,6 +235,8 @@ VEGAS не отменяет закон $1/\sqrt N$. Его преимущест�
 | $10^5$ |              $0.864\pm0.13$ |
 | $10^6$ |             $1.001\pm0.061$ |
 
+: Результаты контрольного расчёта простым методом Монте-Карло {#tbl-monte-carlo-control-run}
+
 Даже миллион равномерно брошенных точек даёт здесь ошибку порядка нескольких процентов, потому что большая часть выборки проходит мимо узкого пика. Тензорная квадратура в малой размерности очень точна, но число узлов растёт как $m^d$. Для того же восьмимерного примера:
 
 | узлов на координату $m$ | всего узлов $m^8$ | результат |
@@ -431,7 +245,9 @@ VEGAS не отменяет закон $1/\sqrt N$. Его преимущест�
 |                       5 |           390 625 |     0.722 |
 |                       7 |         5 764 801 |     0.963 |
 
-После адаптации VEGAS для показанного запуска получено: $$\widehat I_{\mathrm{VEGAS}}=0.99787\pm0.00053,$$ то есть существенно меньшая статистическая ошибка при меньшем числе вычислений, чем у наивного равномерного Монте-Карло.
+: Сходимость равномерной сетки для восьмимерного примера {#tbl-grid-control-run}
+
+Числа в таблицах и результат VEGAS получены скриптом `shared/notebooks/mc_vegas_demo.py` с начальным состоянием генератора 12345. После восьми итераций адаптации по 20 000 точек и десяти рабочих итераций по 50 000 точек получено: $$\widehat I_{\mathrm{VEGAS}}=0.99787\pm0.00053.$$ Статистическая ошибка существенно меньше, чем у равномерного Монте-Карло с миллионом точек.
 
 ### Где VEGAS требует проверки
 
@@ -447,115 +263,46 @@ VEGAS может не заметить очень узкий пик на пер�
 
 Такой ансамбль можно использовать для оценки смещения и дисперсии оценки параметра, проверки покрытия доверительного интервала, построения распределения статистики теста, оценки ожидаемой чувствительности, проверки устойчивости подгонки и исследования систематических неопределённостей. Все эти выводы условны относительно модели, по которой строится ансамбль.
 
-### Счётный эксперимент
+### Счётный эксперимент {#interactive-monte-carlo-counting-experiment}
 
-Пусть число событий распределено по Пуассону: $$N\sim\operatorname{Pois}(s+b),$$ где $s$ — ожидаемый сигнал, а $b$ — известный фон. Простейшая оценка сигнала равна: $$\boxed{\widehat s=N-b.}$$ Она несмещённая: $$\mathbb E[\widehat s]=\mathbb E[N]-b=(s+b)-b=s.$$ Но в отдельной реализации $N$ флуктуирует, и при достаточно малом наблюдаемом числе событий можно получить $\widehat s<0$. Это не означает отрицательное физическое число сигнальных событий; это означает, что статистическая процедура должна уметь корректно интерпретировать такие флуктуации.
-
-::::: {.content-visible when-format="html:js"}
-:::: {.clt-widget .toy-counting-widget}
-::: {.mc-range-controls .toy-counting-controls}
-```{ojs}
-//| echo: false
-viewof toySignal = mcRange("ожидаемый сигнал s", [0, 20], {value: 5, step: 0.5})
-viewof toyBackground = mcRange("ожидаемый фон b", [0.5, 30], {value: 10, step: 0.5})
-viewof toyN = mcRange("псевдоэксперименты", [500, 20000], {value: 6000, step: 500})
-viewof regenerateToys = Inputs.button("Новый ансамбль")
-```
-:::
+Пусть число событий распределено по Пуассону: $$N\sim\operatorname{Pois}(s+b),$$ где $s$ — ожидаемый сигнал, а $b$ — известный фон. Простейшая оценка сигнала равна: $$\boxed{\widehat s=N-b.}$$ Она несмещённая: $$\mathbb E[\widehat s]=\mathbb E[N]-b=(s+b)-b=s.$$ В отдельной реализации $N$ флуктуирует, и при малом числе зарегистрированных событий можно получить $\widehat s<0$. Отрицательная оценка возникает из-за флуктуации $N$ и не имеет буквального физического смысла; статистическая процедура должна учитывать такие реализации.
 
 ```{ojs}
 //| echo: false
-poissonToy = lambda => {
-  const limit = Math.exp(-lambda);
-  let p = 1;
-  let k = 0;
-  do {
-    k += 1;
-    p *= Math.random();
-  } while (p > limit);
-  return k - 1;
-}
-
-toyEstimates = {
-  regenerateToys;
-  return Array.from({length: toyN}, () => poissonToy(toySignal + toyBackground) - toyBackground);
-}
-
-toyBins = {
-  const counts = new Map();
-  for (const value of toyEstimates) counts.set(value, (counts.get(value) || 0) + 1);
-  return Array.from(counts, ([value, count]) => ({
-    value,
-    x1: value - 0.45,
-    x2: value + 0.45,
-    probability: count / toyEstimates.length
-  })).sort((a, b) => a.value - b.value);
-}
-
-toyMin = Math.floor(Math.min(...toyEstimates)) - 0.5
-toyMax = Math.ceil(Math.max(...toyEstimates)) + 0.5
-toyYMax = Math.max(0.12, 1.18 * Math.max(...toyBins.map(d => d.probability)))
-
-toyPlot = Plot.plot({
-  width: 900,
-  height: 360,
-  marginLeft: 72,
-  x: {label: "оценка сигнала ŝ = N - b", domain: [toyMin, toyMax], grid: true},
-  y: {label: "вероятность", domain: [0, toyYMax], grid: true},
-  marks: [
-    Plot.rectY(toyBins, {x1: "x1", x2: "x2", y: "probability", fill: "#4ea1ff", fillOpacity: 0.9}),
-    Plot.ruleX([toySignal], {stroke: "#ffb347", strokeWidth: 4}),
-    Plot.ruleX([0], {stroke: "#777", strokeDasharray: "4,4"})
-  ]
-})
-
-html`
-<div class="clt-panel toy-counting-panel">
-  ${toyPlot}
-  <div class="clt-summary">
-    <span>Модель: s = ${toySignal.toFixed(1)}, b = ${toyBackground.toFixed(1)};</span>
-    <span> реальный эксперимент даст одну точку из этого распределения</span>
-  </div>
-</div>`
+//| classes: book-applet
+{{< include ../assets/applets/monte-carlo-counting-experiment.ojs >}}
 ```
-::::
-:::::
 
-:::: {.content-visible when-format="pdf"}
-::: figure-panel
-![Ансамбль счётных псевдоэкспериментов при $s=5$ и $b=10$. Оценка $\widehat s=N-b$ в отдельных реализациях может принимать отрицательные значения.](../assets/figures/mc_counting_pseudoexperiments.png)
+:::: {.content-visible unless-format="html:js"}
+::: {.animation title="Счётный эксперимент" poster="../assets/figures/mc_counting_pseudoexperiments.png" url="https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/06_monte_carlo_method.html#interactive-monte-carlo-counting-experiment" qr="../assets/qr/monte-carlo-counting-experiment.png"}
+Ансамбль счётных псевдоэкспериментов при $s=5$ и $b=10$. Оценка $\widehat s=N-b$ в отдельных реализациях может принимать отрицательные значения.
 :::
 ::::
 
-Нельзя выбирать модель псевдоэкспериментов после просмотра результата так, чтобы получить желаемый вывод. Сначала фиксируется модель и её параметры, затем по ним строится распределение возможных результатов.
+Модель псевдоэкспериментов и её параметры фиксируются до анализа результата. Распределение возможных результатов строится при этих условиях.
 
 ## Моделирование полного эксперимента
 
 В физическом анализе Монте-Карло проходит через несколько уровней: генерацию физического процесса и кинематики, взаимодействие частиц с веществом, вторичные частицы и потери энергии, отклик сенсоров и электроники, реконструкцию объектов, триггеры и критерии отбора. Каждый уровень добавляет собственные приближения и систематические неопределённости.
 
-:::: {.content-visible when-format="html"}
-::: {.figure-panel .book-video-panel}
-{{< video ../assets/video/opticks_juno_simon_blyth.mp4 title="Моделирование оптических фотонов Daya Bay и JUNO" >}}
-
-Моделирование оптических фотонов в детекторах Daya Bay и JUNO. Такая симуляция позволяет проследить распространение света и отклик большого числа фотоумножителей.
-:::
-::::
-
-::::: {.content-visible when-format="pdf"}
-::: figure-panel
-![Фрагмент детального моделирования Daya Bay: геометрия детектора, фотоумножители и распространение оптических фотонов.](../assets/figures/mc_opticks_dayabay.png)
+::: {.animation title="Моделирование оптических фотонов в Daya Bay и JUNO" url="https://juno.ihep.ac.cn/~blyth/" embed-url="https://www.youtube-nocookie.com/embed/CBpOha4RzIs" qr="../assets/qr/opticks-video.png"}
+В ролике Саймона Блита показана работа Opticks: распространение оптических фотонов рассчитывается на графическом процессоре для геометрий детекторов Daya Bay и JUNO. Исходный материал и документация проекта опубликованы на странице автора [@blythOpticks].
 :::
 
-::: figure-panel
-![Фрагмент моделирования JUNO: оптические фотоны распространяются внутри большого сцинтилляционного детектора и регистрируются фотоумножителями.](../assets/figures/mc_opticks_juno.png)
-:::
-:::::
-
-Такие модели строятся не ради визуализации самой по себе. Их цель — численно определить эффективность реконструкции, отклик детектора и связанные с ними неопределённости, необходимые для статистического анализа.
+Такая модель позволяет численно определить эффективность реконструкции, отклик детектора и связанные с ними неопределённости, необходимые для статистического анализа.
 
 ## Эффективность отбора
 
-Пусть сгенерировано $N_{\mathrm{gen}}$ событий и после отбора осталось $N_{\mathrm{sel}}$. Оценка эффективности равна: $$\boxed{\widehat\varepsilon=\frac{N_{\mathrm{sel}}}{N_{\mathrm{gen}}}.}$$ Если события независимы, число прошедших отбор описывается биномиальным распределением: $$N_{\mathrm{sel}}\sim\operatorname{Bin}(N_{\mathrm{gen}},\varepsilon).$$ Отсюда для обычной области параметров получается оценка стандартной ошибки: $$\boxed{\sigma_{\widehat\varepsilon}\approx\sqrt{\frac{\widehat\varepsilon(1-\widehat\varepsilon)}{N_{\mathrm{gen}}}}.}$$
+Пусть сгенерировано $N_{\mathrm{gen}}$ событий и после отбора осталось $N_{\mathrm{sel}}$. Оценка эффективности равна: $$\widehat\varepsilon=N_{\mathrm{sel}}/N_{\mathrm{gen}}.$$ Если события независимы, число прошедших отбор описывается биномиальным распределением: $$N_{\mathrm{sel}}\sim\operatorname{Bin}(N_{\mathrm{gen}},\varepsilon).$$ Для обычной области параметров оценка стандартной ошибки имеет вид
+
+$$
+\boxed{
+\sigma_{\widehat\varepsilon}\approx
+\sqrt{\frac{\widehat\varepsilon(1-\widehat\varepsilon)}{N_{\mathrm{gen}}}}.
+}
+$$ {#eq-binomial-efficiency-error}
+
+При $N_{\mathrm{sel}}$ около нуля или $N_{\mathrm{gen}}$ приближение @eq-binomial-efficiency-error требует осторожности.
 
 ### Что происходит на границах
 
@@ -624,3 +371,8 @@ html`
 ## Задачи
 
 {{< include ../../../_includes/exercises/06_monte_carlo_method-ru.qmd >}}
+
+## Литература {.unnumbered}
+
+::: {#refs}
+:::

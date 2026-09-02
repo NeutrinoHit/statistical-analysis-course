@@ -1,0 +1,54 @@
+viewof contourProb = Inputs.range([0.1, 0.99], {value: 0.683, step: 0.001, label: "Вер. P"})
+viewof contourRho = Inputs.range([-0.95, 0.95], {value: -0.55, step: 0.05, label: "Корр. ρ"})
+
+contourC = -2 * Math.log(1 - contourProb)
+contourCurve = {
+  const q = Math.sqrt(contourC);
+  const sx = 1.5;
+  const sy = 0.8;
+  const s = Math.sqrt(1 - contourRho * contourRho);
+  return Array.from({length: 241}, (_, i) => {
+    const a = 2 * Math.PI * i / 240;
+    const z1 = q * Math.cos(a);
+    const z2 = q * Math.sin(a);
+    return {x: sx * z1, y: sy * (contourRho * z1 + s * z2)};
+  });
+}
+
+unitCurve = {
+  const q = 1;
+  const sx = 1.5;
+  const sy = 0.8;
+  const s = Math.sqrt(1 - contourRho * contourRho);
+  return Array.from({length: 241}, (_, i) => {
+    const a = 2 * Math.PI * i / 240;
+    const z1 = q * Math.cos(a);
+    const z2 = q * Math.sin(a);
+    return {x: sx * z1, y: sy * (contourRho * z1 + s * z2)};
+  });
+}
+
+contourPlot = Plot.plot({
+  width: 850,
+  height: 500,
+  marginLeft: 70,
+  x: {label: "X", domain: [-5, 5], grid: true},
+  y: {label: "Y", domain: [-4, 4], grid: true},
+  marks: [
+    Plot.ruleX([0], {stroke: "#777"}),
+    Plot.ruleY([0], {stroke: "#777"}),
+    Plot.line(unitCurve, {x: "x", y: "y", stroke: "#8ec5ff", strokeWidth: 3, strokeDasharray: "8,6"}),
+    Plot.line(contourCurve, {x: "x", y: "y", stroke: "#ffb347", strokeWidth: 5})
+  ]
+})
+
+html`
+<div class="book-applet-panel">
+  ${contourPlot}
+  <div class="book-applet-summary">
+    <span>оранжевый: P = ${(100 * contourProb).toFixed(1)}%</span>
+    <span>Delta chi^2 = ${contourC.toFixed(2)}</span>
+    <span>голубой пунктир: Delta chi^2 = 1, P = 39.3%</span>
+  </div>
+</div>
+`

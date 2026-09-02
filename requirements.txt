@@ -4,4 +4,5 @@ numpy>=2.0
 pandas>=2.2
 matplotlib>=3.8
 pypdf>=5.0
+qrcode[pil]>=8.0
 vegas>=6.4

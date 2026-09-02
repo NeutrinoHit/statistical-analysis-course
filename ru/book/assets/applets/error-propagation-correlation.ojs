@@ -1,0 +1,39 @@
+viewof gradX = Inputs.range([-3, 3], {value: 1, step: 0.1, label: "df/dx"})
+viewof gradY = Inputs.range([-3, 3], {value: 1, step: 0.1, label: "df/dy"})
+viewof sigmaXCalc = Inputs.range([0.1, 2], {value: 1, step: 0.05, label: "sigma_X"})
+viewof sigmaYCalc = Inputs.range([0.1, 2], {value: 0.8, step: 0.05, label: "sigma_Y"})
+viewof rhoCalc = Inputs.range([-0.99, 0.99], {value: 0, step: 0.01, label: "rho"})
+
+termX = gradX * gradX * sigmaXCalc * sigmaXCalc
+termY = gradY * gradY * sigmaYCalc * sigmaYCalc
+termCorr = 2 * rhoCalc * gradX * gradY * sigmaXCalc * sigmaYCalc
+varianceCalc = Math.max(0, termX + termY + termCorr)
+
+contribData = [
+  {term: "X", value: termX, color: "#4ea1ff"},
+  {term: "Y", value: termY, color: "#ffb347"},
+  {term: "корреляция", value: termCorr, color: "#b388ff"}
+]
+
+contribPlot = Plot.plot({
+  width: 900,
+  height: 350,
+  marginLeft: 100,
+  x: {label: "вклад в дисперсию", grid: true},
+  y: {label: null},
+  marks: [
+    Plot.ruleX([0], {stroke: "#ddd"}),
+    Plot.barX(contribData, {x: "value", y: "term", fill: d => d.color})
+  ]
+})
+
+html`
+<div class="book-applet-panel">
+  ${contribPlot}
+  <div class="book-applet-summary">
+    <span>sigma_F^2 = ${varianceCalc.toFixed(3)}</span>
+    <span>sigma_F = ${Math.sqrt(varianceCalc).toFixed(3)}</span>
+    <span>корреляционный вклад = ${termCorr.toFixed(3)}</span>
+  </div>
+</div>
+`

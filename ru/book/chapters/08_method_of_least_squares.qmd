@@ -11,10 +11,10 @@ description: "Взвешенная подгонка, линейная модел
 
 ## От измерений к кривой
 
-Пусть имеются измерения: $$(x_i,y_i\pm\sigma_i),\qquad i=1,\ldots,N,$$ и модель: $$y=f(x;\boldsymbol\theta).$$ Задача подгонки состоит не только в том, чтобы найти параметры $\boldsymbol\theta$. Нужно также определить их неопределённости и корреляции, проверить согласование модели с данными и исследовать остатки. Точки могут иметь разные ошибки, ошибки разных точек могут быть коррелированы, а параметры модели после подгонки тоже могут оказаться сильно связанными между собой.
+Пусть имеются измерения: $$(x_i,y_i\pm\sigma_i),\qquad i=1,\ldots,N,$$ и модель: $$y=f(x;\boldsymbol\theta).$$ Подгонка должна определить параметры $\boldsymbol\theta$, их неопределённости и корреляции, а также проверить согласование модели с данными и структуру остатков. Точки могут иметь разные ошибки, ошибки разных точек могут быть коррелированы, а параметры модели после подгонки тоже могут оказаться сильно связанными между собой.
 
 ::: book-note
-**Подгонка — статистическая процедура, а не графический способ провести линию между точками.** Хороший внешний вид кривой сам по себе ничего не говорит о корректности оценок параметров и их ошибок.
+**Подгонка — статистическая процедура.** По внешнему виду кривой нельзя судить о корректности оценок параметров и их ошибок.
 :::
 
 ### Связь с гауссовым правдоподобием
@@ -25,7 +25,17 @@ description: "Взвешенная подгонка, линейная модел
 ::: book-derivation
 #### Взвешенная сумма квадратов из правдоподобия
 
-Возьмём логарифм правдоподобия: $$\ln L(\boldsymbol\theta)=\sum_{i=1}^{N}\left[-\ln(\sqrt{2\pi}\sigma_i)-\frac{[y_i-f(x_i;\boldsymbol\theta)]^2}{2\sigma_i^2}\right].$$ Умножая на $-2$, получаем: $$-2\ln L(\boldsymbol\theta)=\sum_{i=1}^{N}\frac{[y_i-f(x_i;\boldsymbol\theta)]^2}{\sigma_i^2}+\mathrm{const}.$$ Следовательно, максимум правдоподобия находится в той же точке параметров, что и минимум функции: $$\boxed{\chi^2(\boldsymbol\theta)=\sum_{i=1}^{N}\frac{[y_i-f(x_i;\boldsymbol\theta)]^2}{\sigma_i^2}.}\quad\blacksquare$$
+Возьмём логарифм правдоподобия: $$\ln L(\boldsymbol\theta)=\sum_{i=1}^{N}\left[-\ln(\sqrt{2\pi}\sigma_i)-\frac{[y_i-f(x_i;\boldsymbol\theta)]^2}{2\sigma_i^2}\right].$$ Умножая на $-2$, получаем: $$-2\ln L(\boldsymbol\theta)=\sum_{i=1}^{N}\frac{[y_i-f(x_i;\boldsymbol\theta)]^2}{\sigma_i^2}+\mathrm{const}.$$ Максимум правдоподобия находится в той же точке параметров, что и минимум функции
+
+$$
+\boxed{
+\chi^2(\boldsymbol\theta)
+=\sum_{i=1}^{N}\frac{[y_i-f(x_i;\boldsymbol\theta)]^2}{\sigma_i^2}.
+}
+\quad\blacksquare
+$$ {#eq-weighted-least-squares}
+
+В @eq-weighted-least-squares каждое отклонение измеряется в единицах своей стандартной ошибки.
 :::
 
 Для отдельной точки удобно ввести остаток: $$r_i=y_i-f(x_i;\boldsymbol\theta),$$ тогда её вклад равен: $$\chi_i^2=\frac{r_i^2}{\sigma_i^2}.$$ Точка с меньшей $\sigma_i$ сильнее ограничивает модель, а точка с большой ошибкой допускает больший абсолютный остаток. Вес точки равен: $$\boxed{w_i=\frac{1}{\sigma_i^2}.}$$
@@ -75,7 +85,7 @@ $$S_{xx}=\sum_iw_ix_i^2,\quad S_{xy}=\sum_iw_ix_iy_i.$$ Тогда систем�
 
 ## Ковариация параметров прямой
 
-Для гауссовых ошибок: $$L(\boldsymbol\beta)\propto\exp\!\left[-\frac12\chi^2(\boldsymbol\beta)\right].$$ Одновременно многомерная гауссова форма для параметров имеет вид: $$p(\boldsymbol\beta)\propto\exp\!\left[-\frac12(\boldsymbol\beta-\widehat{\boldsymbol\beta})^{\mathsf T}V_\beta^{-1}(\boldsymbol\beta-\widehat{\boldsymbol\beta})\right].$$ Для прямой $\chi^2$ является точно квадратичной функцией $a$ и $b$, а не только локальным приближением.
+Для гауссовых ошибок: $$L(\boldsymbol\beta)\propto\exp\!\left[-\frac12\chi^2(\boldsymbol\beta)\right].$$ Одновременно многомерная гауссова форма для параметров имеет вид: $$p(\boldsymbol\beta)\propto\exp\!\left[-\frac12(\boldsymbol\beta-\widehat{\boldsymbol\beta})^{\mathsf T}V_\beta^{-1}(\boldsymbol\beta-\widehat{\boldsymbol\beta})\right].$$ Для прямой $\chi^2$ является точной квадратичной функцией $a$ и $b$; локального приближения здесь нет.
 
 ::: book-derivation
 #### Ковариационная матрица $a$ и $b$
@@ -104,133 +114,19 @@ Q_x=\sum_iw_i(x_i-\bar x_w)^2=\frac\Delta S.$$ Те же формулы прин
 Из условия $$0=\frac{\partial\chi^2}{\partial a}=-2\sum_iw_i(y_i-a-bx_i)$$ следует: $$\sum_iw_iy_i-a\sum_iw_i-b\sum_iw_ix_i=0.$$ Разделим на $S=\sum_iw_i$ и введём: $$\bar y_w=\frac{\sum_iw_iy_i}{\sum_iw_i},\qquad \bar x_w=\frac{\sum_iw_ix_i}{\sum_iw_i}.$$ Тогда $$\boxed{a(b)=\bar y_w-b\bar x_w.}$$ Следовательно, при любом фиксированном наклоне оптимальное значение $a$ заставляет прямую проходить через взвешенный центр данных: $$\boxed{(\bar x_w,\bar y_w).}\quad\blacksquare$$
 :::
 
-### Геометрия корреляции $a$ и $b$
+### Геометрия корреляции $a$ и $b$ {#interactive-least-squares-parameter-geometry}
 
 Если изменить наклон, свободный член может частично компенсировать это изменение так, чтобы прямая всё ещё проходила через центр данных. Именно эта компенсация создаёт корреляцию параметров. Когда $\bar x_w>0$, увеличение наклона требует уменьшить $a$, поэтому ковариация отрицательна.
 
-:::: {.content-visible when-format="html:js"}
-::: clt-widget
 ```{ojs}
 //| echo: false
-
-viewof geomXbar = Inputs.range([-3, 3], {value: 1.8, step: 0.1, label: "центр x̄_w"})
-viewof geomSpread = Inputs.range([0.45, 2.5], {value: 1.0, step: 0.05, label: "разброс по x"})
-
-geomS = 18
-geomQx = geomS * geomSpread * geomSpread
-geomSigmaB = 1 / Math.sqrt(geomQx)
-geomSigmaA = Math.sqrt(1 / geomS + geomXbar * geomXbar / geomQx)
-geomCovAB = -geomXbar / geomQx
-geomCorrAB = geomCovAB / (geomSigmaA * geomSigmaB)
-
-geomA0 = 1.0
-geomB0 = 0.55
-geomYbar = geomA0 + geomB0 * geomXbar
-geomSlopeSteps = [-1, 0, 1]
-geomLineData = geomSlopeSteps.flatMap(k => {
-  const b = geomB0 + k * geomSigmaB;
-  const a = geomYbar - b * geomXbar;
-  return Array.from({length: 121}, (_, i) => {
-    const x = -4.5 + 9 * i / 120;
-    return {x, y: a + b * x, k};
-  });
-})
-geomFanLineData = geomLineData.filter(d => d.k !== 0)
-geomBestLineData = geomLineData.filter(d => d.k === 0)
-
-geomOffsets = [-1.55, -1.05, -0.55, -0.12, 0.35, 0.82, 1.28, 1.62]
-geomPointSigma = Math.sqrt(geomOffsets.length / geomS)
-geomResidualPattern = [0.09, -0.04, 0.06, -0.08, 0.02, 0.07, -0.05, -0.07]
-geomPoints = geomOffsets.map((u, i) => {
-  const x = geomXbar + geomSpread * u;
-  return {x, y: geomA0 + geomB0 * x + geomResidualPattern[i]};
-})
-
-geomCenterPoint = [{x: geomXbar, y: geomYbar}]
-geomLabels = [
-  {x: 0, y: 3.25, text: "x = 0"},
-  {x: geomXbar, y: 3.0, text: "центр данных"}
-]
-
-geomDataPlot = Plot.plot({
-  width: 650,
-  height: 420,
-  marginLeft: 58,
-  marginBottom: 46,
-  x: {label: "x", domain: [-4.5, 4.5], grid: true},
-  y: {label: "y", domain: [-2.0, 3.5], grid: true},
-  marks: [
-    Plot.ruleX([0], {stroke: "#aaa", strokeDasharray: "6,5"}),
-    Plot.ruleX([geomXbar], {stroke: "#ffb347", strokeWidth: 3}),
-    Plot.line(geomFanLineData, {x: "x", y: "y", z: "k", stroke: "#70b7ff", strokeWidth: 2.4, strokeOpacity: 0.58}),
-    Plot.line(geomBestLineData, {x: "x", y: "y", stroke: "#ffb347", strokeWidth: 4}),
-    Plot.ruleX(geomPoints, {x: "x", y1: d => d.y - geomPointSigma, y2: d => d.y + geomPointSigma, stroke: "#aaa", strokeOpacity: 0.65}),
-    Plot.dot(geomPoints, {x: "x", y: "y", r: 6, fill: "#4ea1ff", fillOpacity: 0.82}),
-    Plot.dot(geomCenterPoint, {x: "x", y: "y", r: 8, fill: "#ffb347", stroke: "#111", strokeWidth: 1}),
-    Plot.text(geomLabels, {x: "x", y: "y", text: "text", fill: "#f2f2f2", fontSize: 16, dy: -8})
-  ]
-})
-
-geomSa2 = geomSigmaA * geomSigmaA
-geomSb2 = geomSigmaB * geomSigmaB
-geomL11 = geomSigmaA
-geomL21 = geomCovAB / geomL11
-geomL22 = Math.sqrt(Math.max(geomSb2 - geomL21 * geomL21, 0))
-geomLevel = Math.sqrt(2.30)
-geomEllipse = Array.from({length: 241}, (_, i) => {
-  const t = 2 * Math.PI * i / 240;
-  const z1 = geomLevel * Math.cos(t);
-  const z2 = geomLevel * Math.sin(t);
-  return {
-    da: geomL11 * z1,
-    db: geomL21 * z1 + geomL22 * z2
-  };
-})
-geomDaMax = Math.max(0.55, 1.18 * Math.max(...geomEllipse.map(d => Math.abs(d.da))))
-geomDbMax = Math.max(0.42, 1.18 * Math.max(...geomEllipse.map(d => Math.abs(d.db))))
-geomCompLine = [
-  {db: -geomDbMax, da: geomXbar * geomDbMax},
-  {db: geomDbMax, da: -geomXbar * geomDbMax}
-]
-
-geomParamPlot = Plot.plot({
-  width: 560,
-  height: 420,
-  marginLeft: 66,
-  marginBottom: 46,
-  x: {label: "δa", domain: [-geomDaMax, geomDaMax], grid: true},
-  y: {label: "δb", domain: [-geomDbMax, geomDbMax], grid: true},
-  marks: [
-    Plot.ruleX([0], {stroke: "#888"}),
-    Plot.ruleY([0], {stroke: "#888"}),
-    Plot.line(geomEllipse, {x: "da", y: "db", stroke: "#ffb347", strokeWidth: 4}),
-    Plot.line(geomCompLine, {x: "da", y: "db", stroke: "#70b7ff", strokeWidth: 3, strokeDasharray: "7,5"}),
-    Plot.dot([{da: 0, db: 0}], {x: "da", y: "db", r: 6, fill: "#f2f2f2"})
-  ]
-})
-
-html`
-<div class="clt-panel">
-  <div style="display:flex; gap:0.9rem; align-items:center; justify-content:center;">
-    ${geomDataPlot}
-    ${geomParamPlot}
-  </div>
-  <div class="clt-summary">
-    <span>Q_x = ${geomQx.toFixed(1)}</span>
-    <span>σ_y фиксирована: ${geomPointSigma.toFixed(2)}</span>
-    <span>σ_b = ${geomSigmaB.toFixed(3)}</span>
-    <span>σ_a = ${geomSigmaA.toFixed(3)}</span>
-    <span>corr(a,b) = ${geomCorrAB.toFixed(2)}</span>
-  </div>
-</div>
-`
+//| classes: book-applet
+{{< include ../assets/applets/least-squares-parameter-geometry.ojs >}}
 ```
-:::
-::::
 
-:::: {.content-visible when-format="pdf"}
-::: figure-panel
-![Геометрия корреляции параметров прямой. При изменении наклона свободный член заново подбирается так, чтобы прямая проходила через взвешенный центр данных.](../assets/figures/lsq_parameter_geometry.png)
+:::: {.content-visible unless-format="html:js"}
+::: {.animation title="Геометрия корреляции $a$ и $b$" poster="../assets/figures/lsq_parameter_geometry.png" url="https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/08_method_of_least_squares.html#interactive-least-squares-parameter-geometry" qr="../assets/qr/least-squares-parameter-geometry.png"}
+Геометрия корреляции параметров прямой. При изменении наклона свободный член заново подбирается так, чтобы прямая проходила через взвешенный центр данных.
 :::
 ::::
 
@@ -245,120 +141,23 @@ html`
 В центрированных параметрах: $$\Delta\chi^2=S(\delta a')^2+Q_x(\delta b')^2.$$ Смешанного члена $\delta a'\delta b'$ нет. Если перейти к безразмерным координатам: $$z_a=\sqrt S\,\delta a'=\frac{\delta a'}{\sigma_{a'}},\qquad
 z_b=\sqrt{Q_x}\,\delta b'=\frac{\delta b'}{\sigma_{b'}},$$ то квадратичная форма становится: $$\boxed{\Delta\chi^2=z_a^2+z_b^2.}$$ Это локальные нормальные координаты параметров: сначала устраняется корреляция, затем каждая ось измеряется в единицах собственной стандартной ошибки.
 
-## Остатки и выбросы
+## Остатки и выбросы {#interactive-least-squares-outlier}
 
 Квадратичный критерий особенно чувствителен к большим отклонениям, потому что остаток входит в $\chi^2$ в квадрате. Один далёкий выброс может заметно сдвинуть подогнанную прямую и увеличить минимум $\chi^2$. Остатки $$\frac{y_i-f(x_i;\widehat{\boldsymbol\theta})}{\sigma_i}$$ позволяют увидеть структуру, которую легко не заметить на основном графике.
 
-:::: {.content-visible when-format="html:js"}
-::: clt-widget
 ```{ojs}
 //| echo: false
-
-viewof lsSigma = Inputs.range([0.15, 1.5], {value: 0.55, step: 0.05, label: "типичная ошибка sigma"})
-viewof lsOutlier = Inputs.range([-4, 6], {value: 0, step: 0.25, label: "добавка к одной точке"})
-viewof regenerateLs = Inputs.button("Новые данные")
-
-randnLs = () => {
-  const u1 = Math.max(Math.random(), 1e-12);
-  const u2 = Math.random();
-  return Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
-}
-
-lsData = {
-  regenerateLs;
-  const data = [];
-  for (let i = 0; i < 16; ++i) {
-    const x = -4.5 + 9 * i / 15;
-    const sigma = lsSigma * (0.72 + 0.56 * (i % 4) / 3);
-    const y = 1 + 0.8 * x + sigma * randnLs() + (i === 12 ? lsOutlier : 0);
-    data.push({x, y, sigma, outlier: i === 12});
-  }
-  return data;
-}
-
-weightedLineFit = data => {
-  let S = 0, Sx = 0, Sy = 0, Sxx = 0, Sxy = 0;
-  for (const d of data) {
-    const w = 1 / (d.sigma * d.sigma);
-    S += w;
-    Sx += w * d.x;
-    Sy += w * d.y;
-    Sxx += w * d.x * d.x;
-    Sxy += w * d.x * d.y;
-  }
-  const delta = S * Sxx - Sx * Sx;
-  const a = (Sxx * Sy - Sx * Sxy) / delta;
-  const b = (S * Sxy - Sx * Sy) / delta;
-  const chi2 = data.reduce((sum, d) => sum + ((d.y - a - b * d.x) / d.sigma) ** 2, 0);
-  return {a, b, chi2, sigmaA: Math.sqrt(Sxx / delta), sigmaB: Math.sqrt(S / delta), covAB: -Sx / delta};
-}
-
-lsFit = weightedLineFit(lsData)
-lsFitLine = Array.from({length: 201}, (_, i) => {
-  const x = -5 + 10 * i / 200;
-  return {x, y: lsFit.a + lsFit.b * x};
-})
-lsTrueLine = Array.from({length: 201}, (_, i) => {
-  const x = -5 + 10 * i / 200;
-  return {x, y: 1 + 0.8 * x};
-})
-lsResiduals = lsData.map(d => ({
-  x: d.x,
-  pull: (d.y - lsFit.a - lsFit.b * d.x) / d.sigma,
-  outlier: d.outlier
-}))
-
-lsMainPlot = Plot.plot({
-  width: 720,
-  height: 460,
-  marginLeft: 65,
-  x: {label: "x", domain: [-5, 5], grid: true},
-  y: {label: "y", grid: true},
-  marks: [
-    Plot.ruleX(lsData, {x: "x", y1: d => d.y - d.sigma, y2: d => d.y + d.sigma, stroke: "#aaa"}),
-    Plot.dot(lsData, {x: "x", y: "y", r: 6, fill: d => d.outlier ? "#ff6b6b" : "#4ea1ff"}),
-    Plot.line(lsTrueLine, {x: "x", y: "y", stroke: "#999", strokeDasharray: "7,5", strokeWidth: 3}),
-    Plot.line(lsFitLine, {x: "x", y: "y", stroke: "#ffb347", strokeWidth: 4})
-  ]
-})
-
-lsResidualPlot = Plot.plot({
-  width: 520,
-  height: 460,
-  marginLeft: 65,
-  x: {label: "x", domain: [-5, 5], grid: true},
-  y: {label: "остаток / sigma", domain: [-6, 6], grid: true},
-  marks: [
-    Plot.ruleY([0], {stroke: "#f2f2f2"}),
-    Plot.ruleY([-2, 2], {stroke: "#999", strokeDasharray: "6,5"}),
-    Plot.dot(lsResiduals, {x: "x", y: "pull", r: 6, fill: d => d.outlier ? "#ff6b6b" : "#4ea1ff"})
-  ]
-})
-
-html`
-<div class="clt-panel">
-  <div style="display:flex; gap:0.7rem; justify-content:center; align-items:center;">
-    ${lsMainPlot}
-    ${lsResidualPlot}
-  </div>
-  <div class="clt-summary">
-    <span>a_hat = ${lsFit.a.toFixed(3)} ± ${lsFit.sigmaA.toFixed(3)}</span>
-    <span>b_hat = ${lsFit.b.toFixed(3)} ± ${lsFit.sigmaB.toFixed(3)}</span>
-    <span>χ²_min = ${lsFit.chi2.toFixed(1)}</span>
-  </div>
-</div>
-`
+//| classes: book-applet
+{{< include ../assets/applets/least-squares-outlier.ojs >}}
 ```
-:::
-::::
 
-::::: {.content-visible when-format="pdf"}
-::: figure-panel
-![Взвешенная линейная подгонка без дополнительного выброса. Подогнанная прямая флуктуирует около истинной модели.](../assets/figures/lsq_fit_no_outlier.png)
+::::: {.content-visible unless-format="html:js"}
+::: {.animation title="Остатки и выбросы" poster="../assets/figures/lsq_fit_no_outlier.png" url="https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/08_method_of_least_squares.html#interactive-least-squares-outlier" qr="../assets/qr/least-squares-outlier.png"}
+Взвешенная линейная подгонка без дополнительного выброса. Подогнанная прямая флуктуирует около истинной модели.
 :::
 
 ::: figure-panel
-![Та же выборка после добавления большого отклонения одной точки. Квадратичный критерий делает подгонку чувствительной к выбросу.](../assets/figures/lsq_fit_with_outlier.png)
+![Та же выборка после добавления большого отклонения одной точки. Квадратичный критерий делает подгонку чувствительной к выбросу.](../assets/figures/lsq_fit_with_outlier.png){#fig-least-squares-outlier}
 :::
 :::::
 
@@ -368,7 +167,17 @@ html`
 
 ## Общий случай с ковариационной матрицей
 
-До сих пор предполагалось, что ошибки разных $y_i$ независимы. В общем гауссовом случае данные описываются вектором: $$\mathbf y=(y_1,\ldots,y_N)^{\mathsf T},$$ модель — вектором математических ожиданий: $$\boldsymbol\lambda(\boldsymbol\theta)=(\lambda_1,\ldots,\lambda_N)^{\mathsf T},$$ а статистические связи между наблюдениями задаются ковариационной матрицей: $$V_y=\operatorname{Cov}(\mathbf y).$$ Тогда $$\boxed{\chi^2(\boldsymbol\theta)=(\mathbf y-\boldsymbol\lambda)^{\mathsf T}V_y^{-1}(\mathbf y-\boldsymbol\lambda).}$$ Если $V_y$ диагональна, эта формула возвращается к обычной сумме $r_i^2/\sigma_i^2$.
+До сих пор предполагалось, что ошибки разных $y_i$ независимы. В общем гауссовом случае данные описываются вектором: $$\mathbf y=(y_1,\ldots,y_N)^{\mathsf T},$$ модель — вектором математических ожиданий: $$\boldsymbol\lambda(\boldsymbol\theta)=(\lambda_1,\ldots,\lambda_N)^{\mathsf T},$$ а статистические связи между измерениями задаются ковариационной матрицей: $$V_y=\operatorname{Cov}(\mathbf y).$$ Тогда
+
+$$
+\boxed{
+\chi^2(\boldsymbol\theta)
+=(\mathbf y-\boldsymbol\lambda)^{\mathsf T}V_y^{-1}
+(\mathbf y-\boldsymbol\lambda).
+}
+$$ {#eq-correlated-least-squares}
+
+Если $V_y$ диагональна, @eq-correlated-least-squares возвращается к обычной сумме $r_i^2/\sigma_i^2$.
 
 ### Линейная многопараметрическая модель
 
@@ -382,7 +191,7 @@ html`
 
 ## Интервалы из формы $\chi^2$
 
-### Один параметр
+### Один параметр {#interactive-least-squares-delta-chi2}
 
 Если около минимума зависимость хорошо описывается квадратичной формой, то $$\chi^2(\theta)\approx\chi^2_{\min}+\frac{(\theta-\widehat\theta)^2}{\sigma_\theta^2}.$$ Точки на расстоянии одной локальной стандартной ошибки удовлетворяют: $$\boxed{\chi^2(\widehat\theta\pm\sigma_\theta)-\chi^2_{\min}=1.}$$
 
@@ -390,74 +199,15 @@ html`
 $\Delta\chi^2=1$ здесь — локальное гауссово правило для **одного** параметра. Формальная связь порогов $\Delta\chi^2$ с доверительными областями и распределением статистики рассматривается дальше в курсе.
 :::
 
-:::: {.content-visible when-format="html:js"}
-::: clt-widget
 ```{ojs}
 //| echo: false
-
-chiOneSigma = 1
-chiOneMin = 1
-chiOneCut = chiOneMin + 1
-chiOneData = Array.from({length: 241}, (_, i) => {
-  const delta = -1.5 + 3.0 * i / 240;
-  return {
-    delta,
-    chi2: chiOneMin + (delta / chiOneSigma) ** 2
-  };
-})
-chiOneMarks = [
-  {delta: -chiOneSigma, chi2: chiOneCut},
-  {delta: 0, chi2: chiOneMin},
-  {delta: chiOneSigma, chi2: chiOneCut}
-]
-chiOneCutLine = [
-  {delta: -chiOneSigma, chi2: chiOneCut},
-  {delta: chiOneSigma, chi2: chiOneCut}
-]
-
-chiOnePlot = Plot.plot({
-  width: 980,
-  height: 460,
-  marginLeft: 70,
-  marginBottom: 54,
-  marginTop: 36,
-  x: {label: "δθ", domain: [-1.5, 1.5], grid: true},
-  y: {label: "χ²(θ)", domain: [0.9, 3.5], grid: true},
-  marks: [
-    Plot.line(chiOneData, {x: "delta", y: "chi2", stroke: "#4ea1ff", strokeWidth: 4}),
-    Plot.line(chiOneCutLine, {x: "delta", y: "chi2", stroke: "#ff5a5f", strokeWidth: 3}),
-    Plot.ruleY([chiOneMin], {stroke: "#777", strokeDasharray: "5,5"}),
-    Plot.ruleX([-chiOneSigma, chiOneSigma], {
-      y1: chiOneMin,
-      y2: chiOneCut,
-      stroke: "#ff5a5f",
-      strokeWidth: 3,
-      strokeDasharray: "7,5"
-    }),
-    Plot.dot(chiOneMarks, {x: "delta", y: "chi2", r: 6, fill: d => d.delta === 0 ? "#f2f2f2" : "#ff5a5f", stroke: "#111"})
-  ]
-})
-
-html`
-<div class="clt-panel">
-  <div style="text-align:center; font-size:1.35rem; font-weight:700; margin-bottom:0.35rem;">
-    χ²(δθ = ±σ<sub>θ</sub>) − χ²<sub>min</sub> = 1
-  </div>
-  ${chiOnePlot}
-  <div class="clt-summary">
-    <span>минимум: δθ = 0</span>
-    <span>красная отсечка: χ²<sub>min</sub> + 1</span>
-    <span>пересечения дают ±σ<sub>θ</sub></span>
-  </div>
-</div>
-`
+//| classes: book-applet
+{{< include ../assets/applets/least-squares-delta-chi2.ojs >}}
 ```
-:::
-::::
 
-:::: {.content-visible when-format="pdf"}
-::: figure-panel
-![Квадратичная форма $\chi^2$ для одного параметра. Пересечения уровня $\chi^2_{\min}+1$ лежат на расстоянии одной локальной стандартной ошибки от минимума.](../assets/figures/lsq_delta_chi2_one_sigma.png)
+:::: {.content-visible unless-format="html:js"}
+::: {.animation title="Один параметр" poster="../assets/figures/lsq_delta_chi2_one_sigma.png" url="https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/08_method_of_least_squares.html#interactive-least-squares-delta-chi2" qr="../assets/qr/least-squares-delta-chi2.png"}
+Квадратичная форма $\chi^2$ для одного параметра. Пересечения уровня $\chi^2_{\min}+1$ лежат на расстоянии одной локальной стандартной ошибки от минимума.
 :::
 ::::
 
@@ -466,16 +216,16 @@ html`
 Для нескольких параметров локальная форма имеет вид: $$\chi^2(\boldsymbol\theta)\approx\chi^2_{\min}+(\boldsymbol\theta-\widehat{\boldsymbol\theta})^{\mathsf T}V_\theta^{-1}(\boldsymbol\theta-\widehat{\boldsymbol\theta}).$$ Уравнение $$\Delta\chi^2=\chi^2-\chi^2_{\min}=c$$ задаёт эллипсоиды в пространстве параметров. Матрица $V_\theta$ определяет размеры и наклон этих областей. Такая картина является локальной: если поверхность $\chi^2$ имеет несколько минимумов, острова или сильную нелинейность, простой эллипс уже не описывает её глобальную форму.
 
 ::: figure-panel
-![Квадратичная поверхность $\chi^2$: сечение параболоида постоянным уровнем даёт эллиптическую область параметров.](../assets/figures/lsq_quadratic_chi2_surface.png)
+![Квадратичная поверхность $\chi^2$: сечение параболоида постоянным уровнем даёт эллиптическую область параметров.](../assets/figures/lsq_quadratic_chi2_surface.png){#fig-least-squares-quadratic-surface}
 :::
 
 ::: figure-panel
-![Пример негауссовой поверхности $\chi^2$ с более сложной структурой и несколькими областями.](../assets/figures/lsq_oscillatory_chi2_surface.png)
+![Пример негауссовой поверхности $\chi^2$ с более сложной структурой и несколькими областями.](../assets/figures/lsq_oscillatory_chi2_surface.png){#fig-least-squares-nongaussian-surface}
 :::
 
 ## Систематические неопределённости
 
-В реальной подгонке модель обычно зависит не только от параметров, которые требуется измерить, но и от параметров, описывающих калибровки, эффективности, фон, нормировку и другие источники систематической неопределённости.
+В реальной подгонке модель зависит от измеряемых параметров и от параметров, описывающих калибровки, эффективности, фон, нормировку и другие источники систематической неопределённости.
 
 ::: book-note
 **Параметр интереса** — величина, ради которой выполняется измерение. **Мешающий параметр** влияет на предсказание, но сам не является целью анализа. Систематическая неопределённость появляется из неопределённости таких физических, инструментальных или модельных величин.
@@ -511,68 +261,27 @@ html`
 
 Рассмотрим несколько измерений одной величины $\mu$ с абсолютными индивидуальными ошибками $s_i$ и общей относительной неопределённостью нормировки $f_N$. Удобно ввести общий мешающий параметр $\alpha$: $$\lambda_i(\mu,\alpha)=(1+\alpha)\mu,\qquad \alpha=0\pm f_N.$$ Для такой модели $$H_{i1}=\left.\frac{\partial\lambda_i}{\partial\alpha}\right|_{\alpha=0}=\mu,$$ поэтому нормировочная часть ковариации должна зависеть от **модельного предсказания**: $$\boxed{(V_{\mathrm{norm}})_{ij}=f_N^2\mu^2.}$$
 
-### Наивная подстановка наблюдённых значений
+### Наивная подстановка данных
 
-Возьмём две точки: $$x_1=8.0,\qquad x_2=8.5,$$ с индивидуальными относительными ошибками $2\%$: $$s_1=0.16,\qquad s_2=0.17,$$ и общей нормировочной неопределённостью $f_N=0.10$. Статистическая матрица равна: $$V_{\mathrm{stat}}=\begin{pmatrix}0.0256&0\\0&0.0289\end{pmatrix}.$$ Если ошибочно построить нормировочную ковариацию из самих наблюдённых данных, $$V_{\mathrm{norm}}^{\mathrm{bad}}=f_N^2\begin{pmatrix}x_1^2&x_1x_2\\x_1x_2&x_2^2\end{pmatrix},$$ то $$V_{\mathrm{bad}}=\begin{pmatrix}0.6656&0.6800\\0.6800&0.7514\end{pmatrix}.$$
+Возьмём две точки: $$x_1=8.0,\qquad x_2=8.5,$$ с индивидуальными относительными ошибками $2\%$: $$s_1=0.16,\qquad s_2=0.17,$$ и общей нормировочной неопределённостью $f_N=0.10$. Статистическая матрица равна: $$V_{\mathrm{stat}}=\begin{pmatrix}0.0256&0\\0&0.0289\end{pmatrix}.$$ Если ошибочно построить нормировочную ковариацию из самих данных, $$V_{\mathrm{norm}}^{\mathrm{bad}}=f_N^2\begin{pmatrix}x_1^2&x_1x_2\\x_1x_2&x_2^2\end{pmatrix},$$ то $$V_{\mathrm{bad}}=\begin{pmatrix}0.6656&0.6800\\0.6800&0.7514\end{pmatrix}.$$
 
 ::: book-derivation
-#### Почему наивная ковариация даёт значение ниже обеих точек
+#### Почему наивная ковариация даёт значение ниже обеих точек {#interactive-least-squares-normalization}
 
-Для постоянной модели $\lambda_i=\mu$ запишем: $$\chi^2(\mu)=(\mathbf x-\mu\mathbf1)^{\mathsf T}W(\mathbf x-\mu\mathbf1),\qquad W=V^{-1}.$$ Раскрывая скобки, получим: $$\chi^2=\mathbf x^{\mathsf T}W\mathbf x-2\mu\mathbf1^{\mathsf T}W\mathbf x+\mu^2\mathbf1^{\mathsf T}W\mathbf1.$$ Условие минимума даёт: $$\boxed{\widehat\mu=\frac{\mathbf1^{\mathsf T}W\mathbf x}{\mathbf1^{\mathsf T}W\mathbf1}=\mathbf w^{\mathsf T}\mathbf x,\qquad \mathbf w=\frac{W\mathbf1}{\mathbf1^{\mathsf T}W\mathbf1}.}$$ Для наивной матрицы веса примерно равны: $$\mathbf w_{\mathrm{bad}}\approx\begin{pmatrix}1.253\\-0.253\end{pmatrix}.$$ В итоге: $$\boxed{\widehat\mu_{\mathrm{bad}}\approx7.87\pm0.81.}\quad\blacksquare$$
+Для постоянной модели $\lambda_i=\mu$ запишем: $$\chi^2(\mu)=(\mathbf x-\mu\mathbf1)^{\mathsf T}W(\mathbf x-\mu\mathbf1),\qquad W=V^{-1}.$$ Раскрывая скобки, получим: $$\chi^2=\mathbf x^{\mathsf T}W\mathbf x-2\mu\mathbf1^{\mathsf T}W\mathbf x+\mu^2\mathbf1^{\mathsf T}W\mathbf1.$$ Условие минимума даёт: $$\boxed{\widehat\mu=\frac{\mathbf1^{\mathsf T}W\mathbf x}{\mathbf1^{\mathsf T}W\mathbf1}=\mathbf w^{\mathsf T}\mathbf x,\qquad \mathbf w=\frac{W\mathbf1}{\mathbf1^{\mathsf T}W\mathbf1}.}$$ Для наивной матрицы веса примерно равны: $$\mathbf w_{\mathrm{bad}}\approx\begin{pmatrix}1.253\\-0.253\end{pmatrix}.$$ Получаем $$\boxed{\widehat\mu_{\mathrm{bad}}\approx7.87\pm0.81.}\quad\blacksquare$$
 :::
 
-Значение $7.87$ находится ниже обеих измеренных точек. Это не арифметическая ошибка минимизации: она честно решила задачу с заданной матрицей. Проблема состоит в самой вероятностной модели. Подстановка $f_N^2x_ix_j$ делает абсолютную систематическую ошибку зависимой от случайной флуктуации наблюдённой точки; при сильной корреляции большая точка может получить отрицательный эффективный вес.
+Значение $7.87$ находится ниже обеих измеренных точек. Это не арифметическая ошибка минимизации: она честно решила задачу с заданной матрицей. Проблема состоит в самой вероятностной модели. Подстановка $f_N^2x_ix_j$ делает абсолютную систематическую ошибку зависимой от случайной флуктуации измеренного значения; при сильной корреляции большая точка может получить отрицательный эффективный вес.
 
-:::: {.content-visible when-format="html:js"}
-::: clt-widget
 ```{ojs}
 //| echo: false
-
-pppPoints = [
-  {x: 7.8737, y: 0, label: "наивная ковариация", kind: "bad"},
-  {x: 8.0, y: 1, label: "x₁ = 8.0", kind: "data"},
-  {x: 8.2349, y: 2, label: "правильная модель", kind: "good"},
-  {x: 8.5, y: 1, label: "x₂ = 8.5", kind: "data"}
-]
-
-pppPlot = Plot.plot({
-  width: 920,
-  height: 190,
-  marginLeft: 80,
-  marginRight: 70,
-  marginBottom: 45,
-  marginTop: 18,
-  x: {label: "значение μ", domain: [7.75, 8.62], grid: true},
-  y: {axis: null, domain: [-0.7, 2.55]},
-  marks: [
-    Plot.ruleY([1], {stroke: "#777", strokeDasharray: "6,5"}),
-    Plot.dot(pppPoints, {
-      x: "x",
-      y: "y",
-      r: 8,
-      fill: d => d.kind === "bad" ? "#ff5a5f" : d.kind === "good" ? "#2dd881" : "#4ea1ff",
-      stroke: "#111",
-      strokeWidth: 1.2
-    }),
-    Plot.text(pppPoints, {
-      x: "x",
-      y: "y",
-      text: "label",
-      fill: "#f2f2f2",
-      dy: d => d.kind === "data" ? -18 : 18,
-      fontSize: 16
-    })
-  ]
-})
-
-html`${pppPlot}`
+//| classes: book-applet
+{{< include ../assets/applets/least-squares-normalization.ojs >}}
 ```
-:::
-::::
 
-:::: {.content-visible when-format="pdf"}
-::: figure-panel
-![Сравнение наивной нормировочной ковариации с корректной моделью общей нормировки. Наивная конструкция даёт оценку ниже обеих измеренных точек.](../assets/figures/lsq_dagostini_comparison.png)
+:::: {.content-visible unless-format="html:js"}
+::: {.animation title="Почему наивная ковариация даёт значение ниже обеих точек" poster="../assets/figures/lsq_dagostini_comparison.png" url="https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/08_method_of_least_squares.html#interactive-least-squares-normalization" qr="../assets/qr/least-squares-normalization.png"}
+Сравнение наивной нормировочной ковариации с корректной моделью общей нормировки. Наивная конструкция даёт оценку ниже обеих измеренных точек.
 :::
 ::::
 
@@ -592,7 +301,7 @@ html`${pppPlot}`
 $$\frac{\partial\chi^2}{\partial\alpha}=-2\mu R+\frac{2\alpha}{f_N^2}=0.$$ Из первого условия $R=0$, а тогда второе даёт $\widehat\alpha=0$. Следовательно, $$\boxed{\widehat\mu=\frac{\sum_ix_i/s_i^2}{\sum_i1/s_i^2}\approx8.235.}$$ Квадратичная форма по $(\mu,\alpha)$ даёт: $$\operatorname{Cov}(\widehat\mu,\widehat\alpha)\approx\begin{pmatrix}0.6917&-0.0823\\-0.0823&0.0100\end{pmatrix},$$ поэтому $$\boxed{\widehat\mu\approx8.235\pm\sqrt{0.6917}=8.235\pm0.832.}\quad\blacksquare$$
 :::
 
-Ту же дисперсию можно представить как сумму статистического и нормировочного вкладов: $$\sigma_\mu^2\approx\left(\sum_i\frac1{s_i^2}\right)^{-1}+(f_N\widehat\mu)^2\approx0.0136+0.6781=0.6917.$$ Таким образом, ковариационная матрица и штрафной параметр дают один и тот же ответ, если оба построены из одной и той же физической модели.
+Ту же дисперсию можно представить как сумму статистического и нормировочного вкладов: $$\sigma_\mu^2\approx\left(\sum_i\frac1{s_i^2}\right)^{-1}+(f_N\widehat\mu)^2\approx0.0136+0.6781=0.6917.$$ Ковариационная матрица и штрафной параметр дают один и тот же ответ, если оба построены из одной и той же физической модели [@dagostini1994bias].
 
 ## Распространение ошибок после подгонки
 
@@ -640,3 +349,8 @@ $$\frac{\partial\chi^2}{\partial\alpha}=-2\mu R+\frac{2\alpha}{f_N^2}=0.$$ Из 
 ## Задачи
 
 {{< include ../../../_includes/exercises/08_method_of_least_squares-ru.qmd >}}
+
+## Литература {.unnumbered}
+
+::: {#refs}
+:::

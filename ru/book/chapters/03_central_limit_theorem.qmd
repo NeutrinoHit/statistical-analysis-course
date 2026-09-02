@@ -53,18 +53,18 @@ preview = list(enumerate(x[:100], start=1))
 ```{python}
 #| echo: false
 #| eval: true
-from IPython.display import HTML
+from IPython.display import Markdown
 import numpy as np
 rng = np.random.default_rng(7)
 x = rng.uniform(-1, 1, size=20_000)
-rows = "".join(
-    f"<tr><td>{i}</td><td>{value:.3f}</td></tr>"
+rows = "\n".join(
+    f"| {i} | {value:.3f} |"
     for i, value in enumerate(x[:100], start=1)
 )
-HTML(
-    '<div class="table-scroll"><table class="table">'
-    '<thead><tr><th>i</th><th>x</th></tr></thead>'
-    f"<tbody>{rows}</tbody></table></div>"
+Markdown(
+    "| $i$ | $x_i$ |\n"
+    "|---:|---:|\n"
+    f"{rows}"
 )
 ```
 
@@ -96,7 +96,7 @@ plt.show()
 ::::
 :::::
 
-:::: {.content-visible when-format="pdf"}
+:::: {.content-visible unless-format="html:js"}
 ::: {.animation title="Выборка из равномерного распределения" poster="../assets/figures/clt_uniform_sample.png" url="https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/03_central_limit_theorem.html#interactive-uniform-sample" qr="../assets/qr/uniform_sample.png"}
 В HTML-книге рядом с графиком доступны выполняемый код и сами данные выборки.
 :::
@@ -278,115 +278,13 @@ $$
 
 При $m=1$ распределение остаётся равномерным. Для $m=2$ сумма двух равномерных величин даёт треугольную форму. Уже при $m=5$ распределение становится очень похожим на нормальное, а при $m=10$ различие на глаз становится небольшим.
 
-:::: {.content-visible when-format="html:js"}
-::: clt-widget
 ```{ojs}
 //| echo: false
-
-viewof m = Inputs.range([1, 50], {
-  value: 5,
-  step: 1,
-  label: "m"
-})
-
-viewof sampleSize = Inputs.range([100, 30000], {
-  value: 12000,
-  step: 1000,
-  label: "N"
-})
-
-viewof regenerate = Inputs.button("Новая статистика")
-
-zValues = {
-  regenerate;
-  const scale = Math.sqrt(m / 3);
-  const values = new Array(sampleSize);
-
-  for (let i = 0; i < sampleSize; ++i) {
-    let sum = 0;
-    for (let j = 0; j < m; ++j) {
-      sum += 2 * Math.random() - 1;
-    }
-    values[i] = sum / scale;
-  }
-
-  return values;
-}
-
-histogram = (values, bins, min, max) => {
-  const width = (max - min) / bins;
-  const counts = Array(bins).fill(0);
-
-  for (const value of values) {
-    if (value < min || value >= max) continue;
-    counts[Math.floor((value - min) / width)] += 1;
-  }
-
-  return counts.map((count, i) => ({
-    x0: min + i * width,
-    x1: min + (i + 1) * width,
-    density: count / (values.length * width)
-  }));
-}
-
-hist = histogram(zValues, 64, -4, 4)
-
-normalCurve = Array.from({length: 401}, (_, i) => {
-  const z = -4 + 8 * i / 400;
-  return {
-    z,
-    density: Math.exp(-0.5 * z * z) / Math.sqrt(2 * Math.PI)
-  };
-})
-
-zMean = zValues.reduce((sum, value) => sum + value, 0) / zValues.length
-
-zVariance = zValues.reduce(
-  (sum, value) => sum + (value - zMean) ** 2,
-  0
-) / zValues.length
-
-cltPlot = Plot.plot({
-  width: 960,
-  height: 580,
-  marginLeft: 55,
-  x: {label: "z", domain: [-4, 4]},
-  y: {label: "density", domain: [0, 0.55]},
-  grid: true,
-  marks: [
-    Plot.rectY(hist, {
-      x1: "x0",
-      x2: "x1",
-      y: "density",
-      fill: "#4ea1ff",
-      fillOpacity: 0.70,
-      stroke: "white"
-    }),
-    Plot.line(normalCurve, {
-      x: "z",
-      y: "density",
-      stroke: "#ffb347",
-      strokeWidth: 2.8
-    })
-  ]
-})
-
-html`
-<div class="clt-panel">
-  ${cltPlot}
-  <div class="clt-summary">
-    <span> Текущие параметры: z = (X1 + ... + Xm)/sqrt(m/3); </span>
-    <span> m = ${m}; </span>
-    <span> mean = ${zMean.toFixed(3)}; </span>
-    <span> variance = ${zVariance.toFixed(3)}. </span>
-  </div>
-</div>
-`
+//| classes: book-applet
+{{< include ../assets/applets/clt-sums.ojs >}}
 ```
-:::
-::::
 
-:::: {.content-visible when-format="pdf"}
+:::: {.content-visible unless-format="html:js"}
 ::: {.animation title="Форма нормированной суммы" poster="../assets/figures/clt_uniform_sum_m5.png" url="https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/03_central_limit_theorem.html#interactive-clt-sums" qr="../assets/qr/clt_sums.png"}
 Меняйте число слагаемых и объём выборки, чтобы увидеть переход от равномерной
 формы к нормальному распределению.
@@ -411,7 +309,7 @@ f(x;\mu,\sigma)
 $$\int_{-\infty}^{+\infty}f(x;\mu,\sigma)\,dx=1.$$
 
 ::: figure-panel
-![Стандартное нормальное распределение при $\mu=0$ и $\sigma=1$.](../assets/figures/gaussian_standard_density.png)
+![Стандартное нормальное распределение при $\mu=0$ и $\sigma=1$.](../assets/figures/gaussian_standard_density.png){#fig-standard-normal-density}
 :::
 
 ### Стандартизация
@@ -457,7 +355,7 @@ $$P(-\infty<Z\le z_\beta)=\beta.$$
 |     $0.995$     |  $2.576$  |
 
 ::: figure-panel
-![Кумулятивная функция стандартного нормального распределения и несколько уровней квантилей.](../assets/figures/normal_quantile_cdf.png)
+![Кумулятивная функция стандартного нормального распределения и несколько уровней квантилей.](../assets/figures/normal_quantile_cdf.png){#fig-standard-normal-quantiles}
 :::
 
 ## Центральные интервалы {#interactive-central-intervals}
@@ -601,7 +499,7 @@ plt.show()
 ::::
 :::
 
-:::: {.content-visible when-format="pdf"}
+:::: {.content-visible unless-format="html:js"}
 ::: {.animation title="Центральные интервалы нормального распределения" poster="../assets/figures/normal_central_intervals.png" url="https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/03_central_limit_theorem.html#interactive-central-intervals" qr="../assets/qr/central_intervals.png"}
 HTML-версия позволяет менять число стандартных отклонений и сразу видеть
 соответствующую вероятность.
@@ -672,7 +570,7 @@ $$D\sim\mathrm{N}(0,\sigma_D),$$
 
 $$Z=\frac{D}{\sigma_D}$$
 
-имеет стандартное нормальное распределение. Для наблюдённых значений получаем:
+имеет стандартное нормальное распределение. Для полученных значений имеем:
 
 $$\boxed{
 z_{\mathrm{obs}}
@@ -703,220 +601,13 @@ $$|z_{\mathrm{obs}}|>c,$$
 
 Обратите внимание: утверждение о совместимости всегда должно сопровождаться выбранным уровнем $\gamma$ или, эквивалентно, $\alpha$.
 
-:::: {.content-visible when-format="html:js"}
-```{=html}
-<style>
-.compat-widget { width:100%; padding:0.7rem; border:1px solid rgba(42,94,168,.30); border-radius:8px; background:#101923; color:#f5f7fd; font-size:.92rem; }
-.compat-controls { display:grid; grid-template-columns:1fr 1fr; gap:.7rem; margin-bottom:.5rem; }
-.compat-control { display:grid; grid-template-columns:auto 1fr auto; align-items:center; gap:.45rem; color:#dbe7f7; font-weight:700; }
-.compat-control input[type="range"] { width:100%; accent-color:#ffb347; }
-.compat-control output { min-width:3.4em; color:#ffcc80; text-align:right; font-variant-numeric:tabular-nums; }
-.compat-plot { display:block; width:100%; height:auto; }
-.compat-summary { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:.35rem; margin-top:.45rem; }
-.compat-summary span { padding:.3rem .4rem; border-radius:6px; background:rgba(255,255,255,.08); color:#dbe7f7; }
-.compat-summary .compat-decision-ok { color:#83f2c1; }
-.compat-summary .compat-decision-bad { color:#ffb4a8; }
-</style>
+```{ojs}
+//| echo: false
+//| classes: book-applet
+{{< include ../assets/applets/measurement-compatibility.ojs >}}
 ```
 
-::: {.compat-widget data-alpha="0.10" data-zobs="1.10"}
-:::
-
-```{=html}
-<script>
-(() => {
-  if (window.initCompatibilityWidgets) {
-    window.initCompatibilityWidgets();
-    return;
-  }
-
-  const pdf = (z) => Math.exp(-0.5 * z * z) / Math.sqrt(2 * Math.PI);
-
-  const erf = (x) => {
-    const sign = x < 0 ? -1 : 1;
-    const a1 = 0.254829592;
-    const a2 = -0.284496736;
-    const a3 = 1.421413741;
-    const a4 = -1.453152027;
-    const a5 = 1.061405429;
-    const p = 0.3275911;
-    const ax = Math.abs(x);
-    const t = 1 / (1 + p * ax);
-    const y = 1 - (((((a5 * t + a4) * t) + a3) * t + a2) * t + a1) * t * Math.exp(-ax * ax);
-    return sign * y;
-  };
-
-  const cdf = (z) => 0.5 * (1 + erf(z / Math.SQRT2));
-
-  const quantile = (probability) => {
-    let lo = -8;
-    let hi = 8;
-    for (let i = 0; i < 80; i += 1) {
-      const mid = 0.5 * (lo + hi);
-      if (cdf(mid) < probability) lo = mid;
-      else hi = mid;
-    }
-    return 0.5 * (lo + hi);
-  };
-
-  const fmt = (value, digits = 3) => Number(value).toFixed(digits);
-  const prob = (value) => value < 0.001 ? value.toExponential(2) : fmt(value, 3);
-
-  const buildSvg = ({alpha, gamma, c, zObs, pTwo, id}) => {
-    const width = 740;
-    const height = 430;
-    const xMin = -8;
-    const xMax = 8;
-    const left = 44;
-    const right = 24;
-    const top = 40;
-    const base = 318;
-    const plotWidth = width - left - right;
-    const peak = pdf(0);
-
-    const x = (z) => left + (z - xMin) / (xMax - xMin) * plotWidth;
-    const y = (density) => base - density / peak * (base - top);
-
-    const curvePoints = Array.from({length: 361}, (_, i) => {
-      const z = xMin + (xMax - xMin) * i / 360;
-      return `${x(z).toFixed(1)},${y(pdf(z)).toFixed(1)}`;
-    }).join(" ");
-
-    const areaPoints = (a, b) => {
-      const n = 72;
-      const points = [`${x(a).toFixed(1)},${base}`];
-      for (let i = 0; i <= n; i += 1) {
-        const z = a + (b - a) * i / n;
-        points.push(`${x(z).toFixed(1)},${y(pdf(z)).toFixed(1)}`);
-      }
-      points.push(`${x(b).toFixed(1)},${base}`);
-      return points.join(" ");
-    };
-
-    const leftTail = areaPoints(xMin, -c);
-    const center = areaPoints(-c, c);
-    const rightTail = areaPoints(c, xMax);
-    const zX = x(Math.max(xMin, Math.min(xMax, zObs)));
-    const zY = y(pdf(zObs));
-    const tailLabel = prob(alpha / 2);
-    const beta = 1 - alpha / 2;
-    const decision = Math.abs(zObs) <= c ? "внутри области" : "в хвосте";
-
-    return `
-      <svg class="compat-plot" viewBox="0 0 ${width} ${height}" role="img" aria-label="Двусторонняя проверка совместимости">
-        <defs>
-          <filter id="${id}-glow" x="-40%" y="-40%" width="180%" height="180%">
-            <feGaussianBlur stdDeviation="3.2" result="blur"></feGaussianBlur>
-            <feMerge><feMergeNode in="blur"></feMergeNode><feMergeNode in="SourceGraphic"></feMergeNode></feMerge>
-          </filter>
-          <linearGradient id="${id}-center" x1="0" x2="1" y1="0" y2="0">
-            <stop offset="0%" stop-color="#4ea1ff" stop-opacity="0.18"></stop>
-            <stop offset="50%" stop-color="#7ee6b8" stop-opacity="0.33"></stop>
-            <stop offset="100%" stop-color="#4ea1ff" stop-opacity="0.18"></stop>
-          </linearGradient>
-          <linearGradient id="${id}-tail" x1="0" x2="1" y1="0" y2="0">
-            <stop offset="0%" stop-color="#ff6b6b" stop-opacity="0.38"></stop>
-            <stop offset="100%" stop-color="#ff9a5c" stop-opacity="0.23"></stop>
-          </linearGradient>
-        </defs>
-        <rect width="${width}" height="${height}" fill="transparent"></rect>
-        <line x1="${left}" y1="${base}" x2="${width - right}" y2="${base}" stroke="#8492a6" stroke-width="2"></line>
-        <text x="${width - right}" y="${base + 27}" text-anchor="end" fill="#c9d4e5" font-size="16">z</text>
-        <text x="${x(0)}" y="${base + 27}" text-anchor="middle" fill="#c9d4e5" font-size="16">0</text>
-
-        <polygon points="${leftTail}" fill="url(#${id}-tail)"></polygon>
-        <polygon points="${center}" fill="url(#${id}-center)"></polygon>
-        <polygon points="${rightTail}" fill="url(#${id}-tail)"></polygon>
-        <polyline points="${curvePoints}" fill="none" stroke="#f5f7fd" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" filter="url(#${id}-glow)"></polyline>
-
-        <line x1="${x(-c)}" y1="${base}" x2="${x(-c)}" y2="58" stroke="#ffd54f" stroke-width="2.5" stroke-dasharray="8 7"></line>
-        <line x1="${x(c)}" y1="${base}" x2="${x(c)}" y2="58" stroke="#ffd54f" stroke-width="2.5" stroke-dasharray="8 7"></line>
-        <line x1="${zX}" y1="${base}" x2="${zX}" y2="${Math.max(54, zY - 16)}" stroke="#ffb347" stroke-width="3.5" stroke-dasharray="9 6"></line>
-        <circle cx="${zX}" cy="${zY}" r="6" fill="#ffb347" stroke="#ffe7b3" stroke-width="2"></circle>
-
-        <text x="${x(-c)}" y="${base + 25}" text-anchor="middle" fill="#ffd54f" font-size="15">-c</text>
-        <text x="${x(c)}" y="${base + 25}" text-anchor="middle" fill="#ffd54f" font-size="15">+c</text>
-        <text x="${zX}" y="${Math.max(36, zY - 24)}" text-anchor="middle" fill="#ffcc80" font-size="16" font-weight="700">z_obs</text>
-
-        <text x="${x(-3.05)}" y="244" text-anchor="middle" fill="#ffb4a8" font-size="18" font-weight="700">α/2 = ${tailLabel}</text>
-        <text x="${x(3.05)}" y="244" text-anchor="middle" fill="#ffb4a8" font-size="18" font-weight="700">α/2 = ${tailLabel}</text>
-        <text x="${x(0)}" y="222" text-anchor="middle" fill="#9ff0cf" font-size="21" font-weight="800">γ = ${fmt(gamma, 3)}</text>
-
-        <path d="M ${x(-c) + 7} 365 H ${x(c) - 7}" stroke="#ffd54f" stroke-width="2.2"></path>
-        <text x="${x(0)}" y="392" text-anchor="middle" fill="#ffd54f" font-size="16">c = z_${fmt(beta, 3)} = ${fmt(c, 3)}</text>
-        <text x="${x(0)}" y="35" text-anchor="middle" fill="#c9d4e5" font-size="16">p(|Z| >= |z_obs|) = ${prob(pTwo)} · ${decision}</text>
-      </svg>
-    `;
-  };
-
-  const render = (root) => {
-    const alphaInput = root.querySelector("[data-compat-alpha]");
-    const zInput = root.querySelector("[data-compat-zobs]");
-    const alphaOut = root.querySelector("[data-compat-alpha-out]");
-    const zOut = root.querySelector("[data-compat-zobs-out]");
-    const plot = root.querySelector("[data-compat-plot]");
-    const summary = root.querySelector("[data-compat-summary]");
-    const alpha = Number(alphaInput.value);
-    const gamma = 1 - alpha;
-    const beta = 1 - alpha / 2;
-    const c = quantile(beta);
-    const zObs = Number(zInput.value);
-    const absZ = Math.abs(zObs);
-    const pTwo = Math.min(1, 2 * (1 - cdf(absZ)));
-    const compatible = absZ <= c;
-
-    alphaOut.value = fmt(alpha, 3);
-    zOut.value = fmt(zObs, 2);
-    plot.innerHTML = buildSvg({alpha, gamma, c, zObs, pTwo, id: root.dataset.compatId});
-    summary.innerHTML = `
-      <span>γ = ${fmt(gamma, 3)}</span>
-      <span>α/2 = ${fmt(alpha / 2, 3)}</span>
-      <span>c = ${fmt(c, 3)}</span>
-      <span>p_two = ${prob(pTwo)}</span>
-      <span class="${compatible ? "compat-decision-ok" : "compat-decision-bad"}" style="grid-column: 1 / -1;">
-        ${compatible ? "Совместимость не отвергается" : "Несовместимо на выбранном уровне α"}
-      </span>
-    `;
-  };
-
-  let compatCounter = 0;
-
-  const initOne = (root) => {
-    if (root.dataset.compatReady) return;
-    root.dataset.compatReady = "1";
-    root.dataset.compatId = root.dataset.compatId || `compat-${compatCounter += 1}`;
-    const initialAlpha = root.dataset.alpha || "0.10";
-    const initialZObs = root.dataset.zobs || "1.10";
-    root.innerHTML = `
-      <div class="compat-controls">
-        <label class="compat-control">α <input data-compat-alpha type="range" min="0.001" max="0.200" step="0.001" value="${initialAlpha}"><output data-compat-alpha-out></output></label>
-        <label class="compat-control">z_obs <input data-compat-zobs type="range" min="-8.00" max="8.00" step="0.01" value="${initialZObs}"><output data-compat-zobs-out></output></label>
-      </div>
-      <div data-compat-plot></div>
-      <div class="compat-summary" data-compat-summary></div>
-    `;
-    root.querySelectorAll("input").forEach((input) => {
-      input.addEventListener("input", () => render(root));
-    });
-    render(root);
-  };
-
-  window.initCompatibilityWidgets = () => {
-    document.querySelectorAll(".compat-widget").forEach(initOne);
-  };
-
-  document.addEventListener("DOMContentLoaded", window.initCompatibilityWidgets);
-  if (window.Reveal) {
-    window.Reveal.on("ready", window.initCompatibilityWidgets);
-    window.Reveal.on("slidechanged", window.initCompatibilityWidgets);
-  }
-  window.initCompatibilityWidgets();
-})();
-</script>
-```
-::::
-
-:::: {.content-visible when-format="pdf"}
+:::: {.content-visible unless-format="html:js"}
 ::: {.animation title="Совместимость двух измерений" poster="../assets/figures/compatibility_example_a.png" url="https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/03_central_limit_theorem.html#interactive-compatibility" qr="../assets/qr/compatibility.png"}
 Задайте результаты двух измерений и уровень центральной области. Интерактив
 показывает наблюдаемую разность в единицах её стандартного отклонения.
