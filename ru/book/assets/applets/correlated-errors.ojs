@@ -1,0 +1,49 @@
+viewof nCorr = Inputs.range([1, 500], {value: 10, step: 1, label: "n"})
+viewof sigmaCommon = Inputs.range([0, 2.0], {value: 0.6, step: 0.05, label: "sigma common"})
+viewof sigmaStat = Inputs.range([0.1, 2.0], {value: 1.0, step: 0.05, label: "sigma stat"})
+viewof sampleCorr = Inputs.range([1000, 30000], {value: 12000, step: 1000, label: "N"})
+viewof regenerateCorr = Inputs.button("Новая статистика")
+
+corrMeans = {
+  regenerateCorr;
+  const values = new Array(sampleCorr);
+  for (let i = 0; i < sampleCorr; ++i) {
+    const c = sigmaCommon * randnCauchy();
+    let sum = 0;
+    for (let j = 0; j < nCorr; ++j) sum += c + sigmaStat * randnCauchy();
+    values[i] = sum / nCorr;
+  }
+  return values;
+}
+
+corrTheorySigma = Math.sqrt(sigmaCommon * sigmaCommon + sigmaStat * sigmaStat / nCorr)
+
+histCorr = histogramCauchy(corrMeans, 90, -4, 4)
+normalCorr = Array.from({length: 401}, (_, i) => {
+  const z = -4 + 8 * i / 400;
+  return {z, density: Math.exp(-0.5 * z * z / (corrTheorySigma * corrTheorySigma)) / (corrTheorySigma * Math.sqrt(2 * Math.PI))};
+})
+
+corrPlot = Plot.plot({
+  width: 760,
+  height: 390,
+  marginLeft: 55,
+  x: {label: "mean", domain: [-4, 4]},
+  y: {label: "density", domain: [0, 1.4]},
+  grid: true,
+  marks: [
+    Plot.rectY(histCorr, {x1: "x0", x2: "x1", y: "density", fill: "#4ea1ff", fillOpacity: 0.70, stroke: "white"}),
+    Plot.line(normalCorr, {x: "z", y: "density", stroke: "#ffb347", strokeWidth: 2.8})
+  ]
+})
+
+html`
+<div class="book-applet-panel">
+  ${corrPlot}
+  <div class="book-applet-summary">
+    <span> Var(mean) = sigma_common² + sigma_stat²/n; </span>
+    <span> sigma(mean) = ${corrTheorySigma.toFixed(3)}; </span>
+    <span> n = ${nCorr}.</span>
+  </div>
+</div>
+`

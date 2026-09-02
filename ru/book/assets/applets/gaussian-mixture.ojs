@@ -1,0 +1,52 @@
+viewof mixWeight = Inputs.range([0.0, 1.0], {value: 0.5, step: 0.02, label: "weight"})
+viewof mixSeparation = Inputs.range([0.0, 6.0], {value: 2.5, step: 0.1, label: "separation"})
+viewof mixSigma2 = Inputs.range([0.2, 2.5], {value: 1.0, step: 0.05, label: "sigma 2"})
+viewof sampleMix = Inputs.range([1000, 40000], {value: 15000, step: 1000, label: "N"})
+viewof regenerateMix = Inputs.button("Новая статистика")
+
+mixValues = {
+  regenerateMix;
+  const values = new Array(sampleMix);
+  const mu1 = -mixSeparation / 2;
+  const mu2 = mixSeparation / 2;
+  for (let i = 0; i < sampleMix; ++i) {
+    if (Math.random() < mixWeight) values[i] = mu1 + randnCauchy();
+    else values[i] = mu2 + mixSigma2 * randnCauchy();
+  }
+  return values;
+}
+
+mixMean = mixValues.reduce((s, x) => s + x, 0) / mixValues.length
+mixVar = mixValues.reduce((s, x) => s + (x - mixMean) ** 2, 0) / mixValues.length
+mixSigma = Math.sqrt(mixVar)
+
+histMix = histogramCauchy(mixValues, 100, -8, 8)
+normalMix = Array.from({length: 401}, (_, i) => {
+  const x = -8 + 16 * i / 400;
+  return {x, y: Math.exp(-0.5 * (x - mixMean) ** 2 / mixVar) / (mixSigma * Math.sqrt(2 * Math.PI))};
+})
+
+mixPlot = Plot.plot({
+  width: 760,
+  height: 390,
+  marginLeft: 55,
+  x: {label: "x", domain: [-8, 8]},
+  y: {label: "density", domain: [0, 0.55]},
+  grid: true,
+  marks: [
+    Plot.rectY(histMix, {x1: "x0", x2: "x1", y: "density", fill: "#4ea1ff", fillOpacity: 0.70, stroke: "white"}),
+    Plot.line(normalMix, {x: "x", y: "y", stroke: "#ffb347", strokeWidth: 2.8})
+  ]
+})
+
+html`
+<div class="book-applet-panel">
+  ${mixPlot}
+  <div class="book-applet-summary">
+    <span> Синим цветом показана смесь,</span>
+    <span> оранжевым - гаусс с теми же mean и variance: </span>
+    <span> mean = ${mixMean.toFixed(2)}, </span>
+    <span> sigma = ${mixSigma.toFixed(2)}.</span>
+  </div>
+</div>
+`

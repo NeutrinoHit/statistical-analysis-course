@@ -1,0 +1,98 @@
+viewof nCauchy = Inputs.range([1, 200], {
+  value: 1,
+  step: 1,
+  label: "n"
+})
+
+viewof sampleCauchy = Inputs.range([1000, 50000], {
+  value: 15000,
+  step: 1000,
+  label: "N"
+})
+
+viewof regenerateCauchy = Inputs.button("Новая статистика")
+
+randnCauchy = () => {
+  let u = 0;
+  let v = 0;
+  while (u === 0) u = Math.random();
+  while (v === 0) v = Math.random();
+  return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
+}
+
+cauchyRandom = () => Math.tan(Math.PI * (Math.random() - 0.5))
+
+cauchyMeans = {
+  regenerateCauchy;
+  const values = new Array(sampleCauchy);
+  for (let i = 0; i < sampleCauchy; ++i) {
+    let sum = 0;
+    for (let j = 0; j < nCauchy; ++j) sum += cauchyRandom();
+    values[i] = sum / nCauchy;
+  }
+  return values;
+}
+
+gaussMeans = {
+  regenerateCauchy;
+  const values = new Array(sampleCauchy);
+  for (let i = 0; i < sampleCauchy; ++i) {
+    let sum = 0;
+    for (let j = 0; j < nCauchy; ++j) sum += randnCauchy();
+    values[i] = sum / Math.sqrt(nCauchy);
+  }
+  return values;
+}
+
+histogramCauchy = (values, bins, min, max) => {
+  const width = (max - min) / bins;
+  const counts = Array(bins).fill(0);
+  for (const value of values) {
+    if (value < min || value >= max) continue;
+    counts[Math.floor((value - min) / width)] += 1;
+  }
+  return counts.map((count, i) => ({
+    x0: min + i * width,
+    x1: min + (i + 1) * width,
+    density: count / (values.length * width)
+  }));
+}
+
+histCauchy = histogramCauchy(cauchyMeans, 100, -10, 10)
+histGaussMean = histogramCauchy(gaussMeans, 100, -10, 10)
+
+cauchyTheory = Array.from({length: 501}, (_, i) => {
+  const x = -10 + 20 * i / 500;
+  return {x, y: 1 / (Math.PI * (1 + x * x))};
+})
+
+cauchyPlot = Plot.plot({
+  width: 760,
+  height: 390,
+  marginLeft: 55,
+  x: {label: "x", domain: [-10, 10]},
+  y: {label: "density", domain: [0, 0.38]},
+  grid: true,
+  marks: [
+    Plot.rectY(histGaussMean, {
+      x1: "x0", x2: "x1", y: "density",
+      fill: "#9be564", fillOpacity: 0.40
+    }),
+    Plot.rectY(histCauchy, {
+      x1: "x0", x2: "x1", y: "density",
+      fill: "#4ea1ff", fillOpacity: 0.68
+    }),
+    Plot.line(cauchyTheory, {x: "x", y: "y", stroke: "#ffb347", strokeWidth: 2.7})
+  ]
+})
+
+html`
+<div class="book-applet-panel">
+  ${cauchyPlot}
+  <div class="book-applet-summary">
+    <span> Синим цветом обозначено среднее для Коши,</span>
+    <span> а зелёным - нормированная сумма для гауссовых распределений. </span>
+    <span> Текущее n = ${nCauchy}.</span>
+  </div>
+</div>
+`

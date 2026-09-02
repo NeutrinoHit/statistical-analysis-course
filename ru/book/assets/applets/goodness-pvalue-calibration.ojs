@@ -1,0 +1,101 @@
+pUniformRandomFactory = () => {
+  let state = 246813579;
+  return () => {
+    state = (1664525 * state + 1013904223) >>> 0;
+    return state / 4294967296;
+  };
+}
+
+pUniformNormal = (rand) => {
+  const u1 = Math.max(rand(), 1e-12);
+  const u2 = rand();
+  return Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
+}
+
+pUniformChi2Sample = (count, nu, rand) => {
+  const out = [];
+  for (let b = 0; b < count; b++) {
+    let t = 0;
+    for (let i = 0; i < nu; i++) {
+      const z = pUniformNormal(rand);
+      t += z * z;
+    }
+    out.push(t);
+  }
+  return out;
+}
+
+pUniformSamples = {
+  const rand = pUniformRandomFactory();
+  const nu = 10;
+  const calibration = pUniformChi2Sample(20000, nu, rand).sort((a, b) => a - b);
+  const observed = pUniformChi2Sample(5000, nu, rand);
+  return {nu, calibration, observed};
+}
+
+pUniformLowerBound = (arr, x) => {
+  let lo = 0;
+  let hi = arr.length;
+  while (lo < hi) {
+    const mid = Math.floor((lo + hi) / 2);
+    if (arr[mid] < x) {
+      lo = mid + 1;
+    } else {
+      hi = mid;
+    }
+  }
+  return lo;
+}
+
+pUniformValues = {
+  const calibration = pUniformSamples.calibration;
+  const nCal = calibration.length;
+  return pUniformSamples.observed.map(t => {
+    const left = pUniformLowerBound(calibration, t);
+    const nRight = nCal - left;
+    return nRight / nCal;
+  });
+}
+
+pUniformHistogram = {
+  const nBins = 20;
+  const bins = Array.from({length: nBins}, () => 0);
+  for (const p of pUniformValues) {
+    const i = Math.min(nBins - 1, Math.floor(p * nBins));
+    bins[i] += 1;
+  }
+  return bins.map((n, i) => ({
+    x1: i / nBins,
+    x2: (i + 1) / nBins,
+    y: n / pUniformValues.length * nBins
+  }));
+}
+
+pUniformPlot = Plot.plot({
+  width: 1050,
+  height: 430,
+  marginLeft: 70,
+  marginBottom: 55,
+  x: {label: "p", domain: [0, 1], grid: true},
+  y: {label: "плотность", domain: [0, 1.45], grid: true},
+  marks: [
+    Plot.rectY(pUniformHistogram, {
+      x1: "x1",
+      x2: "x2",
+      y: "y",
+      fill: "#6ea8ff",
+      fillOpacity: 0.70
+    }),
+    Plot.ruleY([1], {stroke: "#ffb347", strokeWidth: 4, strokeDasharray: "8,7"})
+  ]
+})
+
+html`
+<div class="book-applet-panel">
+  <div class="book-applet-center">${pUniformPlot}</div>
+  <div class="book-applet-summary">
+    <span>${pUniformSamples.calibration.length} значений для калибровки; </span>
+    <span>${pUniformSamples.observed.length} псевдонаблюдений.</span>
+    <span> Ожидаемая плотность равна 1. </span>
+  </div>
+</div>`

@@ -1,0 +1,42 @@
+viewof nFourier = Inputs.range([1, 100], {
+  value: 1,
+  step: 1,
+  label: "n"
+})
+
+sincFourier = (x) => Math.abs(x) < 1e-12 ? 1 : Math.sin(x) / x
+
+fourierData = Array.from({length: 601}, (_, i) => {
+  const t = -8 + 16 * i / 600;
+  const u = Math.sqrt(3) * t / Math.sqrt(nFourier);
+  return {
+    t,
+    sum: Math.pow(sincFourier(u), nFourier),
+    gauss: Math.exp(-0.5 * t * t)
+  };
+})
+
+fourierPlot = Plot.plot({
+  width: 920,
+  height: 490,
+  marginLeft: 55,
+  x: {label: "t", domain: [-8, 8]},
+  y: {label: "Re φ(t)", domain: [-0.25, 1.05]},
+  grid: true,
+  marks: [
+    Plot.ruleY([0], {stroke: "#888"}),
+    Plot.line(fourierData, {x: "t", y: "sum", stroke: "#4ea1ff", strokeWidth: 3}),
+    Plot.line(fourierData, {x: "t", y: "gauss", stroke: "#ffb347", strokeWidth: 2.6})
+  ]
+})
+
+html`
+<div class="book-applet-panel">
+  ${fourierPlot}
+  <div class="book-applet-summary">
+    <span> Синим цветом обозначена нормированная сумма равномерных величин, </span>
+    <span> оранжевым - exp(-t²/2).</span>
+    <span> Сейчас n = ${nFourier}.</span>
+  </div>
+</div>
+`

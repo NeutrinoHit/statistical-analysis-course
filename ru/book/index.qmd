@@ -9,6 +9,7 @@ format:
 
 # Статистический анализ данных {.unnumbered}
 
+:::: {.content-visible when-format="html:js"}
 ```{=html}
 <section class="book-landing">
   <div class="book-landing-main">
@@ -55,3 +56,10 @@ format:
   </div>
 </section>
 ```
+::::
+
+:::: {.content-visible unless-format="html:js"}
+Книга посвящена статистическим методам, которые используются при анализе
+экспериментальных данных: от вероятностной модели и оценки параметров до
+проверки гипотез и формулировки физического результата.
+::::

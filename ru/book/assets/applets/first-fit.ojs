@@ -1,0 +1,154 @@
+viewof trialSigma = Inputs.range([0.35, 1.8], {
+  value: 0.75,
+  step: 0.01,
+  label: "Пробное значение σ"
+})
+
+viewof nEvents = Inputs.range([250, 4000], {
+  value: 1200,
+  step: 250,
+  label: "Число событий"
+})
+
+viewof regenerate = Inputs.button("Новые псевдоданные")
+
+viewof showBest = Inputs.toggle({label: "Показать лучший фит", value: false})
+viewof showTruth = Inputs.toggle({label: "Показать истинное σ", value: false})
+
+function randnBook() {
+  const u = 1 - Math.random();
+  const v = Math.random();
+  return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
+}
+
+centers = Array.from({length: 25}, (_, i) => -3 + 0.25 * i)
+dxBook = 0.25
+xMinBook = centers[0] - dxBook / 2
+xMaxBook = centers[centers.length - 1] + dxBook / 2
+edgesBook = Array.from({length: centers.length + 1}, (_, i) => xMinBook + i * dxBook)
+curveXBook = Array.from({length: 401}, (_, i) => xMinBook + (xMaxBook - xMinBook) * i / 400)
+
+sigmaTrueBook = {
+  regenerate;
+  return 0.55 + 0.75 * Math.random();
+}
+
+function generateGaussianCountsBook(sigma, total) {
+  const counts = Array(centers.length).fill(0);
+  let accepted = 0;
+  while (accepted < total) {
+    const value = sigma * randnBook();
+    if (value < xMinBook || value >= xMaxBook) continue;
+    const index = Math.floor((value - xMinBook) / dxBook);
+    counts[Math.max(0, Math.min(centers.length - 1, index))] += 1;
+    accepted += 1;
+  }
+  return counts;
+}
+
+countsBook = {
+  regenerate;
+  nEvents;
+  return generateGaussianCountsBook(sigmaTrueBook, nEvents);
+}
+
+totalBook = countsBook.reduce((sum, value) => sum + value, 0)
+
+function erfBook(x) {
+  const sign = x < 0 ? -1 : 1;
+  const z = Math.abs(x);
+  const t = 1 / (1 + 0.3275911 * z);
+  const poly = (((((1.061405429 * t - 1.453152027) * t + 1.421413741) * t - 0.284496736) * t + 0.254829592) * t);
+  return sign * (1 - poly * Math.exp(-z * z));
+}
+
+normalCdfBook = (x, sigma) => 0.5 * (1 + erfBook(x / (Math.SQRT2 * sigma)))
+
+function expectedCountsBook(sigma) {
+  const raw = centers.map((_, i) =>
+    normalCdfBook(edgesBook[i + 1], sigma) - normalCdfBook(edgesBook[i], sigma)
+  );
+  const norm = raw.reduce((sum, value) => sum + value, 0);
+  return raw.map((value) => totalBook * value / norm);
+}
+
+function devianceBook(sigma) {
+  const expected = expectedCountsBook(sigma);
+  return countsBook.reduce((sum, observed, i) => {
+    const mean = Math.max(expected[i], 1e-12);
+    return observed > 0
+      ? sum + 2 * (mean - observed + observed * Math.log(observed / mean))
+      : sum + 2 * mean;
+  }, 0);
+}
+
+sigmaGridBook = Array.from({length: 291}, (_, i) => 0.35 + 0.005 * i)
+profileBook = sigmaGridBook.map((sigma) => ({sigma, chi2: devianceBook(sigma)}))
+bestBook = profileBook.reduce((a, b) => a.chi2 < b.chi2 ? a : b)
+trialChi2Book = devianceBook(trialSigma)
+
+function smoothCurveBook(sigma) {
+  const truncation = normalCdfBook(xMaxBook, sigma) - normalCdfBook(xMinBook, sigma);
+  const scale = totalBook * dxBook / (Math.sqrt(2 * Math.PI) * sigma * truncation);
+  return curveXBook.map((x) => ({
+    x,
+    y: scale * Math.exp(-(x * x) / (2 * sigma * sigma))
+  }));
+}
+
+fitPlotBook = Plot.plot({
+  width: 760,
+  height: 410,
+  marginLeft: 58,
+  x: {label: "x", grid: true},
+  y: {label: "число событий", grid: true},
+  marks: [
+    Plot.rectY(centers.map((x, i) => ({x, y: countsBook[i]})), {
+      x1: (d) => d.x - dxBook / 2,
+      x2: (d) => d.x + dxBook / 2,
+      y: "y",
+      fill: "#dce8ee",
+      stroke: "#486979"
+    }),
+    Plot.line(smoothCurveBook(trialSigma), {
+      x: "x", y: "y", stroke: "#c7472f", strokeWidth: 3
+    }),
+    ...(showBest ? [Plot.line(smoothCurveBook(bestBook.sigma), {
+      x: "x", y: "y", stroke: "#147d64", strokeWidth: 3, strokeDasharray: "7,5"
+    })] : []),
+    ...(showTruth ? [Plot.line(smoothCurveBook(sigmaTrueBook), {
+      x: "x", y: "y", stroke: "#2a5ea8", strokeWidth: 2.5
+    })] : [])
+  ]
+})
+
+profilePlotBook = Plot.plot({
+  width: 560,
+  height: 410,
+  marginLeft: 58,
+  x: {label: "σ", grid: true},
+  y: {label: "χ²(σ)", grid: true},
+  marks: [
+    Plot.line(profileBook, {x: "sigma", y: "chi2", stroke: "#486979", strokeWidth: 2.5}),
+    Plot.dot([{sigma: trialSigma, chi2: trialChi2Book}], {
+      x: "sigma", y: "chi2", fill: "#c7472f", r: 6
+    }),
+    ...(showBest ? [Plot.dot([bestBook], {
+      x: "sigma", y: "chi2", fill: "#147d64", r: 6
+    })] : [])
+  ]
+})
+
+html`
+<div class="book-fit-output">
+  <div class="book-fit-plots">
+    <figure>${fitPlotBook}<figcaption>Псевдоданные и пробная модель</figcaption></figure>
+    <figure>${profilePlotBook}<figcaption>Профиль функции χ²</figcaption></figure>
+  </div>
+  <div class="book-fit-readout">
+    <span><b>Ваш выбор</b> σ = ${trialSigma.toFixed(2)}, χ² = ${trialChi2Book.toFixed(1)}</span>
+    ${showBest ? `<span class="fit-best"><b>Результат фита</b> σ̂ = ${bestBook.sigma.toFixed(3)}</span>` : ``}
+    ${showTruth ? `<span class="fit-truth"><b>Истина</b> σ = ${sigmaTrueBook.toFixed(3)}</span>` : ``}
+  </div>
+</div>
+`

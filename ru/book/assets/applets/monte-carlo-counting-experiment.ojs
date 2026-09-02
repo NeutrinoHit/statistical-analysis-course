@@ -1,0 +1,57 @@
+viewof toySignal = mcRange("ожидаемый сигнал s", [0, 20], {value: 5, step: 0.5})
+viewof toyBackground = mcRange("ожидаемый фон b", [0.5, 30], {value: 10, step: 0.5})
+viewof toyN = mcRange("псевдоэксперименты", [500, 20000], {value: 6000, step: 500})
+viewof regenerateToys = Inputs.button("Новый ансамбль")
+
+poissonToy = lambda => {
+  const limit = Math.exp(-lambda);
+  let p = 1;
+  let k = 0;
+  do {
+    k += 1;
+    p *= Math.random();
+  } while (p > limit);
+  return k - 1;
+}
+
+toyEstimates = {
+  regenerateToys;
+  return Array.from({length: toyN}, () => poissonToy(toySignal + toyBackground) - toyBackground);
+}
+
+toyBins = {
+  const counts = new Map();
+  for (const value of toyEstimates) counts.set(value, (counts.get(value) || 0) + 1);
+  return Array.from(counts, ([value, count]) => ({
+    value,
+    x1: value - 0.45,
+    x2: value + 0.45,
+    probability: count / toyEstimates.length
+  })).sort((a, b) => a.value - b.value);
+}
+
+toyMin = Math.floor(Math.min(...toyEstimates)) - 0.5
+toyMax = Math.ceil(Math.max(...toyEstimates)) + 0.5
+toyYMax = Math.max(0.12, 1.18 * Math.max(...toyBins.map(d => d.probability)))
+
+toyPlot = Plot.plot({
+  width: 900,
+  height: 360,
+  marginLeft: 72,
+  x: {label: "оценка сигнала ŝ = N - b", domain: [toyMin, toyMax], grid: true},
+  y: {label: "вероятность", domain: [0, toyYMax], grid: true},
+  marks: [
+    Plot.rectY(toyBins, {x1: "x1", x2: "x2", y: "probability", fill: "#4ea1ff", fillOpacity: 0.9}),
+    Plot.ruleX([toySignal], {stroke: "#ffb347", strokeWidth: 4}),
+    Plot.ruleX([0], {stroke: "#777", strokeDasharray: "4,4"})
+  ]
+})
+
+html`
+<div class="book-applet-panel">
+  ${toyPlot}
+  <div class="book-applet-summary">
+    <span>Модель: s = ${toySignal.toFixed(1)}, b = ${toyBackground.toFixed(1)};</span>
+    <span> реальный эксперимент даст одну точку из этого распределения</span>
+  </div>
+</div>`

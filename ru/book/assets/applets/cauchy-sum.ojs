@@ -1,0 +1,32 @@
+cauchyData = Array.from({length: 501}, (_, i) => {
+  const x = -8 + 16 * i / 500;
+  return {
+    x,
+    original: 1 / (Math.PI * (1 + x * x)),
+    sum: 2 / (Math.PI * (4 + x * x))
+  };
+})
+
+cauchySumPlot = (() => {
+  const plot = Plot.plot({
+    x: { label: "x", domain: [-8, 8], grid: true },
+    y: { label: "плотность", domain: [0, 0.35], grid: true },
+    marks: [
+      Plot.ruleY([0], {stroke: "#888"}),
+      Plot.line(cauchyData, {x: "x", y: "original", stroke: "#ffb347", strokeWidth: 3}),
+      Plot.line(cauchyData, {x: "x", y: "sum", stroke: "#4ea1ff", strokeWidth: 3}),
+      Plot.text(
+        [
+          {x: 2.5, y: 0.12, label: "X"},
+          {x: 4.5, y: 0.07, label: "X + Y"}
+        ],
+        {x: "x", y: "y", text: "label", fill: d => d.label === "X" ? "#ffb347" : "#4ea1ff"}
+      )
+    ]
+  });
+  
+  plot.style.display = 'block';
+  plot.style.margin = '0 auto';
+  
+  return plot; 
+})();

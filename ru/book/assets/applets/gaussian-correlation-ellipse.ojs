@@ -1,0 +1,64 @@
+viewof rhoEllipse = Inputs.range([-0.98, 0.98], {value: 0.65, step: 0.02, label: "rho"})
+viewof sigmaXEllipse = Inputs.range([0.4, 2.2], {value: 1.4, step: 0.05, label: "sigma_X"})
+viewof sigmaYEllipse = Inputs.range([0.4, 2.2], {value: 0.8, step: 0.05, label: "sigma_Y"})
+viewof regenerateEllipse = Inputs.button("Новое облако")
+
+randnEllipse = () => {
+  const u1 = Math.max(Math.random(), 1e-12);
+  const u2 = Math.random();
+  return Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
+}
+
+ellipseCloud = {
+  regenerateEllipse;
+  const points = [];
+  const s = Math.sqrt(1 - rhoEllipse * rhoEllipse);
+  for (let i = 0; i < 1200; ++i) {
+    const z1 = randnEllipse();
+    const z2 = randnEllipse();
+    points.push({
+      x: sigmaXEllipse * z1,
+      y: sigmaYEllipse * (rhoEllipse * z1 + s * z2)
+    });
+  }
+  return points;
+}
+
+ellipseContour = {
+  const q = Math.sqrt(2.30);
+  const s = Math.sqrt(1 - rhoEllipse * rhoEllipse);
+  return Array.from({length: 241}, (_, i) => {
+    const a = 2 * Math.PI * i / 240;
+    const z1 = q * Math.cos(a);
+    const z2 = q * Math.sin(a);
+    return {
+      x: sigmaXEllipse * z1,
+      y: sigmaYEllipse * (rhoEllipse * z1 + s * z2)
+    };
+  });
+}
+
+ellipsePlot = Plot.plot({
+  width: 860,
+  height: 500,
+  marginLeft: 70,
+  x: {label: "X", domain: [-4.5, 4.5], grid: true},
+  y: {label: "Y", domain: [-4, 4], grid: true},
+  marks: [
+    Plot.ruleX([0], {stroke: "#777"}),
+    Plot.ruleY([0], {stroke: "#777"}),
+    Plot.dot(ellipseCloud, {x: "x", y: "y", r: 2.2, fill: "#4ea1ff", fillOpacity: 0.35}),
+    Plot.line(ellipseContour, {x: "x", y: "y", stroke: "#ffb347", strokeWidth: 4})
+  ]
+})
+
+html`
+<div class="book-applet-panel">
+  ${ellipsePlot}
+  <div class="book-applet-summary">
+    <span>rho = ${rhoEllipse.toFixed(2)}</span>
+    <span>оранжевый эллипс: вероятность 68.3%</span>
+    <span>Delta chi^2 = 2.30</span>
+  </div>
+</div>
+`

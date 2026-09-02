@@ -1,0 +1,45 @@
+oneSideGaussZ = 2
+oneSideGaussPdf = z => Math.exp(-0.5 * z * z) / Math.sqrt(2 * Math.PI)
+oneSideGaussData = Array.from({length: 900}, (_, i) => {
+  const z = -4.5 + 9 * i / 899;
+  return {z, y: oneSideGaussPdf(z), tail: z >= oneSideGaussZ};
+})
+oneSideGaussTail = oneSideGaussData.filter(d => d.tail)
+
+oneSideGaussPlot = Plot.plot({
+  width: 1050,
+  height: 420,
+  marginLeft: 70,
+  marginBottom: 55,
+  x: {label: "Z", domain: [-4.5, 4.5], grid: true},
+  y: {label: "f_Z(z)", domain: [0, 0.43], grid: true},
+  marks: [
+    Plot.areaY(oneSideGaussTail, {x: "z", y: "y", fill: "#ff4f5e", fillOpacity: 0.65}),
+    Plot.line(oneSideGaussData, {x: "z", y: "y", stroke: "#6ea8ff", strokeWidth: 4}),
+    Plot.ruleX([oneSideGaussZ], {stroke: "#ffb347", strokeWidth: 4}),
+    Plot.text([{z: oneSideGaussZ, y: 0.37, text: "Z"}], {
+      x: "z",
+      y: "y",
+      text: "text",
+      fill: "#ffffff",
+      fontSize: 24,
+      dy: -4
+    }),
+    Plot.text([{z: 2.95, y: 0.055, text: "p"}], {
+      x: "z",
+      y: "y",
+      text: "text",
+      fill: "#ffffff",
+      fontSize: 28
+    })
+  ]
+})
+
+html`
+<div class="book-applet-panel">
+  <div class="book-applet-center">${oneSideGaussPlot}</div>
+  <div class="book-applet-summary">
+    <span>односторонний перевод: p = P(Z_G ≥ Z)</span>
+    <span>площадь правого хвоста равна p-уровню</span>
+  </div>
+</div>`

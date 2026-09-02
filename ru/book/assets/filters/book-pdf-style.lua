@@ -144,7 +144,10 @@ function Div(div)
   end
 
   if has_class(div, "figure-panel") then
-    return wrap_blocks(div.content, "bookfigurepanel", nil, true)
+    -- Quarto turns the image into a LaTeX float after this filter runs. A float
+    -- cannot be placed inside a tcolorbox, so PDF keeps the numbered figure and
+    -- its following explanation without an outer panel.
+    return div.content
   end
 
   if has_class(div, "result-gallery") then
@@ -156,14 +159,6 @@ function Div(div)
 
   if has_class(div, "book-applet") then
     return title_box(div, "bookapplet", nil, false, true)
-  end
-
-  if has_class(div, "notebook-card") then
-    return title_box(div, "booknotebook", nil, false, true)
-  end
-
-  if has_class(div, "next-chapter") then
-    return wrap_blocks(div.content, "booknextchapter", nil, true)
   end
 
   return nil

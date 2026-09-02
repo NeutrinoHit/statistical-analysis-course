@@ -1,0 +1,119 @@
+viewof cowanObs = Inputs.range([0, 60], {value: 29.8, step: 0.1, label: "χ²_obs"})
+
+cowanNuModel = [
+  0.158, 0.295, 0.513, 0.833, 1.263,
+  1.785, 2.355, 2.899, 3.330, 3.568,
+  3.568, 3.330, 2.899, 2.355, 1.785,
+  1.263, 0.833, 0.513, 0.295, 0.158
+]
+
+cowanRandomFactory = () => {
+  let state = 123456789;
+  return () => {
+    state = (1664525 * state + 1013904223) >>> 0;
+    return state / 4294967296;
+  };
+}
+
+cowanPoisson = (lambda, rand) => {
+  const l = Math.exp(-lambda);
+  let k = 0;
+  let p = 1;
+  do {
+    k += 1;
+    p *= rand();
+  } while (p > l);
+  return k - 1;
+}
+
+cowanToyStats = {
+  const rand = cowanRandomFactory();
+  const out = [];
+  const bCount = 80000;
+  for (let b = 0; b < bCount; b++) {
+    let t = 0;
+    for (const mu of cowanNuModel) {
+      const n = cowanPoisson(mu, rand);
+      const d = n - mu;
+      t += d * d / mu;
+    }
+    out.push(t);
+  }
+  return out;
+}
+
+cowanHistogram = {
+  const binWidth = 1;
+  const bins = Array.from({length: 60}, () => 0);
+  for (const t of cowanToyStats) {
+    if (t >= 0 && t < 60) bins[Math.floor(t / binWidth)] += 1;
+  }
+  return bins.map((n, i) => ({
+    x1: i * binWidth,
+    x2: (i + 1) * binWidth,
+    y: n / (cowanToyStats.length * binWidth)
+  }));
+}
+
+cowanChi2Data = Array.from({length: 1200}, (_, i) => {
+  const x = 1e-4 + 60 * i / 1199;
+  return {x, y: chiDistPdf(x, 20)};
+})
+
+cowanChi2Tail = {
+  const xmax = 90;
+  const nStep = 1800;
+  let s = 0;
+  let x0 = cowanObs;
+  let y0 = chiDistPdf(x0, 20);
+  for (let i = 1; i <= nStep; i++) {
+    const x1 = cowanObs + (xmax - cowanObs) * i / nStep;
+    const y1 = chiDistPdf(x1, 20);
+    s += 0.5 * (y0 + y1) * (x1 - x0);
+    x0 = x1;
+    y0 = y1;
+  }
+  return s;
+}
+
+cowanModelP = cowanToyStats.filter(t => t >= cowanObs).length / cowanToyStats.length;
+cowanFmtP = (p) => p < 1e-3 ? p.toExponential(2) : p.toFixed(3);
+
+cowanPlot = Plot.plot({
+  width: 1050,
+  height: 455,
+  marginLeft: 70,
+  marginBottom: 50,
+  x: {label: "T", domain: [0, 60], grid: true},
+  y: {label: "плотность", domain: [0, 0.10], grid: true},
+  color: {legend: true},
+  marks: [
+    Plot.rectY(cowanHistogram, {
+      x1: "x1",
+      x2: "x2",
+      y: "y",
+      fill: "#b8b8b8",
+      fillOpacity: 0.62
+    }),
+    Plot.line(cowanChi2Data, {
+      x: "x",
+      y: "y",
+      stroke: "#6ea8ff",
+      strokeWidth: 4
+    }),
+    Plot.ruleX([cowanObs], {stroke: "#ff4d4d", strokeWidth: 4}),
+    Plot.text([{x: Math.min(cowanObs + 5, 52), y: 0.075, label: "χ²_obs"}],
+      {x: "x", y: "y", text: "label", fill: "#ffffff", fontSize: 22})
+  ]
+})
+
+html`
+<div class="book-applet-panel">
+  <div class="book-applet-center">${cowanPlot}</div>
+  <div class="book-applet-summary">
+    <span>20 пуассоновских бинов; </span>
+    <span> χ²_obs = ${cowanObs.toFixed(1)};</span>
+    <span> p из моделирования ≈ ${cowanFmtP(cowanModelP)};</span>
+    <span> p по χ²₂₀ ≈ ${cowanFmtP(cowanChi2Tail)}</span>
+  </div>
+</div>`

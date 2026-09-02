@@ -185,55 +185,20 @@ f_S(s)=\frac{2}{\pi(s^2+4)}.
 }$$
 В итоге, то, что при прямой свёртке требовало вычисления нетривиального интеграла, в пространстве Фурье свелось к умножению двух простых функций.
 
-::: figure-panel
-:::: {.content-visible when-format="html:js"}
 ```{ojs}
 //| echo: false
-
-cauchyData = Array.from({length: 501}, (_, i) => {
-  const x = -8 + 16 * i / 500;
-  return {
-    x,
-    original: 1 / (Math.PI * (1 + x * x)),
-    sum: 2 / (Math.PI * (4 + x * x))
-  };
-})
-
-cauchySumPlot = (() => {
-  const plot = Plot.plot({
-    x: { label: "x", domain: [-8, 8], grid: true },
-    y: { label: "плотность", domain: [0, 0.35], grid: true },
-    marks: [
-      Plot.ruleY([0], {stroke: "#888"}),
-      Plot.line(cauchyData, {x: "x", y: "original", stroke: "#ffb347", strokeWidth: 3}),
-      Plot.line(cauchyData, {x: "x", y: "sum", stroke: "#4ea1ff", strokeWidth: 3}),
-      Plot.text(
-        [
-          {x: 2.5, y: 0.12, label: "X"},
-          {x: 4.5, y: 0.07, label: "X + Y"}
-        ],
-        {x: "x", y: "y", text: "label", fill: d => d.label === "X" ? "#ffb347" : "#4ea1ff"}
-      )
-    ]
-  });
-  
-  plot.style.display = 'block';
-  plot.style.margin = '0 auto';
-  
-  return plot; 
-})();
+//| classes: book-applet
+{{< include ../assets/applets/cauchy-sum.ojs >}}
 ```
 Стандартное распределение Коши и распределение суммы двух независимых стандартных величин Коши.
-::::
 
-:::: {.content-visible when-format="pdf"}
+:::: {.content-visible unless-format="html:js"}
 ::: {.animation title="Сумма двух величин Коши" poster="../assets/figures/cauchy_sum.png" url="https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/02_characteristic_functions.html#interactive-cauchy-sum" qr="../assets/qr/cauchy_sum.png"}
 В HTML-книге график строится из характеристических функций исходной величины
 и её суммы с независимой копией.
 :::
 ::::
 У суммы максимум ниже, а распределение шире: параметр $\gamma$ увеличился с $1$ до $2$.
-:::
 
 ### Алгоритм вычисления распределения суммы через Фурье
 
@@ -926,58 +891,13 @@ $$\mathbb{E}[X_k]=0,
 На графике по горизонтальной оси откладывается аргумент $t$, а по вертикальной – вещественная часть характеристической функции. Сравниваются характеристическая функция нормированной суммы и предельная функция
 $$e^{-t^2/2}.$$
 
-::: {.content-visible when-format="html:js"}
-::: clt-widget
 ```{ojs}
 //| echo: false
-
-viewof nFourier = Inputs.range([1, 100], {
-  value: 1,
-  step: 1,
-  label: "n"
-})
-
-sincFourier = (x) => Math.abs(x) < 1e-12 ? 1 : Math.sin(x) / x
-
-fourierData = Array.from({length: 601}, (_, i) => {
-  const t = -8 + 16 * i / 600;
-  const u = Math.sqrt(3) * t / Math.sqrt(nFourier);
-  return {
-    t,
-    sum: Math.pow(sincFourier(u), nFourier),
-    gauss: Math.exp(-0.5 * t * t)
-  };
-})
-
-fourierPlot = Plot.plot({
-  width: 920,
-  height: 490,
-  marginLeft: 55,
-  x: {label: "t", domain: [-8, 8]},
-  y: {label: "Re φ(t)", domain: [-0.25, 1.05]},
-  grid: true,
-  marks: [
-    Plot.ruleY([0], {stroke: "#888"}),
-    Plot.line(fourierData, {x: "t", y: "sum", stroke: "#4ea1ff", strokeWidth: 3}),
-    Plot.line(fourierData, {x: "t", y: "gauss", stroke: "#ffb347", strokeWidth: 2.6})
-  ]
-})
-
-html`
-<div class="clt-panel">
-  ${fourierPlot}
-  <div class="clt-summary">
-    <span> Синим цветом обозначена нормированная сумма равномерных величин, </span>
-    <span> оранжевым - exp(-t²/2).</span>
-    <span> Сейчас n = ${nFourier}.</span>
-  </div>
-</div>
-`
+//| classes: book-applet
+{{< include ../assets/applets/clt-fourier.ojs >}}
 ```
-:::
-:::
 
-:::: {.content-visible when-format="pdf"}
+:::: {.content-visible unless-format="html:js"}
 ::: {.animation title="Гауссов предел в пространстве Фурье" poster="../assets/figures/clt_fourier_n10.png" url="https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/02_characteristic_functions.html#interactive-clt-fourier" qr="../assets/qr/clt_fourier.png"}
 Меняя число слагаемых, можно проследить, как характеристическая функция
 нормированной суммы приближается к $e^{-t^2/2}$.

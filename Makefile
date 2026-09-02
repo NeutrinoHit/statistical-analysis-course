@@ -17,7 +17,7 @@ SLIDES_RU_DIR := ru/slides
 SLIDES_EN_DIR := en/slides
 RU_PDF_CHAPTERS := why_statistics
 
-.PHONY: help check-env ci-setup site all books notebooks figures slides \
+.PHONY: help check-env check-book-sources ci-setup site all books notebooks figures book-qr slides \
 	ru-slides en-slides \
 	ru ru-html ru-pdf ru-chapters ru-epub en en-html en-pdf en-epub \
 	ru-notebooks en-notebooks ru-notebook en-notebook \
@@ -45,7 +45,7 @@ ci-setup: check-env ## Установить зависимости для CI
 	  $(QUARTO) install tinytex --no-prompt; \
 	fi
 
-site: check-env ## Собрать полный сайт в _site
+site: check-env check-book-sources book-qr ## Собрать полный сайт в _site
 	rm -rf _site $(BOOK_RU_DIR)/_book $(BOOK_EN_DIR)/_book $(SLIDES_RU_DIR)/_site $(SLIDES_EN_DIR)/_site
 	mkdir -p _site/shared
 	cp pages/index.html pages/applets.html pages/robots.txt _site/
@@ -59,6 +59,8 @@ site: check-env ## Собрать полный сайт в _site
 	$(QUARTO) render $(SLIDES_EN_DIR)
 	test -s _site/index.html
 	test -s _site/ru/book/index.html
+	test -s _site/ru/book/statistical-data-analysis.pdf
+	test -s _site/ru/book/chapters/why_statistics.pdf
 	test -s _site/en/book/index.html
 
 all: figures books ## Собрать фигуры и обе книги
@@ -77,23 +79,25 @@ en-slides: check-env ## Собрать английские слайды
 	mkdir -p _site/shared
 	cp -R shared/applets _site/shared/
 
-ru: check-env ## Собрать русскую книгу целиком
+ru: check-env check-book-sources book-qr ## Собрать русскую книгу целиком
 	$(QUARTO) render $(BOOK_RU_DIR)
 
 en: check-env ## Собрать английскую книгу целиком
 	$(QUARTO) render $(BOOK_EN_DIR)
 
-ru-html: check-env ## Собрать HTML русской книги
+ru-html: check-env check-book-sources book-qr ## Собрать HTML русской книги
 	$(QUARTO) render $(BOOK_RU_DIR) --to html
 
-ru-pdf: check-env ## Собрать PDF русской книги
+ru-pdf: check-env check-book-sources book-qr ## Собрать PDF русской книги
 	$(QUARTO) render $(BOOK_RU_DIR) --to pdf
 
 ru-chapters: ru-pdf ## Собрать отдельные PDF готовых русских глав
 	$(CHAPTER_PYTHON) scripts/render_book_chapters.py ru $(RU_PDF_CHAPTERS)
 
-ru-epub: check-env ## Собрать EPUB русской книги
+ru-epub: check-env check-book-sources book-qr ## Собрать EPUB русской книги
 	$(QUARTO) render $(BOOK_RU_DIR) --to epub
+	$(PYTHON) scripts/finalize_epub.py _site/ru/book/statistical-data-analysis.epub
+	@if command -v epubcheck >/dev/null 2>&1; then epubcheck _site/ru/book/statistical-data-analysis.epub; else echo "epubcheck не найден: внутренняя проверка выполнена"; fi
 
 en-html: check-env ## Собрать HTML английской книги
 	$(QUARTO) render $(BOOK_EN_DIR) --to html
@@ -106,6 +110,12 @@ en-epub: check-env ## Собрать EPUB английской книги
 
 figures: check-env ## Сгенерировать общие фигуры
 	$(PYTHON) scripts/build_figures.py
+
+book-qr: check-env ## Создать недостающие QR-коды для книги
+	$(PYTHON) scripts/generate_book_qr.py
+
+check-book-sources: check-env ## Проверить структуру исходников русской книги
+	$(PYTHON) scripts/check_book_sources.py
 
 ru-notebooks: check-env ## Пересобрать все русские ноутбуки как отдельные входы
 	@for nb in $(RU_NOTEBOOKS); do \

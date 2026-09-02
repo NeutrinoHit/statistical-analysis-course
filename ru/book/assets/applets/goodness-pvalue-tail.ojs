@@ -1,0 +1,40 @@
+viewof pLevelNu = Inputs.range([1, 120], {value: 50, step: 1, label: "ν"})
+viewof pLevelObs = Inputs.range([0, 180], {value: 70, step: 0.5, label: "χ²_obs"})
+
+pLevelXmax = Math.max(12, pLevelObs + 8 * Math.sqrt(2 * pLevelNu), pLevelNu + 8 * Math.sqrt(2 * pLevelNu));
+pLevelData = Array.from({length: 1400}, (_, i) => {
+  const x = 1e-4 + pLevelXmax * i / 1399;
+  return {x, y: chiDistPdf(x, pLevelNu)};
+});
+pLevelTailData = pLevelData.filter(d => d.x >= pLevelObs);
+pLevelTailArea = pLevelTailData.slice(1).reduce((s, d, i) => {
+  const p = pLevelTailData[i];
+  return s + 0.5 * (d.y + p.y) * (d.x - p.x);
+}, 0);
+pLevelYmax = 1.08 * Math.max(...pLevelData.filter(d => Number.isFinite(d.y)).map(d => d.y));
+
+pLevelPlot = Plot.plot({
+  width: 1050,
+  height: 430,
+  marginLeft: 70,
+  marginBottom: 50,
+  x: {label: "χ²", domain: [0, pLevelXmax], grid: true},
+  y: {label: "f(χ²; ν)", domain: [0, pLevelYmax], grid: true},
+  marks: [
+    Plot.line(pLevelData, {x: "x", y: "y", stroke: "#6ea8ff", strokeWidth: 5}),
+    Plot.areaY(pLevelTailData, {x: "x", y: "y", fill: "#ff4d4d", fillOpacity: 0.62}),
+    Plot.ruleX([pLevelObs], {stroke: "#ff4d4d", strokeWidth: 3}),
+    Plot.text([{x: Math.min(pLevelObs + 0.12 * pLevelXmax, 0.88 * pLevelXmax), y: 0.35 * pLevelYmax, label: "p"}],
+      {x: "x", y: "y", text: "label", fill: "#ffffff", fontSize: 26, fontWeight: 700})
+  ]
+});
+
+html`
+<div class="book-applet-panel">
+  <div class="book-applet-center">${pLevelPlot}</div>
+  <div class="book-applet-summary">
+    <span>ν = ${pLevelNu}</span>
+    <span>χ²_obs = ${pLevelObs.toFixed(1)}</span>
+    <span>p ≈ ${pLevelTailArea < 1e-3 ? pLevelTailArea.toExponential(2) : pLevelTailArea.toFixed(3)}</span>
+  </div>
+</div>`

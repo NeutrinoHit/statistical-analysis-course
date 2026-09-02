@@ -1,0 +1,131 @@
+viewof sampleLandau = Inputs.range([1000, 50000], {
+  value: 15000,
+  step: 1000,
+  label: "N"
+})
+
+viewof landauScale = Inputs.range([0.3, 2.5], {
+  value: 1.0,
+  step: 0.05,
+  label: "scale"
+})
+
+viewof landauShift = Inputs.range([-3.0, 3.0], {
+  value: 0.0,
+  step: 0.1,
+  label: "shift"
+})
+
+viewof regenerateLandau = Inputs.button("Новая статистика")
+
+randnLandau = () => {
+  let u = 0;
+  let v = 0;
+  while (u === 0) u = Math.random();
+  while (v === 0) v = Math.random();
+  return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
+}
+
+histogramLandau = (values, bins, min, max) => {
+  const width = (max - min) / bins;
+  const counts = Array(bins).fill(0);
+  for (const value of values) {
+    if (value < min || value >= max) continue;
+    counts[Math.floor((value - min) / width)] += 1;
+  }
+  return counts.map((count, i) => ({
+    x0: min + i * width,
+    x1: min + (i + 1) * width,
+    density: count / (values.length * width)
+  }));
+}
+
+// Landau-подобная случайная величина.
+// Это alpha-stable распределение с alpha = 1 и максимальной правой асимметрией.
+// Оно имеет тот же физический смысл: длинный правый хвост и отсутствие обычной дисперсии.
+landauStableRandom = () => {
+  const beta = 1.0;
+  const V = Math.PI * (Math.random() - 0.5);
+  let W = 0;
+  while (W === 0) W = -Math.log(Math.random());
+
+  return (2 / Math.PI) * (
+    (Math.PI / 2 + beta * V) * Math.tan(V)
+    - beta * Math.log(
+      (Math.PI / 2 * W * Math.cos(V)) /
+      (Math.PI / 2 + beta * V)
+    )
+  );
+}
+
+landauValues = {
+  regenerateLandau;
+  const values = new Array(sampleLandau);
+  for (let i = 0; i < sampleLandau; ++i) {
+    values[i] = landauShift + landauScale * landauStableRandom();
+  }
+  return values;
+}
+
+landauSorted = [...landauValues].sort((a, b) => a - b)
+
+quantileLandau = (arr, q) => {
+  const pos = q * (arr.length - 1);
+  const lo = Math.floor(pos);
+  const hi = Math.ceil(pos);
+  const h = pos - lo;
+  return arr[lo] * (1 - h) + arr[hi] * h;
+}
+
+landauMedian = quantileLandau(landauSorted, 0.50)
+landauQ16 = quantileLandau(landauSorted, 0.16)
+landauQ84 = quantileLandau(landauSorted, 0.84)
+landauRobustSigma = 0.5 * (landauQ84 - landauQ16)
+
+histLandau = histogramLandau(landauValues, 120, -8, 25)
+
+normalForComparison = Array.from({length: 501}, (_, i) => {
+  const x = -8 + 33 * i / 500;
+  const z = (x - landauMedian) / landauRobustSigma;
+  return {
+    x,
+    y: Math.exp(-0.5 * z * z) / (landauRobustSigma * Math.sqrt(2 * Math.PI))
+  };
+})
+
+landauPlot = Plot.plot({
+  width: 760,
+  height: 390,
+  marginLeft: 55,
+  x: {label: "energy loss variable", domain: [-8, 25]},
+  y: {label: "density", domain: [0, 0.42]},
+  grid: true,
+  marks: [
+    Plot.rectY(histLandau, {
+      x1: "x0",
+      x2: "x1",
+      y: "density",
+      fill: "#4ea1ff",
+      fillOpacity: 0.70,
+      stroke: "white"
+    }),
+    Plot.line(normalForComparison, {
+      x: "x",
+      y: "y",
+      stroke: "#ffb347",
+      strokeWidth: 2.8
+    })
+  ]
+})
+
+html`
+<div class="book-applet-panel">
+  ${landauPlot}
+  <div class="book-applet-summary">
+    <span> Синий: Landau-like stable law;</span>
+    <span> оранжевый: Gaussian с той же медианой и центральной шириной;</span>
+    <span> median = ${landauMedian.toFixed(2)};</span>
+    <span> central sigma = ${landauRobustSigma.toFixed(2)}.</span>
+  </div>
+</div>
+`

@@ -135,7 +135,7 @@ for n in [5, 20, 100]:
 ```
 
 ::: figure-panel
-![Примеры биномиального распределения](../assets/figures/binomial_pmf_profiles.png)
+![Примеры биномиального распределения](../assets/figures/binomial_pmf_profiles.png){#fig-binomial-pmf-profiles}
 
 Обратите внимание, что с увеличением $n$ биномиальное распределение переходит в распределение Гаусса (красная кривая).
 :::
@@ -216,7 +216,7 @@ for lam in [1, 4, 10]:
 ```
 
 ::: figure-panel
-![Примеры распределения Пуассона](../assets/figures/poisson_pmf_profiles.png)
+![Примеры распределения Пуассона](../assets/figures/poisson_pmf_profiles.png){#fig-poisson-pmf-profiles}
 
 Обратите внимание, что с увеличением $n$ распределение Пуассона также стремиться к нормальному распределению (красная кривая).
 :::
@@ -290,7 +290,7 @@ for mu, sigma in [(0, 1), (0, 2), (2, 1)]:
 ```
 
 ::: figure-panel
-![Примеры распределения Гаусса](../assets/figures/normal_density_profiles.png)
+![Примеры распределения Гаусса](../assets/figures/normal_density_profiles.png){#fig-normal-density-profiles}
 
 Из графика видно, что чем меньше $\sigma$, тем уже распределение.
 :::
