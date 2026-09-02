@@ -1,0 +1,978 @@
+---
+title: "χ²-интервалы, систематики и практический рецепт МНК"
+subtitle: "Статистический анализ данных"
+author: "Дмитрий В. Наумов (ОИЯИ)"
+format:
+  revealjs:
+    theme: black
+    slide-number: true
+    preview-links: auto
+    chalkboard:
+      buttons: false
+    logo: shared/figures/dvnlogo.png
+    css: styles.css
+    transition: fade
+    center: true
+---
+
+# Общий случай
+
+## $\chi^2$ с ковариационной матрицей
+
+::: incremental
+- **В гауссовом приближении**, в общем случае, необходимо использовать ковариационную матрицу: 
+$$
+V_y=\operatorname{Cov}(\mathbf y).
+$$
+
+- Тогда
+$$
+\boxed{
+\chi^2(\boldsymbol\theta)
+=
+(\mathbf y-\boldsymbol\lambda(\boldsymbol\theta))^\mathsf T
+V_y^{-1}
+(\mathbf y-\boldsymbol\lambda(\boldsymbol\theta)).
+}
+$$
+- $\mathbf y= (y_1,\dots y_N)$ - наблюдаемые, 
+- $\boldsymbol\lambda= (\lambda_1,\dots \lambda_N)$. $\lambda_i=\mathbb{E}[Y_i]$ - мат. ожидание
+- $\boldsymbol\theta = (\theta_1,\dots \theta_p)$ - параметры модели.  
+- Задача: оценка $\widehat{\boldsymbol\theta}$ и ковариационная матрица параметров $V_\theta$
+:::
+
+## Оценки
+
+::: incremental
+- Оценка $\widehat{\boldsymbol\theta}$ есть решение уравнений:
+$$
+\frac{\partial \chi^2(\boldsymbol\theta)}{\partial\boldsymbol\theta} = 0.
+$$
+- Около минимума
+$$
+\chi^2(\boldsymbol\theta)\approx\chi^2_{\min}+ (\boldsymbol\theta-\widehat{\boldsymbol\theta})^\mathsf T V_\theta^{-1} (\boldsymbol\theta-\widehat{\boldsymbol\theta}).
+$$
+- Значит матрица при этой квадратичной форме есть $V_\theta^{-1}$.
+- Ее элементы находятся так:
+$$
+\left(V_\theta^{-1}\right)_{ij} = \frac{\partial^2\chi^2}{\partial\theta_i\partial\theta_j}.
+$$
+- Чтобы найти ковариационную матрицу $V_\theta$, нужно обратить $V_\theta^{-1}$.
+:::
+
+## Линейная модель
+::: incremental
+
+- Для линейной модели 
+$$
+\boldsymbol\lambda=H\boldsymbol\theta,
+$$
+где $H$ - матрица $N\times p$.
+- Задача решается точно:
+$$
+\boxed{
+\widehat{\boldsymbol\theta} =(H^\mathsf T V_y^{-1}H)^{-1} H^\mathsf T V_y^{-1}\mathbf y}
+$$
+и 
+$$
+\boxed{
+V_\theta=(H^\mathsf T V_y^{-1}H)^{-1}.
+}
+$$
+:::
+
+# Интервалы из формы $\chi^2$
+
+## Один параметр
+
+::: {.panel-tabset}
+
+### Формула
+
+Для одного параметра около минимума
+$$
+\chi^2(\theta)
+\approx
+\chi^2_{\min}
++
+\frac{(\theta-\widehat{\theta})^2}{\sigma_\theta^2}.
+$$
+
+Поэтому границы одной стандартной ошибки задаются условием
+$$
+\boxed{
+\chi^2(\widehat{\theta}\pm\sigma_\theta)
+-
+\chi^2_{\min}=1.
+}
+$$
+
+::: {.fragment .callout-note .thmbox appearance="simple"}
+Здесь $\Delta\chi^2=1$ — локальное гауссово правило для одного параметра. Формальную связь с доверительными интервалами и распределением $\chi^2$ обсудим позже.
+:::
+
+### График
+
+::: {.clt-widget}
+```{ojs}
+//| echo: false
+
+chiOneSigma = 1
+chiOneMin = 1
+chiOneCut = chiOneMin + 1
+chiOneData = Array.from({length: 241}, (_, i) => {
+  const delta = -1.5 + 3.0 * i / 240;
+  return {
+    delta,
+    chi2: chiOneMin + (delta / chiOneSigma) ** 2
+  };
+})
+chiOneMarks = [
+  {delta: -chiOneSigma, chi2: chiOneCut},
+  {delta: 0, chi2: chiOneMin},
+  {delta: chiOneSigma, chi2: chiOneCut}
+]
+chiOneCutLine = [
+  {delta: -chiOneSigma, chi2: chiOneCut},
+  {delta: chiOneSigma, chi2: chiOneCut}
+]
+
+chiOnePlot = Plot.plot({
+  width: 980,
+  height: 460,
+  marginLeft: 70,
+  marginBottom: 54,
+  marginTop: 36,
+  x: {label: "δθ", domain: [-1.5, 1.5], grid: true},
+  y: {label: "χ²(θ)", domain: [0.9, 3.5], grid: true},
+  marks: [
+    Plot.line(chiOneData, {x: "delta", y: "chi2", stroke: "#4ea1ff", strokeWidth: 4}),
+    Plot.line(chiOneCutLine, {x: "delta", y: "chi2", stroke: "#ff5a5f", strokeWidth: 3}),
+    Plot.ruleY([chiOneMin], {stroke: "#777", strokeDasharray: "5,5"}),
+    Plot.ruleX([-chiOneSigma, chiOneSigma], {
+      y1: chiOneMin,
+      y2: chiOneCut,
+      stroke: "#ff5a5f",
+      strokeWidth: 3,
+      strokeDasharray: "7,5"
+    }),
+    Plot.dot(chiOneMarks, {x: "delta", y: "chi2", r: 6, fill: d => d.delta === 0 ? "#f2f2f2" : "#ff5a5f", stroke: "#111"})
+  ]
+})
+
+html`
+<div class="clt-panel">
+  <div style="text-align:center; font-size:1.35rem; font-weight:700; margin-bottom:0.35rem;">
+    χ²(δθ = ±σ<sub>θ</sub>) − χ²<sub>min</sub> = 1
+  </div>
+  ${chiOnePlot}
+  <div class="clt-summary">
+    <span>минимум: δθ = 0</span>
+    <span>красная отсечка: χ²<sub>min</sub> + 1</span>
+    <span>пересечения дают ±σ<sub>θ</sub></span>
+  </div>
+</div>
+`
+```
+:::
+
+:::
+
+## Несколько параметров
+
+::: {.panel-tabset}
+
+### Формула
+
+Если $\chi^2(\boldsymbol\theta)$ хорошо аппроксимируется квадратичной функцией параметров, то
+$$
+\chi^2(\boldsymbol\theta)
+\approx
+\chi^2_{\min}
++
+(\boldsymbol\theta-\widehat{\boldsymbol\theta})^\mathsf T
+V_\theta^{-1}
+(\boldsymbol\theta-\widehat{\boldsymbol\theta}).
+$$
+
+Уравнение
+$$
+\Delta\chi^2
+=
+\chi^2-\chi^2_{\min}
+=c
+$$
+задаёт эллипсоиды в пространстве параметров.
+
+::: incremental
+- Матрица $V_\theta$ задаёт размеры и наклон этих эллипсоидов.
+- Число $c$ зависит от того, какую область мы строим. Это будет отдельная тема в лекции [Качество согласия и статистическая значимость](13_goodness_of_fit_and_significance.qmd).
+- Важно: всё это локальная гауссова картина около минимума.
+:::
+
+### Гауссов пример
+
+::: {.clt-widget}
+![](shared/figures/static/lsq_quadratic_chi2_surface.png){width=88% .nostretch fig-alt="Квадратичная форма chi2: 3D-параболоид, плоскость сечения и эллиптическая проекция"}
+
+<div class="clt-summary">
+  <span>минимум в центре</span>
+  <span>сечение параболоида даёт эллипс</span>
+  <span>наклон эллипса задаёт корреляцию параметров</span>
+</div>
+:::
+
+### Негауссов пример
+
+::: {.clt-widget}
+![](shared/figures/static/lsq_oscillatory_chi2_surface.png){width=78% .nostretch fig-alt="Осцилляционный пример chi2: 3D-поверхность и проекция с несколькими островами"}
+
+:::
+
+:::
+
+
+# Систематические неопределённости
+
+## Словарик
+
+::: incremental
+
+| Термин | Смысл | Пример |
+|---|---|---|
+| Параметр интереса | То, что мы хотим измерить | масса, сечение, $\theta_{13}$, число сигнальных событий |
+| Мешающий (nuisance) параметр | Параметр, который влияет на предсказание, но сам не является целью измерения | фон, эффективность, масштаб энергии |
+| Систематика | Физический, инструментальный или модельный источник неопределённости | калибровка энергии, эффективность отбора, форма фона, нормировка потока |
+| Систематическая неопределённость | Вклад такой систематики в неопределённость параметра интереса | вклад неопределенности энергетической шкалы в ошибку массы |
+
+:::
+
+## Ограниченные и свободные параметры
+
+| Тип параметра | Что это значит | Как появляется в правдоподобии |
+|---|---|---|
+| Ограниченный параметр | О нём есть внешняя информация | есть множитель $L_\mathrm{aux}(\eta)$ |
+| Свободный параметр | Внешнего ограничения нет | определяется только основными данными |
+| Ограниченный мешающий параметр | Типичная реализация систематики | калибровка, эффективность, нормировка фона |
+| Свободный мешающий параметр | Параметр модели, который подгоняется по данным | свободная нормировка фона, неизвестный наклон спектра $L(\mu,\eta)=L_\mathrm{main}(x|\mu,\eta)\,L_\mathrm{aux}(a|\eta)$|
+
+
+Здесь $\mu$ — параметр интереса, $\eta$ — мешающие параметры.
+
+## Модель с мешающими параметрами
+
+Пусть модель зависит от параметров интереса $\boldsymbol\theta$ и мешающих параметров $\boldsymbol\eta$:
+$$
+\boldsymbol\lambda
+=
+\boldsymbol\lambda(\boldsymbol\theta,\boldsymbol\eta).
+$$
+
+Обычно про $\boldsymbol\eta$ уже что-то известно:
+$$
+\boldsymbol\eta\approx\boldsymbol\eta_0,
+\qquad
+\operatorname{Cov}(\boldsymbol\eta)=V_\eta.
+$$
+
+Тогда естественная функция для минимизации:
+$$
+\boxed{
+\chi^2(\boldsymbol\theta,\boldsymbol\eta)
+=
+(\mathbf y-\boldsymbol\lambda(\boldsymbol\theta,\boldsymbol\eta))^\mathsf T
+V_y^{-1}
+(\mathbf y-\boldsymbol\lambda(\boldsymbol\theta,\boldsymbol\eta))
++
+(\boldsymbol\eta-\boldsymbol\eta_0)^\mathsf T
+V_\eta^{-1}
+(\boldsymbol\eta-\boldsymbol\eta_0).
+}
+$$
+
+## Штраф
+::: incremental
+
+- Второе слагаемое называется штрафом (penalty):
+$$
+(\boldsymbol\eta-\boldsymbol\eta_0)^\mathsf T
+V_\eta^{-1}
+(\boldsymbol\eta-\boldsymbol\eta_0).
+$$
+- Данные могут предпочесть сдвинуть систематический параметр.
+- Но большой сдвиг должен быть оплачен штрафом.
+- Если $V_\eta$ мала, параметр жёстко привязан к $\eta_0$.
+- Если $V_\eta$ велика, параметр почти свободен.
+
+- Лучшие значения находятся из совместной минимизации:
+$$
+\frac{\partial\chi^2}{\partial\boldsymbol\theta}=0,
+\qquad
+\frac{\partial\chi^2}{\partial\boldsymbol\eta}=0.
+$$
+:::
+
+## Профилирование
+::: incremental
+
+- Часто нас интересует только $\boldsymbol\theta$, а $\boldsymbol\eta$ не сильно интересует.
+
+- В частотном подходе мы профилируем:
+$$
+\boxed{
+\chi^2_{\mathrm p}(\boldsymbol\theta)
+=
+\min_{\boldsymbol\eta}
+\chi^2(\boldsymbol\theta,\boldsymbol\eta)
+=
+\chi^2(\boldsymbol\theta,\widehat{\widehat{\boldsymbol\eta}}(\boldsymbol\theta)).
+}
+$$
+
+- Двойная шляпа означает: $\boldsymbol\eta$ минимизируется при фиксированном $\boldsymbol\theta$.
+
+- Профилирование отвечает на вопрос: насколько хорошо можно описать данные при данном $\boldsymbol\theta$, если все остальные параметры выбрать наилучшим образом.
+:::
+
+## Линейная систематика
+
+Если зависимость от $\boldsymbol\eta$ линейна около $\boldsymbol\eta_0$, то
+$$
+\boldsymbol\lambda(\boldsymbol\theta,\boldsymbol\eta)
+\approx
+\boldsymbol\lambda_0(\boldsymbol\theta)
++
+H(\boldsymbol\theta)(\boldsymbol\eta-\boldsymbol\eta_0),
+$$
+где
+$$
+H_{ij}
+=
+\left.
+\frac{\partial\lambda_i}{\partial\eta_j}
+\right|_{\boldsymbol\eta=\boldsymbol\eta_0}.
+$$
+
+Обозначим остаток при номинальных систематиках:
+$$
+\mathbf r(\boldsymbol\theta)
+=
+\mathbf y-\boldsymbol\lambda_0(\boldsymbol\theta).
+$$
+
+## Аналитическое профилирование
+
+Для фиксированного $\boldsymbol\theta$ минимум по
+$$
+\boldsymbol\delta=\boldsymbol\eta-\boldsymbol\eta_0
+$$
+находится аналитически:
+$$
+\boxed{
+\widehat{\widehat{\boldsymbol\delta}}(\boldsymbol\theta)
+=
+\left(V_\eta^{-1}+H^\mathsf T V_y^{-1}H\right)^{-1}
+H^\mathsf T V_y^{-1}\mathbf r(\boldsymbol\theta).
+}
+$$
+
+Это полезно практически: часть параметров можно исключить без численного поиска по ним.
+
+## Эквивалентная ковариационная матрица
+
+После подстановки профилированного $\boldsymbol\eta$ получается эквивалентная запись:
+$$
+\boxed{
+\chi^2_{\mathrm p}(\boldsymbol\theta)
+=
+\mathbf r(\boldsymbol\theta)^\mathsf T
+V^{-1}
+\mathbf r(\boldsymbol\theta),
+\qquad
+V=V_y+HV_\eta H^\mathsf T.
+}
+$$
+
+Систематика добавляет к статистической ковариации матрицу
+$$
+\boxed{
+V_{\mathrm{sys}}=HV_\eta H^\mathsf T.}
+$$
+
+## Пример: нормировка с неопределённостью
+
+Пусть несколько точек измеряют одну величину $\mu$.
+
+Индивидуальные ошибки точек — абсолютные $x_i \pm s_i$.
+
+Общий масштаб эксперимента известен с относительной ошибкой $f_N = 0.10$.
+
+Модель:
+$$
+\lambda_i(\mu,\alpha)=(1+\alpha)\mu,
+\qquad
+\alpha = 0 \pm f_N .
+$$
+
+Здесь $\alpha$ — один общий мешающий параметр нормировки.
+
+::: incremental
+
+- Если $\alpha$ сдвигается, все предсказания $\lambda_i$ сдвигаются согласованно.
+
+- Производная по нормировке:
+$$
+H_{i1}
+=
+\left.
+\frac{\partial \lambda_i}{\partial \alpha}
+\right|_{\alpha=0}
+=
+\mu .
+$$
+
+- Ковариация мешающего параметра:
+$$
+V_\alpha=f_N^2.
+$$
+:::
+
+## Ковариация от нормировки
+
+
+Поэтому нормировочная часть ковариации:
+$$
+\boxed{
+(V_{\mathrm{norm}})_{ij}
+=
+(HV_\alpha H^{\mathsf T})_{ij}
+=
+f_N^2\mu^2 .
+}
+$$
+
+Для двух точек:
+$$
+V_{\mathrm{norm}}(\mu)
+=
+f_N^2\mu^2
+\begin{pmatrix}
+1&1\\
+1&1
+\end{pmatrix}.
+$$
+
+
+
+## Парадокс Д'Агостини
+::: incremental
+
+- Рассмотрим две оценки одной и той же величины:
+$$
+x_1=8.0,\qquad x_2=8.5.
+$$
+- Для каждой точки указана индивидуальная относительная ошибка $2\%$, а кроме того есть общая нормировочная неопределённость $10\%$.
+- Индивидуальные ошибки: $s_1=0.16,\ s_2=0.17$.
+:::
+
+::: {.fragment .callout-note .thmbox appearance="simple"}
+Это  [пример Д'Агостини](https://www.roma1.infn.it/~dagos/desy93-175.pdf), связанный с [Peelle's Pertinent Puzzle](https://www.roma1.infn.it/~dagos/cern/node99.html):
+мультипликативная систематика не является обычным аддитивным шумом каждой точки.
+:::
+
+## Данные и статистическая ковариация
+::: incremental
+- Пусть
+$$
+x_1=8.0,\qquad x_2=8.5,
+$$
+- а индивидуальные ошибки равны $2\%$:
+$$
+s_1=0.02\,x_1=0.16,
+\qquad
+s_2=0.02\,x_2=0.17.
+$$
+
+- Статистическая часть ковариации:
+$$
+V_\mathrm{stat}
+=
+\begin{pmatrix}
+s_1^2&0\\
+0&s_2^2
+\end{pmatrix}
+=
+\begin{pmatrix}
+0.0256&0\\
+0&0.0289
+\end{pmatrix}.
+$$
+:::
+
+## Наивная нормировочная ковариация
+::: incremental
+
+- Наивная нормировочная часть:
+$$
+V_\mathrm{norm}^\mathrm{bad}
+=
+f_N^2
+\begin{pmatrix}
+x_1x_1&x_1x_2\\
+x_2x_1&x_2x_2
+\end{pmatrix}.
+$$
+
+- Для $f_N=0.10$:
+$$
+V_\mathrm{norm}^\mathrm{bad}
+=
+0.10^2
+\begin{pmatrix}
+8.0^2&8.0\cdot 8.5\\
+8.5\cdot 8.0&8.5^2
+\end{pmatrix}
+=
+\begin{pmatrix}
+0.6400&0.6800\\
+0.6800&0.7225
+\end{pmatrix}.
+$$
+
+- Поэтому
+$$
+\boxed{
+V_{\mathrm{bad}}
+=
+V_{\mathrm{stat}}+V_{\mathrm{norm}}^{\mathrm{bad}}
+=
+\begin{pmatrix}
+0.6656&0.6800\\
+0.6800&0.7514
+\end{pmatrix}.
+}
+$$
+:::
+
+## Фит с этой матрицей
+$$
+V_{\mathrm{bad}}
+=
+\begin{pmatrix}
+0.6656&0.6800\\
+0.6800&0.7514
+\end{pmatrix}.
+$$
+
+Ищем минимум 
+$$
+\chi^2(\mu)
+=
+(\mathbf x-\mu\mathbf 1)^\mathsf T
+V_{\mathrm{bad}}^{-1}
+(\mathbf x-\mu\mathbf 1).
+$$
+
+Обозначим
+$$
+W_{\mathrm{bad}}
+=
+V_{\mathrm{bad}}^{-1}
+=
+\begin{pmatrix}
+19.9142&-18.0219\\
+-18.0219&17.6403
+\end{pmatrix}.
+$$
+
+## Парадоксальный результат
+
+Для постоянной модели $\lambda_i=\mu$:
+$$
+\chi^2(\mu)
+=
+\mathbf x^\mathsf T W\mathbf x
+-2\mu\,\mathbf 1^\mathsf T W\mathbf x
++\mu^2\,\mathbf 1^\mathsf T W\mathbf 1.
+$$
+
+Условие минимума даёт
+$$
+\frac{\partial\chi^2}{\partial\mu}
+=
+-2\mathbf 1^\mathsf T W\mathbf x
++2\widehat\mu\,\mathbf 1^\mathsf T W\mathbf 1
+=0,
+$$
+откуда
+$$
+\boxed{
+\widehat\mu
+=
+\frac{\mathbf 1^\mathsf T W\mathbf x}{\mathbf 1^\mathsf T W\mathbf 1}
+=
+\mathbf w^\mathsf T\mathbf x,
+\qquad
+\mathbf w
+=
+\frac{W\mathbf 1}{\mathbf 1^\mathsf T W\mathbf 1}.
+}
+$$
+
+Для $W=W_{\mathrm{bad}}$:
+$$
+\mathbf w_{\mathrm{bad}}
+\approx
+\begin{pmatrix}
+1.253\\
+-0.253
+\end{pmatrix},
+\qquad
+\boxed{
+\widehat\mu_{\mathrm{bad}}\approx 7.87\pm0.81.
+}
+$$
+
+::: {.fragment .callout-warning .thmbox appearance="simple"}
+Оценка ниже обеих измеренных точек — не арифметическая ошибка, а сигнал, что модель ковариации неверно описывает нормировку.
+:::
+
+## Сравнение результатов
+
+::: {.clt-widget}
+```{ojs}
+//| echo: false
+
+pppPoints = [
+  {x: 7.8737, y: 0, label: "наивная ковариация", kind: "bad"},
+  {x: 8.0, y: 1, label: "x₁ = 8.0", kind: "data"},
+  {x: 8.2349, y: 2, label: "правильная модель", kind: "good"},
+  {x: 8.5, y: 1, label: "x₂ = 8.5", kind: "data"}
+]
+
+pppPlot = Plot.plot({
+  width: 920,
+  height: 190,
+  marginLeft: 80,
+  marginRight: 70,
+  marginBottom: 45,
+  marginTop: 18,
+  x: {label: "значение μ", domain: [7.75, 8.62], grid: true},
+  y: {axis: null, domain: [-0.7, 2.55]},
+  marks: [
+    Plot.ruleY([1], {stroke: "#777", strokeDasharray: "6,5"}),
+    Plot.dot(pppPoints, {
+      x: "x",
+      y: "y",
+      r: 8,
+      fill: d => d.kind === "bad" ? "#ff5a5f" : d.kind === "good" ? "#2dd881" : "#4ea1ff",
+      stroke: "#111",
+      strokeWidth: 1.2
+    }),
+    Plot.text(pppPoints, {
+      x: "x",
+      y: "y",
+      text: "label",
+      fill: "#f2f2f2",
+      dy: d => d.kind === "data" ? -18 : 18,
+      fontSize: 16
+    })
+  ]
+})
+
+html`${pppPlot}`
+```
+:::
+
+## Что пошло не так
+
+Общая нормировка — это неопределённый масштаб предсказания, а не добавочный шум каждой уже измеренной точки.
+
+::: incremental
+- В записи $f_N^2 x_i x_j$ большая флуктуация автоматически получает большую абсолютную систематическую ошибку.
+- При сильной корреляции это может дать отрицательный вес большей точке.
+- Минимизация формально корректна для записанной матрицы, но сама матрица построена не из той вероятностной модели.
+- Правильный вопрос: как нормировочная систематика меняет **модельное предсказание**?
+:::
+
+## Правильная ковариационная матрица
+
+Из модели нормировки следует
+$$
+\boxed{
+V_{ij}(\mu)
+=
+s_i^2\delta_{ij}
++
+f_N^2\mu^2.
+}
+$$
+
+Если взять самосогласованное значение
+$$
+\widehat\mu
+=
+\frac{\sum_i x_i/s_i^2}{\sum_i1/s_i^2}
+\approx
+8.235,
+$$
+то
+$$
+V_{\mathrm{corr}}
+=
+\begin{pmatrix}
+0.7037&0.6781\\
+0.6781&0.7070
+\end{pmatrix}.
+$$
+
+## Решение с правильной ковариацией
+
+Используем тот же вывод, но теперь $W=V_{\mathrm{corr}}^{-1}$:
+$$
+\widehat\mu
+=
+\frac{\mathbf 1^\mathsf T W\mathbf x}{\mathbf 1^\mathsf T W\mathbf 1},
+\qquad
+\sigma_\mu^2
+=
+\frac{1}{\mathbf 1^\mathsf T W\mathbf 1}.
+$$
+
+Численно:
+$$
+\mathbf w_{\mathrm{corr}}
+\approx
+\begin{pmatrix}
+0.530\\
+0.470
+\end{pmatrix},
+\qquad
+\boxed{
+\widehat\mu_{\mathrm{corr}}
+\approx
+8.235\pm0.832.
+}
+$$
+
+::: {.fragment .callout-note .thmbox appearance="simple"}
+Общая нормировка увеличила ошибку, но не сместила центральное значение ниже обеих точек.
+Отрицательных весов больше нет.
+:::
+
+## То же через штрафной член
+
+Запишем нормировку как ограниченный мешающий параметр:
+$$
+x_i=(1+\alpha)\mu+\varepsilon_i,
+\qquad
+\varepsilon_i\sim\mathrm N(0,s_i^2),
+\qquad
+\alpha=0\pm f_N.
+$$
+
+Тогда минимизируем
+$$
+\boxed{
+\chi^2(\mu,\alpha)
+=
+\sum_i
+\frac{\left[x_i-(1+\alpha)\mu\right]^2}{s_i^2}
++
+\frac{\alpha^2}{f_N^2}.
+}
+$$
+
+Обозначим
+$$
+R(\mu,\alpha)
+=
+\sum_i
+\frac{x_i-(1+\alpha)\mu}{s_i^2}.
+$$
+
+Условия минимума:
+$$
+\frac{\partial\chi^2}{\partial\mu}
+=
+-2(1+\alpha)R=0,
+\qquad
+\frac{\partial\chi^2}{\partial\alpha}
+=
+-2\mu R+\frac{2\alpha}{f_N^2}=0.
+$$
+
+## То же через штрафной член
+
+Отсюда
+$$
+\widehat\alpha=0,
+\qquad
+\widehat\mu
+=
+\frac{\sum_i x_i/s_i^2}{\sum_i1/s_i^2}
+\approx
+8.235.
+$$
+
+## Ошибка из штрафного члена
+
+Матрица при квадратичной форме $\Delta\chi^2$ по $(\mu,\alpha)$ даёт ковариационную матрицу
+$$
+\operatorname{Cov}(\widehat\mu,\widehat\alpha)
+\approx
+\begin{pmatrix}
+0.6917&-0.0823\\
+-0.0823&0.0100
+\end{pmatrix}.
+$$
+
+Поэтому
+$$
+\boxed{
+\widehat\mu_{\text{штраф}}
+\approx
+8.235\pm\sqrt{0.6917}
+=
+8.235\pm0.832.
+}
+$$
+
+То же самое можно записать как сумму вкладов:
+$$
+\begin{aligned}
+\sigma_\mu^2
+&\approx
+\left(\sum_i\frac1{s_i^2}\right)^{-1}
++
+(f_N\widehat\mu)^2\\
+&\approx
+0.0136+0.6781
+=0.6917.
+\end{aligned}
+$$
+
+Первый член — статистика точек, второй — общая нормировка.
+
+::: {.fragment .callout-note .thmbox appearance="simple"}
+Ковариационная матрица и штрафной член дают один и тот же ответ, если ковариация построена из модели.
+Парадокс появляется, когда вместо модели подставляют флуктуировавшие данные.
+:::
+
+
+# Распространение ошибок
+
+## Функция от подогнанных параметров
+
+Пусть мы нашли
+$$
+\widehat{\boldsymbol\theta},
+\qquad
+V_\theta=\operatorname{Cov}(\widehat{\boldsymbol\theta}),
+$$
+а теперь хотим получить величину
+$$
+\boldsymbol\alpha=\boldsymbol\alpha(\boldsymbol\theta).
+$$
+
+Оценка получается подстановкой:
+$$
+\widehat{\boldsymbol\alpha}
+=
+\boldsymbol\alpha(\widehat{\boldsymbol\theta}).
+$$
+
+Ковариация в линейном приближении:
+$$
+\boxed{
+V_\alpha
+=
+A V_\theta A^\mathsf T,
+\qquad
+A_{ij}
+=
+\left.
+\frac{\partial\alpha_i}{\partial\theta_j}
+\right|_{\widehat{\boldsymbol\theta}}.
+}
+$$
+
+## Что важно в этой формуле
+
+::: incremental
+- Производные показывают, как чувствительна новая величина к каждому параметру.
+- Внедиагональные элементы $V_\theta$ важны: корреляции параметров тоже распространяются.
+- Формула локальная: она основана на линейном разложении около минимума.
+- Если функция сильно нелинейна или есть границы, лучше проверять результат псевдоэкспериментами или сканом.
+:::
+
+---
+
+# Что не делаем в этой лекции
+
+## Формальная проверка согласия
+
+Минимум $\chi^2$ часто используют не только для подгонки, но и для проверки согласия модели с данными.
+
+Для этого нужно знать распределение статистики $\chi^2_{\min}$ и число степеней свободы. Это отдельная тема.
+
+::: {.fragment .callout-note .thmbox appearance="simple"}
+В этой лекции $\chi^2$ — прежде всего функция для оценки параметров и их неопределённостей. Формальные $p$-значения, значимости и проверки согласия будут позже.
+:::
+
+## Когда МНК не надо использовать
+
+::: incremental
+- Малые пуассоновские счёты и пустые бины.
+- Событийный анализ без биннирования.
+- Ошибки зависят от параметров.
+- Существенные ошибки есть не только по вертикальной оси.
+- Распределения асимметричны или ограничены.
+- Локальная квадратичная аппроксимация явно плоха.
+:::
+
+В этих случаях лучше начинать с вероятностной модели и писать правдоподобие.
+
+
+# Практический рецепт
+
+## Алгоритм анализа
+
+::: incremental
+1. Записать модель $\boldsymbol\lambda(\boldsymbol\theta,\boldsymbol\eta)$.
+2. Определить ковариацию данных $V_y$.
+3. Для систематик задать номиналы $\boldsymbol\eta_0$ и ковариацию $V_\eta$.
+4. Построить $\chi^2(\boldsymbol\theta,\boldsymbol\eta)$ со штрафами.
+5. Минимизировать или профилировать мешающие параметры.
+6. Получить ковариацию параметров из локальной квадратичной формы.
+7. Проверить остатки, корреляции и устойчивость результата.
+:::
+
+## Что сообщать вместе с результатом
+
+::: incremental
+- подогнанные параметры и их единицы;
+- ковариационную или корреляционную матрицу параметров;
+- использованный вид $\chi^2$;
+- какие систематики включены и как они ограничены;
+- были ли параметры профилированы;
+- графики данных, модели и остатков;
+- проверки устойчивости.
+:::
+
+---
+
+# Что важно запомнить
+
+## Резюме
+
+::: incremental
+- МНК возникает из гауссова правдоподобия.
+- Корреляции данных учитываются заменой диагональных весов на $V_y^{-1}$.
+- Локальная форма $\Delta\chi^2$ задаёт ковариационную матрицу параметров.
+- Систематики удобно описывать мешающими параметрами со штрафом.
+- Линейные систематики можно либо профилировать, либо добавить к ковариации данных: $V=V_y+HV_\eta H^\mathsf T$.
+- Для мультипликативной нормировки нельзя слепо строить ковариацию из самих наблюдённых значений.
+- Ошибки производных величин переносятся формулой $V_\alpha=AV_\theta A^\mathsf T$.
+- Если гауссова и линейная аппроксимации не работают, нужно возвращаться к полному правдоподобию.
+:::

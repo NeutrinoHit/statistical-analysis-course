@@ -346,6 +346,10 @@
 % -----------------------------------------------------------------------------
 \RedeclareSectionCommand[tocbeforeskip=0.12\baselineskip]{chapter}
 \RedeclareSectionCommand[tocbeforeskip=0.55\baselineskip]{part}
+% The local chapter TOC reaches two-digit chapter and section numbers
+% (for example 13.10). Reserve enough width so the title never touches the
+% number.
+\DeclareTOCStyleEntry[numwidth=3.6em]{tocline}{section}
 
 \AtBeginDocument{%
   \addtokomafont{partentry}{\sffamily\bfseries\color{BookTeal}}%

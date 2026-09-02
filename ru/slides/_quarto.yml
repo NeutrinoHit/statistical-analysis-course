@@ -8,32 +8,35 @@ project:
   render:
     - index.qmd
     - bertrand_paradox.qmd
-    - 00_introduction.qmd
-    - 01_random_distributions.qmd
-    - 02_characteristic_functions.qmd
-    - 03_central_limit_theorem.qmd
-    - 04_non_gaussian_clt_violations.qmd
-    - 05_error_propagation.qmd
-    - 06_two_dimensional_gaussian.qmd
-    - 07_monte_carlo_method.qmd
-    - 08_maximum_likelihood.qmd
-    - 09_estimator_properties_profile_likelihood.qmd
-    - 10_least_squares_linear_fit.qmd
-    - 11_least_squares_systematics.qmd
-    - 12_goodness_of_fit_and_significance.qmd
+    - 01_introduction.qmd
+    - 02_random_distributions.qmd
+    - 03_characteristic_functions.qmd
+    - 04_central_limit_theorem.qmd
+    - 05_non_gaussian_clt_violations.qmd
+    - 06_error_propagation.qmd
+    - 07_two_dimensional_gaussian.qmd
+    - 08_monte_carlo_method.qmd
+    - 09_maximum_likelihood.qmd
+    - 10_estimator_properties_profile_likelihood.qmd
+    - 11_least_squares_linear_fit.qmd
+    - 12_least_squares_systematics.qmd
+    - 13_goodness_of_fit_and_significance.qmd
     - notebooks/mc_vegas_notebook.qmd
     - exercises/index.qmd
     - exam_projects/index.qmd
-    - exercises/00_introduction_exercises.qmd
-    - exercises/01_random_distributions_exercises.qmd
-    - exercises/02_characteristic_functions_exercises.qmd
-    - exercises/03_central_limit_theorem_exercises.qmd
-    - exercises/04_non_gaussian_clt_violations_exercises.qmd
-    - exercises/05_error_propagation_and_covariance_exercises.qmd
-    - exercises/06_monte_carlo_method_exercises.qmd
-    - exercises/07_parameter_estimation_and_maximum_likelihood_exercises.qmd
-    - exercises/08_method_of_least_squares_exercises.qmd
-    - exercises/09_statistical_tests_basics_exercises.qmd
+    - exercises/01_introduction_exercises.qmd
+    - exercises/02_random_distributions_exercises.qmd
+    - exercises/03_characteristic_functions_exercises.qmd
+    - exercises/04_central_limit_theorem_exercises.qmd
+    - exercises/05_non_gaussian_clt_violations_exercises.qmd
+    - exercises/06_error_propagation_exercises.qmd
+    - exercises/07_two_dimensional_gaussian_exercises.qmd
+    - exercises/08_monte_carlo_method_exercises.qmd
+    - exercises/09_maximum_likelihood_exercises.qmd
+    - exercises/10_estimator_properties_profile_likelihood_exercises.qmd
+    - exercises/11_least_squares_linear_fit_exercises.qmd
+    - exercises/12_least_squares_systematics_exercises.qmd
+    - exercises/13_goodness_of_fit_and_significance_exercises.qmd
 
 website:
   title: "Статистический анализ данных: слайды"

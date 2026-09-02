@@ -22,7 +22,7 @@ format:
       и честно описывает неопределённость результата.
     </p>
     <div class="book-landing-actions">
-      <a class="book-button book-button-primary" href="chapters/why_statistics.html">Начать чтение</a>
+      <a class="book-button book-button-primary" href="chapters/01_why_statistics.html">Начать чтение</a>
       <a class="book-button" href="../slides/">Слайды курса</a>
     </div>
   </div>

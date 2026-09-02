@@ -1,0 +1,1034 @@
+---
+title: "Центральная предельная теорема и нормальное распределение"
+subtitle: "Статистический анализ данных"
+author: "Дмитрий В. Наумов (ОИЯИ)"
+jupyter: python3
+format:
+  revealjs:
+    theme: black
+    slide-number: true
+    preview-links: auto
+    chalkboard:
+      buttons: false
+    logo: shared/figures/dvnlogo.png
+    css: styles.css
+    transition: fade
+    center: true
+    
+---
+
+# Псевдослучайные числа
+
+## Генератор псевдослучайных чисел
+::: incremental
+- В конце первой лекции мы подбирали $\sigma$ для лучшего описания псевдоданных.
+- Но как мы получили псевдоданные?
+- Для генерации псевдослучайных чисел используются алгоритмы, которые выдают последовательность чисел, статистически похожих на случайные.
+- Такие алгоритмы называются генераторами псевдослучайных чисел.
+- Достаточно иметь генератор равномерного распределения $X\sim U(-1,1)$, чтобы построить генераторы для других распределений.
+:::
+
+## Генерация и визуализация псевдослучайных чисел
+
+```{python}
+#| echo: false
+#| eval: true
+#| include: false
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from IPython.display import HTML
+from statistics import NormalDist
+
+rng = np.random.default_rng(7)
+x = rng.uniform(-1, 1, size=20_000)
+preview = pd.DataFrame({
+    "i": np.arange(1, 101),
+    "x": x[:100],
+})
+```
+
+:::: {.panel-tabset}
+
+### Код
+
+::: {.smaller}
+```{python}
+#| echo: true
+#| eval: false
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+
+rng = np.random.default_rng(7)
+x = rng.uniform(-1, 1, size=20_000)
+preview = pd.DataFrame({"i": np.arange(1, 101), "x": x[:100]})
+```
+
+- `default_rng(7)` создаёт воспроизводимый генератор.
+- `uniform(-1,1,size=20_000)` даёт выборку из равномерного распределения.
+- `preview` сохраняет первые 100 значений для просмотра.
+:::
+
+### Данные
+
+Первые 100 значений выборки:
+
+```{python}
+#| echo: false
+#| eval: true
+HTML(
+    '<div class="table-scroll">'
+    + preview.style.hide(axis="index").format({"i": "{:.0f}", "x": "{:.3f}"}).to_html()
+    + "</div>"
+)
+```
+
+
+### График
+
+::: {.smaller}
+```{python}
+#| echo: false
+#| eval: true
+#| fig-width: 5.2
+#| fig-height: 2.55
+#| out-width: 72%
+fig, ax = plt.subplots()
+ax.hist(x, bins=50, range=(-1.3, 1.3), density=True, color="#4ea1ff", alpha=0.75, edgecolor="white")
+ax.hlines(0.5, -1, 1, color="#ffb347", linewidth=2.4, label=r"$f(x)=1/2$")
+ax.set_xlim(-1.3, 1.3)
+ax.set_ylim(0, 0.7)
+ax.set_xlabel("x")
+ax.set_ylabel("density")
+ax.grid(axis="y", alpha=0.25)
+ax.legend(framealpha=1.0, edgecolor="black")
+plt.show()
+```
+
+:::
+
+::::
+
+
+# Суммы случайных величин
+
+## Центральная предельная теорема
+
+::: incremental
+- Рассмотрим случайную величину
+$$
+S_m=X_1+\dots+X_m.
+$$
+
+- Вопрос: каким становится распределение $S_m$, если $m\to \infty$?
+- Для примера возьмём независимые $X_i\sim U(-1,1)$.
+- У каждой величины: 
+$$
+\begin{aligned}
+\mathbb{E}[X_i]&=0,\\ 
+\mathrm{Var}(X_i)&=1/3.
+\end{aligned}
+$$
+- Короткий вывод:
+$$
+\mathbb{E}[X_i^2]=\int_{-1}^{1} x^2\cdot \frac12\,dx=\frac13,
+\qquad
+\mathrm{Var}(X_i)=\mathbb{E}[X_i^2]-\mathbb{E}[X_i]^2=\frac13.
+$$
+:::
+
+## Среднее суммы
+
+::: incremental
+- Определение среднего:
+$$
+\mathbb{E}[S_m]
+=\mathbb{E}\!\left[\sum_{i=1}^m X_i\right]=\sum_{i=1}^m\mathbb{E}[X_i].
+$$
+- Если $X_i\sim U(-1,1)$, то
+$$
+\boxed{\mathbb{E}[S_m]=0.}
+$$
+:::
+
+## Дисперсия суммы
+
+::: {.fragment}
+По определению,
+$$
+\mathrm{Var}(S_m)=\mathbb{E}\!\left[(S_m-\mathbb{E}[S_m])^2\right].
+$$
+:::
+
+::: {.fragment}
+$$
+\mathrm{Var}(S_m)
+=\mathbb{E}\!\left[\left(\sum_{i=1}^m (X_i-\mathbb{E}[X_i])\right)^2\right].
+$$
+:::
+
+::: {.fragment}
+$$
+\mathrm{Var}(S_m)
+=\sum_{i=1}^m \mathbb{E}\!\left[(X_i-\mathbb{E}[X_i])^2\right]
++2\sum_{i<j}\mathbb{E}\!\left[(X_i-\mathbb{E}[X_i])(X_j-\mathbb{E}[X_j])\right].
+$$
+:::
+
+::: {.fragment}
+Смешанные члены подсказывают новое понятие: ковариацию
+$$
+\boxed{
+\mathrm{cov}(X,Y)=\mathbb{E}\!\left[(X-\mathbb{E}[X])(Y-\mathbb{E}[Y])\right]
+=\mathbb{E}[XY]-\mathbb{E}[X]\mathbb{E}[Y].}
+$$
+В частности, $\mathrm{Var}(X)=\mathrm{cov}(X,X)$.
+:::
+
+## Завершение вычисления
+
+::: {.fragment}
+Теперь формула принимает вид
+$$
+\mathrm{Var}(S_m)
+=\sum_{i=1}^m\mathrm{Var}(X_i)
++2\sum_{i<j}\mathrm{cov}(X_i,X_j).
+$$
+:::
+
+::: {.fragment}
+Для независимых величин ковариации равны нулю:
+$$
+\mathrm{Var}(S_m)=\sum_{i=1}^m\mathrm{Var}(X_i).
+$$
+:::
+
+::: {.fragment}
+Если $X_i\sim U(-1,1)$, то
+$$
+\boxed{\mathrm{Var}(S_m)=m/3.}
+$$
+:::
+
+## Формулировка ЦПТ
+
+::: {.callout-important .thmbox appearance="simple"}
+## Теорема
+
+Если $X_1,\dots,X_m$ независимы и имеют конечные дисперсии, то нормированная сумма
+$$
+Z_m=\frac{S_m-\mathbb{E}[S_m]}{\sqrt{\mathrm{Var}(S_m)}}
+$$
+при большом $m$ стремится к нормальному распределению $\mathrm{N}(0,1)$.
+:::
+
+## ЦПТ для равномерных величин
+
+Для $X_i\sim U(-1,1)$:
+$$
+Z_m=\frac{X_1+\dots+X_m}{\sqrt{m/3}}.
+$$
+
+::: incremental
+- При $m=1$ распределение ещё равномерное.
+- При росте $m$ форма быстро становится похожей на гауссову.
+:::
+
+## ЦПТ: $m=1$
+
+![](shared/figures/generated/clt_uniform_sum_m1.png){width=72% .nostretch}
+
+## ЦПТ: $m=2$
+
+![](shared/figures/generated/clt_uniform_sum_m2.png){width=72% .nostretch}
+
+## ЦПТ: $m=5$
+
+![](shared/figures/generated/clt_uniform_sum_m5.png){width=72% .nostretch}
+
+## ЦПТ: $m=10$
+
+![](shared/figures/generated/clt_uniform_sum_m10.png){width=72% .nostretch}
+
+## Интерактив: ЦПТ {#applet-clt}
+
+::: {.clt-widget}
+```{ojs}
+//| echo: false
+
+viewof m = Inputs.range([1, 50], {
+  value: 5,
+  step: 1,
+  label: "m"
+})
+
+viewof sampleSize = Inputs.range([100, 30000], {
+  value: 12000,
+  step: 1000,
+  label: "N"
+})
+
+viewof regenerate = Inputs.button("Новая статистика")
+
+zValues = {
+  regenerate;
+  const scale = Math.sqrt(m / 3);
+  const values = new Array(sampleSize);
+
+  for (let i = 0; i < sampleSize; ++i) {
+    let sum = 0;
+    for (let j = 0; j < m; ++j) {
+      sum += 2 * Math.random() - 1;
+    }
+    values[i] = sum / scale;
+  }
+
+  return values;
+}
+
+histogram = (values, bins, min, max) => {
+  const width = (max - min) / bins;
+  const counts = Array(bins).fill(0);
+
+  for (const value of values) {
+    if (value < min || value >= max) continue;
+    counts[Math.floor((value - min) / width)] += 1;
+  }
+
+  return counts.map((count, i) => ({
+    x0: min + i * width,
+    x1: min + (i + 1) * width,
+    density: count / (values.length * width)
+  }));
+}
+
+hist = histogram(zValues, 64, -4, 4)
+
+normalCurve = Array.from({length: 401}, (_, i) => {
+  const z = -4 + 8 * i / 400;
+  return {
+    z,
+    density: Math.exp(-0.5 * z * z) / Math.sqrt(2 * Math.PI)
+  };
+})
+
+zMean = zValues.reduce((sum, value) => sum + value, 0) / zValues.length
+
+zVariance = zValues.reduce(
+  (sum, value) => sum + (value - zMean) ** 2,
+  0
+) / zValues.length
+
+cltPlot = Plot.plot({
+  width: 960,
+  height: 580,
+  marginLeft: 55,
+  x: {label: "z", domain: [-4, 4]},
+  y: {label: "density", domain: [0, 0.55]},
+  grid: true,
+  marks: [
+    Plot.rectY(hist, {
+      x1: "x0",
+      x2: "x1",
+      y: "density",
+      fill: "#4ea1ff",
+      fillOpacity: 0.70,
+      stroke: "white"
+    }),
+    Plot.line(normalCurve, {
+      x: "z",
+      y: "density",
+      stroke: "#ffb347",
+      strokeWidth: 2.8
+    })
+  ]
+})
+
+html`
+<div class="clt-panel">
+  ${cltPlot}
+  <div class="clt-summary">
+    <span>z = (X1 + ... + Xm)/sqrt(m/3)</span>
+    <span>m = ${m}</span>
+    <span>mean = ${zMean.toFixed(3)}</span>
+    <span>variance = ${zVariance.toFixed(3)}</span>
+  </div>
+</div>
+`
+```
+:::
+
+
+# Гаусс, квантили и интервалы
+
+## Почему гаусс так важен
+
+::: incremental
+- Потому, что наблюдаемая величина часто есть сумма многих малых вкладов.
+- ЦПТ объясняет, почему такая сумма естественно становится почти нормальной.
+- Поэтому гауссово распределение лежит в основе ошибок измерения, доверительных интервалов, штрафных слагаемых и объединения результатов.
+- Полное доказательство ЦПТ мы опустим.
+:::
+
+## В этой лекции: одномерный гаусс
+
+::: incremental
+- Как устроена плотность $\mathrm{N}(\mu,\sigma)$.
+- Как читать вероятности, квантили и интервалы в единицах $\sigma$.
+- Как сравнивать и усреднять независимые измерения.
+- Как переносить ошибку через функцию.
+- Многомерный гаусс и корреляции подробно разберём в другой лекции.
+:::
+
+## Одномерное гауссовое распределение
+
+::::: {.columns}
+
+:::: {.column width="52%"}
+
+$$
+f(x;\mu,\sigma)=
+\frac{1}{\sigma\sqrt{2\pi}}
+\exp\!\left[
+-\frac{(x-\mu)^2}{2\sigma^2}
+\right]
+$$
+
+::: incremental
+- $\mu$ задаёт наиболее вероятное значение распределения $x$
+- $\sigma$ задаёт характерную ширину распределения
+- Дисперсия равна $\sigma^2$
+- Нормировка: $\int_{-\infty}^{+\infty} f(x;\mu,\sigma)\,dx = 1$
+:::
+
+::::
+
+::: {.column width="46%"}
+
+```{python}
+#| echo: false
+#| eval: true
+#| fig-width: 5.2
+#| out-width: "100%"
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+mu = 0.0
+sigma = 1.0
+
+x = np.linspace(mu - 5*sigma, mu + 5*sigma, 600)
+
+f = 1/(sigma*np.sqrt(2*np.pi)) * np.exp(
+    -(x - mu)**2/(2*sigma**2)
+)
+
+plt.plot(x, f)
+plt.xlabel("x")
+plt.ylabel("f(x)")
+plt.title(rf"Gaussian distribution: $\mu={mu}$, $\sigma={sigma}$")
+plt.grid(True, alpha=0.3)
+plt.show()
+```
+
+:::
+
+:::::
+
+## Стандартное нормальное распределение
+
+Если
+$$
+X\sim \mathrm{N}(\mu,\sigma),
+$$
+то после замены
+$$
+Z=\frac{X-\mu}{\sigma}
+$$
+получаем стандартное нормальное распределение
+$$
+\boxed{
+Z\sim \mathrm{N}(0,1),
+\qquad
+f_Z(z)=\frac{1}{\sqrt{2\pi}}e^{-z^2/2}.}
+$$
+
+## Квантили стандартного нормального распределения
+- В лекции [о случайных величинах и распределениях](02_random_distributions.qmd#cdf) мы ввели кумулятивную функцию распределения:
+$$
+\begin{aligned}
+\Phi(z)=P(Z\le z)&=\frac{1}{\sqrt{2\pi}}\int_{-\infty}^{z}e^{-t^2/2}\,dt
+=\\
+&=\frac12\left[1+\operatorname{erf}\!\left(\frac{z}{\sqrt2}\right)\right].
+\end{aligned}
+$$
+
+## Квантили стандартного нормального распределения
+
+```{python}
+#| echo: false
+#| eval: true
+#| include: false
+dist_std = NormalDist()
+alpha_levels = np.array([0.90, 0.95, 0.975, 0.995])
+z_levels = np.array([dist_std.inv_cdf(float(a)) for a in alpha_levels])
+z_grid = np.linspace(-3.4, 3.4, 500)
+phi_grid = np.array([dist_std.cdf(float(z)) for z in z_grid])
+```
+
+:::: {.columns}
+
+::: {.column width="52%"}
+- Квантиль уровня $\beta$ для $Z\sim \mathrm{N}(0,1)$ — это число $z_\beta$, такое что    
+$$  
+\Phi(z_\beta)=\beta.          
+$$
+- Смысл:
+$$
+P(-\infty < Z \le z_\beta) = \beta
+$$
+
+- Для центральной области вероятности $\gamma$:
+$$
+P\!\left(|Z|\le z_{(1+\gamma)/2}\right)=\gamma.
+$$
+Если задан уровень значимости $\alpha=1-\gamma$, то та же граница равна $z_{1-\alpha/2}$.
+
+| Уровень $\beta$ | $z_\beta$ |
+|---:|---:|
+| 0.90 | 1.282 |
+| 0.95 | 1.645 |
+| 0.975 | 1.960 |
+| 0.995 | 2.576 |
+
+:::
+
+::: {.column width="48%"}
+```{python}
+#| echo: false
+#| eval: true
+#| fig-width: 4.8
+#| fig-height: 3.5
+#| out-width: 100%
+fig, ax = plt.subplots()
+ax.plot(z_grid, phi_grid, color="#4ea1ff", linewidth=2.5)
+
+line_colors = ["#9be564", "#ffd54f", "#ffb347", "#ff8a65"]
+
+for alpha, z_alpha, color in zip(alpha_levels, z_levels, line_colors):
+    ax.hlines(alpha, -3.4, z_alpha, color=color, linestyle="--", linewidth=1.8)
+    ax.vlines(z_alpha, 0, alpha, color=color, linestyle=":", linewidth=1.8)
+    ax.plot([z_alpha], [alpha], "o", color=color, markersize=4.5)
+
+ax.set_xlim(-3.4, 3.4)
+ax.set_ylim(0, 1.02)
+ax.set_xlabel("z")
+ax.set_ylabel(r"$\Phi(z)$")
+ax.grid(alpha=0.25)
+plt.show()
+```
+:::
+
+::::
+
+## Центральные интервалы
+
+```{python}
+#| echo: false
+#| eval: true
+#| include: false
+dist_q = NormalDist()
+z_q = np.linspace(-4.0, 4.0, 800)
+y_q = np.exp(-0.5 * z_q**2) / np.sqrt(2 * np.pi)
+peak_q = 1 / np.sqrt(2 * np.pi)
+y1_q = peak_q * np.exp(-0.5)
+y2_q = peak_q * np.exp(-2.0)
+p1_q = dist_q.cdf(1.0) - dist_q.cdf(-1.0)
+p2_q = dist_q.cdf(2.0) - dist_q.cdf(-2.0)
+p3_q = dist_q.cdf(3.0) - dist_q.cdf(-3.0)
+```
+
+:::: {.panel-tabset}
+
+### Код
+
+::: {.smaller}
+```{python}
+#| echo: true
+#| eval: false
+from statistics import NormalDist
+import numpy as np
+
+dist = NormalDist()
+z = np.linspace(-4, 4, 800)
+f = np.exp(-z**2 / 2) / np.sqrt(2 * np.pi)
+p1 = dist.cdf(1) - dist.cdf(-1)
+p2 = dist.cdf(2) - dist.cdf(-2)
+p3 = dist.cdf(3) - dist.cdf(-3)
+```
+
+- `p1`, `p2`, `p3` дают вероятности попадания в интервалы `[-1,1]`, `[-2,2]`, `[-3,3]`.
+- Для стандартной нормали это и есть центральные интервалы `1σ`, `2σ`, `3σ`.
+- На графике они сопоставлены с шириной гауссовой кривой для `1σ`, `2σ`, `3σ`.
+:::
+
+### График
+
+```{python}
+#| echo: false
+#| eval: true
+#| fig-width: 6.1
+#| fig-height: 4.0
+#| out-width: 86%
+fig, ax = plt.subplots(facecolor="white")
+ax.set_facecolor("white")
+ax.plot(z_q, y_q, color="#294cff", linewidth=2.6)
+
+for z_mark in [-3, -2, -1, 1, 2, 3]:
+    y_mark = peak_q * np.exp(-0.5 * z_mark**2)
+    ax.vlines(z_mark, 0, y_mark, color="black", linestyle=":", linewidth=1.1)
+
+ax.hlines(peak_q, 0.18, 0.95, color="black", linestyle=":", linewidth=1.1)
+ax.hlines(y1_q, 1.10, 2.00, color="black", linestyle=":", linewidth=1.1)
+ax.hlines(y2_q, 2.05, 2.95, color="black", linestyle=":", linewidth=1.1)
+
+ax.text(1.10, peak_q + 0.006, r"$P_0$", fontsize=14)
+ax.text(2.08, y1_q + 0.004, r"$P_0 e^{-1/2}$", fontsize=13)
+ax.text(2.98, y2_q + 0.002, r"$P_0 e^{-2}$", fontsize=13, ha="right")
+
+ax.annotate(
+    "",
+    xy=(1.0, 0.205),
+    xytext=(-1.0, 0.205),
+    arrowprops=dict(arrowstyle="<->", color="black", linewidth=1.4),
+)
+ax.text(0.0, 0.217, r"$\pm1\sigma$", ha="center", fontsize=14)
+
+ax.annotate(
+    "",
+    xy=(2.0, 0.055),
+    xytext=(-2.0, 0.055),
+    arrowprops=dict(arrowstyle="<->", color="black", linewidth=1.4),
+)
+ax.text(0.0, 0.068, r"$\pm2\sigma$", ha="center", fontsize=14)
+
+ax.annotate(
+    "",
+    xy=(3.0, 0.018),
+    xytext=(-3.0, 0.018),
+    arrowprops=dict(arrowstyle="<->", color="black", linewidth=1.4),
+)
+ax.text(0.0, 0.031, r"$\pm3\sigma$", ha="center", fontsize=14)
+
+interval_text = (
+    rf"{100 * p1_q:.1f}% : $|x-\mu| < 1\sigma$" "\n"
+    rf"{100 * p2_q:.1f}% : $|x-\mu| < 2\sigma$" "\n"
+    rf"{100 * p3_q:.1f}% : $|x-\mu| < 3\sigma$"
+)
+ax.text(
+    1.75,
+    0.265,
+    interval_text,
+    fontsize=12.5,
+    va="top",
+    bbox=dict(facecolor="white", edgecolor="#ffb347", linewidth=1.4, boxstyle="round,pad=0.35"),
+)
+
+ax.set_xlim(-4, 4)
+ax.set_ylim(0, 0.5)
+ax.set_xlabel(r"$(x-\mu)/\sigma$", fontsize=15)
+ax.set_ylabel(r"$\mathrm{Prob}(x;\mu,\sigma)$", fontsize=15)
+ax.set_xticks(np.arange(-4, 5, 1))
+ax.tick_params(axis="both", which="major", direction="in", top=True, right=True, length=7, width=1.0, labelsize=12)
+ax.minorticks_on()
+ax.tick_params(axis="both", which="minor", direction="in", top=True, right=True, length=4, width=0.9)
+for spine in ax.spines.values():
+    spine.set_linewidth(1.2)
+plt.show()
+```
+
+::::
+
+# Совместимость измерений
+
+## Совместимость двух измерений
+::: incremental
+
+- Пусть $x_1\pm \sigma_1$, $x_2\pm \sigma_2$ независимо измеряют одну и ту же величину $\mu$.
+
+- Как проверить, что эти измерения совместимы, то есть не противоречат друг другу?
+
+- Например, какие из этих пар измерений совместимы, а какие нет?
+  - первая пара (оценки сильно отличаются, но ошибки велики):
+$$
+1.0\pm0.5,
+\qquad
+2.0\pm0.5.
+$$
+  - вторая пара (оценки близки, но ошибки малы):
+ $$
+1.010\pm0.001,
+\qquad
+1.020\pm0.001.
+$$
+
+:::
+
+## Распределение разности
+
+::: incremental
+- Проверяем не сами значения по отдельности, а разность:
+$$
+D=X_1-X_2.
+$$
+
+- Если оба измерения оценивают одну величину $\mu$, то при гипотезе совместимости
+$$
+\mathbb{E}[D]=\mathbb{E}[X_1-X_2]=\mu-\mu=0.
+$$
+
+- Дисперсия разности:
+$$
+\mathrm{Var}(D)=\mathrm{Var}(X_1-X_2)=\sigma_1^2+\sigma_2^2-2\,\mathrm{cov}(X_1,X_2).
+$$
+:::
+
+## Распределение разности
+
+::: incremental
+- Для независимых измерений
+$$
+\mathrm{cov}(X_1,X_2)=0,
+\qquad
+\sigma_D^2=\sigma_1^2+\sigma_2^2.
+$$
+
+- Если ошибки гауссовы, то
+$$
+D\sim \mathrm{N}(0,\sigma_D),
+\qquad
+\sigma_D=\sqrt{\sigma_1^2+\sigma_2^2}.
+$$
+
+- Поэтому $Z=D/\sigma_D$ имеет стандартное нормальное распределение:
+$$
+Z=\frac{D}{\sigma_D}
+=\frac{D}{\sqrt{\sigma_1^2+\sigma_2^2}}
+\sim \mathrm{N}(0,1).
+$$
+
+- Для наблюдённых значений $x_1$, $x_2$ получаем
+$$
+\boxed{
+z_{\rm obs}
+=
+\frac{x_1-x_2}{\sqrt{\sigma_1^2+\sigma_2^2}}.
+}
+$$
+:::
+
+## Алгоритм проверки совместимости двух измерений {#applet-measurement-compatibility}
+
+::::: {.columns}
+
+:::: {.column width="48%"}
+::: incremental
+- Мы свели задачу к стандартной нормальной величине $Z\sim\mathrm{N}(0,1)$.
+
+- Теперь спрашиваем: попало ли наблюдаемое значение $z_{\rm obs}$ в центральную область стандартного гаусса?
+
+- Если попало, разность выглядит обычной флуктуацией, и совместимость не отвергается.
+
+- Если попало в один из хвостов, такая разность слишком редкая для гипотезы совместимости.
+
+- Для данных считаем
+$$
+\boxed{
+z_{\rm obs}
+=
+\frac{x_1-x_2}{\sqrt{\sigma_1^2+\sigma_2^2}}
+}
+$$
+:::
+::::
+
+::: {.column width="52%"}
+<div class="compat-widget" data-alpha="0.10" data-zobs="1.10"></div>
+
+<script>
+(() => {
+  if (window.initCompatibilityWidgets) {
+    window.initCompatibilityWidgets();
+    return;
+  }
+
+  const pdf = (z) => Math.exp(-0.5 * z * z) / Math.sqrt(2 * Math.PI);
+
+  const erf = (x) => {
+    const sign = x < 0 ? -1 : 1;
+    const a1 = 0.254829592;
+    const a2 = -0.284496736;
+    const a3 = 1.421413741;
+    const a4 = -1.453152027;
+    const a5 = 1.061405429;
+    const p = 0.3275911;
+    const ax = Math.abs(x);
+    const t = 1 / (1 + p * ax);
+    const y = 1 - (((((a5 * t + a4) * t) + a3) * t + a2) * t + a1) * t * Math.exp(-ax * ax);
+    return sign * y;
+  };
+
+  const cdf = (z) => 0.5 * (1 + erf(z / Math.SQRT2));
+
+  const quantile = (probability) => {
+    let lo = -8;
+    let hi = 8;
+    for (let i = 0; i < 80; i += 1) {
+      const mid = 0.5 * (lo + hi);
+      if (cdf(mid) < probability) lo = mid;
+      else hi = mid;
+    }
+    return 0.5 * (lo + hi);
+  };
+
+  const fmt = (value, digits = 3) => Number(value).toFixed(digits);
+  const prob = (value) => value < 0.001 ? value.toExponential(2) : fmt(value, 3);
+
+  const buildSvg = ({alpha, gamma, c, zObs, pTwo, id}) => {
+    const width = 740;
+    const height = 430;
+    const xMin = -8;
+    const xMax = 8;
+    const left = 44;
+    const right = 24;
+    const top = 40;
+    const base = 318;
+    const plotWidth = width - left - right;
+    const peak = pdf(0);
+
+    const x = (z) => left + (z - xMin) / (xMax - xMin) * plotWidth;
+    const y = (density) => base - density / peak * (base - top);
+
+    const curvePoints = Array.from({length: 361}, (_, i) => {
+      const z = xMin + (xMax - xMin) * i / 360;
+      return `${x(z).toFixed(1)},${y(pdf(z)).toFixed(1)}`;
+    }).join(" ");
+
+    const areaPoints = (a, b) => {
+      const n = 72;
+      const points = [`${x(a).toFixed(1)},${base}`];
+      for (let i = 0; i <= n; i += 1) {
+        const z = a + (b - a) * i / n;
+        points.push(`${x(z).toFixed(1)},${y(pdf(z)).toFixed(1)}`);
+      }
+      points.push(`${x(b).toFixed(1)},${base}`);
+      return points.join(" ");
+    };
+
+    const leftTail = areaPoints(xMin, -c);
+    const center = areaPoints(-c, c);
+    const rightTail = areaPoints(c, xMax);
+    const zX = x(Math.max(xMin, Math.min(xMax, zObs)));
+    const zY = y(pdf(zObs));
+    const tailLabel = prob(alpha / 2);
+    const beta = 1 - alpha / 2;
+    const decision = Math.abs(zObs) <= c ? "внутри области" : "в хвосте";
+
+    return `
+      <svg class="compat-plot" viewBox="0 0 ${width} ${height}" role="img" aria-label="Двусторонняя проверка совместимости">
+        <defs>
+          <filter id="${id}-glow" x="-40%" y="-40%" width="180%" height="180%">
+            <feGaussianBlur stdDeviation="3.2" result="blur"></feGaussianBlur>
+            <feMerge><feMergeNode in="blur"></feMergeNode><feMergeNode in="SourceGraphic"></feMergeNode></feMerge>
+          </filter>
+          <linearGradient id="${id}-center" x1="0" x2="1" y1="0" y2="0">
+            <stop offset="0%" stop-color="#4ea1ff" stop-opacity="0.18"></stop>
+            <stop offset="50%" stop-color="#7ee6b8" stop-opacity="0.33"></stop>
+            <stop offset="100%" stop-color="#4ea1ff" stop-opacity="0.18"></stop>
+          </linearGradient>
+          <linearGradient id="${id}-tail" x1="0" x2="1" y1="0" y2="0">
+            <stop offset="0%" stop-color="#ff6b6b" stop-opacity="0.38"></stop>
+            <stop offset="100%" stop-color="#ff9a5c" stop-opacity="0.23"></stop>
+          </linearGradient>
+        </defs>
+        <rect width="${width}" height="${height}" fill="transparent"></rect>
+        <line x1="${left}" y1="${base}" x2="${width - right}" y2="${base}" stroke="#8492a6" stroke-width="2"></line>
+        <text x="${width - right}" y="${base + 27}" text-anchor="end" fill="#c9d4e5" font-size="16">z</text>
+        <text x="${x(0)}" y="${base + 27}" text-anchor="middle" fill="#c9d4e5" font-size="16">0</text>
+
+        <polygon points="${leftTail}" fill="url(#${id}-tail)"></polygon>
+        <polygon points="${center}" fill="url(#${id}-center)"></polygon>
+        <polygon points="${rightTail}" fill="url(#${id}-tail)"></polygon>
+        <polyline points="${curvePoints}" fill="none" stroke="#f5f7fd" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" filter="url(#${id}-glow)"></polyline>
+
+        <line x1="${x(-c)}" y1="${base}" x2="${x(-c)}" y2="58" stroke="#ffd54f" stroke-width="2.5" stroke-dasharray="8 7"></line>
+        <line x1="${x(c)}" y1="${base}" x2="${x(c)}" y2="58" stroke="#ffd54f" stroke-width="2.5" stroke-dasharray="8 7"></line>
+        <line x1="${zX}" y1="${base}" x2="${zX}" y2="${Math.max(54, zY - 16)}" stroke="#ffb347" stroke-width="3.5" stroke-dasharray="9 6"></line>
+        <circle cx="${zX}" cy="${zY}" r="6" fill="#ffb347" stroke="#ffe7b3" stroke-width="2"></circle>
+
+        <text x="${x(-c)}" y="${base + 25}" text-anchor="middle" fill="#ffd54f" font-size="15">-c</text>
+        <text x="${x(c)}" y="${base + 25}" text-anchor="middle" fill="#ffd54f" font-size="15">+c</text>
+        <text x="${zX}" y="${Math.max(36, zY - 24)}" text-anchor="middle" fill="#ffcc80" font-size="16" font-weight="700">z_obs</text>
+
+        <text x="${x(-3.05)}" y="244" text-anchor="middle" fill="#ffb4a8" font-size="18" font-weight="700">α/2 = ${tailLabel}</text>
+        <text x="${x(3.05)}" y="244" text-anchor="middle" fill="#ffb4a8" font-size="18" font-weight="700">α/2 = ${tailLabel}</text>
+        <text x="${x(0)}" y="222" text-anchor="middle" fill="#9ff0cf" font-size="21" font-weight="800">γ = ${fmt(gamma, 3)}</text>
+
+        <path d="M ${x(-c) + 7} 365 H ${x(c) - 7}" stroke="#ffd54f" stroke-width="2.2"></path>
+        <text x="${x(0)}" y="392" text-anchor="middle" fill="#ffd54f" font-size="16">c = z_${fmt(beta, 3)} = ${fmt(c, 3)}</text>
+        <text x="${x(0)}" y="35" text-anchor="middle" fill="#c9d4e5" font-size="16">p(|Z| >= |z_obs|) = ${prob(pTwo)} · ${decision}</text>
+      </svg>
+    `;
+  };
+
+  const render = (root) => {
+    const alphaInput = root.querySelector("[data-compat-alpha]");
+    const zInput = root.querySelector("[data-compat-zobs]");
+    const alphaOut = root.querySelector("[data-compat-alpha-out]");
+    const zOut = root.querySelector("[data-compat-zobs-out]");
+    const plot = root.querySelector("[data-compat-plot]");
+    const summary = root.querySelector("[data-compat-summary]");
+    const alpha = Number(alphaInput.value);
+    const gamma = 1 - alpha;
+    const beta = 1 - alpha / 2;
+    const c = quantile(beta);
+    const zObs = Number(zInput.value);
+    const absZ = Math.abs(zObs);
+    const pTwo = Math.min(1, 2 * (1 - cdf(absZ)));
+    const compatible = absZ <= c;
+
+    alphaOut.value = fmt(alpha, 3);
+    zOut.value = fmt(zObs, 2);
+    plot.innerHTML = buildSvg({alpha, gamma, c, zObs, pTwo, id: root.dataset.compatId});
+    summary.innerHTML = `
+      <span>γ = ${fmt(gamma, 3)}</span>
+      <span>α/2 = ${fmt(alpha / 2, 3)}</span>
+      <span>c = ${fmt(c, 3)}</span>
+      <span>p_two = ${prob(pTwo)}</span>
+      <span class="${compatible ? "compat-decision-ok" : "compat-decision-bad"}" style="grid-column: 1 / -1;">
+        ${compatible ? "Совместимость не отвергается" : "Несовместимо на выбранном уровне α"}
+      </span>
+    `;
+  };
+
+  let compatCounter = 0;
+
+  const initOne = (root) => {
+    if (root.dataset.compatReady) return;
+    root.dataset.compatReady = "1";
+    root.dataset.compatId = root.dataset.compatId || `compat-${compatCounter += 1}`;
+    const initialAlpha = root.dataset.alpha || "0.10";
+    const initialZObs = root.dataset.zobs || "1.10";
+    root.innerHTML = `
+      <div class="compat-controls">
+        <label class="compat-control">α <input data-compat-alpha type="range" min="0.001" max="0.200" step="0.001" value="${initialAlpha}"><output data-compat-alpha-out></output></label>
+        <label class="compat-control">z_obs <input data-compat-zobs type="range" min="-8.00" max="8.00" step="0.01" value="${initialZObs}"><output data-compat-zobs-out></output></label>
+      </div>
+      <div data-compat-plot></div>
+      <div class="compat-summary" data-compat-summary></div>
+    `;
+    root.querySelectorAll("input").forEach((input) => {
+      input.addEventListener("input", () => render(root));
+    });
+    render(root);
+  };
+
+  window.initCompatibilityWidgets = () => {
+    document.querySelectorAll(".compat-widget").forEach(initOne);
+  };
+
+  document.addEventListener("DOMContentLoaded", window.initCompatibilityWidgets);
+  if (window.Reveal) {
+    window.Reveal.on("ready", window.initCompatibilityWidgets);
+    window.Reveal.on("slidechanged", window.initCompatibilityWidgets);
+  }
+  window.initCompatibilityWidgets();
+})();
+</script>
+:::
+
+:::::
+
+## Алгоритм проверки совместимости двух измерений
+
+::::: {.columns}
+
+:::: {.column width="46%"}
+::: incremental
+
+- Выбираем центральную область совместимости:
+  $$
+  \gamma=0.90,
+  \qquad
+  \alpha=1-\gamma=0.10.
+  $$
+
+- Критическая граница:
+  $$
+  c=z_{(1+\gamma)/2}=z_{1-\alpha/2}.
+  $$
+
+- Для $\gamma=0.90$:
+  $$
+  c=z_{0.95}=1.64.
+  $$
+
+- Правило:
+  $$
+  |z_{\rm obs}|\le c
+  $$
+  совместимость не отвергается; при $|z_{\rm obs}|>c$ измерения несовместимы на уровне значимости $\alpha$.
+:::
+::::
+
+::: {.column width="54%"}
+<div class="compat-widget" data-alpha="0.10" data-zobs="1.41"></div>
+:::
+
+:::::
+
+## Совместимость: важна не разность, а значимость
+
+::::: {.columns}
+
+:::: {.column width="46%"}
+::: incremental
+
+- Пример A: оценки сильно отличаются, но ошибки велики.
+$$
+1.0\pm0.5,
+\qquad
+2.0\pm0.5
+$$
+$$
+z_{\rm obs}
+=
+\frac{1.0-2.0}{\sqrt{0.5^2+0.5^2}}
+=
+-1.41
+$$
+
+- Пример B: оценки близки, но ошибки малы.
+$$
+1.010\pm0.001,
+\qquad
+1.020\pm0.001
+$$
+$$
+z_{\rm obs}
+=
+\frac{1.010-1.020}{\sqrt{0.001^2+0.001^2}}
+=
+-7.07
+$$
+
+- Дальше двигаем $z_{\rm obs}$ в апплете и смотрим, попадает ли он в центральную область.
+:::
+::::
+
+::: {.column width="54%"}
+<div class="compat-widget" data-alpha="0.10" data-zobs="-1.41"></div>
+:::
+
+:::::

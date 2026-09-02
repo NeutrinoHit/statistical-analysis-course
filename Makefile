@@ -15,7 +15,20 @@ BOOK_RU_DIR := ru/book
 BOOK_EN_DIR := en/book
 SLIDES_RU_DIR := ru/slides
 SLIDES_EN_DIR := en/slides
-RU_PDF_CHAPTERS := why_statistics
+RU_PDF_CHAPTERS := \
+	01_why_statistics \
+	02_random_distributions \
+	03_characteristic_functions \
+	04_central_limit_theorem \
+	05_non_gaussian_clt_violations \
+	06_error_propagation \
+	07_two_dimensional_gaussian \
+	08_monte_carlo_method \
+	09_maximum_likelihood \
+	10_estimator_properties_profile_likelihood \
+	11_least_squares_linear_fit \
+	12_least_squares_systematics \
+	13_goodness_of_fit_and_significance
 
 .PHONY: help check-env check-book-sources ci-setup site all books notebooks figures book-qr slides \
 	ru-slides en-slides \
@@ -60,7 +73,7 @@ site: check-env check-book-sources book-qr ## Собрать полный сай
 	test -s _site/index.html
 	test -s _site/ru/book/index.html
 	test -s _site/ru/book/statistical-data-analysis.pdf
-	test -s _site/ru/book/chapters/why_statistics.pdf
+	@for chapter in $(RU_PDF_CHAPTERS); do test -s _site/ru/book/chapters/$$chapter.pdf; done
 	test -s _site/en/book/index.html
 
 all: figures books ## Собрать фигуры и обе книги

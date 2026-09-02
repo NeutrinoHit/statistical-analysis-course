@@ -22,34 +22,32 @@ book:
     - preface.qmd
     - part: "I. Вероятностный язык"
       chapters:
-        - chapters/why_statistics.qmd
-        - chapters/01_random_distributions.qmd
-        - chapters/02_characteristic_functions.qmd
-        - chapters/03_central_limit_theorem.qmd
-        - chapters/04_non_gaussian_clt_violations.qmd
+        - chapters/01_why_statistics.qmd
+        - chapters/02_random_distributions.qmd
+        - chapters/03_characteristic_functions.qmd
+        - chapters/04_central_limit_theorem.qmd
+        - chapters/05_non_gaussian_clt_violations.qmd
     - part: "II. Моделирование и оценивание"
       chapters:
-        - chapters/05_error_propagation_and_covariance.qmd
-        - chapters/06_monte_carlo_method.qmd
-        - chapters/07_parameter_estimation_and_maximum_likelihood.qmd
-        - chapters/08_method_of_least_squares.qmd
+        - chapters/06_error_propagation.qmd
+        - chapters/07_two_dimensional_gaussian.qmd
+        - chapters/08_monte_carlo_method.qmd
+        - chapters/09_maximum_likelihood.qmd
+        - chapters/10_estimator_properties_profile_likelihood.qmd
+        - chapters/11_least_squares_linear_fit.qmd
+        - chapters/12_least_squares_systematics.qmd
     - part: "III. Статистический вывод"
       chapters:
-        - chapters/09_statistical_tests_basics.qmd
-        - chapters/10_test_statistics_and_multivariate_methods.qmd
-        - chapters/11_goodness_of_fit_and_significance.qmd
-        - chapters/12_feldman_cousins_and_cls.qmd
-        - chapters/13_interval_estimation_and_limits.qmd
-    - part: "IV. Неопределённости и альтернативный вывод"
-      chapters:
-        - chapters/14_nuisance_parameters_and_systematics.qmd
-        - chapters/15_bayesian_examples.qmd
+        - chapters/13_goodness_of_fit_and_significance.qmd
 
 bibliography: ../../shared/bib/references.bib
 csl: ../../shared/bib/neutrinohit-numeric.csl
-# Each chapter has its own numbered list of sources. Citation links are disabled
-# because duplicate reference anchors in a multi-page book otherwise point to
-# the first chapter in which a source appears.
+# Each chapter has its own numbered list of sources. The generic Pandoc citeproc
+# pass sees a PDF/EPUB book as one document and repeats the full bibliography at
+# every #refs Div, so chapter-bibliographies.lua runs citeproc for each chapter.
+citeproc: false
+# Citation links are disabled because a source can occur in several chapter
+# bibliographies with the same internal reference identifier.
 link-citations: false
 lang: ru
 jupyter: python3
@@ -60,9 +58,9 @@ book-part-titles:
   - "I. Вероятностный язык"
   - "II. Моделирование и оценивание"
   - "III. Статистический вывод"
-  - "IV. Неопределённости и альтернативный вывод"
 
 filters:
+  - assets/filters/chapter-bibliographies.lua
   - assets/filters/hide-book-index.lua
   - assets/filters/neutrinohit-book.lua
 

@@ -850,6 +850,10 @@
 % -----------------------------------------------------------------------------
 \RedeclareSectionCommand[tocbeforeskip=0.12\baselineskip]{chapter}
 \RedeclareSectionCommand[tocbeforeskip=0.55\baselineskip]{part}
+% The local chapter TOC reaches two-digit chapter and section numbers
+% (for example 13.10). Reserve enough width so the title never touches the
+% number.
+\DeclareTOCStyleEntry[numwidth=3.6em]{tocline}{section}
 
 \AtBeginDocument{%
   \addtokomafont{partentry}{\sffamily\bfseries\color{BookTeal}}%
@@ -1628,7 +1632,7 @@ HTML-версии; в EPUB ссылка открывается нажатием 
 
 \end{minipage}\hfill\begin{minipage}[c]{26mm}\centering
 
-\href{https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/why_statistics.html\#interactive-first-fit}{\includegraphics[width=24mm,height=\textheight,keepaspectratio,alt={QR-код интерактива}]{assets/qr/first_fit.png}}
+\href{https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/01_why_statistics.html\#interactive-first-fit}{\includegraphics[width=24mm,height=\textheight,keepaspectratio,alt={QR-код интерактива}]{assets/qr/first_fit.png}}
 
 \end{minipage}
 
@@ -1929,55 +1933,6 @@ Review Letters}, \textbf{133}, 051801. 2024.
 doi:\href{https://doi.org/10.1103/PhysRevLett.133.051801}{10.1103/PhysRevLett.133.051801}.
 \url{https://arxiv.org/abs/2404.01687}.
 
-\bibitem[\citeproctext]{ref-jcgm2008gum}
-{[}6{]} Joint Committee for Guides in Metrology. Evaluation of
-Measurement Data---Guide to the Expression of Uncertainty in
-Measurement. 2008.
-doi:\href{https://doi.org/10.59161/JCGM100-2008E}{10.59161/JCGM100-2008E}.
-
-\bibitem[\citeproctext]{ref-metropolisUlam1949}
-{[}7{]} Metropolis, N. и Ulam, S. The {Monte Carlo} Method.
-\emph{Journal of the American Statistical Association}, \textbf{44},
-335--341. 1949.
-doi:\href{https://doi.org/10.1080/01621459.1949.10483310}{10.1080/01621459.1949.10483310}.
-
-\bibitem[\citeproctext]{ref-lepage1978vegas}
-{[}8{]} Lepage, G. P. A New Algorithm for Adaptive Multidimensional
-Integration. \emph{Journal of Computational Physics}, \textbf{27},
-192--203. 1978.
-doi:\href{https://doi.org/10.1016/0021-9991(78)90004-9}{10.1016/0021-9991(78)90004-9}.
-
-\bibitem[\citeproctext]{ref-blythOpticks}
-{[}9{]} Blyth, S. C. Opticks: {GPU} Optical Photon Simulation.
-\url{https://juno.ihep.ac.cn/~blyth/}.
-
-\bibitem[\citeproctext]{ref-wilks1938}
-{[}10{]} Wilks, S. S. The Large-Sample Distribution of the Likelihood
-Ratio for Testing Composite Hypotheses. \emph{The Annals of Mathematical
-Statistics}, \textbf{9}, 60--62. 1938.
-doi:\href{https://doi.org/10.1214/aoms/1177732360}{10.1214/aoms/1177732360}.
-
-\bibitem[\citeproctext]{ref-huber2011reactor}
-{[}11{]} Huber, P. Determination of Antineutrino Spectra from Nuclear
-Reactors. \emph{Physical Review C}, \textbf{84}, 024617. 2011.
-doi:\href{https://doi.org/10.1103/PhysRevC.84.024617}{10.1103/PhysRevC.84.024617}.
-
-\bibitem[\citeproctext]{ref-mueller2011reactor}
-{[}12{]} {Mueller, Th. A. и др.} Improved Predictions of Reactor
-Antineutrino Spectra. \emph{Physical Review C}, \textbf{83}, 054615.
-2011.
-doi:\href{https://doi.org/10.1103/PhysRevC.83.054615}{10.1103/PhysRevC.83.054615}.
-
-\bibitem[\citeproctext]{ref-dagostini1994bias}
-{[}13{]} D'Agostini, G. On the Use of the Covariance Matrix to Fit
-Correlated Data. \emph{Nuclear Instruments and Methods in Physics
-Research Section A}, \textbf{346}, 306--311. 1994.
-doi:\href{https://doi.org/10.1016/0168-9002(94)90719-6}{10.1016/0168-9002(94)90719-6}.
-
-\bibitem[\citeproctext]{ref-cowan1998}
-{[}14{]} Cowan, G. \emph{Statistical Data Analysis}. Oxford University
-Press. 1998.
-
 \end{CSLReferences}
 
 \chapter{Случайные величины, распределения,
@@ -2020,8 +1975,8 @@ Press. 1998.
 модели с данными.
 
 \textbf{Случайная величина} \(X\) --- правило, которое каждому
-возможному исходу эксперимента сопоставляет число. До измерения мы
-говорим о величине \(X\) и её распределении; после измерения получаем
+возможному исходу эксперимента сопоставляет число {[}1{]}. До измерения
+мы говорим о величине \(X\) и её распределении; после измерения получаем
 конкретное значение \(x\). Например, \(N\) может обозначать число
 зарегистрированных нейтрино за сутки, а запись \(n=17\) --- результат
 одних определённых суток.
@@ -2692,6 +2647,19 @@ Y=e^Z,\qquad Z\sim\mathrm{N}(\mu,\sigma^2).
 
 \end{semanticpdfbox}
 
+\section*{Литература}\label{ux43bux438ux442ux435ux440ux430ux442ux443ux440ux430-1}
+\addcontentsline{toc}{section}{Литература}
+
+\markright{Литература}
+
+\protect\phantomsection\label{refs}
+\begin{CSLReferences}{0}{0}
+\bibitem[\citeproctext]{ref-feller1971}
+{[}1{]} Feller, W. \emph{An Introduction to Probability Theory and Its
+Applications}. John Wiley \& Sons. 1971.
+
+\end{CSLReferences}
+
 \chapter{Характеристические функции и суммы случайных
 величин}\label{ux445ux430ux440ux430ux43aux442ux435ux440ux438ux441ux442ux438ux447ux435ux441ux43aux438ux435-ux444ux443ux43dux43aux446ux438ux438-ux438-ux441ux443ux43cux43cux44b-ux441ux43bux443ux447ux430ux439ux43dux44bux445-ux432ux435ux43bux438ux447ux438ux43d}
 
@@ -2841,8 +2809,8 @@ f_S(s)
 \begin{booknote}
 
 В статистическом анализе \textbf{характеристической функцией} называют
-преобразование Фурье распределения. Для случайной величины \(X\) она
-определяется как \[\boxed{
+преобразование Фурье распределения {[}1{]}. Для случайной величины \(X\)
+она определяется как \[\boxed{
 \varphi_X(t)
 =
 \mathbb{E}\!\left[e^{itX}\right].
@@ -2930,7 +2898,7 @@ f_S(s)=\frac{2}{\pi(s^2+4)}.
 
 \end{minipage}\hfill\begin{minipage}[c]{26mm}\centering
 
-\href{https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/02_characteristic_functions.html\#interactive-cauchy-sum}{\includegraphics[width=24mm,height=\textheight,keepaspectratio,alt={QR-код интерактива}]{assets/qr/cauchy_sum.png}}
+\href{https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/03_characteristic_functions.html\#interactive-cauchy-sum}{\includegraphics[width=24mm,height=\textheight,keepaspectratio,alt={QR-код интерактива}]{assets/qr/cauchy_sum.png}}
 
 \end{minipage}
 
@@ -3614,7 +3582,7 @@ n^{1-r/2}.
 
 \end{minipage}\hfill\begin{minipage}[c]{26mm}\centering
 
-\href{https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/02_characteristic_functions.html\#interactive-clt-fourier}{\includegraphics[width=24mm,height=\textheight,keepaspectratio,alt={QR-код интерактива}]{assets/qr/clt_fourier.png}}
+\href{https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/03_characteristic_functions.html\#interactive-clt-fourier}{\includegraphics[width=24mm,height=\textheight,keepaspectratio,alt={QR-код интерактива}]{assets/qr/clt_fourier.png}}
 
 \end{minipage}
 
@@ -3821,6 +3789,19 @@ Z_n=
 
 \end{semanticpdfbox}
 
+\section*{Литература}\label{ux43bux438ux442ux435ux440ux430ux442ux443ux440ux430-2}
+\addcontentsline{toc}{section}{Литература}
+
+\markright{Литература}
+
+\protect\phantomsection\label{refs}
+\begin{CSLReferences}{0}{0}
+\bibitem[\citeproctext]{ref-feller1971}
+{[}1{]} Feller, W. \emph{An Introduction to Probability Theory and Its
+Applications}. John Wiley \& Sons. 1971.
+
+\end{CSLReferences}
+
 \chapter{Центральная предельная теорема и нормальное
 распределение}\label{ux446ux435ux43dux442ux440ux430ux43bux44cux43dux430ux44f-ux43fux440ux435ux434ux435ux43bux44cux43dux430ux44f-ux442ux435ux43eux440ux435ux43cux430-ux438-ux43dux43eux440ux43cux430ux43bux44cux43dux43eux435-ux440ux430ux441ux43fux440ux435ux434ux435ux43bux435ux43dux438ux435}
 
@@ -3876,7 +3857,7 @@ Z_n=
 
 \end{minipage}\hfill\begin{minipage}[c]{26mm}\centering
 
-\href{https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/03_central_limit_theorem.html\#interactive-uniform-sample}{\includegraphics[width=24mm,height=\textheight,keepaspectratio,alt={QR-код интерактива}]{assets/qr/uniform_sample.png}}
+\href{https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/04_central_limit_theorem.html\#interactive-uniform-sample}{\includegraphics[width=24mm,height=\textheight,keepaspectratio,alt={QR-код интерактива}]{assets/qr/uniform_sample.png}}
 
 \end{minipage}
 
@@ -4048,6 +4029,8 @@ Z_m=
 
 \[\boxed{Z_m\Rightarrow \mathrm{N}(0,1),\qquad \text{при  }~~ m\to\infty.}\]
 
+Эта формулировка и её варианты подробно разобраны в {[}1{]}.
+
 \end{booknote}
 
 \begin{semanticpdfbox}[colback=BookBiographySoft,borderline west={1.2mm}{0pt}{BookBiography},breakable=false]
@@ -4147,7 +4130,7 @@ Z_m=
 
 \end{minipage}\hfill\begin{minipage}[c]{26mm}\centering
 
-\href{https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/03_central_limit_theorem.html\#interactive-clt-sums}{\includegraphics[width=24mm,height=\textheight,keepaspectratio,alt={QR-код интерактива}]{assets/qr/clt_sums.png}}
+\href{https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/04_central_limit_theorem.html\#interactive-clt-sums}{\includegraphics[width=24mm,height=\textheight,keepaspectratio,alt={QR-код интерактива}]{assets/qr/clt_sums.png}}
 
 \end{minipage}
 
@@ -4310,7 +4293,7 @@ HTML-версия позволяет менять число стандартн�
 
 \end{minipage}\hfill\begin{minipage}[c]{26mm}\centering
 
-\href{https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/03_central_limit_theorem.html\#interactive-central-intervals}{\includegraphics[width=24mm,height=\textheight,keepaspectratio,alt={QR-код интерактива}]{assets/qr/central_intervals.png}}
+\href{https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/04_central_limit_theorem.html\#interactive-central-intervals}{\includegraphics[width=24mm,height=\textheight,keepaspectratio,alt={QR-код интерактива}]{assets/qr/central_intervals.png}}
 
 \end{minipage}
 
@@ -4438,7 +4421,7 @@ c=z_{(1+\gamma)/2}=z_{1-\alpha/2}.
 
 \end{minipage}\hfill\begin{minipage}[c]{26mm}\centering
 
-\href{https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/03_central_limit_theorem.html\#interactive-compatibility}{\includegraphics[width=24mm,height=\textheight,keepaspectratio,alt={QR-код интерактива}]{assets/qr/compatibility.png}}
+\href{https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/04_central_limit_theorem.html\#interactive-compatibility}{\includegraphics[width=24mm,height=\textheight,keepaspectratio,alt={QR-код интерактива}]{assets/qr/compatibility.png}}
 
 \end{minipage}
 
@@ -4575,6 +4558,19 @@ v=\frac{L}{t}.
 
 \end{semanticpdfbox}
 
+\section*{Литература}\label{ux43bux438ux442ux435ux440ux430ux442ux443ux440ux430-3}
+\addcontentsline{toc}{section}{Литература}
+
+\markright{Литература}
+
+\protect\phantomsection\label{refs}
+\begin{CSLReferences}{0}{0}
+\bibitem[\citeproctext]{ref-feller1971}
+{[}1{]} Feller, W. \emph{An Introduction to Probability Theory and Its
+Applications}. John Wiley \& Sons. 1971.
+
+\end{CSLReferences}
+
 \chapter{Когда не возникает гауссового
 распределения}\label{ux43aux43eux433ux434ux430-ux43dux435-ux432ux43eux437ux43dux438ux43aux430ux435ux442-ux433ux430ux443ux441ux441ux43eux432ux43eux433ux43e-ux440ux430ux441ux43fux440ux435ux434ux435ux43bux435ux43dux438ux44f}
 
@@ -4699,7 +4695,7 @@ CDF позволяет генерировать случайные значен�
 
 \end{minipage}\hfill\begin{minipage}[c]{26mm}\centering
 
-\href{https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/04_non_gaussian_clt_violations.html\#interactive-cauchy-mean}{\includegraphics[width=24mm,height=\textheight,keepaspectratio,alt={QR-код интерактива}]{assets/qr/cauchy_mean.png}}
+\href{https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/05_non_gaussian_clt_violations.html\#interactive-cauchy-mean}{\includegraphics[width=24mm,height=\textheight,keepaspectratio,alt={QR-код интерактива}]{assets/qr/cauchy_mean.png}}
 
 \end{minipage}
 
@@ -4778,7 +4774,8 @@ L\!\left(\frac{\Delta-\Delta_p}{\xi}\right),
 -- длинный правый хвост: \[L(\lambda)\sim\frac{1}{\lambda^2},
 \qquad
 \lambda\to+\infty.\] Наиболее вероятное значение при этом конечно, а
-среднее и дисперсия не определены.
+среднее и дисперсия не определены. Подробное описание флуктуаций потерь
+энергии в тонких кремниевых детекторах дано в {[}1{]}.
 
 \begin{semanticpdfbox}[colback=BookBiographySoft,borderline west={1.2mm}{0pt}{BookBiography},breakable=false]
 
@@ -4833,7 +4830,7 @@ L\!\left(\frac{\Delta-\Delta_p}{\xi}\right),
 
 \end{minipage}\hfill\begin{minipage}[c]{26mm}\centering
 
-\href{https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/04_non_gaussian_clt_violations.html\#interactive-landau-tail}{\includegraphics[width=24mm,height=\textheight,keepaspectratio,alt={QR-код интерактива}]{assets/qr/landau_tail.png}}
+\href{https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/05_non_gaussian_clt_violations.html\#interactive-landau-tail}{\includegraphics[width=24mm,height=\textheight,keepaspectratio,alt={QR-код интерактива}]{assets/qr/landau_tail.png}}
 
 \end{minipage}
 
@@ -4993,7 +4990,7 @@ L\!\left(\frac{\Delta-\Delta_p}{\xi}\right),
 
 \end{minipage}\hfill\begin{minipage}[c]{26mm}\centering
 
-\href{https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/04_non_gaussian_clt_violations.html\#interactive-correlated-errors}{\includegraphics[width=24mm,height=\textheight,keepaspectratio,alt={QR-код интерактива}]{assets/qr/correlated_errors.png}}
+\href{https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/05_non_gaussian_clt_violations.html\#interactive-correlated-errors}{\includegraphics[width=24mm,height=\textheight,keepaspectratio,alt={QR-код интерактива}]{assets/qr/correlated_errors.png}}
 
 \end{minipage}
 
@@ -5107,7 +5104,7 @@ N\mid\theta=2\sim\mathrm{Pois}(100).\] Средняя внутриклассов
 
 \end{minipage}\hfill\begin{minipage}[c]{26mm}\centering
 
-\href{https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/04_non_gaussian_clt_violations.html\#interactive-gaussian-mixture}{\includegraphics[width=24mm,height=\textheight,keepaspectratio,alt={QR-код интерактива}]{assets/qr/gaussian_mixture.png}}
+\href{https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/05_non_gaussian_clt_violations.html\#interactive-gaussian-mixture}{\includegraphics[width=24mm,height=\textheight,keepaspectratio,alt={QR-код интерактива}]{assets/qr/gaussian_mixture.png}}
 
 \end{minipage}
 
@@ -5187,7 +5184,7 @@ f_R(r)=\frac{1}{\pi(1+r^2)}.}\] То есть отношение двух нез
 
 \end{minipage}\hfill\begin{minipage}[c]{26mm}\centering
 
-\href{https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/04_non_gaussian_clt_violations.html\#interactive-ratio-cauchy}{\includegraphics[width=24mm,height=\textheight,keepaspectratio,alt={QR-код интерактива}]{assets/qr/ratio_cauchy.png}}
+\href{https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/05_non_gaussian_clt_violations.html\#interactive-ratio-cauchy}{\includegraphics[width=24mm,height=\textheight,keepaspectratio,alt={QR-код интерактива}]{assets/qr/ratio_cauchy.png}}
 
 \end{minipage}
 
@@ -5666,18 +5663,33 @@ S=\sum_{i=1}^{N}X_i.
 
 \end{semanticpdfbox}
 
+\section*{Литература}\label{ux43bux438ux442ux435ux440ux430ux442ux443ux440ux430-4}
+\addcontentsline{toc}{section}{Литература}
+
+\markright{Литература}
+
+\protect\phantomsection\label{refs}
+\begin{CSLReferences}{0}{0}
+\bibitem[\citeproctext]{ref-bichsel1988}
+{[}1{]} Bichsel, H. Straggling in Thin Silicon Detectors. \emph{Reviews
+of Modern Physics}, \textbf{60}, 663--699. 1988.
+doi:\href{https://doi.org/10.1103/RevModPhys.60.663}{10.1103/RevModPhys.60.663}.
+
+\end{CSLReferences}
+
 \part{II. Моделирование и оценивание}
 
-\chapter{Распространение ошибок, ковариации и многомерный
-гаусс}\label{ux440ux430ux441ux43fux440ux43eux441ux442ux440ux430ux43dux435ux43dux438ux435-ux43eux448ux438ux431ux43eux43a-ux43aux43eux432ux430ux440ux438ux430ux446ux438ux438-ux438-ux43cux43dux43eux433ux43eux43cux435ux440ux43dux44bux439-ux433ux430ux443ux441ux441}
+\chapter{Распространение
+ошибок}\label{ux440ux430ux441ux43fux440ux43eux441ux442ux440ux430ux43dux435ux43dux438ux435-ux43eux448ux438ux431ux43eux43a}
 
 \bookchapteropeningcontents
 
 \begin{bookchapteropening}[Аннотация]
 
-Глава объясняет, как неопределённости исходных величин переходят в
-неопределённость функции. Ковариационная матрица связывает
-алгебраические формулы с геометрией многомерного гауссова распределения.
+Глава посвящена переносу неопределённостей исходных измерений на
+производные величины. Рассматриваются линейное приближение, его проверка
+для нелинейных функций, разброс оценок дисперсии и общий матричный закон
+распространения с учётом корреляций.
 
 \end{bookchapteropening}
 
@@ -5724,7 +5736,7 @@ S=\sum_{i=1}^{N}X_i.
 f(X)\approx f(\mu_X)+f'(\mu_X)(X-\mu_X).
 }\] Случайное отклонение \(X-\mu_X\) тогда преобразуется почти линейно,
 и его дисперсию можно вычислить аналитически. Это приближение называется
-\textbf{линейным распространением ошибок} {[}6{]}.
+\textbf{линейным распространением ошибок} {[}1{]}.
 
 \section{Одна измеряемая
 величина}\label{ux43eux434ux43dux430-ux438ux437ux43cux435ux440ux44fux435ux43cux430ux44f-ux432ux435ux43bux438ux447ux438ux43dux430}
@@ -5918,7 +5930,7 @@ Y=X+aX^2.\] Линейное приближение около \(\mu_X=1\) пр�
 
 \end{minipage}\hfill\begin{minipage}[c]{26mm}\centering
 
-\href{https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/05_error_propagation_and_covariance.html\#interactive-error-propagation-nonlinear}{\includegraphics[width=24mm,height=\textheight,keepaspectratio,alt={QR-код интерактива}]{assets/qr/error-propagation-nonlinear.png}}
+\href{https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/06_error_propagation.html\#interactive-error-propagation-nonlinear}{\includegraphics[width=24mm,height=\textheight,keepaspectratio,alt={QR-код интерактива}]{assets/qr/error-propagation-nonlinear.png}}
 
 \end{minipage}
 
@@ -6271,7 +6283,7 @@ N\approx51.\]
 
 \end{minipage}\hfill\begin{minipage}[c]{26mm}\centering
 
-\href{https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/05_error_propagation_and_covariance.html\#interactive-error-propagation-sample-variance}{\includegraphics[width=24mm,height=\textheight,keepaspectratio,alt={QR-код интерактива}]{assets/qr/error-propagation-sample-variance.png}}
+\href{https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/06_error_propagation.html\#interactive-error-propagation-sample-variance}{\includegraphics[width=24mm,height=\textheight,keepaspectratio,alt={QR-код интерактива}]{assets/qr/error-propagation-sample-variance.png}}
 
 \end{minipage}
 
@@ -6447,7 +6459,7 @@ N\approx51.\]
 
 \end{minipage}\hfill\begin{minipage}[c]{26mm}\centering
 
-\href{https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/05_error_propagation_and_covariance.html\#interactive-error-propagation-correlation}{\includegraphics[width=24mm,height=\textheight,keepaspectratio,alt={QR-код интерактива}]{assets/qr/error-propagation-correlation.png}}
+\href{https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/06_error_propagation.html\#interactive-error-propagation-correlation}{\includegraphics[width=24mm,height=\textheight,keepaspectratio,alt={QR-код интерактива}]{assets/qr/error-propagation-correlation.png}}
 
 \end{minipage}
 
@@ -6580,11 +6592,196 @@ V_U
 \[\operatorname{Cov}(S,D)=\sigma_X^2-\sigma_Y^2.\] Если
 \(\sigma_X=\sigma_Y\), сумма и разность оказываются некоррелированными.
 
-\section{Двумерное гауссово
+\begin{bookchaptersummary}[Итоги главы]
+
+\begin{itemize}
+\tightlist
+\item
+  Для одной переменной линейное приближение даёт
+  \(\sigma_Y\approx|f'(\mu_X)|\sigma_X\).
+\item
+  Точность линейной формулы определяется кривизной функции на масштабе
+  входной неопределённости.
+\item
+  Оценки дисперсии и стандартного отклонения сами являются случайными
+  величинами; их разброс уменьшается с размером выборки.
+\item
+  Корреляции исходных величин входят в неопределённость результата через
+  ковариационные члены.
+\item
+  Для векторной функции общий закон имеет вид
+  \(V_Y\approx JV_XJ^{\mathsf T}\).
+\end{itemize}
+
+\end{bookchaptersummary}
+
+\section{Задачи}\label{ux437ux430ux434ux430ux447ux438-5}
+
+\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
+
+\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 1. Радиус и площадь круга}\par\nopagebreak[4]\vspace{1.2mm}
+
+Измеренный радиус круга равен \[
+R=(10.0\pm0.3)\ \mathrm{cm}.
+\]
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Найдите площадь \(S=\pi R^2\) и её ошибку в линейном приближении.
+\item
+  Сравните относительные ошибки \(S\) и \(R\).
+\item
+  Оцените поправку к математическому ожиданию площади, возникающую из-за
+  квадратичности функции.
+\end{enumerate}
+
+\end{semanticpdfbox}
+
+\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
+
+\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 2. Сумма и разность коррелированных величин}\par\nopagebreak[4]\vspace{1.2mm}
+
+Пусть \[
+\sigma_X=2,
+\qquad
+\sigma_Y=3,
+\qquad
+\rho_{XY}=0.8.
+\]
+
+Вычислите ошибки: \[
+S=X+Y,
+\qquad
+D=X-Y.
+\]
+
+Повторите вычисление для \(\rho_{XY}=-0.8\) и объясните изменение
+результата.
+
+\end{semanticpdfbox}
+
+\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
+
+\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 3. Ошибка отношения}\par\nopagebreak[4]\vspace{1.2mm}
+
+Эффективность определяется отношением \[
+\varepsilon=\frac{N_{\mathrm{selected}}}{N_{\mathrm{total}}}.
+\]
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Выведите линейную формулу для \(\sigma_\varepsilon\), предполагая
+  известные \(\sigma_{\mathrm{selected}}\), \(\sigma_{\mathrm{total}}\)
+  и корреляцию \(\rho\).
+\item
+  Объясните, почему предположение о независимости числителя и
+  знаменателя обычно неверно.
+\item
+  Сравните ответы для \(\rho=0\) и \(\rho>0\).
+\end{enumerate}
+
+\end{semanticpdfbox}
+
+\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
+
+\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 4. Преобразование ковариационной матрицы}\par\nopagebreak[4]\vspace{1.2mm}
+
+Пусть \[
+\mathbf X=
+\begin{pmatrix}X\\Y\end{pmatrix},
+\qquad
+V_X=
+\begin{pmatrix}
+4&1.2\\
+1.2&1
+\end{pmatrix}.
+\]
+
+Для новых величин \[
+S=X+Y,
+\qquad
+D=X-Y
+\] найдите:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  матрицу Якоби;
+\item
+  ковариационную матрицу \(V_{SD}\);
+\item
+  коэффициент корреляции между \(S\) и \(D\).
+\end{enumerate}
+
+\end{semanticpdfbox}
+
+\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
+
+\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 5. Проверка линейного приближения}\par\nopagebreak[4]\vspace{1.2mm}
+
+Пусть \[
+X\sim\mathrm N(1,\sigma_X^2),
+\qquad
+Y=X+aX^2.
+\]
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Получите линейную оценку \(\sigma_Y\).
+\item
+  Сгенерируйте выборку \(X\) и сравните оценку с дисперсией
+  преобразованной выборки.
+\item
+  Исследуйте зависимость расхождения от \(a\) и \(\sigma_X\).
+\item
+  Определите область параметров, где линейное приближение достаточно
+  точно.
+\end{enumerate}
+
+\end{semanticpdfbox}
+
+\section*{Литература}\label{ux43bux438ux442ux435ux440ux430ux442ux443ux440ux430-5}
+\addcontentsline{toc}{section}{Литература}
+
+\markright{Литература}
+
+\protect\phantomsection\label{refs}
+\begin{CSLReferences}{0}{0}
+\bibitem[\citeproctext]{ref-jcgm2008gum}
+{[}1{]} Joint Committee for Guides in Metrology. Evaluation of
+Measurement Data---Guide to the Expression of Uncertainty in
+Measurement. 2008.
+doi:\href{https://doi.org/10.59161/JCGM100-2008E}{10.59161/JCGM100-2008E}.
+
+\end{CSLReferences}
+
+\chapter{Двумерное гауссово
 распределение}\label{ux434ux432ux443ux43cux435ux440ux43dux43eux435-ux433ux430ux443ux441ux441ux43eux432ux43e-ux440ux430ux441ux43fux440ux435ux434ux435ux43bux435ux43dux438ux435}
 
+\bookchapteropeningcontents
+
+\begin{bookchapteropening}[Аннотация]
+
+Ковариационная матрица определяет форму многомерного гауссова
+распределения. На двумерном примере разбираются наклон эллипса,
+расстояние Махаланобиса, вероятностные контуры и применение полной
+ковариации при объединении измерений и восстановлении инвариантной
+массы.
+
+\end{bookchapteropening}
+
+\section{Двумерное гауссово
+распределение}\label{ux434ux432ux443ux43cux435ux440ux43dux43eux435-ux433ux430ux443ux441ux441ux43eux432ux43e-ux440ux430ux441ux43fux440ux435ux434ux435ux43bux435ux43dux438ux435-1}
+
 Ковариационная матрица переносит ошибки и определяет геометрию
-совместного гауссова распределения.
+совместного гауссова распределения {[}1{]}.
 
 \subsection{Независимые гауссовы
 величины}\label{ux43dux435ux437ux430ux432ux438ux441ux438ux43cux44bux435-ux433ux430ux443ux441ux441ux43eux432ux44b-ux432ux435ux43bux438ux447ux438ux43dux44b}
@@ -6774,7 +6971,7 @@ V^{-1}
 
 \end{minipage}\hfill\begin{minipage}[c]{26mm}\centering
 
-\href{https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/05_error_propagation_and_covariance.html\#interactive-gaussian-correlation-ellipse}{\includegraphics[width=24mm,height=\textheight,keepaspectratio,alt={QR-код интерактива}]{assets/qr/gaussian-correlation-ellipse.png}}
+\href{https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/07_two_dimensional_gaussian.html\#interactive-gaussian-correlation-ellipse}{\includegraphics[width=24mm,height=\textheight,keepaspectratio,alt={QR-код интерактива}]{assets/qr/gaussian-correlation-ellipse.png}}
 
 \end{minipage}
 
@@ -6849,7 +7046,7 @@ c=-2\ln(1-P).
 
 \end{minipage}\hfill\begin{minipage}[c]{26mm}\centering
 
-\href{https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/05_error_propagation_and_covariance.html\#interactive-gaussian-probability-contour}{\includegraphics[width=24mm,height=\textheight,keepaspectratio,alt={QR-код интерактива}]{assets/qr/gaussian-probability-contour.png}}
+\href{https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/07_two_dimensional_gaussian.html\#interactive-gaussian-probability-contour}{\includegraphics[width=24mm,height=\textheight,keepaspectratio,alt={QR-код интерактива}]{assets/qr/gaussian-probability-contour.png}}
 
 \end{minipage}
 
@@ -7046,149 +7243,29 @@ m=9.78\pm0.30~\mathrm{GeV}.
 \begin{itemize}
 \tightlist
 \item
-  Ошибка производной величины определяется локальной чувствительностью
-  функции к исходным измерениям; для одной переменной:
-  \(\sigma_Y\approx|f'(\mu_X)|\sigma_X\).
+  Обратная ковариационная матрица задаёт квадратичную форму многомерного
+  гаусса.
 \item
-  Линейное распространение работает только тогда, когда функцию
-  действительно можно заменить касательной на масштабе входной
-  неопределённости.
+  Коэффициент корреляции определяет ориентацию и вытянутость
+  эллиптических контуров.
 \item
-  Оценки среднего, дисперсии и стандартного отклонения сами флуктуируют
-  от выборки к выборке; для гауссовой выборки:
-  \(\operatorname{Var}(\widehat{\sigma^2})=2\sigma^4/(N-1)\), а при
-  большом \(N\) относительный разброс \(\widehat\sigma\) имеет порядок
-  \(1/\sqrt{2(N-1)}\).
+  Вероятность внутри двумерного контура определяется распределением
+  \(\chi^2_2\); уровень \(D^2=1\) содержит около \(39.3\%\) вероятности.
 \item
-  Ковариация и коэффициент корреляции необходимы для корректного
-  распространения связанных неопределённостей; знак корреляции может как
-  увеличивать, так и уменьшать ошибку производной величины.
+  Объединение коррелированных измерений требует полной ковариационной
+  матрицы.
 \item
-  Ковариационная матрица объединяет все дисперсии и ковариации, а общий
-  закон линейного преобразования имеет вид: \(V_Y\approx JV_XJ^T\).
-\item
-  Та же матрица определяет геометрию многомерного гаусса: квадратичная
-  форма \((\mathbf x-\boldsymbol\mu)^TV^{-1}(\mathbf x-\boldsymbol\mu)\)
-  задаёт расстояние Махаланобиса и эллиптические контуры равной
-  плотности.
-\item
-  В двух измерениях \(\Delta\chi^2=1\) содержит только \(39.3\%\)
-  вероятности; область \(68.3\%\) соответствует \(\Delta\chi^2=2.30\).
-\item
-  При заметной нелинейности аналитическое распространение нужно
-  проверять моделированием Монте-Карло.
+  Линейное распространение в сложной задаче следует проверять
+  моделированием Монте-Карло.
 \end{itemize}
 
 \end{bookchaptersummary}
 
-\section{Задачи}\label{ux437ux430ux434ux430ux447ux438-5}
+\section{Задачи}\label{ux437ux430ux434ux430ux447ux438-6}
 
 \begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
 
-\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 1. Радиус и площадь круга}\par\nopagebreak[4]\vspace{1.2mm}
-
-Измеренный радиус круга равен \[
-R=(10.0\pm0.3)\ \mathrm{cm}.
-\]
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-  Найдите площадь \(S=\pi R^2\) и её ошибку в линейном приближении.
-\item
-  Сравните относительные ошибки \(S\) и \(R\).
-\item
-  Оцените поправку к математическому ожиданию площади, возникающую из-за
-  квадратичности функции.
-\end{enumerate}
-
-\end{semanticpdfbox}
-
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
-
-\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 2. Сумма и разность коррелированных величин}\par\nopagebreak[4]\vspace{1.2mm}
-
-Пусть \[
-\sigma_X=2,
-\qquad
-\sigma_Y=3,
-\qquad
-\rho_{XY}=0.8.
-\]
-
-Вычислите ошибки: \[
-S=X+Y,
-\qquad
-D=X-Y.
-\]
-
-Повторите вычисление для \(\rho_{XY}=-0.8\) и объясните изменение
-результата.
-
-\end{semanticpdfbox}
-
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
-
-\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 3. Ошибка отношения}\par\nopagebreak[4]\vspace{1.2mm}
-
-Эффективность определяется отношением \[
-\varepsilon=\frac{N_{\mathrm{selected}}}{N_{\mathrm{total}}}.
-\]
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-  Выведите линейную формулу для \(\sigma_\varepsilon\), предполагая
-  известные \(\sigma_{\mathrm{selected}}\), \(\sigma_{\mathrm{total}}\)
-  и корреляцию \(\rho\).
-\item
-  Объясните, почему предположение о независимости числителя и
-  знаменателя обычно неверно.
-\item
-  Сравните ответы для \(\rho=0\) и \(\rho>0\).
-\end{enumerate}
-
-\end{semanticpdfbox}
-
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
-
-\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 4. Преобразование ковариационной матрицы}\par\nopagebreak[4]\vspace{1.2mm}
-
-Пусть \[
-\mathbf X=
-\begin{pmatrix}X\\Y\end{pmatrix},
-\qquad
-V_X=
-\begin{pmatrix}
-4&1.2\\
-1.2&1
-\end{pmatrix}.
-\]
-
-Для новых величин \[
-S=X+Y,
-\qquad
-D=X-Y
-\] найдите:
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-  матрицу Якоби;
-\item
-  ковариационную матрицу \(V_{SD}\);
-\item
-  коэффициент корреляции между \(S\) и \(D\).
-\end{enumerate}
-
-\end{semanticpdfbox}
-
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
-
-\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 5. Вероятностные эллипсы}\par\nopagebreak[4]\vspace{1.2mm}
+\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 1. Вероятностные эллипсы}\par\nopagebreak[4]\vspace{1.2mm}
 
 Для двумерного гауссова распределения \[
 D^2=(\mathbf x-\boldsymbol\mu)^TV^{-1}(\mathbf x-\boldsymbol\mu)
@@ -7214,7 +7291,7 @@ D^2=(\mathbf x-\boldsymbol\mu)^TV^{-1}(\mathbf x-\boldsymbol\mu)
 
 \begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
 
-\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 6. Взвешенное среднее}\par\nopagebreak[4]\vspace{1.2mm}
+\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 2. Взвешенное среднее}\par\nopagebreak[4]\vspace{1.2mm}
 
 Получены два независимых измерения: \[
 x_1=10.2\pm0.8,
@@ -7238,7 +7315,7 @@ x_2=11.1\pm0.4.
 
 \begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
 
-\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 7. Инвариантная масса}\par\nopagebreak[4]\vspace{1.2mm}
+\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 3. Инвариантная масса}\par\nopagebreak[4]\vspace{1.2mm}
 
 Для двух безмассовых частиц \[
 m^2=2E_1E_2(1-\cos\theta).
@@ -7259,117 +7336,15 @@ m^2=2E_1E_2(1-\cos\theta).
 
 \end{semanticpdfbox}
 
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
-
-\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 8. Проверка линейного приближения}\par\nopagebreak[4]\vspace{1.2mm}
-
-Пусть \[
-X\sim\mathrm N(1,\sigma_X^2),
-\qquad
-Y=X+aX^2.
-\]
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-  Получите линейную оценку \(\sigma_Y\).
-\item
-  Сгенерируйте выборку \(X\) и сравните оценку с дисперсией
-  преобразованной выборки.
-\item
-  Исследуйте зависимость расхождения от \(a\) и \(\sigma_X\).
-\item
-  Определите область параметров, где линейное приближение достаточно
-  точно.
-\end{enumerate}
-
-\end{semanticpdfbox}
-
-\section*{Литература}\label{ux43bux438ux442ux435ux440ux430ux442ux443ux440ux430-1}
+\section*{Литература}\label{ux43bux438ux442ux435ux440ux430ux442ux443ux440ux430-6}
 \addcontentsline{toc}{section}{Литература}
 
 \markright{Литература}
 
 \protect\phantomsection\label{refs}
 \begin{CSLReferences}{0}{0}
-\bibitem[\citeproctext]{ref-nobel2013higgs}
-{[}1{]} The Royal Swedish Academy of Sciences. The Nobel Prize in
-Physics 2013: Press Release. 2013.
-\url{https://www.nobelprize.org/prizes/physics/2013/press-release/}.
-
-\bibitem[\citeproctext]{ref-atlas2012higgs}
-{[}2{]} ATLAS Collaboration. Observation of a New Particle in the Search
-for the Standard Model Higgs Boson with the {ATLAS} Detector at the
-{LHC}. \emph{Physics Letters B}, \textbf{716}, 1--29. 2012.
-doi:\href{https://doi.org/10.1016/j.physletb.2012.08.020}{10.1016/j.physletb.2012.08.020}.
-
-\bibitem[\citeproctext]{ref-cms2012higgs}
-{[}3{]} CMS Collaboration. Observation of a New Boson at a Mass of 125
-{GeV} with the {CMS} Experiment at the {LHC}. \emph{Physics Letters B},
-\textbf{716}, 30--61. 2012.
-doi:\href{https://doi.org/10.1016/j.physletb.2012.08.021}{10.1016/j.physletb.2012.08.021}.
-
-\bibitem[\citeproctext]{ref-dayabay2012theta13}
-{[}4{]} Daya Bay Collaboration. Observation of Electron-Antineutrino
-Disappearance at {Daya Bay}. \emph{Physical Review Letters},
-\textbf{108}, 171803. 2012.
-doi:\href{https://doi.org/10.1103/PhysRevLett.108.171803}{10.1103/PhysRevLett.108.171803}.
-
-\bibitem[\citeproctext]{ref-dayabay2024sterile}
-{[}5{]} Daya Bay Collaboration. Search for a Light Sterile Neutrino with
-the Full Configuration of the {Daya Bay} Experiment. \emph{Physical
-Review Letters}, \textbf{133}, 051801. 2024.
-doi:\href{https://doi.org/10.1103/PhysRevLett.133.051801}{10.1103/PhysRevLett.133.051801}.
-\url{https://arxiv.org/abs/2404.01687}.
-
-\bibitem[\citeproctext]{ref-jcgm2008gum}
-{[}6{]} Joint Committee for Guides in Metrology. Evaluation of
-Measurement Data---Guide to the Expression of Uncertainty in
-Measurement. 2008.
-doi:\href{https://doi.org/10.59161/JCGM100-2008E}{10.59161/JCGM100-2008E}.
-
-\bibitem[\citeproctext]{ref-metropolisUlam1949}
-{[}7{]} Metropolis, N. и Ulam, S. The {Monte Carlo} Method.
-\emph{Journal of the American Statistical Association}, \textbf{44},
-335--341. 1949.
-doi:\href{https://doi.org/10.1080/01621459.1949.10483310}{10.1080/01621459.1949.10483310}.
-
-\bibitem[\citeproctext]{ref-lepage1978vegas}
-{[}8{]} Lepage, G. P. A New Algorithm for Adaptive Multidimensional
-Integration. \emph{Journal of Computational Physics}, \textbf{27},
-192--203. 1978.
-doi:\href{https://doi.org/10.1016/0021-9991(78)90004-9}{10.1016/0021-9991(78)90004-9}.
-
-\bibitem[\citeproctext]{ref-blythOpticks}
-{[}9{]} Blyth, S. C. Opticks: {GPU} Optical Photon Simulation.
-\url{https://juno.ihep.ac.cn/~blyth/}.
-
-\bibitem[\citeproctext]{ref-wilks1938}
-{[}10{]} Wilks, S. S. The Large-Sample Distribution of the Likelihood
-Ratio for Testing Composite Hypotheses. \emph{The Annals of Mathematical
-Statistics}, \textbf{9}, 60--62. 1938.
-doi:\href{https://doi.org/10.1214/aoms/1177732360}{10.1214/aoms/1177732360}.
-
-\bibitem[\citeproctext]{ref-huber2011reactor}
-{[}11{]} Huber, P. Determination of Antineutrino Spectra from Nuclear
-Reactors. \emph{Physical Review C}, \textbf{84}, 024617. 2011.
-doi:\href{https://doi.org/10.1103/PhysRevC.84.024617}{10.1103/PhysRevC.84.024617}.
-
-\bibitem[\citeproctext]{ref-mueller2011reactor}
-{[}12{]} {Mueller, Th. A. и др.} Improved Predictions of Reactor
-Antineutrino Spectra. \emph{Physical Review C}, \textbf{83}, 054615.
-2011.
-doi:\href{https://doi.org/10.1103/PhysRevC.83.054615}{10.1103/PhysRevC.83.054615}.
-
-\bibitem[\citeproctext]{ref-dagostini1994bias}
-{[}13{]} D'Agostini, G. On the Use of the Covariance Matrix to Fit
-Correlated Data. \emph{Nuclear Instruments and Methods in Physics
-Research Section A}, \textbf{346}, 306--311. 1994.
-doi:\href{https://doi.org/10.1016/0168-9002(94)90719-6}{10.1016/0168-9002(94)90719-6}.
-
 \bibitem[\citeproctext]{ref-cowan1998}
-{[}14{]} Cowan, G. \emph{Statistical Data Analysis}. Oxford University
+{[}1{]} Cowan, G. \emph{Statistical Data Analysis}. Oxford University
 Press. 1998.
 
 \end{CSLReferences}
@@ -7402,7 +7377,7 @@ Press. 1998.
 \begin{booknote}
 
 Метод Монте-Карло заменяет сложное аналитическое вычисление статистикой
-большого числа реализаций заданной модели {[}7{]}.
+большого числа реализаций заданной модели {[}1{]}.
 
 \end{booknote}
 
@@ -7593,7 +7568,7 @@ Press. 1998.
 
 \end{minipage}\hfill\begin{minipage}[c]{26mm}\centering
 
-\href{https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/06_monte_carlo_method.html\#interactive-monte-carlo-rejection-sampling}{\includegraphics[width=24mm,height=\textheight,keepaspectratio,alt={QR-код интерактива}]{assets/qr/monte-carlo-rejection-sampling.png}}
+\href{https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/08_monte_carlo_method.html\#interactive-monte-carlo-rejection-sampling}{\includegraphics[width=24mm,height=\textheight,keepaspectratio,alt={QR-код интерактива}]{assets/qr/monte-carlo-rejection-sampling.png}}
 
 \end{minipage}
 
@@ -7712,7 +7687,7 @@ Press. 1998.
 
 \end{minipage}\hfill\begin{minipage}[c]{26mm}\centering
 
-\href{https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/06_monte_carlo_method.html\#interactive-monte-carlo-pi}{\includegraphics[width=24mm,height=\textheight,keepaspectratio,alt={QR-код интерактива}]{assets/qr/monte-carlo-pi.png}}
+\href{https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/08_monte_carlo_method.html\#interactive-monte-carlo-pi}{\includegraphics[width=24mm,height=\textheight,keepaspectratio,alt={QR-код интерактива}]{assets/qr/monte-carlo-pi.png}}
 
 \end{minipage}
 
@@ -7749,7 +7724,7 @@ Press. 1998.
 
 \end{minipage}\hfill\begin{minipage}[c]{26mm}\centering
 
-\href{https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/06_monte_carlo_method.html\#interactive-monte-carlo-grid-dimension}{\includegraphics[width=24mm,height=\textheight,keepaspectratio,alt={QR-код интерактива}]{assets/qr/monte-carlo-grid-dimension.png}}
+\href{https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/08_monte_carlo_method.html\#interactive-monte-carlo-grid-dimension}{\includegraphics[width=24mm,height=\textheight,keepaspectratio,alt={QR-код интерактива}]{assets/qr/monte-carlo-grid-dimension.png}}
 
 \end{minipage}
 
@@ -7826,7 +7801,7 @@ Press. 1998.
 
 \end{minipage}\hfill\begin{minipage}[c]{26mm}\centering
 
-\href{https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/06_monte_carlo_method.html\#interactive-monte-carlo-importance-sampling}{\includegraphics[width=24mm,height=\textheight,keepaspectratio,alt={QR-код интерактива}]{assets/qr/monte-carlo-importance-sampling.png}}
+\href{https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/08_monte_carlo_method.html\#interactive-monte-carlo-importance-sampling}{\includegraphics[width=24mm,height=\textheight,keepaspectratio,alt={QR-код интерактива}]{assets/qr/monte-carlo-importance-sampling.png}}
 
 \end{minipage}
 
@@ -7864,7 +7839,7 @@ Press. 1998.
 важности}\label{vegas-ux430ux434ux430ux43fux442ux438ux432ux43dux430ux44f-ux432ux44bux431ux43eux440ux43aux430-ux43fux43e-ux432ux430ux436ux43dux43eux441ux442ux438}
 
 Выборка по важности требует знать, где находится важная область.
-Алгоритм \textbf{VEGAS} решает эту задачу адаптивно {[}8{]}. На первых
+Алгоритм \textbf{VEGAS} решает эту задачу адаптивно {[}2{]}. На первых
 итерациях он ещё не знает форму интегранда и делает пробную выборку. По
 полученным значениям он оценивает, где вклад велик, перестраивает
 разбиение координат и на следующих итерациях чаще генерирует точки в
@@ -8019,7 +7994,7 @@ VEGAS может не заметить очень узкий пик на пер�
 
 \end{minipage}\hfill\begin{minipage}[c]{26mm}\centering
 
-\href{https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/06_monte_carlo_method.html\#interactive-monte-carlo-counting-experiment}{\includegraphics[width=24mm,height=\textheight,keepaspectratio,alt={QR-код интерактива}]{assets/qr/monte-carlo-counting-experiment.png}}
+\href{https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/08_monte_carlo_method.html\#interactive-monte-carlo-counting-experiment}{\includegraphics[width=24mm,height=\textheight,keepaspectratio,alt={QR-код интерактива}]{assets/qr/monte-carlo-counting-experiment.png}}
 
 \end{minipage}
 
@@ -8049,7 +8024,7 @@ VEGAS может не заметить очень узкий пик на пер�
 В ролике Саймона Блита показана работа Opticks: распространение
 оптических фотонов рассчитывается на графическом процессоре для
 геометрий детекторов Daya Bay и JUNO. Исходный материал и документация
-проекта опубликованы на странице автора {[}9{]}.
+проекта опубликованы на странице автора {[}3{]}.
 
 \end{minipage}\hfill\begin{minipage}[c]{26mm}\centering
 
@@ -8240,7 +8215,7 @@ VEGAS может не заметить очень узкий пик на пер�
 
 \end{bookchaptersummary}
 
-\section{Задачи}\label{ux437ux430ux434ux430ux447ux438-6}
+\section{Задачи}\label{ux437ux430ux434ux430ux447ux438-7}
 
 \begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
 
@@ -8453,108 +8428,42 @@ N_{\mathrm{eff}}
 
 \end{semanticpdfbox}
 
-\section*{Литература}\label{ux43bux438ux442ux435ux440ux430ux442ux443ux440ux430-2}
+\section*{Литература}\label{ux43bux438ux442ux435ux440ux430ux442ux443ux440ux430-7}
 \addcontentsline{toc}{section}{Литература}
 
 \markright{Литература}
 
 \protect\phantomsection\label{refs}
 \begin{CSLReferences}{0}{0}
-\bibitem[\citeproctext]{ref-nobel2013higgs}
-{[}1{]} The Royal Swedish Academy of Sciences. The Nobel Prize in
-Physics 2013: Press Release. 2013.
-\url{https://www.nobelprize.org/prizes/physics/2013/press-release/}.
-
-\bibitem[\citeproctext]{ref-atlas2012higgs}
-{[}2{]} ATLAS Collaboration. Observation of a New Particle in the Search
-for the Standard Model Higgs Boson with the {ATLAS} Detector at the
-{LHC}. \emph{Physics Letters B}, \textbf{716}, 1--29. 2012.
-doi:\href{https://doi.org/10.1016/j.physletb.2012.08.020}{10.1016/j.physletb.2012.08.020}.
-
-\bibitem[\citeproctext]{ref-cms2012higgs}
-{[}3{]} CMS Collaboration. Observation of a New Boson at a Mass of 125
-{GeV} with the {CMS} Experiment at the {LHC}. \emph{Physics Letters B},
-\textbf{716}, 30--61. 2012.
-doi:\href{https://doi.org/10.1016/j.physletb.2012.08.021}{10.1016/j.physletb.2012.08.021}.
-
-\bibitem[\citeproctext]{ref-dayabay2012theta13}
-{[}4{]} Daya Bay Collaboration. Observation of Electron-Antineutrino
-Disappearance at {Daya Bay}. \emph{Physical Review Letters},
-\textbf{108}, 171803. 2012.
-doi:\href{https://doi.org/10.1103/PhysRevLett.108.171803}{10.1103/PhysRevLett.108.171803}.
-
-\bibitem[\citeproctext]{ref-dayabay2024sterile}
-{[}5{]} Daya Bay Collaboration. Search for a Light Sterile Neutrino with
-the Full Configuration of the {Daya Bay} Experiment. \emph{Physical
-Review Letters}, \textbf{133}, 051801. 2024.
-doi:\href{https://doi.org/10.1103/PhysRevLett.133.051801}{10.1103/PhysRevLett.133.051801}.
-\url{https://arxiv.org/abs/2404.01687}.
-
-\bibitem[\citeproctext]{ref-jcgm2008gum}
-{[}6{]} Joint Committee for Guides in Metrology. Evaluation of
-Measurement Data---Guide to the Expression of Uncertainty in
-Measurement. 2008.
-doi:\href{https://doi.org/10.59161/JCGM100-2008E}{10.59161/JCGM100-2008E}.
-
 \bibitem[\citeproctext]{ref-metropolisUlam1949}
-{[}7{]} Metropolis, N. и Ulam, S. The {Monte Carlo} Method.
+{[}1{]} Metropolis, N. и Ulam, S. The {Monte Carlo} Method.
 \emph{Journal of the American Statistical Association}, \textbf{44},
 335--341. 1949.
 doi:\href{https://doi.org/10.1080/01621459.1949.10483310}{10.1080/01621459.1949.10483310}.
 
 \bibitem[\citeproctext]{ref-lepage1978vegas}
-{[}8{]} Lepage, G. P. A New Algorithm for Adaptive Multidimensional
+{[}2{]} Lepage, G. P. A New Algorithm for Adaptive Multidimensional
 Integration. \emph{Journal of Computational Physics}, \textbf{27},
 192--203. 1978.
 doi:\href{https://doi.org/10.1016/0021-9991(78)90004-9}{10.1016/0021-9991(78)90004-9}.
 
 \bibitem[\citeproctext]{ref-blythOpticks}
-{[}9{]} Blyth, S. C. Opticks: {GPU} Optical Photon Simulation.
+{[}3{]} Blyth, S. C. Opticks: {GPU} Optical Photon Simulation.
 \url{https://juno.ihep.ac.cn/~blyth/}.
-
-\bibitem[\citeproctext]{ref-wilks1938}
-{[}10{]} Wilks, S. S. The Large-Sample Distribution of the Likelihood
-Ratio for Testing Composite Hypotheses. \emph{The Annals of Mathematical
-Statistics}, \textbf{9}, 60--62. 1938.
-doi:\href{https://doi.org/10.1214/aoms/1177732360}{10.1214/aoms/1177732360}.
-
-\bibitem[\citeproctext]{ref-huber2011reactor}
-{[}11{]} Huber, P. Determination of Antineutrino Spectra from Nuclear
-Reactors. \emph{Physical Review C}, \textbf{84}, 024617. 2011.
-doi:\href{https://doi.org/10.1103/PhysRevC.84.024617}{10.1103/PhysRevC.84.024617}.
-
-\bibitem[\citeproctext]{ref-mueller2011reactor}
-{[}12{]} {Mueller, Th. A. и др.} Improved Predictions of Reactor
-Antineutrino Spectra. \emph{Physical Review C}, \textbf{83}, 054615.
-2011.
-doi:\href{https://doi.org/10.1103/PhysRevC.83.054615}{10.1103/PhysRevC.83.054615}.
-
-\bibitem[\citeproctext]{ref-dagostini1994bias}
-{[}13{]} D'Agostini, G. On the Use of the Covariance Matrix to Fit
-Correlated Data. \emph{Nuclear Instruments and Methods in Physics
-Research Section A}, \textbf{346}, 306--311. 1994.
-doi:\href{https://doi.org/10.1016/0168-9002(94)90719-6}{10.1016/0168-9002(94)90719-6}.
-
-\bibitem[\citeproctext]{ref-cowan1998}
-{[}14{]} Cowan, G. \emph{Statistical Data Analysis}. Oxford University
-Press. 1998.
 
 \end{CSLReferences}
 
-\chapter{Оценивание параметров и метод максимального
-правдоподобия}\label{ux43eux446ux435ux43dux438ux432ux430ux43dux438ux435-ux43fux430ux440ux430ux43cux435ux442ux440ux43eux432-ux438-ux43cux435ux442ux43eux434-ux43cux430ux43aux441ux438ux43cux430ux43bux44cux43dux43eux433ux43e-ux43fux440ux430ux432ux434ux43eux43fux43eux434ux43eux431ux438ux44f}
+\chapter{Правдоподобие и оценки максимального
+правдоподобия}\label{ux43fux440ux430ux432ux434ux43eux43fux43eux434ux43eux431ux438ux435-ux438-ux43eux446ux435ux43dux43aux438-ux43cux430ux43aux441ux438ux43cux430ux43bux44cux43dux43eux433ux43e-ux43fux440ux430ux432ux434ux43eux43fux43eux434ux43eux431ux438ux44f}
 
 \bookchapteropeningcontents
 
 \begin{bookchapteropening}[Аннотация]
 
-Глава переводит задачу статистического анализа от распределений данных к
-оцениванию неизвестных параметров модели. Вводятся функция правдоподобия
-и метод максимального правдоподобия, обсуждаются смещение, дисперсия,
-средний квадрат ошибки, состоятельность и эффективность оценок. Затем
-форма правдоподобия связывается с локальной точностью оценки, вводятся
-относительное и профильное правдоподобия, а работа с несколькими
-параметрами разбирается на примере реакторных нейтрино.
+Глава вводит функцию правдоподобия как функцию неизвестных параметров
+при фиксированных данных. Метод максимального правдоподобия разбирается
+для биномиального и пуассоновского счёта, гауссова среднего и совместной
+оценки среднего и дисперсии.
 
 \end{bookchapteropening}
 
@@ -8682,7 +8591,7 @@ Press. 1998.
 правдоподобия}\label{ux43cux435ux442ux43eux434-ux43cux430ux43aux441ux438ux43cux430ux43bux44cux43dux43eux433ux43e-ux43fux440ux430ux432ux434ux43eux43fux43eux434ux43eux431ux438ux44f}
 
 Оценка максимального правдоподобия выбирает значение параметра, которому
-соответствует наибольшее правдоподобие данных:
+соответствует наибольшее правдоподобие данных {[}1{]}:
 
 \begin{equation}\protect\phantomsection\label{eq-maximum-likelihood-estimator}{
 \boxed{
@@ -8764,7 +8673,7 @@ Press. 1998.
 
 \end{minipage}\hfill\begin{minipage}[c]{26mm}\centering
 
-\href{https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/07_parameter_estimation_and_maximum_likelihood.html\#interactive-likelihood-binomial}{\includegraphics[width=24mm,height=\textheight,keepaspectratio,alt={QR-код интерактива}]{assets/qr/likelihood-binomial.png}}
+\href{https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/09_maximum_likelihood.html\#interactive-likelihood-binomial}{\includegraphics[width=24mm,height=\textheight,keepaspectratio,alt={QR-код интерактива}]{assets/qr/likelihood-binomial.png}}
 
 \end{minipage}
 
@@ -8885,6 +8794,187 @@ Press. 1998.
 между делителями \(N\) и \(N-1\) становится малым, но для небольшой
 статистики оно может быть заметным.
 
+\begin{bookchaptersummary}[Итоги главы]
+
+\begin{itemize}
+\tightlist
+\item
+  Оценка является правилом, применяемым к случайным данным; результат
+  применения этого правила к выборке представляет собой число или вектор
+  чисел.
+\item
+  Правдоподобие рассматривает модель как функцию параметров и не
+  является распределением вероятности параметра.
+\item
+  Для независимой выборки правдоподобия перемножаются, а их логарифмы
+  складываются.
+\item
+  Оценка максимального правдоподобия соответствует максимуму
+  \(L(\theta;x)\).
+\item
+  Физические границы параметров необходимо учитывать при максимизации.
+\end{itemize}
+
+\end{bookchaptersummary}
+
+\section{Задачи}\label{ux437ux430ux434ux430ux447ux438-8}
+
+\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
+
+\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 1. Вероятность и правдоподобие}\par\nopagebreak[4]\vspace{1.2mm}
+
+Одно наблюдение \(x\) получено из экспоненциального распределения \[
+f(x\mid\lambda)=\lambda e^{-\lambda x},
+\qquad x\ge0.
+\]
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Нарисуйте \(f(x\mid\lambda)\) как функцию \(x\) при нескольких
+  фиксированных \(\lambda\).
+\item
+  После наблюдения \(x=x_{\mathrm{obs}}\) запишите
+  \(L(\lambda;x_{\mathrm{obs}})\).
+\item
+  Покажите, что \(L(\lambda;x_{\mathrm{obs}})\) не нормирована по
+  \(\lambda\).
+\item
+  Найдите \(\widehat\lambda_{\mathrm{ML}}\).
+\item
+  Объясните словами различие между плотностью вероятности и функцией
+  правдоподобия.
+\end{enumerate}
+
+\end{semanticpdfbox}
+
+\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
+
+\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 2. Биномиальная оценка}\par\nopagebreak[4]\vspace{1.2mm}
+
+В \(N\) независимых испытаниях наблюдалось \(k\) успехов.
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Запишите биномиальное правдоподобие \(L(p)\).
+\item
+  Найдите \(\widehat p_{\mathrm{ML}}\).
+\item
+  Вычислите \(\mathbb E[\widehat p]\) и
+  \(\operatorname{Var}(\widehat p)\).
+\item
+  Покажите, что оценка несмещённая и состоятельная.
+\item
+  Исследуйте форму \(L(p)\) для случаев \(k=0\), \(k=N/2\) и \(k=N\).
+\end{enumerate}
+
+\end{semanticpdfbox}
+
+\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
+
+\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 3. Пуассоновский счёт с известным фоном}\par\nopagebreak[4]\vspace{1.2mm}
+
+Пусть \[
+N\sim\operatorname{Pois}(s+b),
+\] где \(s\ge0\) --- неизвестный сигнал, а фон \(b\) известен точно.
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Запишите \(L(s)\) и \(\ell(s)\).
+\item
+  Найдите неограниченную оценку максимального правдоподобия сигнала.
+\item
+  Найдите оценку максимального правдоподобия при физическом ограничении
+  \(s\ge0\).
+\item
+  Объясните, что происходит при \(n<b\).
+\item
+  Постройте \(q(s)=-2\ln[L(s)/L(\widehat s)]\) для нескольких \(n\) и
+  \(b\).
+\end{enumerate}
+
+\end{semanticpdfbox}
+
+\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
+
+\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 4. Гауссово среднее}\par\nopagebreak[4]\vspace{1.2mm}
+
+Пусть \[
+X_i\sim\mathrm N(\mu,\sigma^2),
+\] где \(\sigma\) известна.
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Запишите функцию правдоподобия независимой выборки.
+\item
+  Покажите, что \(\widehat\mu_{\mathrm{ML}}=\langle X\rangle\).
+\item
+  Найдите \(\operatorname{Var}(\widehat\mu_{\mathrm{ML}})\).
+\end{enumerate}
+
+\end{semanticpdfbox}
+
+\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
+
+\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 5. Взвешенное среднее}\par\nopagebreak[4]\vspace{1.2mm}
+
+Имеются независимые измерения \[
+X_i\sim\mathrm N(\mu,\sigma_i^2),
+\] где \(\sigma_i\) известны и различаются.
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Запишите совместный логарифм функции правдоподобия.
+\item
+  Найдите оценку максимального правдоподобия параметра \(\mu\).
+\item
+  Покажите, что результат является взвешенным средним с весами
+  \(w_i=1/\sigma_i^2\).
+\item
+  Найдите дисперсию оценки.
+\item
+  Объясните, почему измерения с меньшей ошибкой получают больший вес.
+\end{enumerate}
+
+\end{semanticpdfbox}
+
+\section*{Литература}\label{ux43bux438ux442ux435ux440ux430ux442ux443ux440ux430-8}
+\addcontentsline{toc}{section}{Литература}
+
+\markright{Литература}
+
+\protect\phantomsection\label{refs}
+\begin{CSLReferences}{0}{0}
+\bibitem[\citeproctext]{ref-cowan1998}
+{[}1{]} Cowan, G. \emph{Statistical Data Analysis}. Oxford University
+Press. 1998.
+
+\end{CSLReferences}
+
+\chapter{Свойства оценок и профильное
+правдоподобие}\label{ux441ux432ux43eux439ux441ux442ux432ux430-ux43eux446ux435ux43dux43eux43a-ux438-ux43fux440ux43eux444ux438ux43bux44cux43dux43eux435-ux43fux440ux430ux432ux434ux43eux43fux43eux434ux43eux431ux438ux435}
+
+\bookchapteropeningcontents
+
+\begin{bookchapteropening}[Аннотация]
+
+Глава рассматривает свойства статистических оценок и форму функции
+правдоподобия около максимума. Обсуждаются смещение, средний квадрат
+ошибки, состоятельность, информация Фишера, граница Крамера--Рао и
+профилирование мешающих параметров. Практические вопросы показаны на
+примере анализа реакторных нейтрино.
+
+\end{bookchapteropening}
+
 \section{Свойства
 оценок}\label{ux441ux432ux43eux439ux441ux442ux432ux430-ux43eux446ux435ux43dux43eux43a}
 
@@ -8950,7 +9040,7 @@ Press. 1998.
 
 \end{minipage}\hfill\begin{minipage}[c]{26mm}\centering
 
-\href{https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/07_parameter_estimation_and_maximum_likelihood.html\#interactive-likelihood-variance-estimators}{\includegraphics[width=24mm,height=\textheight,keepaspectratio,alt={QR-код интерактива}]{assets/qr/likelihood-variance-estimators.png}}
+\href{https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/10_estimator_properties_profile_likelihood.html\#interactive-likelihood-variance-estimators}{\includegraphics[width=24mm,height=\textheight,keepaspectratio,alt={QR-код интерактива}]{assets/qr/likelihood-variance-estimators.png}}
 
 \end{minipage}
 
@@ -9091,7 +9181,7 @@ q(\theta)=-2\ln\lambda(\theta)
 \[q(\theta)\approx(\theta-\widehat\theta)^2/\sigma_{\widehat\theta}^2.\]
 Асимптотическая интерпретация
 Уравнение~\ref{eq-likelihood-ratio-statistic} требует условий
-регулярности и достаточно большой выборки {[}10{]}.
+регулярности и достаточно большой выборки {[}1{]}.
 
 \subsection{Квадратичный профиль гауссова
 среднего}\label{ux43aux432ux430ux434ux440ux430ux442ux438ux447ux43dux44bux439-ux43fux440ux43eux444ux438ux43bux44c-ux433ux430ux443ux441ux441ux43eux432ux430-ux441ux440ux435ux434ux43dux435ux433ux43e}
@@ -9153,7 +9243,7 @@ q(\theta)=-2\ln\lambda(\theta)
 
 \end{minipage}\hfill\begin{minipage}[c]{26mm}\centering
 
-\href{https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/07_parameter_estimation_and_maximum_likelihood.html\#interactive-likelihood-lifetime}{\includegraphics[width=24mm,height=\textheight,keepaspectratio,alt={QR-код интерактива}]{assets/qr/likelihood-lifetime.png}}
+\href{https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/10_estimator_properties_profile_likelihood.html\#interactive-likelihood-lifetime}{\includegraphics[width=24mm,height=\textheight,keepaspectratio,alt={QR-код интерактива}]{assets/qr/likelihood-lifetime.png}}
 
 \end{minipage}
 
@@ -9297,7 +9387,7 @@ q(\theta)=-2\ln\lambda(\theta)
 
 \end{minipage}\hfill\begin{minipage}[c]{26mm}\centering
 
-\href{https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/07_parameter_estimation_and_maximum_likelihood.html\#interactive-likelihood-profile}{\includegraphics[width=24mm,height=\textheight,keepaspectratio,alt={QR-код интерактива}]{assets/qr/likelihood-profile.png}}
+\href{https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/10_estimator_properties_profile_likelihood.html\#interactive-likelihood-profile}{\includegraphics[width=24mm,height=\textheight,keepaspectratio,alt={QR-код интерактива}]{assets/qr/likelihood-profile.png}}
 
 \end{minipage}
 
@@ -9341,7 +9431,7 @@ q(\theta)=-2\ln\lambda(\theta)
 модели}\label{ux43fux43eux442ux43eux43a-ux438-ux441ux435ux447ux435ux43dux438ux435-ux432-ux438ux433ux440ux443ux448ux435ux447ux43dux43eux439-ux43cux43eux434ux435ux43bux438}
 
 В учебном примере используется параметризация реакторного потока по
-работам {[}11, 12{]}:
+работам {[}2, 3{]}:
 \[\phi(E)=\sum_k f_k\exp\!\left[\sum_{p=0}^{5}a_{kp}E^p\right],\] где
 суммируются вклады \(^{235}\mathrm U\), \(^{238}\mathrm U\),
 \(^{239}\mathrm{Pu}\) и \(^{241}\mathrm{Pu}\). Энергия \(E\) выражается
@@ -9453,7 +9543,7 @@ q(\theta)=-2\ln\lambda(\theta)
 
 \end{minipage}\hfill\begin{minipage}[c]{26mm}\centering
 
-\href{https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/07_parameter_estimation_and_maximum_likelihood.html\#interactive-likelihood-reactor-oscillation}{\includegraphics[width=24mm,height=\textheight,keepaspectratio,alt={QR-код интерактива}]{assets/qr/likelihood-reactor-oscillation.png}}
+\href{https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/10_estimator_properties_profile_likelihood.html\#interactive-likelihood-reactor-oscillation}{\includegraphics[width=24mm,height=\textheight,keepaspectratio,alt={QR-код интерактива}]{assets/qr/likelihood-reactor-oscillation.png}}
 
 \end{minipage}
 
@@ -9648,135 +9738,29 @@ q(\theta)=-2\ln\lambda(\theta)
 \begin{itemize}
 \tightlist
 \item
-  Параметр модели в частотном подходе фиксирован, а данные и построенная
-  по ним оценка случайны.
+  Качество оценки характеризуют смещение, дисперсия и средний квадрат
+  ошибки.
 \item
-  Оценка --- правило, применяемое к случайным данным; полученное
-  значение оценки --- результат этого правила для конкретной выборки.
+  Информация Фишера измеряет локальную чувствительность правдоподобия к
+  параметру.
 \item
-  Функция правдоподобия рассматривает вероятностную модель как функцию
-  неизвестных параметров при уже фиксированных данных и не является
-  вероятностью параметра.
+  Кривизна логарифма правдоподобия даёт локальную оценку
+  неопределённости при выполнении условий регулярности.
 \item
-  Для независимой выборки правдоподобия перемножаются, а логарифмы
-  правдоподобий складываются.
+  Профилирование повторяет оптимизацию мешающих параметров при каждом
+  фиксированном значении параметра интереса.
 \item
-  Метод максимального правдоподобия выбирает параметры, при которых
-  правдоподобие максимально.
-\item
-  ММП даёт естественные оценки в биномиальном, пуассоновском и гауссовом
-  примерах, но не гарантирует несмещённость: оценка гауссовой дисперсии
-  с делителем \(N\) смещена при конечной статистике.
-\item
-  Свойства оценки нужно рассматривать совместно через смещение,
-  дисперсию, средний квадрат ошибки, состоятельность и эффективность.
-\item
-  Информация Фишера характеризует чувствительность правдоподобия к
-  параметру, а граница Крамера--Рао задаёт нижнюю границу дисперсии
-  несмещённой оценки при условиях регулярности.
-\item
-  Кривизна логарифма правдоподобия даёт локальную оценку ошибки только в
-  регулярном почти гауссовом случае.
-\item
-  Относительное правдоподобие и статистика \(q=-2\ln\lambda\) позволяют
-  описывать форму правдоподобия независимо от его абсолютной нормировки.
-\item
-  В многопараметрическом анализе мешающие параметры нельзя игнорировать.
-  Профилирование повторно оптимизирует их при каждом фиксированном
-  значении параметра интереса и тем самым учитывает корреляции и
-  компенсации.
-\item
-  Реальная подгонка требует проверки сканами, диагностикой оптимизатора
-  и псевдоэкспериментами; сообщения минимизатора об успешной сходимости
-  недостаточно.
+  Численную подгонку проверяют сканами, разными начальными точками и
+  псевдоэкспериментами.
 \end{itemize}
 
 \end{bookchaptersummary}
 
-\section{Задачи}\label{ux437ux430ux434ux430ux447ux438-7}
+\section{Задачи}\label{ux437ux430ux434ux430ux447ux438-9}
 
 \begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
 
-\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 1. Вероятность и правдоподобие}\par\nopagebreak[4]\vspace{1.2mm}
-
-Одно наблюдение \(x\) получено из экспоненциального распределения \[
-f(x\mid\lambda)=\lambda e^{-\lambda x},
-\qquad x\ge0.
-\]
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-  Нарисуйте \(f(x\mid\lambda)\) как функцию \(x\) при нескольких
-  фиксированных \(\lambda\).
-\item
-  После наблюдения \(x=x_{\mathrm{obs}}\) запишите
-  \(L(\lambda;x_{\mathrm{obs}})\).
-\item
-  Покажите, что \(L(\lambda;x_{\mathrm{obs}})\) не нормирована по
-  \(\lambda\).
-\item
-  Найдите \(\widehat\lambda_{\mathrm{ML}}\).
-\item
-  Объясните словами различие между плотностью вероятности и likelihood.
-\end{enumerate}
-
-\end{semanticpdfbox}
-
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
-
-\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 2. Биномиальная оценка}\par\nopagebreak[4]\vspace{1.2mm}
-
-В \(N\) независимых испытаниях наблюдалось \(k\) успехов.
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-  Запишите биномиальное правдоподобие \(L(p)\).
-\item
-  Найдите \(\widehat p_{\mathrm{ML}}\).
-\item
-  Вычислите \(\mathbb E[\widehat p]\) и
-  \(\operatorname{Var}(\widehat p)\).
-\item
-  Покажите, что оценка несмещённая и состоятельная.
-\item
-  Исследуйте форму \(L(p)\) для случаев \(k=0\), \(k=N/2\) и \(k=N\).
-\end{enumerate}
-
-\end{semanticpdfbox}
-
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
-
-\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 3. Пуассоновский счёт с известным фоном}\par\nopagebreak[4]\vspace{1.2mm}
-
-Пусть \[
-N\sim\operatorname{Pois}(s+b),
-\] где \(s\ge0\) --- неизвестный сигнал, а фон \(b\) известен точно.
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-  Запишите \(L(s)\) и \(\ell(s)\).
-\item
-  Найдите неограниченную MLE сигнала.
-\item
-  Найдите MLE при физическом ограничении \(s\ge0\).
-\item
-  Объясните, что происходит при \(n<b\).
-\item
-  Постройте \(q(s)=-2\ln[L(s)/L(\widehat s)]\) для нескольких \(n\) и
-  \(b\).
-\end{enumerate}
-
-\end{semanticpdfbox}
-
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
-
-\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 4. Гауссово среднее}\par\nopagebreak[4]\vspace{1.2mm}
+\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 1. Информация Фишера для гауссова среднего}\par\nopagebreak[4]\vspace{1.2mm}
 
 Пусть \[
 X_i\sim\mathrm N(\mu,\sigma^2),
@@ -9786,48 +9770,19 @@ X_i\sim\mathrm N(\mu,\sigma^2),
 \def\labelenumi{\arabic{enumi}.}
 \tightlist
 \item
-  Запишите likelihood независимой выборки.
-\item
-  Покажите, что \(\widehat\mu_{\mathrm{ML}}=\langle X\rangle\).
-\item
-  Найдите \(\operatorname{Var}(\widehat\mu_{\mathrm{ML}})\).
-\item
   Вычислите информацию Фишера для одного наблюдения и всей выборки.
 \item
-  Покажите, что оценка достигает границы Крамера --- Рао.
+  Получите границу Крамера--Рао для дисперсии несмещённой оценки
+  \(\mu\).
+\item
+  Сравните границу с дисперсией выборочного среднего.
 \end{enumerate}
 
 \end{semanticpdfbox}
 
 \begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
 
-\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 5. Взвешенное среднее}\par\nopagebreak[4]\vspace{1.2mm}
-
-Имеются независимые измерения \[
-X_i\sim\mathrm N(\mu,\sigma_i^2),
-\] где \(\sigma_i\) известны и различаются.
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-  Запишите совместный log-likelihood.
-\item
-  Найдите MLE параметра \(\mu\).
-\item
-  Покажите, что результат является взвешенным средним с весами
-  \(w_i=1/\sigma_i^2\).
-\item
-  Найдите дисперсию оценки.
-\item
-  Объясните, почему измерения с меньшей ошибкой получают больший вес.
-\end{enumerate}
-
-\end{semanticpdfbox}
-
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
-
-\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 6. Смещённая MLE дисперсии}\par\nopagebreak[4]\vspace{1.2mm}
+\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 2. Смещённая оценка дисперсии}\par\nopagebreak[4]\vspace{1.2mm}
 
 Для гауссовой выборки с неизвестными \(\mu\) и \(\sigma^2\):
 
@@ -9835,7 +9790,7 @@ X_i\sim\mathrm N(\mu,\sigma_i^2),
 \def\labelenumi{\arabic{enumi}.}
 \tightlist
 \item
-  Найдите MLE обоих параметров.
+  Найдите оценки максимального правдоподобия обоих параметров.
 \item
   Покажите, что \[
   \mathbb E[\widehat{\sigma^2}_{\mathrm{ML}}]
@@ -9845,18 +9800,20 @@ X_i\sim\mathrm N(\mu,\sigma_i^2),
 \item
   Постройте несмещённую оценку дисперсии.
 \item
-  Сравните MSE двух оценок аналитически или методом Монте-Карло.
+  Сравните средние квадраты ошибок двух оценок аналитически или методом
+  Монте-Карло.
 \item
-  Обсудите, почему MLE не обязана быть несмещённой при конечном \(N\).
+  Обсудите, почему оценка максимального правдоподобия не обязана быть
+  несмещённой при конечном \(N\).
 \end{enumerate}
 
 \end{semanticpdfbox}
 
 \begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
 
-\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 7. Профилирование nuisance-параметра}\par\nopagebreak[4]\vspace{1.2mm}
+\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 3. Профилирование мешающего параметра}\par\nopagebreak[4]\vspace{1.2mm}
 
-Рассмотрите квадратичный log-likelihood \[
+Рассмотрите квадратичный логарифм функции правдоподобия \[
 -2\ell(\theta,\eta)
 =
 \frac{\theta^2-2\rho\theta\eta+\eta^2}{1-\rho^2}
@@ -9878,7 +9835,7 @@ X_i\sim\mathrm N(\mu,\sigma_i^2),
 \item
   Сравните её с сечением \(q(\theta,\eta=0)\).
 \item
-  Объясните, почему фиксирование nuisance-параметра занижает
+  Объясните, почему фиксирование мешающего параметра занижает
   неопределённость при \(\rho\ne0\).
 \end{enumerate}
 
@@ -9886,7 +9843,7 @@ X_i\sim\mathrm N(\mu,\sigma_i^2),
 
 \begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
 
-\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 8. Extended likelihood для сигнала и фона}\par\nopagebreak[4]\vspace{1.2mm}
+\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 4. Расширенная функция правдоподобия для сигнала и фона}\par\nopagebreak[4]\vspace{1.2mm}
 
 Наблюдаются события с признаком \(x\). Ожидаемые числа сигнала и фона
 равны \(s\) и \(b\), а нормированные плотности --- \(f_s(x)\) и
@@ -9896,23 +9853,24 @@ X_i\sim\mathrm N(\mu,\sigma_i^2),
 \def\labelenumi{\arabic{enumi}.}
 \tightlist
 \item
-  Запишите extended likelihood для выборки \(x_1,\ldots,x_N\).
+  Запишите расширенную функцию правдоподобия для выборки
+  \(x_1,\ldots,x_N\).
 \item
-  Покажите, как в likelihood используются число событий и форма
-  распределения.
+  Покажите, как в ней используются число событий и форма распределения.
 \item
-  Запишите likelihood для бинированных данных.
+  Запишите функцию правдоподобия для бинированных данных.
 \item
   Обсудите, какая информация теряется при грубом биннировании.
 \item
-  Добавьте внешний гауссов constraint на неопределённый фон \(b\).
+  Добавьте гауссово ограничение на неопределённый фон \(b\) по внешнему
+  измерению.
 \end{enumerate}
 
 \end{semanticpdfbox}
 
 \begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
 
-\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 9. Проверка fit на псевдоэкспериментах}\par\nopagebreak[4]\vspace{1.2mm}
+\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 5. Проверка подгонки на псевдоэкспериментах}\par\nopagebreak[4]\vspace{1.2mm}
 
 Выберите одну из моделей предыдущих задач.
 
@@ -9923,123 +9881,58 @@ X_i\sim\mathrm N(\mu,\sigma_i^2),
   Сгенерируйте не менее \(5000\) псевдоэкспериментов при известном
   истинном параметре.
 \item
-  В каждом псевдоэксперименте найдите MLE.
+  В каждом псевдоэксперименте найдите оценку максимального
+  правдоподобия.
 \item
-  Оцените смещение, дисперсию и MSE.
+  Оцените смещение, дисперсию и средний квадрат ошибки.
 \item
   Исследуйте зависимость результатов от размера выборки.
 \item
-  Проверьте частоту попадания fit в физическую границу.
+  Проверьте, как часто оценка попадает на физическую границу.
 \item
-  Сравните фактический разброс MLE с ошибкой, предсказанной кривизной
-  log-likelihood.
+  Сравните фактический разброс оценки максимального правдоподобия с
+  ошибкой, предсказанной кривизной логарифма функции правдоподобия.
 \end{enumerate}
 
 \end{semanticpdfbox}
 
-\section*{Литература}\label{ux43bux438ux442ux435ux440ux430ux442ux443ux440ux430-3}
+\section*{Литература}\label{ux43bux438ux442ux435ux440ux430ux442ux443ux440ux430-9}
 \addcontentsline{toc}{section}{Литература}
 
 \markright{Литература}
 
 \protect\phantomsection\label{refs}
 \begin{CSLReferences}{0}{0}
-\bibitem[\citeproctext]{ref-nobel2013higgs}
-{[}1{]} The Royal Swedish Academy of Sciences. The Nobel Prize in
-Physics 2013: Press Release. 2013.
-\url{https://www.nobelprize.org/prizes/physics/2013/press-release/}.
-
-\bibitem[\citeproctext]{ref-atlas2012higgs}
-{[}2{]} ATLAS Collaboration. Observation of a New Particle in the Search
-for the Standard Model Higgs Boson with the {ATLAS} Detector at the
-{LHC}. \emph{Physics Letters B}, \textbf{716}, 1--29. 2012.
-doi:\href{https://doi.org/10.1016/j.physletb.2012.08.020}{10.1016/j.physletb.2012.08.020}.
-
-\bibitem[\citeproctext]{ref-cms2012higgs}
-{[}3{]} CMS Collaboration. Observation of a New Boson at a Mass of 125
-{GeV} with the {CMS} Experiment at the {LHC}. \emph{Physics Letters B},
-\textbf{716}, 30--61. 2012.
-doi:\href{https://doi.org/10.1016/j.physletb.2012.08.021}{10.1016/j.physletb.2012.08.021}.
-
-\bibitem[\citeproctext]{ref-dayabay2012theta13}
-{[}4{]} Daya Bay Collaboration. Observation of Electron-Antineutrino
-Disappearance at {Daya Bay}. \emph{Physical Review Letters},
-\textbf{108}, 171803. 2012.
-doi:\href{https://doi.org/10.1103/PhysRevLett.108.171803}{10.1103/PhysRevLett.108.171803}.
-
-\bibitem[\citeproctext]{ref-dayabay2024sterile}
-{[}5{]} Daya Bay Collaboration. Search for a Light Sterile Neutrino with
-the Full Configuration of the {Daya Bay} Experiment. \emph{Physical
-Review Letters}, \textbf{133}, 051801. 2024.
-doi:\href{https://doi.org/10.1103/PhysRevLett.133.051801}{10.1103/PhysRevLett.133.051801}.
-\url{https://arxiv.org/abs/2404.01687}.
-
-\bibitem[\citeproctext]{ref-jcgm2008gum}
-{[}6{]} Joint Committee for Guides in Metrology. Evaluation of
-Measurement Data---Guide to the Expression of Uncertainty in
-Measurement. 2008.
-doi:\href{https://doi.org/10.59161/JCGM100-2008E}{10.59161/JCGM100-2008E}.
-
-\bibitem[\citeproctext]{ref-metropolisUlam1949}
-{[}7{]} Metropolis, N. и Ulam, S. The {Monte Carlo} Method.
-\emph{Journal of the American Statistical Association}, \textbf{44},
-335--341. 1949.
-doi:\href{https://doi.org/10.1080/01621459.1949.10483310}{10.1080/01621459.1949.10483310}.
-
-\bibitem[\citeproctext]{ref-lepage1978vegas}
-{[}8{]} Lepage, G. P. A New Algorithm for Adaptive Multidimensional
-Integration. \emph{Journal of Computational Physics}, \textbf{27},
-192--203. 1978.
-doi:\href{https://doi.org/10.1016/0021-9991(78)90004-9}{10.1016/0021-9991(78)90004-9}.
-
-\bibitem[\citeproctext]{ref-blythOpticks}
-{[}9{]} Blyth, S. C. Opticks: {GPU} Optical Photon Simulation.
-\url{https://juno.ihep.ac.cn/~blyth/}.
-
 \bibitem[\citeproctext]{ref-wilks1938}
-{[}10{]} Wilks, S. S. The Large-Sample Distribution of the Likelihood
+{[}1{]} Wilks, S. S. The Large-Sample Distribution of the Likelihood
 Ratio for Testing Composite Hypotheses. \emph{The Annals of Mathematical
 Statistics}, \textbf{9}, 60--62. 1938.
 doi:\href{https://doi.org/10.1214/aoms/1177732360}{10.1214/aoms/1177732360}.
 
 \bibitem[\citeproctext]{ref-huber2011reactor}
-{[}11{]} Huber, P. Determination of Antineutrino Spectra from Nuclear
+{[}2{]} Huber, P. Determination of Antineutrino Spectra from Nuclear
 Reactors. \emph{Physical Review C}, \textbf{84}, 024617. 2011.
 doi:\href{https://doi.org/10.1103/PhysRevC.84.024617}{10.1103/PhysRevC.84.024617}.
 
 \bibitem[\citeproctext]{ref-mueller2011reactor}
-{[}12{]} {Mueller, Th. A. и др.} Improved Predictions of Reactor
+{[}3{]} {Mueller, Th. A. и др.} Improved Predictions of Reactor
 Antineutrino Spectra. \emph{Physical Review C}, \textbf{83}, 054615.
 2011.
 doi:\href{https://doi.org/10.1103/PhysRevC.83.054615}{10.1103/PhysRevC.83.054615}.
 
-\bibitem[\citeproctext]{ref-dagostini1994bias}
-{[}13{]} D'Agostini, G. On the Use of the Covariance Matrix to Fit
-Correlated Data. \emph{Nuclear Instruments and Methods in Physics
-Research Section A}, \textbf{346}, 306--311. 1994.
-doi:\href{https://doi.org/10.1016/0168-9002(94)90719-6}{10.1016/0168-9002(94)90719-6}.
-
-\bibitem[\citeproctext]{ref-cowan1998}
-{[}14{]} Cowan, G. \emph{Statistical Data Analysis}. Oxford University
-Press. 1998.
-
 \end{CSLReferences}
 
-\chapter{Метод наименьших
-квадратов}\label{ux43cux435ux442ux43eux434-ux43dux430ux438ux43cux435ux43dux44cux448ux438ux445-ux43aux432ux430ux434ux440ux430ux442ux43eux432}
+\chapter{Метод наименьших квадратов и линейная
+подгонка}\label{ux43cux435ux442ux43eux434-ux43dux430ux438ux43cux435ux43dux44cux448ux438ux445-ux43aux432ux430ux434ux440ux430ux442ux43eux432-ux438-ux43bux438ux43dux435ux439ux43dux430ux44f-ux43fux43eux434ux433ux43eux43dux43aux430}
 
 \bookchapteropeningcontents
 
 \begin{bookchapteropening}[Аннотация]
 
-Глава связывает метод наименьших квадратов с гауссовым правдоподобием и
-показывает, как из измерений с известными неопределённостями получить
-оценки параметров модели. На примере прямой выводятся нормальные
-уравнения, ковариационная матрица параметров и геометрический смысл их
-корреляций. Затем рассматривается общий случай с ковариационной матрицей
-данных, локальные интервалы по форме \(\chi^2\) , систематические
-неопределённости, мешающие параметры, профилирование и распространение
-ошибок на производные величины.
+Метод наименьших квадратов выводится из гауссовой модели измерений. Для
+подгонки прямой получаются нормальные уравнения и ковариационная матрица
+параметров, разбираются центрирование координаты, геометрия корреляций,
+остатки и влияние выбросов.
 
 \end{bookchapteropening}
 
@@ -10065,7 +9958,8 @@ Press. 1998.
 правдоподобием}\label{ux441ux432ux44fux437ux44c-ux441-ux433ux430ux443ux441ux441ux43eux432ux44bux43c-ux43fux440ux430ux432ux434ux43eux43fux43eux434ux43eux431ux438ux435ux43c}
 
 Пусть значения \(x_i\) известны точно, а наблюдаемые величины \(Y_i\)
-независимы и распределены по гауссу вокруг модельного предсказания:
+независимы и распределены по гауссу вокруг модельного предсказания
+{[}1{]}:
 \[Y_i\sim\mathrm N\!\left(f(x_i;\boldsymbol\theta),\sigma_i^2\right).\]
 Тогда совместная функция правдоподобия равна:
 \[L(\boldsymbol\theta)=\prod_{i=1}^{N}\frac{1}{\sqrt{2\pi}\sigma_i}
@@ -10276,7 +10170,7 @@ Q_x=\sum_iw_i(x_i-\bar x_w)^2=\frac\Delta S.\] Те же формулы прин
 
 \end{minipage}\hfill\begin{minipage}[c]{26mm}\centering
 
-\href{https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/08_method_of_least_squares.html\#interactive-least-squares-parameter-geometry}{\includegraphics[width=24mm,height=\textheight,keepaspectratio,alt={QR-код интерактива}]{assets/qr/least-squares-parameter-geometry.png}}
+\href{https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/11_least_squares_linear_fit.html\#interactive-least-squares-parameter-geometry}{\includegraphics[width=24mm,height=\textheight,keepaspectratio,alt={QR-код интерактива}]{assets/qr/least-squares-parameter-geometry.png}}
 
 \end{minipage}
 
@@ -10334,7 +10228,7 @@ z_b=\sqrt{Q_x}\,\delta b'=\frac{\delta b'}{\sigma_{b'}},\] то
 
 \end{minipage}\hfill\begin{minipage}[c]{26mm}\centering
 
-\href{https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/08_method_of_least_squares.html\#interactive-least-squares-outlier}{\includegraphics[width=24mm,height=\textheight,keepaspectratio,alt={QR-код интерактива}]{assets/qr/least-squares-outlier.png}}
+\href{https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/11_least_squares_linear_fit.html\#interactive-least-squares-outlier}{\includegraphics[width=24mm,height=\textheight,keepaspectratio,alt={QR-код интерактива}]{assets/qr/least-squares-outlier.png}}
 
 \end{minipage}
 
@@ -10361,6 +10255,182 @@ z_b=\sqrt{Q_x}\,\delta b'=\frac{\delta b'}{\sigma_{b'}},\] то
 дополнительный декоративный график.
 
 \end{booknote}
+
+\begin{bookchaptersummary}[Итоги главы]
+
+\begin{itemize}
+\tightlist
+\item
+  Взвешенный МНК следует из гауссова правдоподобия с известными
+  дисперсиями измерений.
+\item
+  Линейная модель приводит к нормальным уравнениям и аналитической
+  ковариационной матрице параметров.
+\item
+  Разброс точек по \(x\) определяет точность наклона прямой.
+\item
+  Центрирование координаты уменьшает корреляцию наклона и свободного
+  члена.
+\item
+  Остатки и устойчивость к выбросам входят в обязательную диагностику
+  подгонки.
+\end{itemize}
+
+\end{bookchaptersummary}
+
+\section{Задачи}\label{ux437ux430ux434ux430ux447ux438-10}
+
+\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
+
+\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 1. Среднее как результат МНК}\par\nopagebreak[4]\vspace{1.2mm}
+
+Имеются независимые измерения одной величины: \[
+Y_i\sim\mathrm N(\mu,\sigma_i^2).
+\]
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Запишите функцию \(\chi^2(\mu)\).
+\item
+  Найдите её минимум.
+\item
+  Покажите, что полученная оценка является взвешенным средним.
+\item
+  Найдите дисперсию этой оценки.
+\item
+  Рассмотрите частный случай одинаковых \(\sigma_i\).
+\end{enumerate}
+
+\end{semanticpdfbox}
+
+\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
+
+\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 2. Аналитическая подгонка прямой}\par\nopagebreak[4]\vspace{1.2mm}
+
+Для данных \((x_i,y_i,\sigma_i)\) рассматривается модель \[
+y=a+bx.
+\]
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Выведите нормальные уравнения.
+\item
+  Получите аналитические формулы для \(\widehat a\) и \(\widehat b\).
+\item
+  Выведите ковариационную матрицу параметров.
+\item
+  Покажите, что центрирование \(x_i\) около взвешенного среднего
+  устраняет ковариацию параметров.
+\item
+  Проверьте формулы численно на искусственной выборке.
+\end{enumerate}
+
+\end{semanticpdfbox}
+
+\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
+
+\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 3. Ошибка подогнанной кривой}\par\nopagebreak[4]\vspace{1.2mm}
+
+Используя ковариационную матрицу параметров прямой, найдите:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  дисперсию оценки среднего \(\widehat y(x)=\widehat a+\widehat bx\);
+\item
+  точку, в которой эта дисперсия минимальна;
+\item
+  предиктивную дисперсию нового наблюдения;
+\item
+  различие между полосой среднего и предиктивной полосой.
+\end{enumerate}
+
+Постройте обе полосы на одном графике.
+
+\end{semanticpdfbox}
+
+\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
+
+\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 4. Остатки и диагональные элементы матрицы влияния}\par\nopagebreak[4]\vspace{1.2mm}
+
+Для обычного метода наименьших квадратов
+\(\widehat{\mathbf y}=H\mathbf y\):
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  покажите, что \(H^2=H\);
+\item
+  покажите, что \(\operatorname{tr}H=p\);
+\item
+  выведите ковариацию остатков \[
+  \operatorname{Cov}(\mathbf r)=\sigma^2(I-H);
+  \]
+\item
+  найдите диагональные элементы \(h_{ii}\), характеризующие влияние
+  точек при подгонке прямой;
+\item
+  добавьте одну далёкую по \(x\) точку и исследуйте её влияние.
+\end{enumerate}
+
+\end{semanticpdfbox}
+
+\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
+
+\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 5. Выбросы и устойчивая подгонка}\par\nopagebreak[4]\vspace{1.2mm}
+
+Сгенерируйте линейные данные и добавьте несколько выбросов.
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Выполните подгонку обычным методом наименьших квадратов.
+\item
+  Выполните подгонку с функцией потерь Хьюбера или с функцией
+  правдоподобия, построенной по распределению Стьюдента.
+\item
+  Сравните полученные параметры и остатки.
+\item
+  Исследуйте зависимость результата от размера и числа выбросов.
+\item
+  Обсудите, когда робастная модель физически оправдана.
+\end{enumerate}
+
+\end{semanticpdfbox}
+
+\section*{Литература}\label{ux43bux438ux442ux435ux440ux430ux442ux443ux440ux430-10}
+\addcontentsline{toc}{section}{Литература}
+
+\markright{Литература}
+
+\protect\phantomsection\label{refs}
+\begin{CSLReferences}{0}{0}
+\bibitem[\citeproctext]{ref-cowan1998}
+{[}1{]} Cowan, G. \emph{Statistical Data Analysis}. Oxford University
+Press. 1998.
+
+\end{CSLReferences}
+
+\chapter{χ²-интервалы, систематики и практический рецепт
+МНК}\label{ux3c7uxb2-ux438ux43dux442ux435ux440ux432ux430ux43bux44b-ux441ux438ux441ux442ux435ux43cux430ux442ux438ux43aux438-ux438-ux43fux440ux430ux43aux442ux438ux447ux435ux441ux43aux438ux439-ux440ux435ux446ux435ux43fux442-ux43cux43dux43a}
+
+\bookchapteropeningcontents
+
+\begin{bookchapteropening}[Аннотация]
+
+Глава обобщает метод наименьших квадратов на коррелированные измерения и
+несколько параметров. Рассматриваются интервалы по форме \(\chi^2\),
+систематические неопределённости, профилирование мешающих параметров,
+нормировочная неопределённость и перенос ковариации после подгонки.
+
+\end{bookchapteropening}
 
 \section{Общий случай с ковариационной
 матрицей}\label{ux43eux431ux449ux438ux439-ux441ux43bux443ux447ux430ux439-ux441-ux43aux43eux432ux430ux440ux438ux430ux446ux438ux43eux43dux43dux43eux439-ux43cux430ux442ux440ux438ux446ux435ux439}
@@ -10445,7 +10515,7 @@ z_b=\sqrt{Q_x}\,\delta b'=\frac{\delta b'}{\sigma_{b'}},\] то
 
 \end{minipage}\hfill\begin{minipage}[c]{26mm}\centering
 
-\href{https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/08_method_of_least_squares.html\#interactive-least-squares-delta-chi2}{\includegraphics[width=24mm,height=\textheight,keepaspectratio,alt={QR-код интерактива}]{assets/qr/least-squares-delta-chi2.png}}
+\href{https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/12_least_squares_systematics.html\#interactive-least-squares-delta-chi2}{\includegraphics[width=24mm,height=\textheight,keepaspectratio,alt={QR-код интерактива}]{assets/qr/least-squares-delta-chi2.png}}
 
 \end{minipage}
 
@@ -10637,7 +10707,7 @@ z_b=\sqrt{Q_x}\,\delta b'=\frac{\delta b'}{\sigma_{b'}},\] то
 
 \end{minipage}\hfill\begin{minipage}[c]{26mm}\centering
 
-\href{https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/08_method_of_least_squares.html\#interactive-least-squares-normalization}{\includegraphics[width=24mm,height=\textheight,keepaspectratio,alt={QR-код интерактива}]{assets/qr/least-squares-normalization.png}}
+\href{https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/12_least_squares_systematics.html\#interactive-least-squares-normalization}{\includegraphics[width=24mm,height=\textheight,keepaspectratio,alt={QR-код интерактива}]{assets/qr/least-squares-normalization.png}}
 
 \end{minipage}
 
@@ -10692,7 +10762,7 @@ z_b=\sqrt{Q_x}\,\delta b'=\frac{\delta b'}{\sigma_{b'}},\] то
 нормировочного вкладов:
 \[\sigma_\mu^2\approx\left(\sum_i\frac1{s_i^2}\right)^{-1}+(f_N\widehat\mu)^2\approx0.0136+0.6781=0.6917.\]
 Ковариационная матрица и штрафной параметр дают один и тот же ответ,
-если оба построены из одной и той же физической модели {[}13{]}.
+если оба построены из одной и той же физической модели {[}1{]}.
 
 \section{Распространение ошибок после
 подгонки}\label{ux440ux430ux441ux43fux440ux43eux441ux442ux440ux430ux43dux435ux43dux438ux435-ux43eux448ux438ux431ux43eux43a-ux43fux43eux441ux43bux435-ux43fux43eux434ux433ux43eux43dux43aux438}
@@ -10768,138 +10838,32 @@ z_b=\sqrt{Q_x}\,\delta b'=\frac{\delta b'}{\sigma_{b'}},\] то
 \begin{itemize}
 \tightlist
 \item
-  Метод наименьших квадратов возникает из максимизации правдоподобия для
-  независимых гауссовых измерений с известными дисперсиями.
+  Коррелированные измерения входят в \(\chi^2\) через полную
+  ковариационную матрицу.
 \item
-  Взвешенный критерий имеет вид
-  \(\chi^2=\sum_i[y_i-f(x_i;\theta)]^2/\sigma_i^2\), а вес измерения
-  равен обратной дисперсии.
+  Интервалы по \(\Delta\chi^2\) имеют стандартную интерпретацию только в
+  локальном гауссовом приближении.
 \item
-  Для линейной модели параметры находятся из нормальных уравнений, а их
-  ковариационная матрица определяется той же квадратичной формой.
+  Систематические неопределённости описываются мешающими параметрами и
+  вспомогательной информацией.
 \item
-  Ошибка наклона уменьшается при большем разбросе точек по \(x\), а
-  корреляция наклона и пересечения связана с положением центра данных
-  относительно \(x=0\).
+  Линейная систематика допускает эквивалентные ковариационную и
+  профильную записи.
 \item
-  Центрирование координаты в \(\bar x_w\) устраняет корреляцию
-  параметров прямой и приводит к нормальным координатам локальной
-  квадратичной формы.
+  Нормировочную ковариацию строят из модели, поскольку использование
+  флуктуировавших данных смещает результат.
 \item
-  Один большой выброс может существенно изменить обычную МНК-подгонку;
-  остатки необходимы для диагностики.
-\item
-  Коррелированные ошибки данных учитываются полной ковариационной
-  матрицей через
-  \((\mathbf y-\boldsymbol\lambda)^{\mathsf T}V_y^{-1}(\mathbf y-\boldsymbol\lambda)\).
-\item
-  Для одного параметра в локальном гауссовом случае уровень
-  \(\Delta\chi^2=1\) соответствует одной стандартной ошибке; для
-  нескольких параметров постоянные уровни образуют эллипсоиды только в
-  квадратичном приближении.
-\item
-  Систематические неопределённости удобно задавать мешающими параметрами
-  со вспомогательной информацией и профилировать вместе с параметрами
-  интереса.
-\item
-  Линейные систематики эквивалентно добавляют к ковариации данных вклад:
-  \(HV_\eta H^{\mathsf T}\).
-\item
-  Мультипликативную нормировочную неопределённость нельзя строить из
-  самих флуктуировавших наблюдений: это может породить отрицательные
-  веса и физически парадоксальный результат.
-\item
-  Ковариационный подход и штрафной мешающий параметр дают одинаковый
-  результат, если исходят из одной вероятностной модели.
-\item
-  Неопределённости производных величин переносятся вместе с корреляциями
-  по формуле \(V_\alpha=AV_\theta A^{\mathsf T}\).
-\item
-  Если гауссово или линейное приближение не работает, нужно возвращаться
-  к полной функции правдоподобия.
+  После подгонки публикуют параметры, их ковариации, использованный
+  критерий и диагностику остатков.
 \end{itemize}
 
 \end{bookchaptersummary}
 
-\section{Задачи}\label{ux437ux430ux434ux430ux447ux438-8}
+\section{Задачи}\label{ux437ux430ux434ux430ux447ux438-11}
 
 \begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
 
-\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 1. Среднее как результат МНК}\par\nopagebreak[4]\vspace{1.2mm}
-
-Имеются независимые измерения одной величины: \[
-Y_i\sim\mathrm N(\mu,\sigma_i^2).
-\]
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-  Запишите функцию \(\chi^2(\mu)\).
-\item
-  Найдите её минимум.
-\item
-  Покажите, что fitted-значение является взвешенным средним.
-\item
-  Найдите дисперсию fitted-среднего.
-\item
-  Рассмотрите частный случай одинаковых \(\sigma_i\).
-\end{enumerate}
-
-\end{semanticpdfbox}
-
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
-
-\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 2. Аналитический fit прямой}\par\nopagebreak[4]\vspace{1.2mm}
-
-Для данных \((x_i,y_i,\sigma_i)\) рассматривается модель \[
-y=a+bx.
-\]
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-  Выведите нормальные уравнения.
-\item
-  Получите аналитические формулы для \(\widehat a\) и \(\widehat b\).
-\item
-  Выведите ковариационную матрицу параметров.
-\item
-  Покажите, что центрирование \(x_i\) около взвешенного среднего
-  устраняет ковариацию параметров.
-\item
-  Проверьте формулы численно на искусственной выборке.
-\end{enumerate}
-
-\end{semanticpdfbox}
-
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
-
-\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 3. Ошибка fitted-кривой}\par\nopagebreak[4]\vspace{1.2mm}
-
-Используя ковариационную матрицу параметров прямой, найдите:
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-  дисперсию fitted-среднего \(\widehat y(x)=\widehat a+\widehat bx\);
-\item
-  точку, в которой эта дисперсия минимальна;
-\item
-  предиктивную дисперсию нового наблюдения;
-\item
-  различие между полосой среднего и предиктивной полосой.
-\end{enumerate}
-
-Постройте обе полосы на одном графике.
-
-\end{semanticpdfbox}
-
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
-
-\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 4. Коррелированные измерения}\par\nopagebreak[4]\vspace{1.2mm}
+\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 1. Коррелированные измерения}\par\nopagebreak[4]\vspace{1.2mm}
 
 Три измерения одной величины имеют ковариационную матрицу \[
 V
@@ -10918,7 +10882,7 @@ V
 \item
   Запишите обобщённый \(\chi^2(\mu)\).
 \item
-  Найдите fitted-среднее и его дисперсию.
+  Найдите оценку среднего и её дисперсию.
 \item
   Исследуйте пределы \(\rho\to0\) и \(\rho\to1\).
 \item
@@ -10931,7 +10895,7 @@ V
 
 \begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
 
-\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 5. Распределение минимального \(\chi^2\)}\par\nopagebreak[4]\vspace{1.2mm}
+\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 2. Распределение минимального \(\chi^2\)}\par\nopagebreak[4]\vspace{1.2mm}
 
 Сгенерируйте псевдоэксперименты для линейной модели с известными
 гауссовыми ошибками.
@@ -10940,7 +10904,7 @@ V
 \def\labelenumi{\arabic{enumi}.}
 \tightlist
 \item
-  В каждом эксперименте выполните fit \(p\) параметров.
+  В каждом эксперименте выполните подгонку \(p\) параметров.
 \item
   Постройте распределение \(\chi^2_{\min}\).
 \item
@@ -10952,39 +10916,14 @@ V
 \item
   Повторите эксперимент с заниженными ошибками.
 \item
-  Повторите эксперимент с неверной fitted-моделью.
+  Повторите эксперимент с неверной моделью подгонки.
 \end{enumerate}
 
 \end{semanticpdfbox}
 
 \begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
 
-\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 6. Остатки и leverage}\par\nopagebreak[4]\vspace{1.2mm}
-
-Для OLS-модели \(\widehat{\mathbf y}=H\mathbf y\):
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-  покажите, что \(H^2=H\);
-\item
-  покажите, что \(\operatorname{tr}H=p\);
-\item
-  выведите ковариацию остатков \[
-  \operatorname{Cov}(\mathbf r)=\sigma^2(I-H);
-  \]
-\item
-  найдите leverage точек при fit прямой;
-\item
-  добавьте одну далёкую по \(x\) точку и исследуйте её влияние.
-\end{enumerate}
-
-\end{semanticpdfbox}
-
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
-
-\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 7. Нелинейный fit}\par\nopagebreak[4]\vspace{1.2mm}
+\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 3. Нелинейная подгонка}\par\nopagebreak[4]\vspace{1.2mm}
 
 Данные описываются экспонентой \[
 y(x)=A e^{-\lambda x}.
@@ -10994,7 +10933,7 @@ y(x)=A e^{-\lambda x}.
 \def\labelenumi{\arabic{enumi}.}
 \tightlist
 \item
-  Выполните нелинейный fit параметров \(A\) и \(\lambda\).
+  Выполните нелинейную подгонку параметров \(A\) и \(\lambda\).
 \item
   Постройте двумерный скан \(\Delta\chi^2(A,\lambda)\).
 \item
@@ -11009,7 +10948,7 @@ y(x)=A e^{-\lambda x}.
 
 \begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
 
-\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 8. Ошибки по обеим координатам}\par\nopagebreak[4]\vspace{1.2mm}
+\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 4. Ошибки по обеим координатам}\par\nopagebreak[4]\vspace{1.2mm}
 
 Сгенерируйте точки около прямой с ошибками по \(x\) и \(y\).
 
@@ -11017,22 +10956,24 @@ y(x)=A e^{-\lambda x}.
 \def\labelenumi{\arabic{enumi}.}
 \tightlist
 \item
-  Выполните обычный вертикальный OLS-fit.
+  Выполните обычную вертикальную подгонку методом наименьших квадратов.
 \item
-  Выполните orthogonal distance regression.
+  Выполните ортогональную регрессию, учитывающую ошибки по обеим
+  координатам.
 \item
-  Сравните fitted-наклоны.
+  Сравните полученные оценки наклона.
 \item
-  Исследуйте смещение OLS при увеличении ошибки \(x\).
+  Исследуйте смещение обычного метода наименьших квадратов при
+  увеличении ошибки \(x\).
 \item
-  Объясните эффект regression dilution.
+  Объясните ослабление наклона регрессии при неучтённой ошибке \(x\).
 \end{enumerate}
 
 \end{semanticpdfbox}
 
 \begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
 
-\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 9. Пуассоновские счёты}\par\nopagebreak[4]\vspace{1.2mm}
+\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 5. Пуассоновские счёты}\par\nopagebreak[4]\vspace{1.2mm}
 
 Сгенерируйте бинированные пуассоновские данные с малыми ожидаемыми
 счётами.
@@ -11041,11 +10982,11 @@ y(x)=A e^{-\lambda x}.
 \def\labelenumi{\arabic{enumi}.}
 \tightlist
 \item
-  Оцените параметр модели минимизацией Pearson \(\chi^2\).
+  Оцените параметр модели минимизацией \(\chi^2\) Пирсона.
 \item
-  Повторите с Neyman \(\chi^2\).
+  Повторите расчёт с \(\chi^2\) Неймана.
 \item
-  Повторите максимизацией пуассоновского likelihood.
+  Повторите расчёт, максимизируя пуассоновскую функцию правдоподобия.
 \item
   Сравните смещение и дисперсию оценок на псевдоэкспериментах.
 \item
@@ -11054,662 +10995,22 @@ y(x)=A e^{-\lambda x}.
 
 \end{semanticpdfbox}
 
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
-
-\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 10. Выбросы и робастный fit}\par\nopagebreak[4]\vspace{1.2mm}
-
-Сгенерируйте линейные данные и добавьте несколько выбросов.
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-  Выполните OLS-fit.
-\item
-  Выполните fit с Huber loss или Student-\(t\) likelihood.
-\item
-  Сравните fitted-параметры и остатки.
-\item
-  Исследуйте зависимость результата от размера и числа выбросов.
-\item
-  Обсудите, когда робастная модель физически оправдана.
-\end{enumerate}
-
-\end{semanticpdfbox}
-
-\section*{Литература}\label{ux43bux438ux442ux435ux440ux430ux442ux443ux440ux430-4}
+\section*{Литература}\label{ux43bux438ux442ux435ux440ux430ux442ux443ux440ux430-11}
 \addcontentsline{toc}{section}{Литература}
 
 \markright{Литература}
 
 \protect\phantomsection\label{refs}
 \begin{CSLReferences}{0}{0}
-\bibitem[\citeproctext]{ref-nobel2013higgs}
-{[}1{]} The Royal Swedish Academy of Sciences. The Nobel Prize in
-Physics 2013: Press Release. 2013.
-\url{https://www.nobelprize.org/prizes/physics/2013/press-release/}.
-
-\bibitem[\citeproctext]{ref-atlas2012higgs}
-{[}2{]} ATLAS Collaboration. Observation of a New Particle in the Search
-for the Standard Model Higgs Boson with the {ATLAS} Detector at the
-{LHC}. \emph{Physics Letters B}, \textbf{716}, 1--29. 2012.
-doi:\href{https://doi.org/10.1016/j.physletb.2012.08.020}{10.1016/j.physletb.2012.08.020}.
-
-\bibitem[\citeproctext]{ref-cms2012higgs}
-{[}3{]} CMS Collaboration. Observation of a New Boson at a Mass of 125
-{GeV} with the {CMS} Experiment at the {LHC}. \emph{Physics Letters B},
-\textbf{716}, 30--61. 2012.
-doi:\href{https://doi.org/10.1016/j.physletb.2012.08.021}{10.1016/j.physletb.2012.08.021}.
-
-\bibitem[\citeproctext]{ref-dayabay2012theta13}
-{[}4{]} Daya Bay Collaboration. Observation of Electron-Antineutrino
-Disappearance at {Daya Bay}. \emph{Physical Review Letters},
-\textbf{108}, 171803. 2012.
-doi:\href{https://doi.org/10.1103/PhysRevLett.108.171803}{10.1103/PhysRevLett.108.171803}.
-
-\bibitem[\citeproctext]{ref-dayabay2024sterile}
-{[}5{]} Daya Bay Collaboration. Search for a Light Sterile Neutrino with
-the Full Configuration of the {Daya Bay} Experiment. \emph{Physical
-Review Letters}, \textbf{133}, 051801. 2024.
-doi:\href{https://doi.org/10.1103/PhysRevLett.133.051801}{10.1103/PhysRevLett.133.051801}.
-\url{https://arxiv.org/abs/2404.01687}.
-
-\bibitem[\citeproctext]{ref-jcgm2008gum}
-{[}6{]} Joint Committee for Guides in Metrology. Evaluation of
-Measurement Data---Guide to the Expression of Uncertainty in
-Measurement. 2008.
-doi:\href{https://doi.org/10.59161/JCGM100-2008E}{10.59161/JCGM100-2008E}.
-
-\bibitem[\citeproctext]{ref-metropolisUlam1949}
-{[}7{]} Metropolis, N. и Ulam, S. The {Monte Carlo} Method.
-\emph{Journal of the American Statistical Association}, \textbf{44},
-335--341. 1949.
-doi:\href{https://doi.org/10.1080/01621459.1949.10483310}{10.1080/01621459.1949.10483310}.
-
-\bibitem[\citeproctext]{ref-lepage1978vegas}
-{[}8{]} Lepage, G. P. A New Algorithm for Adaptive Multidimensional
-Integration. \emph{Journal of Computational Physics}, \textbf{27},
-192--203. 1978.
-doi:\href{https://doi.org/10.1016/0021-9991(78)90004-9}{10.1016/0021-9991(78)90004-9}.
-
-\bibitem[\citeproctext]{ref-blythOpticks}
-{[}9{]} Blyth, S. C. Opticks: {GPU} Optical Photon Simulation.
-\url{https://juno.ihep.ac.cn/~blyth/}.
-
-\bibitem[\citeproctext]{ref-wilks1938}
-{[}10{]} Wilks, S. S. The Large-Sample Distribution of the Likelihood
-Ratio for Testing Composite Hypotheses. \emph{The Annals of Mathematical
-Statistics}, \textbf{9}, 60--62. 1938.
-doi:\href{https://doi.org/10.1214/aoms/1177732360}{10.1214/aoms/1177732360}.
-
-\bibitem[\citeproctext]{ref-huber2011reactor}
-{[}11{]} Huber, P. Determination of Antineutrino Spectra from Nuclear
-Reactors. \emph{Physical Review C}, \textbf{84}, 024617. 2011.
-doi:\href{https://doi.org/10.1103/PhysRevC.84.024617}{10.1103/PhysRevC.84.024617}.
-
-\bibitem[\citeproctext]{ref-mueller2011reactor}
-{[}12{]} {Mueller, Th. A. и др.} Improved Predictions of Reactor
-Antineutrino Spectra. \emph{Physical Review C}, \textbf{83}, 054615.
-2011.
-doi:\href{https://doi.org/10.1103/PhysRevC.83.054615}{10.1103/PhysRevC.83.054615}.
-
 \bibitem[\citeproctext]{ref-dagostini1994bias}
-{[}13{]} D'Agostini, G. On the Use of the Covariance Matrix to Fit
+{[}1{]} D'Agostini, G. On the Use of the Covariance Matrix to Fit
 Correlated Data. \emph{Nuclear Instruments and Methods in Physics
 Research Section A}, \textbf{346}, 306--311. 1994.
 doi:\href{https://doi.org/10.1016/0168-9002(94)90719-6}{10.1016/0168-9002(94)90719-6}.
 
-\bibitem[\citeproctext]{ref-cowan1998}
-{[}14{]} Cowan, G. \emph{Statistical Data Analysis}. Oxford University
-Press. 1998.
-
 \end{CSLReferences}
 
 \part{III. Статистический вывод}
-
-\chapter{Статистические тесты: общие
-понятия}\label{ux441ux442ux430ux442ux438ux441ux442ux438ux447ux435ux441ux43aux438ux435-ux442ux435ux441ux442ux44b-ux43eux431ux449ux438ux435-ux43fux43eux43dux44fux442ux438ux44f}
-
-\bookchapteropeningcontents
-
-\begin{bookchapteropening}[Аннотация]
-
-Глава формулирует задачу статистической проверки гипотез. Нулевая и
-альтернативная гипотезы, ошибки первого и второго рода, мощность,
-критическая область и \(p\)-value собраны в единую процедуру принятия
-решения.
-
-\end{bookchapteropening}
-
-\section{Задачи}\label{ux437ux430ux434ux430ux447ux438-9}
-
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
-
-\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 1. Матрица решений}\par\nopagebreak[4]\vspace{1.2mm}
-
-Для теста \(H_0\) против \(H_1\):
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-  Постройте таблицу возможных решений и истинных состояний.
-\item
-  Определите ошибки I и II рода.
-\item
-  Запишите размер и мощность теста.
-\item
-  Объясните, почему неотклонение \(H_0\) не доказывает её истинность.
-\item
-  Приведите физический пример, в котором ошибки I и II рода имеют разную
-  цену.
-\end{enumerate}
-
-\end{semanticpdfbox}
-
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
-
-\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 2. Односторонний гауссов тест}\par\nopagebreak[4]\vspace{1.2mm}
-
-Пусть \[
-X_1,\ldots,X_N\sim\mathrm N(\mu,\sigma^2),
-\] где \(\sigma\) известна. Проверяется \[
-H_0:\mu=\mu_0
-\qquad\text{против}\qquad
-H_1:\mu>\mu_0.
-\]
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-  Постройте статистику \(Z\) со стандартным нормальным распределением
-  при \(H_0\).
-\item
-  Найдите критическую границу теста уровня \(\alpha\).
-\item
-  Выведите функцию мощности \(\pi(\mu)\).
-\item
-  Найдите необходимое \(N\) для заданных \(\alpha\), мощности и
-  минимального размера эффекта.
-\item
-  Проверьте результат псевдоэкспериментами.
-\end{enumerate}
-
-\end{semanticpdfbox}
-
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
-
-\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 3. Двусторонний тест}\par\nopagebreak[4]\vspace{1.2mm}
-
-Для той же гауссовой модели проверяется \[
-H_0:\mu=\mu_0
-\qquad\text{против}\qquad
-H_1:\mu\ne\mu_0.
-\]
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-  Постройте критическую область уровня \(\alpha\).
-\item
-  Объясните появление квантиля \(z_{1-\alpha/2}\).
-\item
-  Выведите функцию мощности для истинного среднего \(\mu_1\).
-\item
-  Сравните мощность одностороннего и двустороннего тестов при
-  \(\mu_1>\mu_0\).
-\item
-  Объясните, почему направление теста нельзя выбирать после просмотра
-  данных.
-\end{enumerate}
-
-\end{semanticpdfbox}
-
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
-
-\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 4. \(p\)-value}\par\nopagebreak[4]\vspace{1.2mm}
-
-Наблюдалось значение \(z_{\mathrm{obs}}=2.1\).
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-  Вычислите правосторонний \(p\)-value.
-\item
-  Вычислите двусторонний \(p\)-value.
-\item
-  Укажите, на каких уровнях \(\alpha\) гипотеза будет отвергнута.
-\item
-  Объясните, почему \(p\)-value не является вероятностью \(H_0\).
-\item
-  Сгенерируйте \(Z\sim\mathrm N(0,1)\) и проверьте, что корректный
-  непрерывный \(p\)-value равномерен при \(H_0\).
-\end{enumerate}
-
-\end{semanticpdfbox}
-
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
-
-\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 5. Лемма Неймана --- Пирсона}\par\nopagebreak[4]\vspace{1.2mm}
-
-Проверяются простые гипотезы \[
-H_0:X\sim\mathrm N(0,1),
-\qquad
-H_1:X\sim\mathrm N(\delta,1),
-\qquad \delta>0.
-\]
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-  Запишите отношение правдоподобия.
-\item
-  Покажите, что оно монотонно по \(X\).
-\item
-  Найдите наиболее мощный тест уровня \(\alpha\).
-\item
-  Выведите его мощность.
-\item
-  Постройте ROC-кривую для нескольких \(\delta\).
-\end{enumerate}
-
-\end{semanticpdfbox}
-
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
-
-\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 6. Точный биномиальный тест}\par\nopagebreak[4]\vspace{1.2mm}
-
-Проверяется \[
-H_0:p=0.5
-\qquad\text{против}\qquad
-H_1:p>0.5
-\] по числу успехов \(K\) в \(N=12\) испытаниях.
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-  Найдите критическую область уровня не более \(5\%\).
-\item
-  Вычислите фактический размер теста.
-\item
-  Найдите мощность при \(p=0.7\).
-\item
-  Вычислите точный \(p\)-value при \(k_{\mathrm{obs}}=10\).
-\item
-  Объясните, почему точный тест консервативен.
-\end{enumerate}
-
-\end{semanticpdfbox}
-
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
-
-\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 7. Пуассоновский поиск сигнала}\par\nopagebreak[4]\vspace{1.2mm}
-
-Наблюдается \[
-N\sim\operatorname{Pois}(s+b),
-\] где фон \(b\) известен.
-
-Проверяется \[
-H_0:s=0
-\qquad\text{против}\qquad
-H_1:s>0.
-\]
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-  Обоснуйте выбор статистики теста \(T=N\).
-\item
-  Постройте критическую область уровня не более \(\alpha\).
-\item
-  Вычислите мощность как функцию \(s\).
-\item
-  Исследуйте влияние фона \(b\).
-\item
-  Сравните точный тест с гауссовым приближением.
-\end{enumerate}
-
-\end{semanticpdfbox}
-
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
-
-\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 8. Низкая мощность}\par\nopagebreak[4]\vspace{1.2mm}
-
-Разработан тест уровня \(\alpha=0.05\), имеющий мощность \(0.20\) против
-физически интересной альтернативы.
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-  Найдите вероятность ошибки II рода.
-\item
-  Объясните смысл неотклонения \(H_0\) в таком эксперименте.
-\item
-  Оцените, во сколько раз следует увеличить выборку, если размер
-  стандартизованного эффекта растёт как \(\sqrt N\), а требуется
-  существенно большая мощность.
-\item
-  Покажите псевдоэкспериментами, что большинство экспериментов не
-  заметит реальный эффект.
-\item
-  Сформулируйте корректный отрицательный вывод.
-\end{enumerate}
-
-\end{semanticpdfbox}
-
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
-
-\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 9. Множественные проверки}\par\nopagebreak[4]\vspace{1.2mm}
-
-Выполняется \(m\) независимых тестов уровня \(\alpha\).
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-  Выведите вероятность хотя бы одного ложного отклонения.
-\item
-  Вычислите её для \(m=10,100,1000\) и \(\alpha=0.05\).
-\item
-  Найдите порог отдельного теста по поправке Бонферрони для общего
-  уровня \(0.05\).
-\item
-  Сравните фактическую вероятность ошибки с заданной.
-\item
-  Обсудите потерю мощности.
-\end{enumerate}
-
-\end{semanticpdfbox}
-
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
-
-\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 10. Проверка калибровки теста}\par\nopagebreak[4]\vspace{1.2mm}
-
-Выберите любой тест из предыдущих задач.
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-  Сгенерируйте не менее \(10\,000\) псевдоэкспериментов при \(H_0\).
-\item
-  Проверьте фактическую частоту отклонения \(H_0\).
-\item
-  Сгенерируйте эксперименты при нескольких альтернативах.
-\item
-  Постройте функцию мощности.
-\item
-  Исследуйте влияние ошибочно заданной дисперсии или фона на размер
-  теста.
-\end{enumerate}
-
-\end{semanticpdfbox}
-
-\chapter{Статистики тестов и многомерные
-методы}\label{ux441ux442ux430ux442ux438ux441ux442ux438ux43aux438-ux442ux435ux441ux442ux43eux432-ux438-ux43cux43dux43eux433ux43eux43cux435ux440ux43dux44bux435-ux43cux435ux442ux43eux434ux44b}
-
-\bookchapteropeningcontents
-
-\begin{bookchapteropening}[Аннотация]
-
-Глава переходит от отношения правдоподобий и профильных статистик к
-многомерным дискриминантам. Особое внимание уделено асимптотическим
-результатам, ROC-кривым, переобучению и независимой валидации.
-
-\end{bookchapteropening}
-
-\section{Задачи}\label{ux437ux430ux434ux430ux447ux438-10}
-
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
-
-\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 1. Likelihood-ratio, Wald и score}\par\nopagebreak[4]\vspace{1.2mm}
-
-Для \[
-K\sim\operatorname{Bin}(N,p)
-\] проверяется \(H_0:p=p_0\).
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-  Выведите LR-, Wald- и score-статистики.
-\item
-  Сравните их численно для разных \(N\), \(p_0\) и \(k\).
-\item
-  Исследуйте случаи \(k=0\) и \(k=N\).
-\item
-  Покажите их асимптотическую эквивалентность вблизи \(p_0\).
-\item
-  Объясните различия при малой выборке.
-\end{enumerate}
-
-\end{semanticpdfbox}
-
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
-
-\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 2. Профильное отношение правдоподобия}\par\nopagebreak[4]\vspace{1.2mm}
-
-Пусть наблюдение имеет модель \[
-X\sim\mathrm N(\mu+\eta,\sigma_X^2),
-\qquad
-Y\sim\mathrm N(\eta,\sigma_Y^2),
-\] где \(Y\) --- вспомогательное измерение nuisance-параметра.
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-  Запишите совместный likelihood.
-\item
-  Найдите глобальные MLE \(\widehat\mu,\widehat\eta\).
-\item
-  Найдите \(\widehat{\widehat\eta}(\mu)\).
-\item
-  Постройте профильную статистику \(q(\mu)\).
-\item
-  Исследуйте влияние \(\sigma_Y\) на ширину профиля.
-\end{enumerate}
-
-\end{semanticpdfbox}
-
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
-
-\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 3. Проверка теоремы Вилкса}\par\nopagebreak[4]\vspace{1.2mm}
-
-Выберите регулярную модель с одним параметром.
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-  Постройте статистику \(q(\theta_0)=-2\ln\lambda(\theta_0)\).
-\item
-  Сгенерируйте псевдоэксперименты при \(H_0\).
-\item
-  Сравните распределение \(q\) с \(\chi^2_1\) для нескольких размеров
-  выборки.
-\item
-  Повторите эксперимент при параметре на границе.
-\item
-  Опишите, где и почему асимптотика нарушается.
-\end{enumerate}
-
-\end{semanticpdfbox}
-
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
-
-\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 4. Линейный дискриминант Фишера}\par\nopagebreak[4]\vspace{1.2mm}
-
-Сигнал и фон имеют двумерные гауссовы распределения с общей
-ковариационной матрицей \(\Sigma\).
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-  Выведите направление \[
-  \mathbf w\propto\Sigma^{-1}(\boldsymbol\mu_s-\boldsymbol\mu_b).
-  \]
-\item
-  Постройте распределения score для двух классов.
-\item
-  Постройте ROC-кривую.
-\item
-  Исследуйте влияние корреляции.
-\item
-  Сравните с использованием только одной переменной.
-\end{enumerate}
-
-\end{semanticpdfbox}
-
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
-
-\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 5. Наивный likelihood}\par\nopagebreak[4]\vspace{1.2mm}
-
-Постройте двумерные распределения сигнала и фона с одинаковыми
-одномерными маргинальными распределениями, но разными корреляциями.
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-  Покажите, что каждая переменная отдельно не различает классы.
-\item
-  Постройте наивное произведение одномерных likelihood.
-\item
-  Постройте полный двумерный likelihood ratio.
-\item
-  Сравните ROC-кривые.
-\item
-  Объясните потерю информации при игнорировании корреляций.
-\end{enumerate}
-
-\end{semanticpdfbox}
-
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
-
-\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 6. ROC и рабочая точка}\par\nopagebreak[4]\vspace{1.2mm}
-
-Для заданных распределений score сигнала и фона:
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-  постройте ROC-кривую;
-\item
-  вычислите AUC;
-\item
-  найдите порог, максимизирующий \(S/\sqrt B\);
-\item
-  найдите порог при ограничении \(\varepsilon_b<1\%\);
-\item
-  объясните, почему максимальная AUC не задаёт единственную рабочую
-  точку.
-\end{enumerate}
-
-\end{semanticpdfbox}
-
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
-
-\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 7. Cut-based и shape-анализ}\par\nopagebreak[4]\vspace{1.2mm}
-
-Сгенерируйте score для сигнала и фона.
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-  Постройте cut-based анализ по одному оптимальному порогу.
-\item
-  Постройте бинированный likelihood по полной форме score.
-\item
-  Сравните ожидаемую чувствительность.
-\item
-  Добавьте неопределённость формы фона.
-\item
-  Исследуйте, когда преимущество shape-анализа исчезает.
-\end{enumerate}
-
-\end{semanticpdfbox}
-
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
-
-\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 8. Переобучение}\par\nopagebreak[4]\vspace{1.2mm}
-
-Обучите классификатор возрастающей сложности на небольшой выборке.
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-  Постройте качество на train и независимом test.
-\item
-  Найдите область underfitting.
-\item
-  Найдите область overfitting.
-\item
-  Исследуйте влияние размера train-выборки.
-\item
-  Покажите, почему выбор сложности по test-набору делает оценку
-  оптимистичной.
-\end{enumerate}
-
-\end{semanticpdfbox}
-
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
-
-\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 9. Калибровка классификатора}\par\nopagebreak[4]\vspace{1.2mm}
-
-Для набора предсказаний вероятности:
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-  постройте reliability diagram;
-\item
-  вычислите Brier score;
-\item
-  сравните ROC двух монотонно связанных score;
-\item
-  примените простую перекалибровку;
-\item
-  покажите, что калибровка может улучшиться без изменения AUC.
-\end{enumerate}
-
-\end{semanticpdfbox}
-
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
-
-\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 10. Полная валидация анализа}\par\nopagebreak[4]\vspace{1.2mm}
-
-Спроектируйте процедуру поиска сигнала с многомерным классификатором.
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-  Опишите разделение train, validation и test.
-\item
-  Определите контрольные области в данных.
-\item
-  Перечислите систематические вариации входных признаков.
-\item
-  Постройте конечный likelihood по score.
-\item
-  Опишите ансамбль псевдоэкспериментов для проверки размера и мощности
-  теста.
-\end{enumerate}
-
-\end{semanticpdfbox}
 
 \chapter{Качество согласия и статистическая
 значимость}\label{ux43aux430ux447ux435ux441ux442ux432ux43e-ux441ux43eux433ux43bux430ux441ux438ux44f-ux438-ux441ux442ux430ux442ux438ux441ux442ux438ux447ux435ux441ux43aux430ux44f-ux437ux43dux430ux447ux438ux43cux43eux441ux442ux44c}
@@ -11925,7 +11226,7 @@ t^{\nu/2-1}e^{-t/2},\qquad t\ge0.
 
 \end{minipage}\hfill\begin{minipage}[c]{26mm}\centering
 
-\href{https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/11_goodness_of_fit_and_significance.html\#interactive-goodness-chi2-shape}{\includegraphics[width=24mm,height=\textheight,keepaspectratio,alt={QR-код интерактива}]{assets/qr/goodness-chi2-shape.png}}
+\href{https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/13_goodness_of_fit_and_significance.html\#interactive-goodness-chi2-shape}{\includegraphics[width=24mm,height=\textheight,keepaspectratio,alt={QR-код интерактива}]{assets/qr/goodness-chi2-shape.png}}
 
 \end{minipage}
 
@@ -12054,7 +11355,7 @@ p=\int_{\chi^2_{\mathrm{obs}}}^{\infty}f(t;\nu)\,dt.
 
 \end{minipage}\hfill\begin{minipage}[c]{26mm}\centering
 
-\href{https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/11_goodness_of_fit_and_significance.html\#interactive-goodness-pvalue-tail}{\includegraphics[width=24mm,height=\textheight,keepaspectratio,alt={QR-код интерактива}]{assets/qr/goodness-pvalue-tail.png}}
+\href{https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/13_goodness_of_fit_and_significance.html\#interactive-goodness-pvalue-tail}{\includegraphics[width=24mm,height=\textheight,keepaspectratio,alt={QR-код интерактива}]{assets/qr/goodness-pvalue-tail.png}}
 
 \end{minipage}
 
@@ -12070,7 +11371,7 @@ p=\int_{\chi^2_{\mathrm{obs}}}^{\infty}f(t;\nu)\,dt.
 выборки справа от него. Для непрерывной статистики и точного
 калибровочного распределения \(p\)-уровни равномерны на отрезке от нуля
 до единицы. Для дискретной статистики они принимают конечный набор
-значений и обычно имеют консервативное распределение {[}14{]}.
+значений и обычно имеют консервативное распределение {[}1{]}.
 
 \begin{semanticpdfbox}[breakable=false]
 
@@ -12090,7 +11391,7 @@ p=\int_{\chi^2_{\mathrm{obs}}}^{\infty}f(t;\nu)\,dt.
 
 \end{minipage}\hfill\begin{minipage}[c]{26mm}\centering
 
-\href{https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/11_goodness_of_fit_and_significance.html\#interactive-goodness-pvalue-calibration}{\includegraphics[width=24mm,height=\textheight,keepaspectratio,alt={QR-код интерактива}]{assets/qr/goodness-pvalue-calibration.png}}
+\href{https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/13_goodness_of_fit_and_significance.html\#interactive-goodness-pvalue-calibration}{\includegraphics[width=24mm,height=\textheight,keepaspectratio,alt={QR-код интерактива}]{assets/qr/goodness-pvalue-calibration.png}}
 
 \end{minipage}
 
@@ -12133,7 +11434,7 @@ p=\int_{\chi^2_{\mathrm{obs}}}^{\infty}f(t;\nu)\,dt.
 
 \end{minipage}\hfill\begin{minipage}[c]{26mm}\centering
 
-\href{https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/11_goodness_of_fit_and_significance.html\#interactive-goodness-p-to-z-one-sided}{\includegraphics[width=24mm,height=\textheight,keepaspectratio,alt={QR-код интерактива}]{assets/qr/goodness-p-to-z-one-sided.png}}
+\href{https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/13_goodness_of_fit_and_significance.html\#interactive-goodness-p-to-z-one-sided}{\includegraphics[width=24mm,height=\textheight,keepaspectratio,alt={QR-код интерактива}]{assets/qr/goodness-p-to-z-one-sided.png}}
 
 \end{minipage}
 
@@ -12191,7 +11492,7 @@ p=\int_{\chi^2_{\mathrm{obs}}}^{\infty}f(t;\nu)\,dt.
 
 \end{minipage}\hfill\begin{minipage}[c]{26mm}\centering
 
-\href{https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/11_goodness_of_fit_and_significance.html\#interactive-goodness-p-to-z-two-sided}{\includegraphics[width=24mm,height=\textheight,keepaspectratio,alt={QR-код интерактива}]{assets/qr/goodness-p-to-z-two-sided.png}}
+\href{https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/13_goodness_of_fit_and_significance.html\#interactive-goodness-p-to-z-two-sided}{\includegraphics[width=24mm,height=\textheight,keepaspectratio,alt={QR-код интерактива}]{assets/qr/goodness-p-to-z-two-sided.png}}
 
 \end{minipage}
 
@@ -12327,7 +11628,7 @@ p=\int_{\chi^2_{\mathrm{obs}}}^{\infty}f(t;\nu)\,dt.
 Рисунок~\ref{fig-goodness-cms-pvalue} показаны кривые из публикаций
 ATLAS {[}2{]} и CMS {[}3{]}. Эти результаты стали экспериментальным
 основанием Нобелевской премии по физике 2013 года, присуждённой Франсуа
-Энглеру и Питеру Хиггсу {[}1{]}.
+Энглеру и Питеру Хиггсу {[}4{]}.
 
 \begin{booknote}
 
@@ -12393,7 +11694,7 @@ ATLAS {[}2{]} и CMS {[}3{]}. Эти результаты стали экспе�
 
 \end{minipage}\hfill\begin{minipage}[c]{26mm}\centering
 
-\href{https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/11_goodness_of_fit_and_significance.html\#interactive-goodness-low-count-calibration}{\includegraphics[width=24mm,height=\textheight,keepaspectratio,alt={QR-код интерактива}]{assets/qr/goodness-low-count-calibration.png}}
+\href{https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/13_goodness_of_fit_and_significance.html\#interactive-goodness-low-count-calibration}{\includegraphics[width=24mm,height=\textheight,keepaspectratio,alt={QR-код интерактива}]{assets/qr/goodness-low-count-calibration.png}}
 
 \end{minipage}
 
@@ -12480,11 +11781,11 @@ ATLAS {[}2{]} и CMS {[}3{]}. Эти результаты стали экспе�
 
 \end{bookchaptersummary}
 
-\section{Задачи}\label{ux437ux430ux434ux430ux447ux438-11}
+\section{Задачи}\label{ux437ux430ux434ux430ux447ux438-12}
 
 \begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
 
-\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 1. Pearson \(\chi^2\) и пуассоновский deviance}\par\nopagebreak[4]\vspace{1.2mm}
+\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 1. \(\chi^2\) Пирсона и пуассоновское отношение правдоподобий}\par\nopagebreak[4]\vspace{1.2mm}
 
 Для набора независимых счётов \(n_i\sim\operatorname{Pois}(\mu_i)\):
 
@@ -12492,9 +11793,10 @@ ATLAS {[}2{]} и CMS {[}3{]}. Эти результаты стали экспе�
 \def\labelenumi{\arabic{enumi}.}
 \tightlist
 \item
-  выведите Pearson \(\chi^2\);
+  выведите \(\chi^2\) Пирсона;
 \item
-  выведите deviance как likelihood-ratio относительно насыщенной модели;
+  выведите статистику отношения правдоподобий относительно насыщенной
+  модели;
 \item
   покажите их эквивалентность в квадратичном приближении при
   \(n_i\simeq\mu_i\);
@@ -12508,7 +11810,7 @@ ATLAS {[}2{]} и CMS {[}3{]}. Эти результаты стали экспе�
 
 \begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
 
-\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 2. Число степеней свободы после fit}\par\nopagebreak[4]\vspace{1.2mm}
+\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 2. Число степеней свободы после подгонки}\par\nopagebreak[4]\vspace{1.2mm}
 
 Сгенерируйте \(m\) гауссовых наблюдений с общей неизвестной средней и
 известными ошибками.
@@ -12517,7 +11819,7 @@ ATLAS {[}2{]} и CMS {[}3{]}. Эти результаты стали экспе�
 \def\labelenumi{\arabic{enumi}.}
 \tightlist
 \item
-  Fit-ируйте среднюю.
+  Найдите оценку средней подгонкой к данным.
 \item
   Вычислите минимальный \(\chi^2\).
 \item
@@ -12534,7 +11836,7 @@ ATLAS {[}2{]} и CMS {[}3{]}. Эти результаты стали экспе�
 
 \noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 3. Диагностика по остаткам}\par\nopagebreak[4]\vspace{1.2mm}
 
-Постройте данные с линейным трендом и fit константой.
+Постройте данные с линейным трендом и подгоните их константой.
 
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
@@ -12556,7 +11858,7 @@ ATLAS {[}2{]} и CMS {[}3{]}. Эти результаты стали экспе�
 
 \begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
 
-\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 4. Критерии на основе CDF}\par\nopagebreak[4]\vspace{1.2mm}
+\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 4. Критерии на основе функции распределения}\par\nopagebreak[4]\vspace{1.2mm}
 
 Для выборок из нормального распределения:
 
@@ -12580,7 +11882,7 @@ ATLAS {[}2{]} и CMS {[}3{]}. Эти результаты стали экспе�
 
 \begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
 
-\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 5. Fit меняет калибровку}\par\nopagebreak[4]\vspace{1.2mm}
+\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 5. Подгонка меняет калибровку}\par\nopagebreak[4]\vspace{1.2mm}
 
 Сгенерируйте выборки из \(\mathrm N(\mu,1)\).
 
@@ -12588,23 +11890,25 @@ ATLAS {[}2{]} и CMS {[}3{]}. Эти результаты стали экспе�
 \def\labelenumi{\arabic{enumi}.}
 \tightlist
 \item
-  Примените KS-тест к полностью заданной модели \(\mathrm N(0,1)\).
+  Примените критерий Колмогорова--Смирнова к полностью заданной модели
+  \(\mathrm N(0,1)\).
 \item
   Затем оцените \(\widehat\mu\) по каждой выборке и тестируйте
   \(\mathrm N(\widehat\mu,1)\).
 \item
   Сравните распределения статистики.
 \item
-  Проверьте стандартные KS \(p\)-value.
+  Проверьте стандартные \(p\)-уровни критерия Колмогорова--Смирнова.
 \item
-  Постройте правильную калибровку псевдоэкспериментами с повторным fit.
+  Постройте правильную калибровку псевдоэкспериментами с повторной
+  подгонкой.
 \end{enumerate}
 
 \end{semanticpdfbox}
 
 \begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
 
-\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 6. Равномерность \(p\)-value}\par\nopagebreak[4]\vspace{1.2mm}
+\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 6. Равномерность \(p\)-уровня}\par\nopagebreak[4]\vspace{1.2mm}
 
 Для корректно заданной непрерывной модели:
 
@@ -12614,7 +11918,7 @@ ATLAS {[}2{]} и CMS {[}3{]}. Эти результаты стали экспе�
 \item
   сгенерируйте много экспериментов при \(H_0\);
 \item
-  вычислите \(p\)-value каждого эксперимента;
+  вычислите \(p\)-уровень каждого эксперимента;
 \item
   проверьте равномерность распределения;
 \item
@@ -12627,15 +11931,15 @@ ATLAS {[}2{]} и CMS {[}3{]}. Эти результаты стали экспе�
 
 \begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
 
-\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 7. Перевод \(p\)-value в \(Z\)}\par\nopagebreak[4]\vspace{1.2mm}
+\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 7. Перевод \(p\)-уровня в \(Z\)}\par\nopagebreak[4]\vspace{1.2mm}
 
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
 \tightlist
 \item
-  Вычислите односторонние \(p\)-value для \(Z=1,\ldots,5\).
+  Вычислите односторонние \(p\)-уровни для \(Z=1,\ldots,5\).
 \item
-  Вычислите соответствующие двусторонние \(p\)-value.
+  Вычислите соответствующие двусторонние \(p\)-уровни.
 \item
   Найдите \(Z\) для \(p=0.05\), \(2.7\times10^{-3}\) и
   \(2.87\times10^{-7}\).
@@ -12664,7 +11968,7 @@ ATLAS {[}2{]} и CMS {[}3{]}. Эти результаты стали экспе�
 \item
   исследуйте малый \(b\);
 \item
-  сравните с точным пуассоновским \(p\)-value;
+  сравните с точным пуассоновским \(p\)-уровнем;
 \item
   добавьте неопределённость фона и обсудите изменение вывода.
 \end{enumerate}
@@ -12697,9 +12001,9 @@ ATLAS {[}2{]} и CMS {[}3{]}. Эти результаты стали экспе�
 
 \begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
 
-\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 10. Look-elsewhere effect}\par\nopagebreak[4]\vspace{1.2mm}
+\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 10. Эффект поиска в широком диапазоне}\par\nopagebreak[4]\vspace{1.2mm}
 
-Пусть выполняется scan по \(M\) независимым стандартным нормальным
+Пусть поиск выполняется по \(M\) независимым стандартным нормальным
 статистикам.
 
 \begin{enumerate}
@@ -12715,22 +12019,21 @@ ATLAS {[}2{]} и CMS {[}3{]}. Эти результаты стали экспе�
   Замените независимые точки коррелированным гауссовым процессом.
 \item
   Оцените эффективное число испытаний и объясните, почему оно меньше
-  числа точек scan.
+  числа проверенных точек.
 \end{enumerate}
 
 \end{semanticpdfbox}
 
-\section*{Литература}\label{ux43bux438ux442ux435ux440ux430ux442ux443ux440ux430-5}
+\section*{Литература}\label{ux43bux438ux442ux435ux440ux430ux442ux443ux440ux430-12}
 \addcontentsline{toc}{section}{Литература}
 
 \markright{Литература}
 
 \protect\phantomsection\label{refs}
 \begin{CSLReferences}{0}{0}
-\bibitem[\citeproctext]{ref-nobel2013higgs}
-{[}1{]} The Royal Swedish Academy of Sciences. The Nobel Prize in
-Physics 2013: Press Release. 2013.
-\url{https://www.nobelprize.org/prizes/physics/2013/press-release/}.
+\bibitem[\citeproctext]{ref-cowan1998}
+{[}1{]} Cowan, G. \emph{Statistical Data Analysis}. Oxford University
+Press. 1998.
 
 \bibitem[\citeproctext]{ref-atlas2012higgs}
 {[}2{]} ATLAS Collaboration. Observation of a New Particle in the Search
@@ -12744,1110 +12047,12 @@ doi:\href{https://doi.org/10.1016/j.physletb.2012.08.020}{10.1016/j.physletb.201
 \textbf{716}, 30--61. 2012.
 doi:\href{https://doi.org/10.1016/j.physletb.2012.08.021}{10.1016/j.physletb.2012.08.021}.
 
-\bibitem[\citeproctext]{ref-dayabay2012theta13}
-{[}4{]} Daya Bay Collaboration. Observation of Electron-Antineutrino
-Disappearance at {Daya Bay}. \emph{Physical Review Letters},
-\textbf{108}, 171803. 2012.
-doi:\href{https://doi.org/10.1103/PhysRevLett.108.171803}{10.1103/PhysRevLett.108.171803}.
-
-\bibitem[\citeproctext]{ref-dayabay2024sterile}
-{[}5{]} Daya Bay Collaboration. Search for a Light Sterile Neutrino with
-the Full Configuration of the {Daya Bay} Experiment. \emph{Physical
-Review Letters}, \textbf{133}, 051801. 2024.
-doi:\href{https://doi.org/10.1103/PhysRevLett.133.051801}{10.1103/PhysRevLett.133.051801}.
-\url{https://arxiv.org/abs/2404.01687}.
-
-\bibitem[\citeproctext]{ref-jcgm2008gum}
-{[}6{]} Joint Committee for Guides in Metrology. Evaluation of
-Measurement Data---Guide to the Expression of Uncertainty in
-Measurement. 2008.
-doi:\href{https://doi.org/10.59161/JCGM100-2008E}{10.59161/JCGM100-2008E}.
-
-\bibitem[\citeproctext]{ref-metropolisUlam1949}
-{[}7{]} Metropolis, N. и Ulam, S. The {Monte Carlo} Method.
-\emph{Journal of the American Statistical Association}, \textbf{44},
-335--341. 1949.
-doi:\href{https://doi.org/10.1080/01621459.1949.10483310}{10.1080/01621459.1949.10483310}.
-
-\bibitem[\citeproctext]{ref-lepage1978vegas}
-{[}8{]} Lepage, G. P. A New Algorithm for Adaptive Multidimensional
-Integration. \emph{Journal of Computational Physics}, \textbf{27},
-192--203. 1978.
-doi:\href{https://doi.org/10.1016/0021-9991(78)90004-9}{10.1016/0021-9991(78)90004-9}.
-
-\bibitem[\citeproctext]{ref-blythOpticks}
-{[}9{]} Blyth, S. C. Opticks: {GPU} Optical Photon Simulation.
-\url{https://juno.ihep.ac.cn/~blyth/}.
-
-\bibitem[\citeproctext]{ref-wilks1938}
-{[}10{]} Wilks, S. S. The Large-Sample Distribution of the Likelihood
-Ratio for Testing Composite Hypotheses. \emph{The Annals of Mathematical
-Statistics}, \textbf{9}, 60--62. 1938.
-doi:\href{https://doi.org/10.1214/aoms/1177732360}{10.1214/aoms/1177732360}.
-
-\bibitem[\citeproctext]{ref-huber2011reactor}
-{[}11{]} Huber, P. Determination of Antineutrino Spectra from Nuclear
-Reactors. \emph{Physical Review C}, \textbf{84}, 024617. 2011.
-doi:\href{https://doi.org/10.1103/PhysRevC.84.024617}{10.1103/PhysRevC.84.024617}.
-
-\bibitem[\citeproctext]{ref-mueller2011reactor}
-{[}12{]} {Mueller, Th. A. и др.} Improved Predictions of Reactor
-Antineutrino Spectra. \emph{Physical Review C}, \textbf{83}, 054615.
-2011.
-doi:\href{https://doi.org/10.1103/PhysRevC.83.054615}{10.1103/PhysRevC.83.054615}.
-
-\bibitem[\citeproctext]{ref-dagostini1994bias}
-{[}13{]} D'Agostini, G. On the Use of the Covariance Matrix to Fit
-Correlated Data. \emph{Nuclear Instruments and Methods in Physics
-Research Section A}, \textbf{346}, 306--311. 1994.
-doi:\href{https://doi.org/10.1016/0168-9002(94)90719-6}{10.1016/0168-9002(94)90719-6}.
-
-\bibitem[\citeproctext]{ref-cowan1998}
-{[}14{]} Cowan, G. \emph{Statistical Data Analysis}. Oxford University
-Press. 1998.
+\bibitem[\citeproctext]{ref-nobel2013higgs}
+{[}4{]} The Royal Swedish Academy of Sciences. The Nobel Prize in
+Physics 2013: Press Release. 2013.
+\url{https://www.nobelprize.org/prizes/physics/2013/press-release/}.
 
 \end{CSLReferences}
-
-\chapter{Фельдман--Казинс, CLs и родственные
-методы}\label{ux444ux435ux43bux44cux434ux43cux430ux43dux43aux430ux437ux438ux43dux441-cls-ux438-ux440ux43eux434ux441ux442ux432ux435ux43dux43dux44bux435-ux43cux435ux442ux43eux434ux44b}
-
-\bookchapteropeningcontents
-
-\begin{bookchapteropening}[Аннотация]
-
-Глава сравнивает процедуры построения интервалов и ограничений вблизи
-физической границы. Построение Неймана, единые интервалы
-Фельдмана--Казинса и метод \(CL_s\) различаются правилом упорядочения и
-поведением при слабой чувствительности эксперимента.
-
-\end{bookchapteropening}
-
-\section{Задачи}\label{ux437ux430ux434ux430ux447ux438-12}
-
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
-
-\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 1. Построение Неймана для гауссова измерения}\par\nopagebreak[4]\vspace{1.2mm}
-
-Пусть \(X\sim\mathrm N(\mu,\sigma^2)\), где \(\sigma\) известна.
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-  Постройте центральные области принятия уровня \(1-\alpha\).
-\item
-  Инвертируйте их и получите центральный доверительный интервал.
-\item
-  Постройте односторонние области принятия и верхний предел.
-\item
-  Проверьте покрытие обеих процедур симуляцией.
-\item
-  Объясните, почему одинаковое покрытие не делает интервалы одинаковыми.
-\end{enumerate}
-
-\end{semanticpdfbox}
-
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
-
-\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 2. Flip-flop и покрытие}\par\nopagebreak[4]\vspace{1.2mm}
-
-Используйте гауссово измерение параметра \(\mu\).
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-  Если \(x>c\), сообщайте центральный интервал.
-\item
-  Иначе сообщайте верхний предел.
-\item
-  Выберите фиксированные \(c\) и confidence level.
-\item
-  Найдите покрытие итоговой процедуры как функцию \(\mu\).
-\item
-  Покажите область недопокрытия и объясните её происхождение.
-\end{enumerate}
-
-\end{semanticpdfbox}
-
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
-
-\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 3. Физическая граница}\par\nopagebreak[4]\vspace{1.2mm}
-
-Для \(X\sim\mathrm N(\mu,1)\) и \(\mu\ge0\):
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-  постройте наивный центральный интервал;
-\item
-  исследуйте результаты при \(x<0\);
-\item
-  обрежьте интервал физической границей;
-\item
-  проверьте покрытие и форму результатов;
-\item
-  сравните с единым likelihood-ratio ordering.
-\end{enumerate}
-
-\end{semanticpdfbox}
-
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
-
-\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 4. Ordering Фельдмана--Казинса}\par\nopagebreak[4]\vspace{1.2mm}
-
-Для гауссова измерения с \(\mu\ge0\):
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-  найдите физически разрешённый MLE;
-\item
-  выпишите отношение \(R(x;\mu)\);
-\item
-  численно постройте области принятия;
-\item
-  постройте доверительный пояс;
-\item
-  покажите автоматический переход от верхнего предела к двустороннему
-  интервалу.
-\end{enumerate}
-
-\end{semanticpdfbox}
-
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
-
-\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 5. Пуассоновский пояс}\par\nopagebreak[4]\vspace{1.2mm}
-
-Пусть \(N\sim\operatorname{Pois}(\mu+b)\), где \(\mu\ge0\), а \(b\)
-известен.
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-  Реализуйте алгоритм Фельдмана--Казинса.
-\item
-  Постройте пояс для нескольких \(b\).
-\item
-  Найдите интервалы для разных \(n_{\mathrm{obs}}\).
-\item
-  Проверьте покрытие как функцию \(\mu\).
-\item
-  Объясните перепокрытие из-за дискретности.
-\end{enumerate}
-
-\end{semanticpdfbox}
-
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
-
-\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 6. Сравнение ordering rules}\par\nopagebreak[4]\vspace{1.2mm}
-
-Для одной и той же пуассоновской модели:
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-  постройте центральный интервал;
-\item
-  постройте односторонний предел;
-\item
-  постройте интервал Фельдмана--Казинса;
-\item
-  сравните длину, покрытие и поведение при малом \(n\);
-\item
-  объясните, почему покрытие не определяет единственный оптимальный
-  интервал.
-\end{enumerate}
-
-\end{semanticpdfbox}
-
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
-
-\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 7. Простой гауссов \(CL_s\)}\par\nopagebreak[4]\vspace{1.2mm}
-
-Пусть \(X\sim\mathrm N(\mu,1)\) и большие \(\mu\) исключаются малыми
-\(x\).
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-  Выведите \(p_\mu=P_\mu(X\le x_{\mathrm{obs}})\).
-\item
-  Выведите \(p_0=P_0(X\le x_{\mathrm{obs}})\).
-\item
-  Найдите обычный верхний предел.
-\item
-  Найдите \(CL_s\)-предел.
-\item
-  Сравните их при положительной, типичной и отрицательной флуктуации.
-\end{enumerate}
-
-\end{semanticpdfbox}
-
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
-
-\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 8. Покрытие \(CL_s\)}\par\nopagebreak[4]\vspace{1.2mm}
-
-Для гауссова примера:
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-  постройте \(CL_s\)-предел для каждой псевдовыборки;
-\item
-  найдите покрытие как функцию истинного \(\mu\);
-\item
-  сравните с обычным частотным пределом;
-\item
-  покажите перепокрытие;
-\item
-  объясните связь перепокрытия с защитой от слабой чувствительности.
-\end{enumerate}
-
-\end{semanticpdfbox}
-
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
-
-\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 9. Ожидаемые пределы}\par\nopagebreak[4]\vspace{1.2mm}
-
-Для background-only ансамбля:
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-  вычислите верхний предел в каждом псевдоэксперименте;
-\item
-  найдите медианный ожидаемый предел;
-\item
-  найдите центральные полосы \(68\%\) и \(95\%\);
-\item
-  сравните наблюдаемый предел с ожидаемым;
-\item
-  объясните, что означает наблюдаемый предел вне полосы \(\pm2\sigma\).
-\end{enumerate}
-
-\end{semanticpdfbox}
-
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
-
-\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 10. Power-constrained limit}\par\nopagebreak[4]\vspace{1.2mm}
-
-Выберите простую модель поиска сигнала.
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-  Постройте обычный верхний предел.
-\item
-  Вычислите мощность теста для каждого \(\mu\).
-\item
-  Задайте минимально допустимую мощность.
-\item
-  Постройте power-constrained limit.
-\item
-  Сравните его с \(CL_s\) по покрытию, ожидаемому пределу и
-  интерпретации.
-\end{enumerate}
-
-\end{semanticpdfbox}
-
-\chapter{Интервальные оценки и установление
-ограничений}\label{ux438ux43dux442ux435ux440ux432ux430ux43bux44cux43dux44bux435-ux43eux446ux435ux43dux43aux438-ux438-ux443ux441ux442ux430ux43dux43eux432ux43bux435ux43dux438ux435-ux43eux433ux440ux430ux43dux438ux447ux435ux43dux438ux439}
-
-\bookchapteropeningcontents
-
-\begin{bookchapteropening}[Аннотация]
-
-Глава сопоставляет классические интервалы, интервалы Вальда и Уилсона,
-профильное правдоподобие и bootstrap. Каждая процедура оценивается по
-покрытию, поведению на границах и пригодности для односторонних
-ограничений.
-
-\end{bookchapteropening}
-
-\section{Задачи}\label{ux437ux430ux434ux430ux447ux438-13}
-
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
-
-\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 1. Интервал из pivot}\par\nopagebreak[4]\vspace{1.2mm}
-
-Для \(X\sim\mathrm N(\mu,\sigma^2)\) с известной \(\sigma\):
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-  постройте центральный интервал уровня \(1-\alpha\);
-\item
-  проверьте его покрытие аналитически;
-\item
-  постройте односторонний верхний предел;
-\item
-  проверьте покрытие симуляцией;
-\item
-  сравните интерпретации двух процедур.
-\end{enumerate}
-
-\end{semanticpdfbox}
-
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
-
-\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 2. Интервал Стьюдента}\par\nopagebreak[4]\vspace{1.2mm}
-
-Для выборки из \(\mathrm N(\mu,\sigma^2)\) с неизвестной \(\sigma\):
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-  выведите \(t\)-pivot;
-\item
-  постройте интервал для \(\mu\);
-\item
-  сравните с нормальным интервалом при малых \(n\);
-\item
-  проверьте покрытие обоих методов;
-\item
-  покажите сходимость результатов при росте \(n\).
-\end{enumerate}
-
-\end{semanticpdfbox}
-
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
-
-\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 3. Нелинейная перепараметризация}\par\nopagebreak[4]\vspace{1.2mm}
-
-Пусть оценён положительный параметр \(\theta\), а интересующая величина
-\(\phi=\log\theta\).
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-  Постройте Wald interval для \(\theta\).
-\item
-  Преобразуйте его в интервал для \(\phi\).
-\item
-  Постройте Wald interval непосредственно для \(\phi\) методом delta.
-\item
-  Сравните результаты при разных относительных ошибках.
-\item
-  Проверьте инвариантность profile-likelihood interval.
-\end{enumerate}
-
-\end{semanticpdfbox}
-
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
-
-\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 4. Интервалы биномиальной доли}\par\nopagebreak[4]\vspace{1.2mm}
-
-Для \(K\sim\operatorname{Bin}(n,p)\):
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-  реализуйте Wald interval;
-\item
-  реализуйте Wilson interval;
-\item
-  реализуйте Clopper--Pearson interval;
-\item
-  постройте покрытие как функцию \(p\);
-\item
-  сравните среднюю длину и покрытие методов.
-\end{enumerate}
-
-\end{semanticpdfbox}
-
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
-
-\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 5. Пуассоновский profile likelihood}\par\nopagebreak[4]\vspace{1.2mm}
-
-Для \(N\sim\operatorname{Pois}(\mu)\):
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-  выведите \(q(\mu)=-2\ln\lambda(\mu)\);
-\item
-  постройте асимптотический profile-likelihood interval;
-\item
-  сравните с Wald interval;
-\item
-  проверьте покрытие для нескольких истинных \(\mu\);
-\item
-  объясните поведение при \(n=0\).
-\end{enumerate}
-
-\end{semanticpdfbox}
-
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
-
-\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 6. Nuisance-параметр в profile likelihood}\par\nopagebreak[4]\vspace{1.2mm}
-
-Пусть \[
-N\sim\operatorname{Pois}(\mu+b),
-\qquad
-B\sim\mathrm N(b,\sigma_b^2).
-\]
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-  Запишите совместный likelihood.
-\item
-  Постройте профиль \(q(\mu)\).
-\item
-  Найдите интервал для \(\mu\).
-\item
-  Исследуйте зависимость ширины от \(\sigma_b\).
-\item
-  Сравните с результатом при фиксированном фоне.
-\end{enumerate}
-
-\end{semanticpdfbox}
-
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
-
-\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 7. Совместный контур}\par\nopagebreak[4]\vspace{1.2mm}
-
-Для двумерного гауссова likelihood:
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-  постройте контуры \(\Delta q=1\), \(2.30\) и \(5.99\);
-\item
-  определите их совместные уровни;
-\item
-  найдите одномерные профильные интервалы;
-\item
-  сравните их с проекциями совместных контуров;
-\item
-  исследуйте влияние корреляции.
-\end{enumerate}
-
-\end{semanticpdfbox}
-
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
-
-\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 8. Bootstrap-интервалы}\par\nopagebreak[4]\vspace{1.2mm}
-
-Для медианы экспоненциальной выборки:
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-  постройте normal bootstrap interval;
-\item
-  постройте percentile interval;
-\item
-  постройте basic interval;
-\item
-  оцените покрытие симуляцией;
-\item
-  исследуйте влияние размера исходной выборки и числа bootstrap-реплик.
-\end{enumerate}
-
-\end{semanticpdfbox}
-
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
-
-\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 9. Зависимые данные}\par\nopagebreak[4]\vspace{1.2mm}
-
-Сгенерируйте временной ряд с автокорреляцией.
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-  Постройте обычный непараметрический bootstrap interval для среднего.
-\item
-  Проверьте его покрытие.
-\item
-  Реализуйте block bootstrap.
-\item
-  Подберите длину блока.
-\item
-  Объясните, почему обычный bootstrap недооценивает ошибку.
-\end{enumerate}
-
-\end{semanticpdfbox}
-
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
-
-\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 10. Полное сравнение интервалов}\par\nopagebreak[4]\vspace{1.2mm}
-
-Выберите модель с физической границей и малой статистикой.
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-  Постройте Wald interval.
-\item
-  Постройте profile-likelihood interval.
-\item
-  Постройте интервал полной частотной конструкцией.
-\item
-  Сравните покрытие, среднюю длину и вычислительную стоимость.
-\item
-  Сформулируйте рекомендацию для публикации результата.
-\end{enumerate}
-
-\end{semanticpdfbox}
-
-\part{IV. Неопределённости и альтернативный вывод}
-
-\chapter{Nuisance-параметры и систематические
-неопределённости}\label{nuisance-ux43fux430ux440ux430ux43cux435ux442ux440ux44b-ux438-ux441ux438ux441ux442ux435ux43cux430ux442ux438ux447ux435ux441ux43aux438ux435-ux43dux435ux43eux43fux440ux435ux434ux435ux43bux451ux43dux43dux43eux441ux442ux438}
-
-\bookchapteropeningcontents
-
-\begin{bookchapteropening}[Аннотация]
-
-Глава включает систематические эффекты в статистическую модель через
-nuisance-параметры, ограничивающие члены и ковариационные матрицы.
-Профилирование и маргинализация показывают два способа учесть эти
-параметры в итоговом выводе.
-
-\end{bookchapteropening}
-
-\section{Задачи}\label{ux437ux430ux434ux430ux447ux438-14}
-
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
-
-\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 1. Фон с auxiliary measurement}\par\nopagebreak[4]\vspace{1.2mm}
-
-Пусть \[
-N\sim\operatorname{Pois}(\mu s+b),
-\qquad
-B_{\mathrm{aux}}\sim\mathrm N(b,\sigma_b^2).
-\]
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-  Запишите полный likelihood.
-\item
-  Найдите профильный likelihood по \(b\) для фиксированного \(\mu\).
-\item
-  Постройте \(q(\mu)\) численно.
-\item
-  Сравните с fit при фиксированном \(b=b_{\mathrm{aux}}\).
-\item
-  Исследуйте зависимость интервала от \(\sigma_b\).
-\end{enumerate}
-
-\end{semanticpdfbox}
-
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
-
-\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 2. Gaussian и log-normal constraints}\par\nopagebreak[4]\vspace{1.2mm}
-
-Для положительной нормировки \(\nu\):
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-  постройте модель с Gaussian constraint;
-\item
-  постройте модель с log-normal constraint;
-\item
-  сравните up/down variations при одинаковой относительной ошибке;
-\item
-  исследуйте большие неопределённости;
-\item
-  объясните, когда Gaussian constraint может давать физически
-  невозможные значения.
-\end{enumerate}
-
-\end{semanticpdfbox}
-
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
-
-\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 3. Gamma constraint из контрольного счёта}\par\nopagebreak[4]\vspace{1.2mm}
-
-Пусть контрольная область даёт \[
-M\sim\operatorname{Pois}(\tau b).
-\]
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-  Запишите совместный likelihood для signal и control regions.
-\item
-  Найдите MLE фона.
-\item
-  Сравните gamma/Poisson constraint с гауссовым приближением.
-\item
-  Исследуйте малые \(M\).
-\item
-  Постройте профильный интервал для сигнала.
-\end{enumerate}
-
-\end{semanticpdfbox}
-
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
-
-\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 4. Коррелированные измерения}\par\nopagebreak[4]\vspace{1.2mm}
-
-Даны два измерения одной величины с ковариационной матрицей \(V\).
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-  Выведите BLUE-оценку.
-\item
-  Постройте ошибку объединения как функцию корреляции.
-\item
-  Покажите пример отрицательного веса.
-\item
-  Сравните с объединением, игнорирующим корреляции.
-\item
-  Проверьте покрытие итогового интервала симуляцией.
-\end{enumerate}
-
-\end{semanticpdfbox}
-
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
-
-\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 5. Shape uncertainty}\par\nopagebreak[4]\vspace{1.2mm}
-
-Для бинированного шаблона есть номинальный, up и down варианты.
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-  Постройте линейную интерполяцию по nuisance-параметру.
-\item
-  Постройте shape-only нормировку.
-\item
-  Сравните влияние norm+shape и shape-only моделей.
-\item
-  Проверьте положительность бинов.
-\item
-  Исследуйте, как shape nuisance влияет на fit сигнала.
-\end{enumerate}
-
-\end{semanticpdfbox}
-
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
-
-\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 6. Pulls и constraints}\par\nopagebreak[4]\vspace{1.2mm}
-
-Сгенерируйте модель с несколькими nuisance-параметрами.
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-  Выполните fit.
-\item
-  Найдите pulls.
-\item
-  Найдите post-fit uncertainties.
-\item
-  Постройте корреляции nuisance-параметров с параметром интереса.
-\item
-  Объясните, какие pulls требуют диагностики.
-\end{enumerate}
-
-\end{semanticpdfbox}
-
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
-
-\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 7. Impacts}\par\nopagebreak[4]\vspace{1.2mm}
-
-Для совместного likelihood:
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-  найдите best fit;
-\item
-  зафиксируйте каждый nuisance на
-  \(\widehat\theta_j\pm\sigma_j^{\mathrm{post}}\);
-\item
-  повторите fit параметра интереса;
-\item
-  постройте ranking impacts;
-\item
-  сравните с наивным квадратурным разложением.
-\end{enumerate}
-
-\end{semanticpdfbox}
-
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
-
-\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 8. MC-stat uncertainty}\par\nopagebreak[4]\vspace{1.2mm}
-
-Пусть шаблонный бин предсказывается по MC-счёту \[
-m_i\sim\operatorname{Pois}(\tau_i\nu_i).
-\]
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-  Введите bin-by-bin nuisance-параметр.
-\item
-  Запишите likelihood для data и MC.
-\item
-  Исследуйте влияние малой MC-stat на shape.
-\item
-  Сравните независимые bin nuisances со сглаженным шаблоном.
-\item
-  Объясните риск нестабильного fit.
-\end{enumerate}
-
-\end{semanticpdfbox}
-
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
-
-\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 9. Control region и transfer factor}\par\nopagebreak[4]\vspace{1.2mm}
-
-Пусть фон в signal region связан с control region через \[
-b_{\mathrm{SR}}=T b_{\mathrm{CR}}.
-\]
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-  Постройте likelihood для SR и CR.
-\item
-  Введите uncertainty transfer factor \(T\).
-\item
-  Найдите профильный предел на сигнал.
-\item
-  Исследуйте signal contamination в CR.
-\item
-  Покажите, как ошибка \(T\) ограничивает чувствительность.
-\end{enumerate}
-
-\end{semanticpdfbox}
-
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
-
-\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 10. Полная модель систематик}\par\nopagebreak[4]\vspace{1.2mm}
-
-Для выбранного toy analysis:
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-  перечислите источники систематик;
-\item
-  задайте norm и shape nuisances;
-\item
-  задайте корреляции между каналами;
-\item
-  выполните fit и постройте pulls/impacts;
-\item
-  проверьте покрытие интервала на параметр интереса
-  псевдоэкспериментами.
-\end{enumerate}
-
-\end{semanticpdfbox}
-
-\chapter{Байесовский вывод и практические
-примеры}\label{ux431ux430ux439ux435ux441ux43eux432ux441ux43aux438ux439-ux432ux44bux432ux43eux434-ux438-ux43fux440ux430ux43aux442ux438ux447ux435ux441ux43aux438ux435-ux43fux440ux438ux43cux435ux440ux44b}
-
-\bookchapteropeningcontents
-
-\begin{bookchapteropening}[Аннотация]
-
-Глава строит байесовский вывод из априорного распределения,
-правдоподобия и апостериорного распределения. На практических примерах
-обсуждаются выбор prior, credible intervals, предсказательные
-распределения и связь с частотными процедурами.
-
-\end{bookchapteropening}
-
-\section{Задачи}\label{ux437ux430ux434ux430ux447ux438-15}
-
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
-
-\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 1. Beta--Binomial обновление}\par\nopagebreak[4]\vspace{1.2mm}
-
-Пусть: \[
-K\mid p\sim\operatorname{Bin}(n,p),
-\qquad
-p\sim\operatorname{Beta}(\alpha,\beta).
-\]
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-  Выведите posterior для \(p\).
-\item
-  Найдите posterior mean, mode и variance.
-\item
-  Найдите predictive probability успеха в следующем испытании.
-\item
-  Сравните результаты для \(\operatorname{Beta}(1,1)\),
-  \(\operatorname{Beta}(1/2,1/2)\) и информативного prior.
-\item
-  Исследуйте зависимость posterior от размера выборки.
-\end{enumerate}
-
-\end{semanticpdfbox}
-
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
-
-\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 2. Credible intervals для биномиальной вероятности}\par\nopagebreak[4]\vspace{1.2mm}
-
-Для нескольких значений \(n\) и \(k\):
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-  постройте 90\% equal-tail credible interval;
-\item
-  постройте 90\% HPD interval;
-\item
-  сравните их длины;
-\item
-  сравните с Wald и Wilson intervals;
-\item
-  проверьте частотное покрытие байесовских интервалов симуляцией.
-\end{enumerate}
-
-\end{semanticpdfbox}
-
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
-
-\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 3. Poisson--Gamma модель}\par\nopagebreak[4]\vspace{1.2mm}
-
-Пусть: \[
-N\mid\lambda\sim\operatorname{Pois}(\lambda),
-\qquad
-\lambda\sim\operatorname{Gamma}(\alpha,\beta).
-\]
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-  Выведите posterior.
-\item
-  Найдите posterior mean и mode.
-\item
-  Выведите posterior predictive distribution для нового счёта.
-\item
-  Исследуйте влияние \(\alpha\) и \(\beta\).
-\item
-  Сравните с MLE и частотным интервалом.
-\end{enumerate}
-
-\end{semanticpdfbox}
-
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
-
-\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 4. Сигнал на известном фоне}\par\nopagebreak[4]\vspace{1.2mm}
-
-Для: \[
-N\sim\operatorname{Pois}(\mu+b),
-\qquad
-\mu\ge0
-\] и известного \(b\):
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-  постройте posterior при равномерном prior для \(\mu\);
-\item
-  постройте posterior при Jeffreys-like prior;
-\item
-  найдите 95\% upper credible limits;
-\item
-  сравните пределы при \(n<b\), \(n\simeq b\) и \(n>b\);
-\item
-  объясните влияние физической границы.
-\end{enumerate}
-
-\end{semanticpdfbox}
-
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
-
-\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 5. Неизвестный фон и маргинализация}\par\nopagebreak[4]\vspace{1.2mm}
-
-Пусть: \[
-N\sim\operatorname{Pois}(\mu+b),
-\qquad
-M\sim\operatorname{Pois}(\tau b).
-\]
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-  Запишите совместный posterior для \(\mu\) и \(b\).
-\item
-  Выберите priors для \(\mu\) и \(b\).
-\item
-  Получите marginal posterior \(\pi(\mu\mid n,m)\) численно.
-\item
-  Сравните с profile likelihood.
-\item
-  Исследуйте зависимость результата от контрольной статистики \(m\).
-\end{enumerate}
-
-\end{semanticpdfbox}
-
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
-
-\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 6. Нормальный prior и shrinkage}\par\nopagebreak[4]\vspace{1.2mm}
-
-Пусть: \[
-\langle X\rangle\mid\mu
-\sim
-\mathrm N\left(\mu,\frac{\sigma^2}{n}\right),
-\qquad
-\mu\sim\mathrm N(\mu_0,\tau_0^2).
-\]
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-  Выведите posterior.
-\item
-  Покажите, что posterior mean является взвешенным средним
-  \(\langle x\rangle\) и \(\mu_0\).
-\item
-  Исследуйте bias и variance posterior mean.
-\item
-  Постройте posterior predictive distribution.
-\item
-  Объясните смысл shrinkage.
-\end{enumerate}
-
-\end{semanticpdfbox}
-
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
-
-\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 7. Prior predictive и posterior predictive checks}\par\nopagebreak[4]\vspace{1.2mm}
-
-Выберите простую вероятностную модель.
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-  Сгенерируйте prior predictive datasets.
-\item
-  Найдите абсурдные или маловероятные свойства генераций.
-\item
-  Скорректируйте prior.
-\item
-  После наблюдения toy data постройте posterior predictive datasets.
-\item
-  Сравните несколько discrepancy statistics.
-\end{enumerate}
-
-\end{semanticpdfbox}
-
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
-
-\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 8. Bayes factor для монеты}\par\nopagebreak[4]\vspace{1.2mm}
-
-Сравните: \[
-M_0:p=\frac12,
-\qquad
-M_1:p\sim\operatorname{Beta}(\alpha,\beta).
-\]
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-  Выведите Bayes factor \(B_{10}\).
-\item
-  Вычислите его для нескольких \(n\) и \(k\).
-\item
-  Исследуйте зависимость от \(\alpha,\beta\).
-\item
-  Сравните Bayes factor с биномиальным \(p\)-value.
-\item
-  Покажите роль prior odds моделей.
-\end{enumerate}
-
-\end{semanticpdfbox}
-
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
-
-\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 9. Иерархическая модель}\par\nopagebreak[4]\vspace{1.2mm}
-
-Рассмотрите несколько измерений: \[
-y_j\mid\theta_j\sim\mathrm N(\theta_j,\sigma_j^2),
-\qquad
-\theta_j\mid\mu,\tau\sim\mathrm N(\mu,\tau^2).
-\]
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-  Постройте posterior при фиксированных \(\mu,\tau\).
-\item
-  Покажите partial pooling.
-\item
-  Сравните no pooling, complete pooling и partial pooling.
-\item
-  Исследуйте группы с малой статистикой.
-\item
-  Обсудите выбор hyperpriors для \(\mu,\tau\).
-\end{enumerate}
-
-\end{semanticpdfbox}
-
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
-
-\noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 10. Полный байесовский анализ}\par\nopagebreak[4]\vspace{1.2mm}
-
-Для выбранного toy experiment:
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-  запишите generative model;
-\item
-  задайте priors и выполните prior predictive checks;
-\item
-  получите posterior численно;
-\item
-  постройте marginal и joint credible regions;
-\item
-  выполните posterior predictive checks и prior sensitivity study.
-\end{enumerate}
-
-\end{semanticpdfbox}
 
 
 \backmatter

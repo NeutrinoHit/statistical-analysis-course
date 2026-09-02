@@ -1,0 +1,14 @@
+---
+title: "Задачи: интервальные оценки и установление ограничений"
+subtitle: "Статистический анализ данных"
+author: "Дмитрий В. Наумов"
+format:
+  html:
+    toc: false
+---
+
+[← Вернуться к курсу](../index.html){.exercise-back-link}
+
+# Задачи
+
+{{< include ../../../../_includes/exercises/planned/interval_estimation_and_limits-ru.qmd >}}

@@ -1,0 +1,794 @@
+---
+title: "Метод наименьших квадратов и линейная подгонка"
+subtitle: "Статистический анализ данных"
+author: "Дмитрий В. Наумов (ОИЯИ)"
+format:
+  revealjs:
+    theme: black
+    slide-number: true
+    preview-links: auto
+    chalkboard:
+      buttons: false
+    logo: shared/figures/dvnlogo.png
+    css: styles.css
+    transition: fade
+    center: true
+---
+
+# От измерений к кривой
+
+## Задача подгонки
+
+Имеются измерения
+$$
+(x_i,y_i\pm \sigma_i),
+\qquad i=1,\ldots,N,
+$$
+и модель
+$$
+y=f(x;\boldsymbol\theta).
+$$
+
+Требуется:
+
+::: incremental
+- оценить параметры $\boldsymbol\theta$;
+- определить их неопределённости и корреляции;
+- проверить, согласуется ли модель с данными;
+- исследовать остатки и устойчивость результата.
+:::
+
+## Почему нельзя просто провести красивую кривую
+
+::: incremental
+- Точки имеют разные неопределённости.
+- Ошибки разных точек могут быть коррелированы.
+- Параметры модели также оказываются коррелированными.
+- Выброс или неверная модель могут сильно сместить результат.
+- Хорошая картинка не заменяет количественную проверку согласия.
+:::
+
+::: {.fragment .callout-note .thmbox appearance="simple"}
+Подгонка — это статистическая процедура, а не графический способ провести линию между точками.
+:::
+
+
+# Связь с методом функции правдоподобия
+
+## Гауссовая модель измерений
+
+Пусть $x_i$ известны точно, а измерения $y_i$ независимы и **распределены по гауссу**:
+$$
+Y_i
+\sim
+\mathrm N\!\left(
+f(x_i;\boldsymbol\theta),
+\sigma_i^2
+\right).
+$$
+
+Тогда функция правдоподобия равна
+$$
+L(\boldsymbol\theta)
+=
+\prod_{i=1}^{N}
+\frac{1}{\sqrt{2\pi}\sigma_i}
+\exp\!\left[
+-\frac{
+[y_i-f(x_i;\boldsymbol\theta)]^2
+}{2\sigma_i^2}
+\right].
+$$
+
+## Взвешенная сумма квадратов
+
+Для известных $\sigma_i$, не зависящих от параметров:
+$$
+-2\ln L(\boldsymbol\theta)
+=
+\sum_{i=1}^{N}
+\frac{
+[y_i-f(x_i;\boldsymbol\theta)]^2
+}{\sigma_i^2}
++\mathrm{const}.
+$$
+
+Поэтому максимизация правдоподобия эквивалентна минимизации
+$$
+\boxed{
+\chi^2(\boldsymbol\theta)
+=
+\sum_{i=1}^{N}
+\frac{[y_i-f(x_i;\boldsymbol\theta)]^2}{\sigma_i^2}.
+}
+$$
+
+
+## Что означают веса
+
+Вклад одной точки:
+$$
+\chi_i^2
+=\frac{[y_i-f(x_i;\boldsymbol\theta)]^2}{\sigma_i^2}\equiv
+\frac{r_i^2}{\sigma_i^2}.
+$$
+
+::: incremental
+- Точка с малой $\sigma_i$ сильнее влияет на подгонку.
+- Точка с большой $\sigma_i$ допускает больший абсолютный остаток.
+- Вес точки равен обратной дисперсии:
+  $$
+  w_i=\frac{1}{\sigma_i^2}.
+  $$
+- Вес должен следовать из вероятностной модели, а не выбираться для получения желаемого результата.
+:::
+
+
+## МНК не универсален
+
+МНК естественно возникает в гауссовом приближении. Он может быть неверным, если:
+
+::: incremental
+- наблюдаются малые пуассоновские счёты;
+- распределение имеет тяжёлые хвосты;
+- ошибки асимметричны;
+- имеются физические границы;
+- дисперсия зависит от параметров, но это проигнорировано;
+- неопределённости по оси $x$ существенны.
+:::
+
+
+# Прямая по точкам
+
+## Линейная модель
+
+Рассмотрим
+$$
+y_i=a+b x_i+\varepsilon_i,
+\qquad
+\varepsilon_i\sim\mathrm N(0,\sigma_i^2).
+$$
+
+Минимизируем
+$$
+\chi^2(a,b)
+=
+\sum_i w_i(y_i-a-bx_i)^2,
+\qquad
+w_i=\frac1{\sigma_i^2}.
+$$
+
+Условия минимума:
+$$
+\frac{\partial\chi^2}{\partial a}=0,
+\qquad
+\frac{\partial\chi^2}{\partial b}=0.
+$$
+
+## Вывод нормальных уравнений
+
+Дифференцируем
+$$
+\chi^2(a,b)=\sum_i w_i(y_i-a-bx_i)^2.
+$$
+
+Получаем два условия:
+$$
+\frac{\partial\chi^2}{\partial a}
+=
+-2\sum_i w_i(y_i-a-bx_i)=0,
+$$
+$$
+\frac{\partial\chi^2}{\partial b}
+=
+-2\sum_i w_i x_i(y_i-a-bx_i)=0.
+$$
+
+Раскрываем скобки и переносим известные величины вправо:
+$$
+\begin{pmatrix}
+\sum_iw_i&\sum_iw_ix_i\\
+\sum_iw_ix_i&\sum_iw_ix_i^2
+\end{pmatrix}
+\begin{pmatrix}a\\b\end{pmatrix}
+=
+\begin{pmatrix}
+\sum_iw_iy_i\\
+\sum_iw_ix_iy_i
+\end{pmatrix}.
+$$
+
+## Нормальные уравнения
+
+Введём суммы
+$$
+\begin{aligned}
+S&=\sum_iw_i,
+&
+S_x&=\sum_iw_ix_i,
+&
+S_y&=\sum_iw_iy_i,\\
+S_{xx}&=\sum_iw_ix_i^2,
+&
+S_{xy}&=\sum_iw_ix_iy_i.
+\end{aligned}
+$$
+
+Тогда
+$$
+\begin{pmatrix}
+S&S_x\\
+S_x&S_{xx}
+\end{pmatrix}
+\begin{pmatrix}a\\b\end{pmatrix}
+=
+\begin{pmatrix}S_y\\S_{xy}\end{pmatrix}.
+$$
+
+## Формальное решение
+
+Запишем систему короче:
+$$
+A\boldsymbol\beta=\mathbf c,
+\qquad
+A=
+\begin{pmatrix}
+S&S_x\\
+S_x&S_{xx}
+\end{pmatrix},
+\quad
+\boldsymbol\beta=
+\begin{pmatrix}a\\b\end{pmatrix},
+\quad
+\mathbf c=
+\begin{pmatrix}S_y\\S_{xy}\end{pmatrix}.
+$$
+
+Если матрица $A$ обратима, то
+$$
+\boxed{
+\widehat{\boldsymbol\beta}
+=
+A^{-1}\mathbf c.
+}
+$$
+
+::: {.fragment .callout-note .thmbox appearance="simple"}
+Обратимость означает, что данные действительно различают $a$ и $b$.
+Например, все точки с одним и тем же $x$ не позволяют определить наклон.
+:::
+
+## Ковариация параметров
+
+Из лекции [о двумерном гауссе](07_two_dimensional_gaussian.qmd) мы знаем форму многомерного гаусса:
+$$
+p(\boldsymbol\beta)
+\propto
+\exp\!\left[
+-\frac12
+(\boldsymbol\beta-\widehat{\boldsymbol\beta})^\mathsf T
+V_\beta^{-1}
+(\boldsymbol\beta-\widehat{\boldsymbol\beta})
+\right].
+$$
+
+А для гауссовых ошибок измерений
+$$
+L(\boldsymbol\beta)
+\propto
+\exp\!\left[-\frac12\chi^2(\boldsymbol\beta)\right].
+$$
+
+Значит около минимума нужно узнать в $\chi^2$ квадратичную форму
+$$
+\boxed{
+\chi^2(\boldsymbol\beta)
+\approx
+\chi^2_{\min}
++
+(\boldsymbol\beta-\widehat{\boldsymbol\beta})^\mathsf T
+V_\beta^{-1}
+(\boldsymbol\beta-\widehat{\boldsymbol\beta}).
+}
+$$
+
+## Ковариация параметров для прямой
+
+Для прямой $\chi^2$ является квадратичной функцией параметров, поэтому это не приближение, а точное равенство:
+$$
+\chi^2(\boldsymbol\beta)
+=
+\chi^2_{\min}
++
+(\boldsymbol\beta-\widehat{\boldsymbol\beta})^\mathsf T
+\begin{pmatrix}
+S&S_x\\
+S_x&S_{xx}
+\end{pmatrix}
+(\boldsymbol\beta-\widehat{\boldsymbol\beta}).
+$$
+
+Сравнивая с формой многомерного гаусса, получаем
+$$
+\boxed{
+V_\beta^{-1}
+=
+\begin{pmatrix}
+S&S_x\\
+S_x&S_{xx}
+\end{pmatrix},
+\qquad
+V_\beta
+=
+\begin{pmatrix}
+S&S_x\\
+S_x&S_{xx}
+\end{pmatrix}^{-1}.
+}
+$$
+
+## Явные формулы для оценок
+
+Обозначим
+$$
+\Delta=SS_{xx}-S_x^2.
+$$
+
+Тогда из $\widehat{\boldsymbol\beta}=V_\beta\mathbf c$ получаем
+$$
+\boxed{
+\begin{pmatrix}
+\widehat a\\
+\widehat b
+\end{pmatrix}
+=
+V_\beta
+\begin{pmatrix}
+S_y\\S_{xy}
+\end{pmatrix}
+=
+\frac1\Delta
+\begin{pmatrix}
+S_{xx}S_y-S_xS_{xy}\\
+SS_{xy}-S_xS_y
+\end{pmatrix}.
+}
+$$
+
+## Явные формулы для ковариаций
+
+Напомним:
+$$
+S=\sum_iw_i,\qquad
+S_x=\sum_iw_ix_i,\qquad
+S_{xx}=\sum_iw_ix_i^2,
+\qquad
+\Delta=SS_{xx}-S_x^2.
+$$
+
+Матрица $V_\beta$ — это ковариационная матрица вектора параметров:
+$$
+\boxed{
+\operatorname{Cov}\!\left(
+\begin{pmatrix}
+\widehat a\\
+\widehat b
+\end{pmatrix}
+\right)
+=
+V_\beta.
+}
+$$
+
+В явном виде
+$$
+\boxed{
+V_\beta
+=
+\frac1\Delta
+\begin{pmatrix}
+S_{xx}&-S_x\\
+-S_x&S
+\end{pmatrix}.
+}
+$$
+
+Её элементы:
+$$
+\operatorname{Var}(\widehat a)=\frac{S_{xx}}{\Delta},
+\qquad
+\operatorname{Var}(\widehat b)=\frac{S}{\Delta},
+\qquad
+\operatorname{Cov}(\widehat a,\widehat b)=-\frac{S_x}{\Delta}.
+$$
+
+## От чего зависят ошибки
+
+Введём взвешенный центр и взвешенный разброс по $x$:
+$$
+\bar x_w=\frac{S_x}{S},
+\qquad
+Q_x=\sum_iw_i(x_i-\bar x_w)^2=\frac{\Delta}{S}.
+$$
+
+Тогда те же формулы можно переписать так:
+$$
+\boxed{
+\sigma_b^2=\frac{1}{Q_x},
+\qquad
+\sigma_a^2=\frac{1}{S}+\frac{\bar x_w^2}{Q_x},
+\qquad
+\operatorname{Cov}(\widehat a,\widehat b)=-\frac{\bar x_w}{Q_x}.
+}
+$$
+
+::: incremental
+- Меньшие ошибки точек дают большие веса $w_i=1/\sigma_i^2$ и уменьшают ошибки параметров.
+- Наклон определяется рычагом $Q_x$: чем шире точки разнесены по $x$, тем меньше $\sigma_b$.
+- Пересечение $a$ относится к точке $x=0$. Если данные далеко от нуля, ошибка наклона переносится в ошибку $a$.
+- Ковариация появляется потому, что изменение наклона компенсируется сдвигом пересечения.
+:::
+
+## Центр тяжести точек
+::: incremental
+- При фиксированном наклоне $b$ минимизация $\chi^2$ по $a$:
+$$
+0=\frac{\partial\chi^2}{\partial a}
+=
+-2\sum_iw_i(y_i-a-bx_i).
+$$
+
+- Отсюда
+$$
+\boxed{
+a(b)=\bar y_w-b\bar x_w,
+\qquad
+\bar y_w=\frac{\sum_iw_iy_i}{\sum_iw_i}.
+}
+$$
+
+- Лучшая прямая для любого $b$ проходит через  "центр тяжести"
+$$
+(\bar x_w,\bar y_w).
+$$
+
+- Следующим шагом нужно найти $b$, минимизирующий $\chi^2$.
+:::
+
+## Геометрия ошибок: профилирование по $a$ {#applet-fit-geometry}
+
+::: {.clt-widget}
+```{ojs}
+//| echo: false
+
+viewof geomXbar = Inputs.range([-3, 3], {value: 1.8, step: 0.1, label: "центр x̄_w"})
+viewof geomSpread = Inputs.range([0.45, 2.5], {value: 1.0, step: 0.05, label: "разброс по x"})
+
+geomS = 18
+geomQx = geomS * geomSpread * geomSpread
+geomSigmaB = 1 / Math.sqrt(geomQx)
+geomSigmaA = Math.sqrt(1 / geomS + geomXbar * geomXbar / geomQx)
+geomCovAB = -geomXbar / geomQx
+geomCorrAB = geomCovAB / (geomSigmaA * geomSigmaB)
+
+geomA0 = 1.0
+geomB0 = 0.55
+geomYbar = geomA0 + geomB0 * geomXbar
+geomSlopeSteps = [-1, 0, 1]
+geomLineData = geomSlopeSteps.flatMap(k => {
+  const b = geomB0 + k * geomSigmaB;
+  const a = geomYbar - b * geomXbar;
+  return Array.from({length: 121}, (_, i) => {
+    const x = -4.5 + 9 * i / 120;
+    return {x, y: a + b * x, k};
+  });
+})
+geomFanLineData = geomLineData.filter(d => d.k !== 0)
+geomBestLineData = geomLineData.filter(d => d.k === 0)
+
+geomOffsets = [-1.55, -1.05, -0.55, -0.12, 0.35, 0.82, 1.28, 1.62]
+geomPointSigma = Math.sqrt(geomOffsets.length / geomS)
+geomResidualPattern = [0.09, -0.04, 0.06, -0.08, 0.02, 0.07, -0.05, -0.07]
+geomPoints = geomOffsets.map((u, i) => {
+  const x = geomXbar + geomSpread * u;
+  return {x, y: geomA0 + geomB0 * x + geomResidualPattern[i]};
+})
+
+geomCenterPoint = [{x: geomXbar, y: geomYbar}]
+geomLabels = [
+  {x: 0, y: 3.25, text: "x = 0"},
+  {x: geomXbar, y: 3.0, text: "центр данных"}
+]
+
+geomDataPlot = Plot.plot({
+  width: 650,
+  height: 420,
+  marginLeft: 58,
+  marginBottom: 46,
+  x: {label: "x", domain: [-4.5, 4.5], grid: true},
+  y: {label: "y", domain: [-2.0, 3.5], grid: true},
+  marks: [
+    Plot.ruleX([0], {stroke: "#aaa", strokeDasharray: "6,5"}),
+    Plot.ruleX([geomXbar], {stroke: "#ffb347", strokeWidth: 3}),
+    Plot.line(geomFanLineData, {x: "x", y: "y", z: "k", stroke: "#70b7ff", strokeWidth: 2.4, strokeOpacity: 0.58}),
+    Plot.line(geomBestLineData, {x: "x", y: "y", stroke: "#ffb347", strokeWidth: 4}),
+    Plot.ruleX(geomPoints, {x: "x", y1: d => d.y - geomPointSigma, y2: d => d.y + geomPointSigma, stroke: "#aaa", strokeOpacity: 0.65}),
+    Plot.dot(geomPoints, {x: "x", y: "y", r: 6, fill: "#4ea1ff", fillOpacity: 0.82}),
+    Plot.dot(geomCenterPoint, {x: "x", y: "y", r: 8, fill: "#ffb347", stroke: "#111", strokeWidth: 1}),
+    Plot.text(geomLabels, {x: "x", y: "y", text: "text", fill: "#f2f2f2", fontSize: 16, dy: -8})
+  ]
+})
+
+geomSa2 = geomSigmaA * geomSigmaA
+geomSb2 = geomSigmaB * geomSigmaB
+geomL11 = geomSigmaA
+geomL21 = geomCovAB / geomL11
+geomL22 = Math.sqrt(Math.max(geomSb2 - geomL21 * geomL21, 0))
+geomLevel = Math.sqrt(2.30)
+geomEllipse = Array.from({length: 241}, (_, i) => {
+  const t = 2 * Math.PI * i / 240;
+  const z1 = geomLevel * Math.cos(t);
+  const z2 = geomLevel * Math.sin(t);
+  return {
+    da: geomL11 * z1,
+    db: geomL21 * z1 + geomL22 * z2
+  };
+})
+geomDaMax = Math.max(0.55, 1.18 * Math.max(...geomEllipse.map(d => Math.abs(d.da))))
+geomDbMax = Math.max(0.42, 1.18 * Math.max(...geomEllipse.map(d => Math.abs(d.db))))
+geomCompLine = [
+  {db: -geomDbMax, da: geomXbar * geomDbMax},
+  {db: geomDbMax, da: -geomXbar * geomDbMax}
+]
+
+geomParamPlot = Plot.plot({
+  width: 560,
+  height: 420,
+  marginLeft: 66,
+  marginBottom: 46,
+  x: {label: "δa", domain: [-geomDaMax, geomDaMax], grid: true},
+  y: {label: "δb", domain: [-geomDbMax, geomDbMax], grid: true},
+  marks: [
+    Plot.ruleX([0], {stroke: "#888"}),
+    Plot.ruleY([0], {stroke: "#888"}),
+    Plot.line(geomEllipse, {x: "da", y: "db", stroke: "#ffb347", strokeWidth: 4}),
+    Plot.line(geomCompLine, {x: "da", y: "db", stroke: "#70b7ff", strokeWidth: 3, strokeDasharray: "7,5"}),
+    Plot.dot([{da: 0, db: 0}], {x: "da", y: "db", r: 6, fill: "#f2f2f2"})
+  ]
+})
+
+html`
+<div class="clt-panel">
+  <div style="display:flex; gap:0.9rem; align-items:center; justify-content:center;">
+    ${geomDataPlot}
+    ${geomParamPlot}
+  </div>
+  <div class="clt-summary">
+    <span>Q_x = ${geomQx.toFixed(1)}</span>
+    <span>σ_y фиксирована: ${geomPointSigma.toFixed(2)}</span>
+    <span>σ_b = ${geomSigmaB.toFixed(3)}</span>
+    <span>σ_a = ${geomSigmaA.toFixed(3)}</span>
+    <span>corr(a,b) = ${geomCorrAB.toFixed(2)}</span>
+  </div>
+</div>
+`
+```
+:::
+
+::: {.fragment .callout-note .thmbox appearance="simple"}
+Синие прямые — это лучшие прямые при наклонах $\widehat b\pm\sigma_b$: для каждого наклона свободный член $a$ заново минимизирует $\chi^2$. Поэтому они проходят через центр данных, но описывают точки хуже оранжевой прямой.
+:::
+
+## Центрированная параметризация
+
+Корреляция особенно прозрачна в формуле
+$$
+\operatorname{Cov}(\widehat a,\widehat b)=-\frac{\bar x_w}{Q_x}.
+$$
+
+Если перенести начало координат в взвешенный центр данных,
+$$
+x_i'=x_i-\bar x_w,
+\qquad
+\bar x_w=\frac{\sum_iw_ix_i}{\sum_iw_i},
+$$
+и записать ту же прямую как
+$$
+y=a'+b'x',
+\qquad
+a'=a+b\bar x_w,
+\qquad
+b'=b,
+$$
+то для новых параметров
+$$
+S_x'=\sum_iw_ix_i'=0,
+\qquad
+\operatorname{Cov}(\widehat a',\widehat b')=0,
+\qquad
+\operatorname{Var}(\widehat a')=\frac1S,
+\qquad
+\operatorname{Var}(\widehat b')=\frac1{Q_x}.
+$$
+
+::: {.fragment .callout-note .thmbox appearance="simple"}
+$a'$ — значение прямой в центре данных, а не старое пересечение при $x=0$.
+Параметризация влияет на корреляцию, но не меняет физическую прямую.
+:::
+
+## Связь с нормальными координатами
+
+В центрированных параметрах квадратичная форма около минимума диагональна:
+$$
+\Delta\chi^2
+=
+\chi^2(a',b')-\chi^2_{\min}
+=
+S\,(\delta a')^2
++
+Q_x\,(\delta b')^2.
+$$
+
+Здесь нет смешанного члена $\delta a'\delta b'$ — значит параметры некоррелированы.
+
+Если ещё перейти к безразмерным координатам
+$$
+z_a=\sqrt{S}\,\delta a'
+=
+\frac{\delta a'}{\sigma_{a'}},
+\qquad
+z_b=\sqrt{Q_x}\,\delta b'
+=
+\frac{\delta b'}{\sigma_{b'}},
+$$
+то
+$$
+\boxed{
+\Delta\chi^2=z_a^2+z_b^2.
+}
+$$
+
+::: {.fragment .callout-note .thmbox appearance="simple"}
+Это и есть нормальные координаты для локального гаусса параметров: сначала диагонализуем форму, затем измеряем оси в единицах их стандартных ошибок.
+:::
+
+## Выброс портит подгонку. Интерактив
+
+Аплет генерирует точки около прямой
+$$
+y=1+0.8x
+$$
+и выполняет взвешенную подгонку.
+
+::: incremental
+1. Изменяем статистическую ошибку точек.
+2. Добавляем управляемый выброс.
+3. Сравниваем подогнанную прямую с истинной.
+4. Смотрим остатки и вклад выброса в $\chi^2$.
+5. Проверяем, что квадратичный критерий особенно чувствителен к большим отклонениям.
+:::
+
+## Интерактив: прямая, ошибки и выброс {#applet-line-outlier}
+
+::: {.clt-widget}
+```{ojs}
+//| echo: false
+
+viewof lsSigma = Inputs.range([0.15, 1.5], {value: 0.55, step: 0.05, label: "типичная ошибка sigma"})
+viewof lsOutlier = Inputs.range([-4, 6], {value: 0, step: 0.25, label: "добавка к одной точке"})
+viewof regenerateLs = Inputs.button("Новые данные")
+
+randnLs = () => {
+  const u1 = Math.max(Math.random(), 1e-12);
+  const u2 = Math.random();
+  return Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
+}
+
+lsData = {
+  regenerateLs;
+  const data = [];
+  for (let i = 0; i < 16; ++i) {
+    const x = -4.5 + 9 * i / 15;
+    const sigma = lsSigma * (0.72 + 0.56 * (i % 4) / 3);
+    const y = 1 + 0.8 * x + sigma * randnLs() + (i === 12 ? lsOutlier : 0);
+    data.push({x, y, sigma, outlier: i === 12});
+  }
+  return data;
+}
+
+weightedLineFit = data => {
+  let S = 0, Sx = 0, Sy = 0, Sxx = 0, Sxy = 0;
+  for (const d of data) {
+    const w = 1 / (d.sigma * d.sigma);
+    S += w;
+    Sx += w * d.x;
+    Sy += w * d.y;
+    Sxx += w * d.x * d.x;
+    Sxy += w * d.x * d.y;
+  }
+  const delta = S * Sxx - Sx * Sx;
+  const a = (Sxx * Sy - Sx * Sxy) / delta;
+  const b = (S * Sxy - Sx * Sy) / delta;
+  const chi2 = data.reduce((sum, d) => sum + ((d.y - a - b * d.x) / d.sigma) ** 2, 0);
+  return {a, b, chi2, sigmaA: Math.sqrt(Sxx / delta), sigmaB: Math.sqrt(S / delta), covAB: -Sx / delta};
+}
+
+lsFit = weightedLineFit(lsData)
+lsFitLine = Array.from({length: 201}, (_, i) => {
+  const x = -5 + 10 * i / 200;
+  return {x, y: lsFit.a + lsFit.b * x};
+})
+lsTrueLine = Array.from({length: 201}, (_, i) => {
+  const x = -5 + 10 * i / 200;
+  return {x, y: 1 + 0.8 * x};
+})
+lsResiduals = lsData.map(d => ({
+  x: d.x,
+  pull: (d.y - lsFit.a - lsFit.b * d.x) / d.sigma,
+  outlier: d.outlier
+}))
+
+lsMainPlot = Plot.plot({
+  width: 720,
+  height: 460,
+  marginLeft: 65,
+  x: {label: "x", domain: [-5, 5], grid: true},
+  y: {label: "y", grid: true},
+  marks: [
+    Plot.ruleX(lsData, {x: "x", y1: d => d.y - d.sigma, y2: d => d.y + d.sigma, stroke: "#aaa"}),
+    Plot.dot(lsData, {x: "x", y: "y", r: 6, fill: d => d.outlier ? "#ff6b6b" : "#4ea1ff"}),
+    Plot.line(lsTrueLine, {x: "x", y: "y", stroke: "#999", strokeDasharray: "7,5", strokeWidth: 3}),
+    Plot.line(lsFitLine, {x: "x", y: "y", stroke: "#ffb347", strokeWidth: 4})
+  ]
+})
+
+lsResidualPlot = Plot.plot({
+  width: 520,
+  height: 460,
+  marginLeft: 65,
+  x: {label: "x", domain: [-5, 5], grid: true},
+  y: {label: "остаток / sigma", domain: [-6, 6], grid: true},
+  marks: [
+    Plot.ruleY([0], {stroke: "#f2f2f2"}),
+    Plot.ruleY([-2, 2], {stroke: "#999", strokeDasharray: "6,5"}),
+    Plot.dot(lsResiduals, {x: "x", y: "pull", r: 6, fill: d => d.outlier ? "#ff6b6b" : "#4ea1ff"})
+  ]
+})
+
+html`
+<div class="clt-panel">
+  <div style="display:flex; gap:0.7rem; justify-content:center; align-items:center;">
+    ${lsMainPlot}
+    ${lsResidualPlot}
+  </div>
+  <div class="clt-summary">
+    <span>a_hat = ${lsFit.a.toFixed(3)} ± ${lsFit.sigmaA.toFixed(3)}</span>
+    <span>b_hat = ${lsFit.b.toFixed(3)} ± ${lsFit.sigmaB.toFixed(3)}</span>
+    <span>χ²_min = ${lsFit.chi2.toFixed(1)}</span>
+  </div>
+</div>
+`
+```
+:::
+
+## Что видно в аплете
+
+::: incremental
+- Без выброса подогнанная прямая флуктуирует около истинной.
+- Увеличение ошибок ослабляет ограничения на параметры.
+- Один далёкий выброс заметно сдвигает прямую и увеличивает $\chi^2$.
+- Остатки показывают структуру, которую легко пропустить на основном графике.
+- Обычный МНК не является устойчивым к выбросам методом.
+:::
+
+# Что важно запомнить
+
+## Резюме
+
+::: incremental
+- МНК возникает из гауссова правдоподобия.
+- Веса задают относительную точность измерений.
+- В линейной модели оценки параметров находятся из нормальных уравнений.
+- Ковариация параметров определяется геометрией точек и ошибками измерений.
+- Остатки обязательны для диагностики подгонки.
+:::

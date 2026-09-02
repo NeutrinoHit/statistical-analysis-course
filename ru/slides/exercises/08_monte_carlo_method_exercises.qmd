@@ -1,0 +1,14 @@
+---
+title: "Задачи: метод Монте-Карло"
+subtitle: "Статистический анализ данных"
+author: "Дмитрий В. Наумов"
+format:
+  html:
+    toc: false
+---
+
+[← Вернуться к курсу](../index.html){.exercise-back-link}
+
+# Задачи
+
+{{< include ../../../_includes/exercises/08_monte_carlo_method-ru.qmd >}}

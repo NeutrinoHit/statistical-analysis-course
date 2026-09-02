@@ -42,10 +42,10 @@ format:
       <div class="lecture-row-body">
         <p>Зачем физику статистика и какие вопросы решает курс.</p>
         <div class="lecture-links">
-          <a href="00_introduction.html">Открыть лекцию</a>
-          <a href="exercises/00_introduction_exercises.html">Задачи</a>
-          <a href="../book/chapters/why_statistics.pdf">Конспект PDF</a>
-          <a href="../book/chapters/why_statistics.html">Глава в онлайн-книге</a>
+          <a href="01_introduction.html">Открыть лекцию</a>
+          <a href="exercises/01_introduction_exercises.html">Задачи</a>
+          <a href="../book/chapters/01_why_statistics.pdf">Конспект PDF</a>
+          <a href="../book/chapters/01_why_statistics.html">Глава в онлайн-книге</a>
           <span class="lecture-link-pending">Видео появится позже</span>
         </div>
       </div>
@@ -59,8 +59,10 @@ format:
       <div class="lecture-row-body">
         <p>Вероятности, плотности, кумулятивная функция распределения и моменты.</p>
         <div class="lecture-links">
-          <a href="01_random_distributions.html">Открыть лекцию</a>
-          <a href="exercises/01_random_distributions_exercises.html">Задачи</a>
+          <a href="02_random_distributions.html">Открыть лекцию</a>
+          <a href="exercises/02_random_distributions_exercises.html">Задачи</a>
+          <a href="../book/chapters/02_random_distributions.pdf">Конспект PDF</a>
+          <a href="../book/chapters/02_random_distributions.html">Глава в онлайн-книге</a>
           <span class="lecture-link-pending">Видео появится позже</span>
         </div>
       </div>
@@ -74,8 +76,10 @@ format:
       <div class="lecture-row-body">
         <p>Преобразование Фурье распределения, свёртки, независимые суммы, моменты, кумулянты и мост к ЦПТ.</p>
         <div class="lecture-links">
-          <a href="02_characteristic_functions.html">Открыть лекцию</a>
-          <a href="exercises/02_characteristic_functions_exercises.html">Задачи</a>
+          <a href="03_characteristic_functions.html">Открыть лекцию</a>
+          <a href="exercises/03_characteristic_functions_exercises.html">Задачи</a>
+          <a href="../book/chapters/03_characteristic_functions.pdf">Конспект PDF</a>
+          <a href="../book/chapters/03_characteristic_functions.html">Глава в онлайн-книге</a>
           <span class="lecture-link-pending">Видео появится позже</span>
         </div>
       </div>
@@ -89,8 +93,10 @@ format:
       <div class="lecture-row-body">
         <p>Почему возникает гаусс, как читать квантили и как проверять совместимость измерений.</p>
         <div class="lecture-links">
-          <a href="03_central_limit_theorem.html">Открыть лекцию</a>
-          <a href="exercises/03_central_limit_theorem_exercises.html">Задачи</a>
+          <a href="04_central_limit_theorem.html">Открыть лекцию</a>
+          <a href="exercises/04_central_limit_theorem_exercises.html">Задачи</a>
+          <a href="../book/chapters/04_central_limit_theorem.pdf">Конспект PDF</a>
+          <a href="../book/chapters/04_central_limit_theorem.html">Глава в онлайн-книге</a>
           <span class="lecture-link-pending">Видео появится позже</span>
         </div>
       </div>
@@ -104,8 +110,10 @@ format:
       <div class="lecture-row-body">
         <p>Границы применимости ЦПТ: тяжёлые хвосты, корреляции, смеси распределений, пороги и малые счёты.</p>
         <div class="lecture-links">
-          <a href="04_non_gaussian_clt_violations.html">Открыть лекцию</a>
-          <a href="exercises/04_non_gaussian_clt_violations_exercises.html">Задачи</a>
+          <a href="05_non_gaussian_clt_violations.html">Открыть лекцию</a>
+          <a href="exercises/05_non_gaussian_clt_violations_exercises.html">Задачи</a>
+          <a href="../book/chapters/05_non_gaussian_clt_violations.pdf">Конспект PDF</a>
+          <a href="../book/chapters/05_non_gaussian_clt_violations.html">Глава в онлайн-книге</a>
           <span class="lecture-link-pending">Видео появится позже</span>
         </div>
       </div>
@@ -119,8 +127,10 @@ format:
       <div class="lecture-row-body">
         <p>Линейное распространение ошибок, нелинейные функции, оценки среднего, дисперсии и стандартного отклонения, ковариации.</p>
         <div class="lecture-links">
-          <a href="05_error_propagation.html">Открыть лекцию</a>
-          <a href="exercises/05_error_propagation_and_covariance_exercises.html">Задачи</a>
+          <a href="06_error_propagation.html">Открыть лекцию</a>
+          <a href="exercises/06_error_propagation_exercises.html">Задачи</a>
+          <a href="../book/chapters/06_error_propagation.pdf">Конспект PDF</a>
+          <a href="../book/chapters/06_error_propagation.html">Глава в онлайн-книге</a>
           <span class="lecture-link-pending">Видео появится позже</span>
         </div>
       </div>
@@ -134,8 +144,10 @@ format:
       <div class="lecture-row-body">
         <p>Ковариационная матрица как геометрия распределения, корреляция, двумерный гаусс, эллипсы, контуры и практические применения.</p>
         <div class="lecture-links">
-          <a href="06_two_dimensional_gaussian.html">Открыть лекцию</a>
-          <a href="exercises/05_error_propagation_and_covariance_exercises.html">Задачи</a>
+          <a href="07_two_dimensional_gaussian.html">Открыть лекцию</a>
+          <a href="exercises/07_two_dimensional_gaussian_exercises.html">Задачи</a>
+          <a href="../book/chapters/07_two_dimensional_gaussian.pdf">Конспект PDF</a>
+          <a href="../book/chapters/07_two_dimensional_gaussian.html">Глава в онлайн-книге</a>
           <span class="lecture-link-pending">Видео появится позже</span>
         </div>
       </div>
@@ -149,9 +161,11 @@ format:
       <div class="lecture-row-body">
         <p>Генерация распределений, численное интегрирование, псевдоэксперименты, распространение неопределённостей и моделирование детектора.</p>
         <div class="lecture-links">
-          <a href="07_monte_carlo_method.html">Открыть лекцию</a>
+          <a href="08_monte_carlo_method.html">Открыть лекцию</a>
           <a href="notebooks/mc_vegas_notebook.html">Ноутбук VEGAS</a>
-          <a href="exercises/06_monte_carlo_method_exercises.html">Задачи</a>
+          <a href="exercises/08_monte_carlo_method_exercises.html">Задачи</a>
+          <a href="../book/chapters/08_monte_carlo_method.pdf">Конспект PDF</a>
+          <a href="../book/chapters/08_monte_carlo_method.html">Глава в онлайн-книге</a>
           <span class="lecture-link-pending">Видео появится позже</span>
         </div>
       </div>
@@ -165,8 +179,10 @@ format:
       <div class="lecture-row-body">
         <p>Функция правдоподобия, логарифм правдоподобия, ММП и первые примеры оценивания параметров.</p>
         <div class="lecture-links">
-          <a href="08_maximum_likelihood.html">Открыть лекцию</a>
-          <a href="exercises/07_parameter_estimation_and_maximum_likelihood_exercises.html">Задачи</a>
+          <a href="09_maximum_likelihood.html">Открыть лекцию</a>
+          <a href="exercises/09_maximum_likelihood_exercises.html">Задачи</a>
+          <a href="../book/chapters/09_maximum_likelihood.pdf">Конспект PDF</a>
+          <a href="../book/chapters/09_maximum_likelihood.html">Глава в онлайн-книге</a>
           <span class="lecture-link-pending">Видео появится позже</span>
         </div>
       </div>
@@ -180,8 +196,10 @@ format:
       <div class="lecture-row-body">
         <p>Смещение, дисперсия, информация Фишера, форма правдоподобия, профилирование, несколько параметров и практическая диагностика подгонки.</p>
         <div class="lecture-links">
-          <a href="09_estimator_properties_profile_likelihood.html">Открыть лекцию</a>
-          <a href="exercises/07_parameter_estimation_and_maximum_likelihood_exercises.html">Задачи</a>
+          <a href="10_estimator_properties_profile_likelihood.html">Открыть лекцию</a>
+          <a href="exercises/10_estimator_properties_profile_likelihood_exercises.html">Задачи</a>
+          <a href="../book/chapters/10_estimator_properties_profile_likelihood.pdf">Конспект PDF</a>
+          <a href="../book/chapters/10_estimator_properties_profile_likelihood.html">Глава в онлайн-книге</a>
           <span class="lecture-link-pending">Видео появится позже</span>
         </div>
       </div>
@@ -195,8 +213,10 @@ format:
       <div class="lecture-row-body">
         <p>Связь МНК с гауссовым правдоподобием, линейная модель, нормальные уравнения, ковариации параметров, остатки и выбросы.</p>
         <div class="lecture-links">
-          <a href="10_least_squares_linear_fit.html">Открыть лекцию</a>
-          <a href="exercises/08_method_of_least_squares_exercises.html">Задачи</a>
+          <a href="11_least_squares_linear_fit.html">Открыть лекцию</a>
+          <a href="exercises/11_least_squares_linear_fit_exercises.html">Задачи</a>
+          <a href="../book/chapters/11_least_squares_linear_fit.pdf">Конспект PDF</a>
+          <a href="../book/chapters/11_least_squares_linear_fit.html">Глава в онлайн-книге</a>
           <span class="lecture-link-pending">Видео появится позже</span>
         </div>
       </div>
@@ -210,8 +230,10 @@ format:
       <div class="lecture-row-body">
         <p>Общий матричный случай, интервалы из формы χ², систематические неопределённости, нормировка, парадокс Д’Агостини и практический рецепт анализа.</p>
         <div class="lecture-links">
-          <a href="11_least_squares_systematics.html">Открыть лекцию</a>
-          <a href="exercises/08_method_of_least_squares_exercises.html">Задачи</a>
+          <a href="12_least_squares_systematics.html">Открыть лекцию</a>
+          <a href="exercises/12_least_squares_systematics_exercises.html">Задачи</a>
+          <a href="../book/chapters/12_least_squares_systematics.pdf">Конспект PDF</a>
+          <a href="../book/chapters/12_least_squares_systematics.html">Глава в онлайн-книге</a>
           <span class="lecture-link-pending">Видео появится позже</span>
         </div>
       </div>
@@ -225,8 +247,10 @@ format:
       <div class="lecture-row-body">
         <p>Остатки, распределение χ², число степеней свободы, p-значение, перевод в Z и калибровка статистики псевдоэкспериментами.</p>
         <div class="lecture-links">
-          <a href="12_goodness_of_fit_and_significance.html">Открыть лекцию</a>
-          <a href="exercises/09_statistical_tests_basics_exercises.html">Задачи</a>
+          <a href="13_goodness_of_fit_and_significance.html">Открыть лекцию</a>
+          <a href="exercises/13_goodness_of_fit_and_significance_exercises.html">Задачи</a>
+          <a href="../book/chapters/13_goodness_of_fit_and_significance.pdf">Конспект PDF</a>
+          <a href="../book/chapters/13_goodness_of_fit_and_significance.html">Глава в онлайн-книге</a>
           <span class="lecture-link-pending">Видео появится позже</span>
         </div>
       </div>
