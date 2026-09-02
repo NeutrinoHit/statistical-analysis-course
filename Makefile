@@ -49,14 +49,12 @@ site: check-env check-book-sources book-qr ## Собрать полный сай
 	$(QUARTO) render $(BOOK_RU_DIR) --to html
 	$(QUARTO) render $(BOOK_RU_DIR) --to pdf
 	$(CHAPTER_PYTHON) scripts/render_book_chapters.py ru $(RU_PDF_CHAPTERS)
-	$(MAKE) ru-epub
 	$(QUARTO) render $(BOOK_EN_DIR) --to html
 	$(QUARTO) render $(SLIDES_RU_DIR)
 	$(QUARTO) render $(SLIDES_EN_DIR)
 	test -s _site/index.html
 	test -s _site/ru/book/index.html
 	test -s _site/ru/book/statistical-data-analysis.pdf
-	test -s _site/ru/book/statistical-data-analysis.epub
 	test -s _site/ru/book/chapters/why_statistics.pdf
 	test -s _site/en/book/index.html
 

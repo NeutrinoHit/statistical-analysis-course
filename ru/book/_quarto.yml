@@ -13,7 +13,7 @@ book:
   repo-actions: [source, issue]
   search: true
   reader-mode: true
-  downloads: [pdf, epub]
+  downloads: [pdf]
   page-footer:
     left: "© Дмитрий В. Наумов"
     right: "NeutrinoHit · Статистический анализ данных"

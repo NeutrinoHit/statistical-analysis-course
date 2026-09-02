@@ -19,9 +19,10 @@ make site
 ```
 
 Полный сайт собирается в `_site/` с деревом `ru/book`, `ru/slides`,
-`en/book`, `en/slides`. Цель `make site` публикует HTML, PDF и EPUB русской
-книги, а также отдельные PDF готовых глав. Python нужен для выполняемых
-Quarto-блоков, фигур, QR-кодов и подготовки EPUB.
+`en/book`, `en/slides`. Цель `make site` публикует HTML и PDF русской книги,
+а также отдельные PDF готовых глав. EPUB собирается и проверяется отдельной
+целью, но на сайт не публикуется. Python нужен для выполняемых Quarto-блоков,
+фигур, QR-кодов и подготовки EPUB.
 
 Push в `main` автоматически публикует сайт. `workflow_dispatch` позволяет
 повторить публикацию вручную.
@@ -38,7 +39,7 @@ Push в `main` автоматически публикует сайт. `workflow
 - `make ru-chapters` собирает полную русскую PDF-книгу и выделяет готовые
   главы в `_site/ru/book/chapters/`; список публикуемых глав задаётся переменной
   `RU_PDF_CHAPTERS` в `Makefile`;
-- `make ru-epub` и `make en-epub` собирают EPUB;
+- `make ru-epub` и `make en-epub` собирают EPUB отдельно от сайта;
 - русская книга подключает общую книжную основу NeutrinoHit из
   `ru/book/assets/styles/neutrinohit-book.css` и сохраняет предметные правила в
   `ru/book/assets/styles/book.css`.
