@@ -1,0 +1,8 @@
+% Replace the previous title artwork while retaining its single printed TOC.
+\AtBeginDocument{%
+  \renewcommand{\maketitle}{%
+    \NeutrinoHitFrontCover
+    \tableofcontents
+    \clearpage
+  }%
+}

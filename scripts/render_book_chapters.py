@@ -155,10 +155,15 @@ def main() -> int:
         parser.error("В закладках PDF не найдены главы: " + "; ".join(missing_titles))
 
     ordered = sorted(chapters, key=lambda chapter: pages[chapter.title])
+    back_cover = reader.named_destinations.get("neutrinohit-back-cover")
+    content_end = (
+        reader.get_destination_page_number(back_cover)
+        if back_cover is not None else len(reader.pages)
+    )
     end_pages: dict[str, int] = {}
     for index, chapter in enumerate(ordered):
         end_pages[chapter.slug] = (
-            pages[ordered[index + 1].title] if index + 1 < len(ordered) else len(reader.pages)
+            pages[ordered[index + 1].title] if index + 1 < len(ordered) else content_end
         )
 
     for slug in requested:

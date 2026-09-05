@@ -11,6 +11,15 @@ format:
 
 :::: {.content-visible when-format="html:js"}
 ```{=html}
+<a href="assets/covers/front.svg" aria-label="Открыть лицевую обложку крупно">
+  <img class="book-front-cover" src="assets/covers/front.svg" width="210" height="297" alt="Обложка книги Дмитрия В. Наумова «Статистические методы в физике»: спектры нейтрино и профильное правдоподобие">
+</a>
+<details class="book-cover-back">
+  <summary>Задняя обложка · о книге и авторе</summary>
+  <a href="assets/covers/back.svg" aria-label="Открыть заднюю обложку крупно">
+    <img src="assets/covers/back.svg" width="210" height="297" loading="lazy" alt="Задняя обложка: аннотация статистической книги и сведения об авторе">
+  </a>
+</details>
 <section class="book-landing">
   <div class="book-landing-main">
     <p class="book-kicker">Онлайн-книга · в работе</p>

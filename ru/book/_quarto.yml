@@ -1,6 +1,8 @@
 project:
   type: book
   output-dir: ../../_site/ru/book
+  resources:
+    - assets/covers/**
 
 book:
   title: "Статистический анализ данных"
@@ -77,6 +79,7 @@ format:
     css:
       - assets/styles/neutrinohit-book.css
       - assets/styles/book.css
+      - assets/covers/covers.css
     include-in-header:
       - ../../shared/html/mathjax.html
     include-after-body: analytics/cloudflare-web-analytics.html
@@ -117,6 +120,9 @@ format:
       - ../../shared/latex/neutrinohit-book.tex
       - ../../shared/latex/ru-lang.tex
       - assets/latex/book-pdf-style.tex
+      - assets/covers/covers.tex
+      - assets/latex/cover-title.tex
+    include-after-body: assets/covers/back-cover.tex
   epub:
     toc: true
     toc-depth: 2
