@@ -1,63 +1,80 @@
-viewof chiDistNu = Inputs.range([1, 80], {value: 10, step: 1, label: "ν"})
-
-chiDistGamma = (z) => {
-  const p = [
-    676.5203681218851,
-    -1259.1392167224028,
-    771.32342877765313,
-    -176.61502916214059,
-    12.507343278686905,
-    -0.13857109526572012,
-    9.9843695780195716e-6,
-    1.5056327351493116e-7
-  ];
+viewof chiDistNu = Inputs.range([1, 80], {value: 10, step: 1, label: "Степени свободы ν"})
+chiDistLogGamma = (z) => {
+  const coefficients = [676.5203681218851, -1259.1392167224028,
+    771.32342877765313, -176.61502916214059, 12.507343278686905,
+    -0.13857109526572012, 9.9843695780195716e-6, 1.5056327351493116e-7];
   z -= 1;
-  let x = 0.99999999999980993;
-  for (let i = 0; i < p.length; i++) x += p[i] / (z + i + 1);
-  const t = z + p.length - 0.5;
-  return Math.sqrt(2 * Math.PI) * t ** (z + 0.5) * Math.exp(-t) * x;
+  let sum = 0.99999999999980993;
+  for (let i = 0; i < coefficients.length; i++) sum += coefficients[i] / (z + i + 1);
+  const t = z + 7.5;
+  return 0.5 * Math.log(2 * Math.PI) + (z + 0.5) * Math.log(t) - t + Math.log(sum);
 }
-
-chiDistPdf = (x, nu) => {
-  if (x <= 0) return nu === 1 ? Infinity : 0;
-  return x ** (nu / 2 - 1) * Math.exp(-x / 2) /
-    (2 ** (nu / 2) * chiDistGamma(nu / 2));
+chiDistPdf = (t, nu) => {
+  if (t < 0) return 0;
+  if (t === 0) return nu < 2 ? Infinity : nu === 2 ? 0.5 : 0;
+  const a = nu / 2;
+  return Math.exp((a - 1) * Math.log(t) - t / 2 - a * Math.log(2) - chiDistLogGamma(a));
 }
-
-chiDistXmax = Math.max(8, chiDistNu + 5 * Math.sqrt(2 * chiDistNu));
-chiDistData = Array.from({length: 700}, (_, i) => {
-  const x = 1e-4 + chiDistXmax * i / 699;
-  return {x, y: chiDistPdf(x, chiDistNu)};
+chiDistSf = (t, nu) => {
+  if (!(nu > 0) || Number.isNaN(t)) return NaN;
+  if (t <= 0) return 1;
+  if (t === Infinity) return 0;
+  const a = nu / 2, x = t / 2;
+  const scale = Math.exp(a * Math.log(x) - x - chiDistLogGamma(a));
+  const eps = 3e-14, tiny = 1e-300;
+  if (x < a + 1) {
+    let term = 1 / a, sum = term;
+    for (let n = 1; n < 10000; n++) {
+      term *= x / (a + n);
+      sum += term;
+      if (Math.abs(term) < eps * Math.abs(sum)) return Math.max(0, Math.min(1, 1 - scale * sum));
+    }
+  } else {
+    let b = x + 1 - a, c = 1 / tiny, d = 1 / b, h = d;
+    for (let n = 1; n < 10000; n++) {
+      const an = -n * (n - a);
+      b += 2;
+      d = an * d + b;
+      if (Math.abs(d) < tiny) d = tiny;
+      c = b + an / c;
+      if (Math.abs(c) < tiny) c = tiny;
+      d = 1 / d;
+      const delta = d * c;
+      h *= delta;
+      if (Math.abs(delta - 1) < eps) return Math.max(0, Math.min(1, scale * h));
+    }
+  }
+  throw new Error("Не сошлось вычисление хвоста χ²");
+}
+chiDistProbabilityText = p => p === 0 ? "0" : p < 0.001 ? p.toExponential(3) : p.toFixed(5)
+chiDistPlotLimit = nu => nu === 1 ? 1.5 : 1.12 * chiDistPdf(Math.max(0, nu - 2), nu)
+chiDistGrid = (nu, xmax, count = 1000) => Array.from({length: count}, (_, i) => {
+  const t = Math.max(1e-8, xmax * (i / (count - 1)) ** 2);
+  return {t, density: chiDistPdf(t, nu)};
 })
-chiDistMean = chiDistNu;
-chiDistSigma = Math.sqrt(2 * chiDistNu);
-chiDistScaleY = Math.max(...chiDistData.filter(d => Number.isFinite(d.y)).map(d => d.y));
-
+chiDistXmax = Math.max(8, chiDistNu + 5 * Math.sqrt(2 * chiDistNu))
+chiDistData = chiDistGrid(chiDistNu, chiDistXmax)
+chiDistSigma = Math.sqrt(2 * chiDistNu)
 chiDistPlot = Plot.plot({
-  width: 1050,
-  height: 500,
-  marginLeft: 70,
-  marginBottom: 50,
+  width: 760, height: 340, marginLeft: 58, marginBottom: 48,
+  style: {fontSize: "14px"},
   x: {label: "t", domain: [0, chiDistXmax], grid: true},
-  y: {label: "f(t; ν)", domain: [0, 1.08 * chiDistScaleY], grid: true},
+  y: {label: "f(t; ν)", domain: [0, chiDistPlotLimit(chiDistNu)], grid: true},
   marks: [
-    Plot.areaY(chiDistData, {x: "x", y: "y", fill: "#4ea1ff", fillOpacity: 0.22}),
-    Plot.line(chiDistData, {x: "x", y: "y", stroke: "#4ea1ff", strokeWidth: 4}),
-    Plot.ruleX([chiDistMean], {stroke: "#ffb347", strokeWidth: 4}),
-    Plot.ruleX(
-      [chiDistMean - chiDistSigma, chiDistMean + chiDistSigma].filter(x => x > 0),
-      {stroke: "#f2f2f2", strokeDasharray: "6,5", strokeWidth: 2}
-    )
+    Plot.areaY(chiDistData, {x: "t", y: "density", fill: "#367ab5", fillOpacity: 0.14, clip: true}),
+    Plot.line(chiDistData, {x: "t", y: "density", stroke: "#367ab5", strokeWidth: 2.5, clip: true}),
+    Plot.ruleX([chiDistNu], {stroke: "#c44536", strokeWidth: 2}),
+    Plot.ruleX([chiDistNu - chiDistSigma, chiDistNu + chiDistSigma].filter(t => t > 0),
+      {stroke: "#536773", strokeDasharray: "5,4"})
   ]
 })
-
-html`
-<div class="book-applet-panel">
-  <div class="book-applet-center">${chiDistPlot}</div>
+html`<div class="book-applet-panel">
+  ${chiDistPlot}
   <div class="book-applet-summary">
-    <span>ν = ${chiDistNu}; </span>
-    <span> E[χ²] = ${chiDistMean.toFixed(1)}. </span>
-    <span> Стандартное отклонение χ² = √(2ν) = ${chiDistSigma.toFixed(2)}.</span>
-    <span> Стандартное отклонение χ²/ν = √(2/ν) = ${Math.sqrt(2 / chiDistNu).toFixed(3)}.</span>
+    <span>ν = ${chiDistNu}</span>
+    <span>E[T] = ${chiDistNu}</span>
+    <span>σT = ${chiDistSigma.toFixed(3)}</span>
+    <span>σ(T/ν) = ${Math.sqrt(2 / chiDistNu).toFixed(3)}</span>
+    <span>${chiDistNu === 1 ? "При t → 0 плотность неограниченно растёт; график обрезан сверху." : ""}</span>
   </div>
 </div>`

@@ -1,45 +1,30 @@
-oneSideGaussZ = 2
-oneSideGaussPdf = z => Math.exp(-0.5 * z * z) / Math.sqrt(2 * Math.PI)
-oneSideGaussData = Array.from({length: 900}, (_, i) => {
-  const z = -4.5 + 9 * i / 899;
-  return {z, y: oneSideGaussPdf(z), tail: z >= oneSideGaussZ};
+viewof oneSideGaussZ = Inputs.range([-3, 6], {value: 2, step: 0.1, label: "Граница G: Z"})
+oneSideGaussPdf = g => Math.exp(-g*g/2)/Math.sqrt(2*Math.PI)
+oneSideGaussP = oneSideGaussZ >= 0 ? 0.5*chiDistSf(oneSideGaussZ**2,1) : 1-0.5*chiDistSf(oneSideGaussZ**2,1)
+oneSideGaussXmax = Math.max(4.5, oneSideGaussZ+1)
+oneSideGaussData = Array.from({length:1201},(_,i)=>{
+  const g = -oneSideGaussXmax + 2*oneSideGaussXmax*i/1200;
+  return {g, density:oneSideGaussPdf(g)};
 })
-oneSideGaussTail = oneSideGaussData.filter(d => d.tail)
+oneSideGaussRight = [{g:oneSideGaussZ,density:oneSideGaussPdf(oneSideGaussZ)},...oneSideGaussData.filter(d=>d.g>oneSideGaussZ)]
 
 oneSideGaussPlot = Plot.plot({
-  width: 1050,
-  height: 420,
-  marginLeft: 70,
-  marginBottom: 55,
-  x: {label: "Z", domain: [-4.5, 4.5], grid: true},
-  y: {label: "f_Z(z)", domain: [0, 0.43], grid: true},
-  marks: [
-    Plot.areaY(oneSideGaussTail, {x: "z", y: "y", fill: "#ff4f5e", fillOpacity: 0.65}),
-    Plot.line(oneSideGaussData, {x: "z", y: "y", stroke: "#6ea8ff", strokeWidth: 4}),
-    Plot.ruleX([oneSideGaussZ], {stroke: "#ffb347", strokeWidth: 4}),
-    Plot.text([{z: oneSideGaussZ, y: 0.37, text: "Z"}], {
-      x: "z",
-      y: "y",
-      text: "text",
-      fill: "#ffffff",
-      fontSize: 24,
-      dy: -4
-    }),
-    Plot.text([{z: 2.95, y: 0.055, text: "p"}], {
-      x: "z",
-      y: "y",
-      text: "text",
-      fill: "#ffffff",
-      fontSize: 28
-    })
+  width:760,height:340,marginLeft:58,marginBottom:48,
+  style:{fontSize:"14px"},
+  x:{label:"g",domain:[-oneSideGaussXmax,oneSideGaussXmax],grid:true},
+  y:{label:"φ(g)",domain:[0,0.43],grid:true},
+  marks:[
+    Plot.areaY(oneSideGaussRight,{x:"g",y:"density",fill:"#c44536",fillOpacity:0.4}),
+
+    Plot.line(oneSideGaussData,{x:"g",y:"density",stroke:"#367ab5",strokeWidth:2.5}),
+    Plot.ruleX([oneSideGaussZ],{stroke:"#c44536",strokeWidth:2})
   ]
 })
-
-html`
-<div class="book-applet-panel">
-  <div class="book-applet-center">${oneSideGaussPlot}</div>
+html`<div class="book-applet-panel">
+  ${oneSideGaussPlot}
   <div class="book-applet-summary">
-    <span>односторонний перевод: p = P(Z_G ≥ Z)</span>
-    <span>площадь правого хвоста равна p-уровню</span>
+    <span>Z = ${oneSideGaussZ.toFixed(1)}</span>
+    <span>p = P(G ≥ Z) = ${chiDistProbabilityText(oneSideGaussP)}</span>
+
   </div>
 </div>`

@@ -1,12 +1,13 @@
 % Full-page vector covers. Interior geometry and page styles remain unchanged.
 \usepackage{pdfpages}
+\hypersetup{pdfpagelayout=TwoPageRight}
 \newcommand{\NeutrinoHitFrontCover}{%
   \hypersetup{pageanchor=false}%
   \begingroup
   \ifdefined\bookpagenavigatorfalse\bookpagenavigatorfalse\fi
   \includepdf[pages=1,fitpaper=true,pagecommand={\thispagestyle{empty}}]{assets/covers/front.pdf}%
   \endgroup
-  \setcounter{page}{1}%
+  % Count the cover in the front matter so physical and printed parity agree.
   \hypersetup{pageanchor=true}%
 }
 \newcommand{\NeutrinoHitBackCover}{%

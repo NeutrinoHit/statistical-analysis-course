@@ -1,17 +1,27 @@
-viewof mixWeight = Inputs.range([0.0, 1.0], {value: 0.5, step: 0.02, label: "weight"})
-viewof mixSeparation = Inputs.range([0.0, 6.0], {value: 2.5, step: 0.1, label: "separation"})
-viewof mixSigma2 = Inputs.range([0.2, 2.5], {value: 1.0, step: 0.05, label: "sigma 2"})
-viewof sampleMix = Inputs.range([1000, 40000], {value: 15000, step: 1000, label: "N"})
-viewof regenerateMix = Inputs.button("Новая статистика")
+viewof mixWeight = Inputs.range([0.0, 1.0], {value: 0.5, step: 0.02, label: "Доля первого класса w"})
+viewof mixSeparation = Inputs.range([0.0, 6.0], {value: 2.5, step: 0.1, label: "Расстояние между средними"})
+viewof mixSigma2 = Inputs.range([0.2, 2.5], {value: 1.0, step: 0.05, label: "Ширина второго класса σ₂"})
+viewof sampleMix = Inputs.range([1000, 40000], {value: 15000, step: 1000, label: "Число событий N"})
+viewof regenerateMix = Inputs.button("Новая статистика", {
+  value: 0,
+  reduce: value => value + 1
+})
 
 mixValues = {
-  regenerateMix;
+  const random = seededUniformCh5(
+    131041
+    + 1031 * regenerateMix
+    + sampleMix
+    + Math.round(100 * mixWeight)
+    + Math.round(100 * mixSeparation)
+    + Math.round(100 * mixSigma2)
+  );
   const values = new Array(sampleMix);
   const mu1 = -mixSeparation / 2;
   const mu2 = mixSeparation / 2;
   for (let i = 0; i < sampleMix; ++i) {
-    if (Math.random() < mixWeight) values[i] = mu1 + randnCauchy();
-    else values[i] = mu2 + mixSigma2 * randnCauchy();
+    if (random() < mixWeight) values[i] = mu1 + randnCauchy(random);
+    else values[i] = mu2 + mixSigma2 * randnCauchy(random);
   }
   return values;
 }
@@ -31,7 +41,7 @@ mixPlot = Plot.plot({
   height: 390,
   marginLeft: 55,
   x: {label: "x", domain: [-8, 8]},
-  y: {label: "density", domain: [0, 0.55]},
+  y: {label: "Плотность", domain: [0, 0.55]},
   grid: true,
   marks: [
     Plot.rectY(histMix, {x1: "x0", x2: "x1", y: "density", fill: "#4ea1ff", fillOpacity: 0.70, stroke: "white"}),
@@ -43,10 +53,10 @@ html`
 <div class="book-applet-panel">
   ${mixPlot}
   <div class="book-applet-summary">
-    <span> Синим цветом показана смесь,</span>
-    <span> оранжевым - гаусс с теми же mean и variance: </span>
-    <span> mean = ${mixMean.toFixed(2)}, </span>
-    <span> sigma = ${mixSigma.toFixed(2)}.</span>
+    <span>Синий: смесь;</span>
+    <span>оранжевый: гаусс с теми же средним и дисперсией;</span>
+    <span>среднее = ${mixMean.toFixed(2)};</span>
+    <span>σ = ${mixSigma.toFixed(2)}.</span>
   </div>
 </div>
 `

@@ -1,5 +1,14 @@
-viewof rare_N = mcRange("число точек", [200, 6000], {value: 1500, step: 100})
-viewof rare_sigma = mcRange("ширина важной области", [0.02, 0.18], {value: 0.06, step: 0.005})
+viewof importanceN = Inputs.range([200, 6000], {
+  value: 1500,
+  step: 100,
+  label: "число точек"
+})
+
+viewof importanceSigma = Inputs.range([0.02, 0.18], {
+  value: 0.06,
+  step: 0.005,
+  label: "ширина важной области"
+})
 
 function rng32(seed) {
   return function() {
@@ -16,12 +25,12 @@ rare_canvas = {
   const ctx = canvas.getContext("2d");
   const rnd = rng32(20260618);
   const L = 320, x0 = 50, y0 = 48;
-  const cx = x0 + 0.68 * L, cy = y0 + 0.42 * L, r = rare_sigma * L;
+  const cx = x0 + 0.68 * L, cy = y0 + 0.42 * L, r = importanceSigma * L;
   ctx.clearRect(0, 0, width, height);
   ctx.strokeStyle = "#666"; ctx.lineWidth = 2; ctx.strokeRect(x0, y0, L, L);
   ctx.beginPath(); ctx.arc(cx, cy, r, 0, 2 * Math.PI); ctx.strokeStyle = "#2163ff"; ctx.stroke();
   let hit = 0;
-  for (let i = 0; i < rare_N; ++i) {
+  for (let i = 0; i < importanceN; ++i) {
     const x = rnd(), y = rnd();
     const px = x0 + x * L, py = y0 + y * L;
     const inside = (px-cx)**2 + (py-cy)**2 < r**2;
@@ -30,12 +39,9 @@ rare_canvas = {
     ctx.fillStyle = inside ? "#2163ff" : "rgba(100,100,100,0.28)"; ctx.fill();
   }
   ctx.fillStyle = "#222"; ctx.font = "20px system-ui";
-  ctx.fillText(`равномерно: попало ${hit} из ${rare_N}`, 395, 180);
+  ctx.fillText(`равномерно: попало ${hit} из ${importanceN}`, 395, 180);
   return canvas;
 }
-
-viewof imp_N = mcRange("число точек", [200, 6000], {value: 1500, step: 100})
-viewof imp_sigma = mcRange("ширина важной области", [0.02, 0.18], {value: 0.06, step: 0.005})
 
 importance_canvas = {
   const width = 720, height = 410;
@@ -47,14 +53,14 @@ importance_canvas = {
     return Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
   }
   const L = 320, x0 = 50, y0 = 48;
-  const cx = x0 + 0.68 * L, cy = y0 + 0.42 * L, r = imp_sigma * L;
+  const cx = x0 + 0.68 * L, cy = y0 + 0.42 * L, r = importanceSigma * L;
   ctx.clearRect(0, 0, width, height);
   ctx.strokeStyle = "#666"; ctx.lineWidth = 2; ctx.strokeRect(x0, y0, L, L);
   ctx.beginPath(); ctx.arc(cx, cy, r, 0, 2 * Math.PI); ctx.strokeStyle = "#2163ff"; ctx.stroke();
   let hit = 0;
-  for (let i = 0; i < imp_N; ++i) {
-    const x = 0.68 + imp_sigma * normal();
-    const y = 0.42 + imp_sigma * normal();
+  for (let i = 0; i < importanceN; ++i) {
+    const x = 0.68 + importanceSigma * normal();
+    const y = 0.42 + importanceSigma * normal();
     if (x < 0 || x > 1 || y < 0 || y > 1) continue;
     const px = x0 + x * L, py = y0 + y * L;
     const inside = (px-cx)**2 + (py-cy)**2 < r**2;

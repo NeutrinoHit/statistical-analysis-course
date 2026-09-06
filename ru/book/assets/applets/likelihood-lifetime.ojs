@@ -1,14 +1,26 @@
-viewof lifeN = Inputs.range([3, 200], {value: 20, step: 1, label: "N"})
-viewof lifeTauTrue = Inputs.range([0.5, 5], {value: 2, step: 0.1, label: "τ0"})
-viewof lifeTauTry = Inputs.range([0.1, 20], {value: 2, step: 0.05, label: "τ"})
-viewof regenerateLife = Inputs.button("Новая выборка", {value: 0, reduce: () => Date.now()})
-viewof revealLifeInterval = Inputs.button("Найти интервал", {value: 0, reduce: () => Date.now()})
+viewof lifeN = Inputs.range([3, 200], {value: 20, step: 1, label: "число распадов N"})
+viewof lifeTauTrue = Inputs.range([0.5, 5], {value: 2, step: 0.1, label: "истинное τ₀, мкс"})
+viewof lifeTauTry = Inputs.range([0.1, 20], {value: 2, step: 0.05, label: "пробное τ, мкс"})
+viewof regenerateLife = Inputs.button("Новая выборка", {value: 0, reduce: value => value + 1})
+viewof revealLifeInterval = Inputs.toggle({label: "показать границы q = 1", value: false})
+
+lifeUniform = seed => {
+  let state = seed >>> 0;
+  return () => {
+    state = (state + 0x6D2B79F5) >>> 0;
+    let value = state;
+    value = Math.imul(value ^ (value >>> 15), value | 1);
+    value ^= value + Math.imul(value ^ (value >>> 7), value | 61);
+    return ((value ^ (value >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
 
 lifeSample = {
-  regenerateLife;
+  const random = lifeUniform((20260910 + 104729 * regenerateLife) >>> 0);
   const values = [];
   for (let i = 0; i < lifeN; ++i) {
-    values.push(-lifeTauTrue * Math.log(Math.max(1e-12, 1 - Math.random())));
+    values.push(-lifeTauTrue * Math.log(Math.max(1e-12, 1 - random())));
   }
   return values;
 }
@@ -41,7 +53,7 @@ lifeRightHi = {
 }
 lifeLow = lifeBisect(Math.max(1e-6, lifeTauHat * 1e-6), lifeTauHat)
 lifeHigh = lifeBisect(lifeTauHat, lifeRightHi)
-lifeShowInterval = revealLifeInterval > regenerateLife
+lifeShowInterval = revealLifeInterval
 lifeXmax = Math.max(
   4 * lifeTauTrue,
   3 * lifeTauHat,
@@ -50,7 +62,7 @@ lifeXmax = Math.max(
   5
 )
 lifeGrid = Array.from({length: 600}, (_, i) => 1e-4 + (lifeXmax - 1e-4) * i / 599)
-lifeCurve = lifeGrid.map(tau => ({tau, dlog: lifeDeltaLog(tau), q: lifeQ(tau)}))
+lifeCurve = lifeGrid.map(tau => ({tau, dlog: lifeDeltaLog(tau), q: lifeQ(tau), quadratic: -0.5 * lifeNobs * (tau - lifeTauHat) ** 2 / lifeTauHat ** 2}))
 lifeTryPoint = [{tau: lifeTauTry, dlog: lifeDeltaLog(lifeTauTry)}]
 lifeYmin = Math.floor(Math.max(
   -20,
@@ -66,42 +78,45 @@ lifeIntervalMarks = lifeShowInterval
   : []
 
 lifePlot = Plot.plot({
+  style: {fontSize: "14px"},
   width: 760,
   height: 360,
   marginLeft: 80,
-  x: {label: "время жизни τ", domain: [0, lifeXmax], grid: true},
+  x: {label: "время жизни τ, мкс", domain: [0, lifeXmax], grid: true},
   y: {label: "ℓ(τ) − ℓmax", domain: [lifeYmin, 0.12], grid: true},
   marks: [
-    Plot.line(lifeCurve, {x: "tau", y: "dlog", stroke: "#4ea1ff", strokeWidth: 4}),
+    Plot.line(lifeCurve, {clip: true,x: "tau", y: "dlog", stroke: "#4ea1ff", strokeWidth: 4}),
+    Plot.line(lifeCurve, {clip: true,x: "tau", y: "quadratic", stroke: "#72808a", strokeDasharray: "6,4", strokeWidth: 2}),
     Plot.ruleY([0], {stroke: "#777", strokeWidth: 2}),
-    Plot.ruleX([lifeTauTrue], {stroke: "#f2f2f2", strokeDasharray: "5,5", strokeWidth: 3}),
+    Plot.ruleX([lifeTauTrue], {stroke: "#1d3941", strokeDasharray: "5,5", strokeWidth: 3}),
     Plot.ruleX([lifeTauTry], {stroke: "#ffb347", strokeWidth: 4}),
-    Plot.dot(lifeTryPoint, {x: "tau", y: "dlog", fill: "#ffb347", r: 7}),
+    Plot.dot(lifeTryPoint, {clip: true,x: "tau", y: "dlog", fill: "#ffb347", r: 7}),
     ...lifeIntervalMarks
   ]
 })
 lifeDataPlot = Plot.plot({
-  width: 290,
-  height: 360,
+  style: {fontSize: "14px"},
+  width: 760,
+  height: 240,
   marginLeft: 55,
-  x: {label: "измеренные времена tᵢ", domain: [0, lifeDataXmax], grid: true},
+  x: {label: "времена tᵢ, мкс", domain: [0, lifeDataXmax], grid: true},
   y: {label: "номер i", domain: [0, lifeN + 1]},
   marks: [
-    Plot.dot(lifeDataRows, {x: "t", y: "i", fill: "#f2f2f2", fillOpacity: 0.72, r: 3}),
-    Plot.ruleX([lifeTauTrue], {stroke: "#f2f2f2", strokeDasharray: "5,5", strokeWidth: 2})
+    Plot.dot(lifeDataRows, {x: "t", y: "i", fill: "#1d3941", fillOpacity: 0.72, r: 3}),
+    Plot.ruleX([lifeTauTrue], {stroke: "#1d3941", strokeDasharray: "5,5", strokeWidth: 2})
   ]
 })
 
 html`
 <div class="book-applet-panel">
-  <div class="book-applet-row book-applet-row-start">
+  <div class="book-applet-column">
     ${lifePlot}
     ${lifeDataPlot}
   </div>
   <div class="book-applet-summary">
-    <span>τ0 задаёт генерацию; точки справа — сгенерированные времена распада;</span>
+    <span>τ₀ = ${lifeTauTrue.toFixed(2)} мкс; оценка τ̂ = ${lifeTauHat.toFixed(2)} мкс. Точки на нижнем графике — времена распада; серая кривая — квадратичное приближение;</span>
     <span> выбранное τ = ${lifeTauTry.toFixed(2)}: ℓ−ℓmax = ${lifeDeltaLog(lifeTauTry).toFixed(2)}, q = ${lifeQ(lifeTauTry).toFixed(2)};</span>
-    <span>${lifeShowInterval ? `q=1: [${lifeLow.toFixed(2)}, ${lifeHigh.toFixed(2)}]` : "сначала найдите максимум, затем нажмите «Найти интервал»"}. </span>
+    <span>${lifeShowInterval ? `q=1: [${lifeLow.toFixed(2)}, ${lifeHigh.toFixed(2)}] мкс` : "сначала найдите максимум, затем включите границы q = 1"}. </span>
     <span> Интервал находится опусканием от максимума на 1/2: ℓ−ℓmax = −1/2.</span>
   </div>
 </div>

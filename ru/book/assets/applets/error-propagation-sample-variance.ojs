@@ -1,7 +1,7 @@
 viewof pars = Inputs.form({
   mu: Inputs.range([-5, 5], {value: 0.8, step: 0.1, label: "μ"}),
   sigma: Inputs.range([0.2, 5], {value: 1.5, step: 0.1, label: "σ"}),
-  seed: Inputs.range([1, 1000], {value: 123, step: 1, label: "seed"})
+  seed: Inputs.range([1, 1000], {value: 123, step: 1, label: "начальное состояние"})
 })
 
 muTrue = pars.mu
@@ -36,32 +36,22 @@ sigmaSHat = shat / Math.sqrt(2 * (N - 1))
 fmt = x => Number(x).toFixed(3)
 
 html`
-<style>
-.gauss-box { font-size: 0.78em; line-height: 1.15; }
-.gauss-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.1em; align-items: start; }
-.gauss-table { border-collapse: collapse; width: 100%; font-size: 0.9em; }
-.gauss-table th, .gauss-table td { padding: 0.2em 0.45em; border-bottom: 1px solid #999; text-align: right; }
-.gauss-table th:first-child, .gauss-table td:first-child { text-align: center; }
-.gauss-panel { display: grid; gap: 0.35em; }
-.gauss-result { margin-top: 0.4em; padding: 0.45em 0.65em; border: 1px solid #999; border-radius: 0.35em; }
-@media (max-width: 800px) { .gauss-grid { grid-template-columns: 1fr; } }
-</style>
-<div class="gauss-box">
-  <div class="gauss-grid">
-    <div>
-      <table class="gauss-table">
+<div class="book-applet-data">
+  <div class="book-applet-grid">
+    <div class="book-applet-table-wrap">
+      <table class="book-applet-table">
         <thead><tr><th>k</th><th>X_k</th><th>X_k - X̄</th><th>(X_k - X̄)^2</th></tr></thead>
         <tbody>
           ${X.map((x, i) => html`<tr><td>${i + 1}</td><td>${fmt(x)}</td><td>${fmt(x - xbar)}</td><td>${fmt((x - xbar) ** 2)}</td></tr>`)}
         </tbody>
       </table>
     </div>
-    <div class="gauss-panel">
+    <div class="book-applet-results">
       <div>Истинные параметры: μ = ${fmt(muTrue)}, σ = ${fmt(sigmaTrue)}, N = ${N}</div>
-      <div class="gauss-result"><div>Оценка среднего:</div><div>X̄ = ${fmt(xbar)}</div></div>
-      <div class="gauss-result"><div>Оценка разброса:</div><div>ŝ² = ${fmt(shat2)}</div><div>ŝ = ${fmt(shat)}</div></div>
-      <div class="gauss-result"><div>Неопределённость среднего:</div><div>ŝ / √N = ${fmt(sigmaMeanHat)}</div><div>Vâr(X̄) = ${fmt(varMeanHat)}</div></div>
-      <div class="gauss-result"><div>Неопределённость оценки ŝ:</div><div>ŝ / √[2(N−1)] = ${fmt(sigmaSHat)}</div><div>Vâr(ŝ) ≈ ${fmt(varSHat)}</div></div>
+      <div class="book-applet-result"><div>Оценка среднего:</div><div>X̄ = ${fmt(xbar)}</div></div>
+      <div class="book-applet-result"><div>Оценки дисперсии и стандартного отклонения:</div><div>σ̂² = ${fmt(shat2)}</div><div>σ̂ = ${fmt(shat)}</div></div>
+      <div class="book-applet-result"><div>Неопределённость среднего:</div><div>σ̂ / √N = ${fmt(sigmaMeanHat)}</div><div>оценка Var(X̄) = ${fmt(varMeanHat)}</div></div>
+      <div class="book-applet-result"><div>Неопределённость оценки σ̂:</div><div>σ̂ / √[2(N−1)] = ${fmt(sigmaSHat)}</div><div>оценка Var(σ̂) ≈ ${fmt(varSHat)}</div></div>
     </div>
   </div>
 </div>

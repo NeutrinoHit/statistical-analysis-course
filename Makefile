@@ -30,9 +30,16 @@ RU_PDF_CHAPTERS := \
 	12_least_squares_systematics \
 	13_goodness_of_fit_and_significance
 
+SITE_OUTPUTS := \
+	_site/index.html \
+	_site/ru/book/index.html \
+	_site/ru/book/statistical-data-analysis.pdf \
+	$(addprefix _site/ru/book/chapters/,$(addsuffix .pdf,$(RU_PDF_CHAPTERS))) \
+	_site/en/book/index.html
+
 .PHONY: help check-env check-book-sources ci-setup site all books notebooks figures book-qr slides \
 	ru-slides en-slides \
-	ru ru-html ru-pdf ru-chapters ru-epub en en-html en-pdf en-epub \
+	ru ru-html ru-preview ru-pdf ru-chapters ru-epub en en-html en-pdf en-epub \
 	ru-notebooks en-notebooks ru-notebook en-notebook \
 	clean clean-site clean-ru clean-en clean-notebooks clean-figures clean-cache
 
@@ -66,15 +73,12 @@ site: check-env check-book-sources book-qr ## Собрать полный сай
 	cp -R shared/analytics shared/styles shared/applets _site/shared/
 	$(QUARTO) render $(BOOK_RU_DIR) --to html
 	$(QUARTO) render $(BOOK_RU_DIR) --to pdf
+	$(PYTHON) scripts/finalize_chapter_bibliographies.py
 	$(CHAPTER_PYTHON) scripts/render_book_chapters.py ru $(RU_PDF_CHAPTERS)
 	$(QUARTO) render $(BOOK_EN_DIR) --to html
 	$(QUARTO) render $(SLIDES_RU_DIR)
 	$(QUARTO) render $(SLIDES_EN_DIR)
-	test -s _site/index.html
-	test -s _site/ru/book/index.html
-	test -s _site/ru/book/statistical-data-analysis.pdf
-	@for chapter in $(RU_PDF_CHAPTERS); do test -s _site/ru/book/chapters/$$chapter.pdf; done
-	test -s _site/en/book/index.html
+	$(PYTHON) scripts/wait_for_files.py $(SITE_OUTPUTS)
 
 all: figures books ## Собрать фигуры и обе книги
 
@@ -94,15 +98,21 @@ en-slides: check-env ## Собрать английские слайды
 
 ru: check-env check-book-sources book-qr ## Собрать русскую книгу целиком
 	$(QUARTO) render $(BOOK_RU_DIR)
+	$(PYTHON) scripts/finalize_chapter_bibliographies.py
 
 en: check-env ## Собрать английскую книгу целиком
 	$(QUARTO) render $(BOOK_EN_DIR)
 
 ru-html: check-env check-book-sources book-qr ## Собрать HTML русской книги
 	$(QUARTO) render $(BOOK_RU_DIR) --to html
+	$(PYTHON) scripts/finalize_chapter_bibliographies.py
+
+ru-preview: check-env check-book-sources book-qr ## Собрать и открыть локальную HTML-книгу
+	$(QUARTO) preview $(BOOK_RU_DIR) --to html
 
 ru-pdf: check-env check-book-sources book-qr ## Собрать PDF русской книги
 	$(QUARTO) render $(BOOK_RU_DIR) --to pdf
+	@if [ -f _site/ru/book/index.html ]; then $(PYTHON) scripts/finalize_chapter_bibliographies.py; fi
 
 ru-chapters: ru-pdf ## Собрать отдельные PDF готовых русских глав
 	$(CHAPTER_PYTHON) scripts/render_book_chapters.py ru $(RU_PDF_CHAPTERS)

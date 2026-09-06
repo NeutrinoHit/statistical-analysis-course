@@ -4,7 +4,7 @@ viewof m = Inputs.range([1, 50], {
   label: "m"
 })
 
-viewof sampleSize = Inputs.range([100, 30000], {
+viewof sampleSize = Inputs.range([1000, 30000], {
   value: 12000,
   step: 1000,
   label: "N"
@@ -12,15 +12,26 @@ viewof sampleSize = Inputs.range([100, 30000], {
 
 viewof regenerate = Inputs.button("Новая статистика")
 
+seededUniform = (seed) => {
+  let state = seed >>> 0;
+  return () => {
+    state += 0x6D2B79F5;
+    let value = state;
+    value = Math.imul(value ^ (value >>> 15), value | 1);
+    value ^= value + Math.imul(value ^ (value >>> 7), value | 61);
+    return ((value ^ (value >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
 zValues = {
-  regenerate;
+  const random = seededUniform(104729 + 1009 * regenerate + 17 * m + sampleSize);
   const scale = Math.sqrt(m / 3);
   const values = new Array(sampleSize);
 
   for (let i = 0; i < sampleSize; ++i) {
     let sum = 0;
     for (let j = 0; j < m; ++j) {
-      sum += 2 * Math.random() - 1;
+      sum += 2 * random() - 1;
     }
     values[i] = sum / scale;
   }
@@ -66,7 +77,7 @@ cltPlot = Plot.plot({
   height: 580,
   marginLeft: 55,
   x: {label: "z", domain: [-4, 4]},
-  y: {label: "density", domain: [0, 0.55]},
+  y: {label: "плотность", domain: [0, 0.55]},
   grid: true,
   marks: [
     Plot.rectY(hist, {
@@ -90,10 +101,11 @@ html`
 <div class="book-applet-panel">
   ${cltPlot}
   <div class="book-applet-summary">
-    <span> Текущие параметры: z = (X1 + ... + Xm)/sqrt(m/3); </span>
-    <span> m = ${m}; </span>
-    <span> mean = ${zMean.toFixed(3)}; </span>
-    <span> variance = ${zVariance.toFixed(3)}. </span>
+    <span><i>Z</i><sub>m</sub> = (<i>X</i><sub>1</sub> + ⋯ + <i>X</i><sub>m</sub>)/√(<i>m</i>/3)</span>
+    <span><i>m</i> = ${m}</span>
+    <span><i>N</i> = ${sampleSize}</span>
+    <span>Среднее выборки = ${zMean.toFixed(3)}</span>
+    <span>Дисперсия выборки = ${zVariance.toFixed(3)}</span>
   </div>
 </div>
 `

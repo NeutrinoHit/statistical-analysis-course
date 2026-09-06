@@ -1,12 +1,28 @@
 viewof piN = Inputs.range([100, 12000], {value: 1200, step: 100, label: "число точек N"})
-viewof regeneratePi = Inputs.button("Новая выборка")
+viewof regeneratePi = Inputs.button("Новая выборка", {
+  value: 0,
+  reduce: value => value + 1
+})
+
+seededUniformPi = seed => {
+  let state = seed >>> 0;
+  return () => {
+    state = (state + 0x6D2B79F5) >>> 0;
+    let value = state;
+    value = Math.imul(value ^ (value >>> 15), value | 1);
+    value ^= value + Math.imul(value ^ (value >>> 7), value | 61);
+    return ((value ^ (value >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+piSeed = (20260908 + 1009 * piN + 104729 * regeneratePi) >>> 0
 
 piPoints = {
-  regeneratePi;
+  const random = seededUniformPi(piSeed);
   const values = [];
   for (let i = 0; i < piN; ++i) {
-    const x = Math.random();
-    const y = Math.random();
+    const x = random();
+    const y = random();
     values.push({x, y, inside: x * x + y * y <= 1});
   }
   return values;
@@ -37,8 +53,8 @@ html`
 <div class="book-applet-panel">
   ${piPlot}
   <div class="book-applet-summary">
-    <span>pi по Монте-Карло = ${piEstimate.toFixed(5)}; </span>
-    <span> статистическая ошибка ≈ ${piSe.toFixed(5)}; </span>
-    <span> отклонение от pi = ${(piEstimate - Math.PI).toFixed(5)}</span>
+    <span>Оценка π: ${piEstimate.toFixed(5)};</span>
+    <span>статистическая ошибка: ${piSe.toFixed(5)};</span>
+    <span>отклонение от π: ${(piEstimate - Math.PI).toFixed(5)}.</span>
   </div>
 </div>`

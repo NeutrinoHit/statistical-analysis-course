@@ -26,12 +26,18 @@ FORBIDDEN = {
     r'when-format="pdf"': 'use unless-format="html:js" for the PDF/EPUB fallback',
     r"\bclt-(?:widget|panel|summary)\b": "use the generic book-applet classes",
     r"\\newline\b": "start a new Markdown paragraph instead of using \\newline",
-    r"наблюд[её]нн\w*": "replace the participle with «данные», «полученное значение» or «результат наблюдения»",
+    r"наблюд[её]нн\w*\s+данн\w*": (
+        "replace «наблюдённые данные» with «данные» or «результат наблюдения»"
+    ),
     r"\b(?:Основная идея|Главная мысль)\b": "state the point directly",
     r"\b(?:внезапно|незаметно|на самом деле|легко видеть|очевидно)\b": (
         "state the fact and its reason without a stock transition"
     ),
     r"analysis-pipeline": "use the generic process-flow component",
+    r"^\{#eq-[A-Za-z0-9_-]+(?:\s+[^}]*)?\}\s*$": (
+        "attach the equation identifier to the closing $$ delimiter"
+    ),
+    r"^`\{ojs\}\s*$": "use a fenced OJS block with three backticks",
     r"\bfig-alt=": "put alternative text in the Markdown image description for EPUB compatibility",
     r"^:{3,}\s+book-applet\s*$": "put .book-applet in the OJS cell options",
     r'^:{3,}\s+\{\.content-visible\s+\.book-applet\s+when-format="html:js"\}': (

@@ -1,16 +1,28 @@
-viewof nCorr = Inputs.range([1, 500], {value: 10, step: 1, label: "n"})
-viewof sigmaCommon = Inputs.range([0, 2.0], {value: 0.6, step: 0.05, label: "sigma common"})
-viewof sigmaStat = Inputs.range([0.1, 2.0], {value: 1.0, step: 0.05, label: "sigma stat"})
-viewof sampleCorr = Inputs.range([1000, 30000], {value: 12000, step: 1000, label: "N"})
-viewof regenerateCorr = Inputs.button("Новая статистика")
+viewof nCorr = Inputs.range([1, 500], {value: 10, step: 1, label: "Число измерений n"})
+viewof sigmaCommon = Inputs.range([0, 2.0], {value: 0.6, step: 0.05, label: "Общая ошибка σ_C"})
+viewof sigmaStat = Inputs.range([0.1, 2.0], {value: 1.0, step: 0.05, label: "Статистическая ошибка σ_ε"})
+viewof sampleCorr = Inputs.range([1000, 30000], {value: 12000, step: 1000, label: "Число опытов N"})
+viewof regenerateCorr = Inputs.button("Новая статистика", {
+  value: 0,
+  reduce: value => value + 1
+})
 
 corrMeans = {
-  regenerateCorr;
+  const random = seededUniformCh5(
+    111031
+    + 1021 * regenerateCorr
+    + 23 * nCorr
+    + sampleCorr
+    + Math.round(100 * sigmaCommon)
+    + Math.round(100 * sigmaStat)
+  );
   const values = new Array(sampleCorr);
   for (let i = 0; i < sampleCorr; ++i) {
-    const c = sigmaCommon * randnCauchy();
+    const c = sigmaCommon * randnCauchy(random);
     let sum = 0;
-    for (let j = 0; j < nCorr; ++j) sum += c + sigmaStat * randnCauchy();
+    for (let j = 0; j < nCorr; ++j) {
+      sum += c + sigmaStat * randnCauchy(random);
+    }
     values[i] = sum / nCorr;
   }
   return values;
@@ -28,8 +40,8 @@ corrPlot = Plot.plot({
   width: 760,
   height: 390,
   marginLeft: 55,
-  x: {label: "mean", domain: [-4, 4]},
-  y: {label: "density", domain: [0, 1.4]},
+  x: {label: "Среднее", domain: [-4, 4]},
+  y: {label: "Плотность", domain: [0, 1.4]},
   grid: true,
   marks: [
     Plot.rectY(histCorr, {x1: "x0", x2: "x1", y: "density", fill: "#4ea1ff", fillOpacity: 0.70, stroke: "white"}),
@@ -41,9 +53,9 @@ html`
 <div class="book-applet-panel">
   ${corrPlot}
   <div class="book-applet-summary">
-    <span> Var(mean) = sigma_common² + sigma_stat²/n; </span>
-    <span> sigma(mean) = ${corrTheorySigma.toFixed(3)}; </span>
-    <span> n = ${nCorr}.</span>
+    <span>Var(среднего) = σ_C² + σ_ε²/n;</span>
+    <span>σ(среднего) = ${corrTheorySigma.toFixed(3)};</span>
+    <span>n = ${nCorr}.</span>
   </div>
 </div>
 `

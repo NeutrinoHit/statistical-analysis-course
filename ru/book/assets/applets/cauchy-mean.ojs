@@ -1,44 +1,62 @@
 viewof nCauchy = Inputs.range([1, 200], {
   value: 1,
   step: 1,
-  label: "n"
+  label: "Число слагаемых n"
 })
 
 viewof sampleCauchy = Inputs.range([1000, 50000], {
   value: 15000,
   step: 1000,
-  label: "N"
+  label: "Число опытов N"
 })
 
-viewof regenerateCauchy = Inputs.button("Новая статистика")
+viewof regenerateCauchy = Inputs.button("Новая статистика", {
+  value: 0,
+  reduce: value => value + 1
+})
 
-randnCauchy = () => {
+seededUniformCh5 = (seed) => {
+  let state = seed >>> 0;
+  return () => {
+    state += 0x6D2B79F5;
+    let value = state;
+    value = Math.imul(value ^ (value >>> 15), value | 1);
+    value ^= value + Math.imul(value ^ (value >>> 7), value | 61);
+    return ((value ^ (value >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+randnCauchy = (random) => {
   let u = 0;
   let v = 0;
-  while (u === 0) u = Math.random();
-  while (v === 0) v = Math.random();
+  while (u === 0) u = random();
+  while (v === 0) v = random();
   return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
 }
 
-cauchyRandom = () => Math.tan(Math.PI * (Math.random() - 0.5))
+cauchyRandom = (random) => Math.tan(Math.PI * (random() - 0.5))
 
 cauchyMeans = {
-  regenerateCauchy;
+  const random = seededUniformCh5(
+    51001 + 1009 * regenerateCauchy + 17 * nCauchy + sampleCauchy
+  );
   const values = new Array(sampleCauchy);
   for (let i = 0; i < sampleCauchy; ++i) {
     let sum = 0;
-    for (let j = 0; j < nCauchy; ++j) sum += cauchyRandom();
+    for (let j = 0; j < nCauchy; ++j) sum += cauchyRandom(random);
     values[i] = sum / nCauchy;
   }
   return values;
 }
 
 gaussMeans = {
-  regenerateCauchy;
+  const random = seededUniformCh5(
+    71011 + 1013 * regenerateCauchy + 19 * nCauchy + sampleCauchy
+  );
   const values = new Array(sampleCauchy);
   for (let i = 0; i < sampleCauchy; ++i) {
     let sum = 0;
-    for (let j = 0; j < nCauchy; ++j) sum += randnCauchy();
+    for (let j = 0; j < nCauchy; ++j) sum += randnCauchy(random);
     values[i] = sum / Math.sqrt(nCauchy);
   }
   return values;
@@ -70,8 +88,8 @@ cauchyPlot = Plot.plot({
   width: 760,
   height: 390,
   marginLeft: 55,
-  x: {label: "x", domain: [-10, 10]},
-  y: {label: "density", domain: [0, 0.38]},
+  x: {label: "Значение", domain: [-10, 10]},
+  y: {label: "Плотность", domain: [0, 0.38]},
   grid: true,
   marks: [
     Plot.rectY(histGaussMean, {
@@ -90,9 +108,9 @@ html`
 <div class="book-applet-panel">
   ${cauchyPlot}
   <div class="book-applet-summary">
-    <span> Синим цветом обозначено среднее для Коши,</span>
-    <span> а зелёным - нормированная сумма для гауссовых распределений. </span>
-    <span> Текущее n = ${nCauchy}.</span>
+    <span>Синий: среднее величин Коши;</span>
+    <span>зелёный: нормированная сумма гауссовых величин;</span>
+    <span>n = ${nCauchy}.</span>
   </div>
 </div>
 `

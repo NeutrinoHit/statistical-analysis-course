@@ -40,6 +40,26 @@ local function latex_escape(text)
     :gsub("%^", "\\textasciicircum{}")
 end
 
+local function markdown_inlines(text)
+  text = value(text)
+  if text == "" then
+    return {}
+  end
+  local document = pandoc.read(text, "markdown")
+  local first = document.blocks[1]
+  if first and (first.t == "Para" or first.t == "Plain") then
+    return first.content
+  end
+  return {pandoc.Str(text)}
+end
+
+local function markdown_inline_html(text)
+  local rendered = pandoc.write(
+    pandoc.Pandoc({pandoc.Plain(markdown_inlines(text))}), "html"
+  )
+  return rendered:gsub("^<p>", ""):gsub("</p>%s*$", ""):gsub("%s+$", "")
+end
+
 local function heading(title, label)
   local content = {}
   if label ~= "" then
@@ -49,7 +69,7 @@ local function heading(title, label)
     if #content > 0 then
       content[#content + 1] = pandoc.Str(". ")
     end
-    content[#content + 1] = pandoc.Strong(title)
+    content[#content + 1] = pandoc.Strong(markdown_inlines(title))
   end
   return pandoc.Para(content)
 end
@@ -308,7 +328,8 @@ local function render_biography(div)
 end
 
 local function render_animation(div)
-  local title = value(div.attributes.title)
+  local title = value(div.attributes.title):gsub("^%s*Интерактив%s*:%s*", "")
+  local applet_fallback = has_class(div, "applet-fallback")
   local src = value(div.attributes.src)
   local epub_src = value(div.attributes["epub-src"])
   local poster_html = value(div.attributes.poster)
@@ -352,6 +373,18 @@ local function render_animation(div)
           html_escape(url)
         )
       end
+    elseif applet_fallback and browser_poster ~= "" then
+      local image = string.format(
+        '<img src="%s" alt="%s" />',
+        html_escape(browser_poster), html_escape(title)
+      )
+      if url ~= "" then
+        media = string.format(
+          '<a href="%s">%s</a>', html_escape(url), image
+        )
+      else
+        media = image
+      end
     elseif embed_url ~= "" or url ~= "" then
       media = string.format(
         '<iframe class="animation-embed" src="%s" title="%s" loading="lazy" allowfullscreen="allowfullscreen"></iframe>',
@@ -366,15 +399,20 @@ local function render_animation(div)
 
     local identifier = div.identifier ~= "" and
       string.format(' id="%s"', html_escape(div.identifier)) or ""
+    local figure_class = applet_fallback and
+      "animation-block applet-fallback" or "animation-block"
     local blocks = {
-      pandoc.RawBlock("html", '<figure class="animation-block"' .. identifier .. '>' .. media)
+      pandoc.RawBlock(
+        "html",
+        '<figure class="' .. figure_class .. '"' .. identifier .. '>' .. media
+      )
     }
     for _, block in ipairs(div.content) do
       blocks[#blocks + 1] = block
     end
     if title ~= "" then
       blocks[#blocks + 1] = pandoc.RawBlock(
-        "html", "<figcaption>" .. html_escape(title) .. "</figcaption>"
+        "html", "<figcaption>" .. markdown_inline_html(title) .. "</figcaption>"
       )
     end
     blocks[#blocks + 1] = pandoc.RawBlock("html", "</figure>")
@@ -516,7 +554,7 @@ function Header(header)
       close_exercise_box(prefix)
       prefix[#prefix + 1] = pandoc.RawBlock(
         "latex",
-        "\\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]"
+        "\\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral},breakable=false]"
       )
       exercise_box_open = true
       local rendered = pandoc.write(

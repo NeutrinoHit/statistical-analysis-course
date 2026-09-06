@@ -82,6 +82,27 @@ def outline_pages(reader: PdfReader) -> dict[str, int]:
     return pages
 
 
+def chapter_end_pages(
+    chapters: list[Chapter],
+    pages: dict[str, int],
+    part_titles: list[str],
+    content_end: int,
+) -> dict[str, int]:
+    """Stop before the next chapter, part opening, or back cover."""
+    titles = [chapter.title for chapter in chapters] + part_titles
+    missing = [title for title in titles if title not in pages]
+    if missing:
+        raise ValueError("В закладках PDF не найдены разделы: " + "; ".join(missing))
+    boundaries = sorted({pages[title] for title in titles} | {content_end})
+    result: dict[str, int] = {}
+    for chapter in chapters:
+        start = pages[chapter.title]
+        if start >= content_end:
+            raise ValueError(f"Глава за пределами содержимого PDF: {chapter.title}")
+        result[chapter.slug] = next(page for page in boundaries if page > start)
+    return result
+
+
 def extract_chapter(
     input_pdf: Path,
     output_pdf: Path,
@@ -91,8 +112,18 @@ def extract_chapter(
     start_page: int,
     end_page: int,
 ) -> None:
+    reader = PdfReader(str(input_pdf))
+    labels = reader.page_labels[start_page:end_page]
     writer = PdfWriter()
-    writer.append(str(input_pdf), pages=(start_page, end_page), import_outline=False)
+    writer.append(reader, pages=(start_page, end_page), import_outline=False)
+    # Two-page layouts require PDF 1.5 or later.
+    writer.pdf_header = max(reader.pdf_header, "%PDF-1.5")
+    for index, label in enumerate(labels):
+        writer.set_page_label(index, index, prefix=label)
+    # The opening may be a left-hand page of the complete book. Do not add
+    # a blank page or move its outer margin to the other side.
+    first_number = int(labels[0]) if labels[0].isdigit() else start_page + 1
+    writer.page_layout = "/TwoPageRight" if first_number % 2 else "/TwoPageLeft"
     writer.add_outline_item(title, 0)
     writer.add_metadata(
         {
@@ -150,21 +181,19 @@ def main() -> int:
         else "Standalone chapter from the statistical analysis course"
     )
     pages = outline_pages(reader)
-    missing_titles = [chapter.title for chapter in chapters if chapter.title not in pages]
-    if missing_titles:
-        parser.error("В закладках PDF не найдены главы: " + "; ".join(missing_titles))
-
-    ordered = sorted(chapters, key=lambda chapter: pages[chapter.title])
     back_cover = reader.named_destinations.get("neutrinohit-back-cover")
     content_end = (
         reader.get_destination_page_number(back_cover)
         if back_cover is not None else len(reader.pages)
     )
-    end_pages: dict[str, int] = {}
-    for index, chapter in enumerate(ordered):
-        end_pages[chapter.slug] = (
-            pages[ordered[index + 1].title] if index + 1 < len(ordered) else content_end
-        )
+    part_titles = [
+        value.strip().strip("\"'")
+        for value in re.findall(r"^\s*-\s+part:\s*(.+?)\s*$", config, re.MULTILINE)
+    ]
+    try:
+        end_pages = chapter_end_pages(chapters, pages, part_titles, content_end)
+    except ValueError as error:
+        parser.error(str(error))
 
     for slug in requested:
         chapter = chapters_by_slug[slug]

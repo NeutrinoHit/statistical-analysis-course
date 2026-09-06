@@ -1,30 +1,62 @@
-viewof likeN = Inputs.range([1, 200], {value: 20, step: 1, label: "N"})
-viewof likeK = Inputs.range([0, likeN], {value: Math.round(0.35 * likeN), step: 1, label: "k"})
+viewof likeN = Inputs.range([1, 200], {
+  value: 20,
+  step: 1,
+  label: "число частиц N"
+})
 
-likePGrid = Array.from({length: 499}, (_, i) => 0.002 + 0.996 * i / 498)
-likePhat = likeK / likeN
-likeLog = p => likeK * Math.log(p) + (likeN - likeK) * Math.log(1 - p)
-likeLogMax = likeK === 0
-  ? 0
-  : likeK === likeN
-    ? 0
-    : likeLog(likePhat)
-likeCurve = likePGrid.map(p => ({
-  p,
-  relative: Math.exp(likeLog(p) - likeLogMax),
-  q: -2 * (likeLog(p) - likeLogMax)
+viewof likeK = Inputs.range([0, likeN], {
+  value: Math.round(0.35 * likeN),
+  step: 1,
+  label: "число срабатываний k"
+})
+
+likeEpsilonGrid = Array.from({length: 501}, (_, i) => i / 500)
+
+likeEpsilonHat = likeK / likeN
+
+likeLogLikelihood = epsilon => {
+  if (epsilon === 0) return likeK === 0 ? 0 : -Infinity
+  if (epsilon === 1) return likeK === likeN ? 0 : -Infinity
+  return likeK * Math.log(epsilon)
+    + (likeN - likeK) * Math.log(1 - epsilon)
+}
+
+likeLogMaximum = likeLogLikelihood(likeEpsilonHat)
+
+likeCurve = likeEpsilonGrid.map(epsilon => ({
+  epsilon,
+  relative: Math.exp(likeLogLikelihood(epsilon) - likeLogMaximum)
 }))
+
+likeStandardError = Math.sqrt(
+  likeEpsilonHat * (1 - likeEpsilonHat) / likeN
+)
 
 likePlot = Plot.plot({
   width: 940,
   height: 430,
   marginLeft: 70,
-  x: {label: "p", domain: [0, 1], grid: true},
-  y: {label: "L(p) / L(p̂)", domain: [0, 1.05], grid: true},
+  x: {
+    label: "эффективность ε",
+    domain: [0, 1],
+    grid: true
+  },
+  y: {
+    label: "L(ε) / L(ε̂)",
+    domain: [0, 1.05],
+    grid: true
+  },
   marks: [
-    Plot.line(likeCurve, {x: "p", y: "relative", stroke: "#4ea1ff", strokeWidth: 4}),
-    Plot.ruleX([likePhat], {stroke: "#ffb347", strokeWidth: 4}),
-    Plot.ruleY([Math.exp(-0.5)], {stroke: "#999", strokeDasharray: "6,5"})
+    Plot.line(likeCurve, {
+      x: "epsilon",
+      y: "relative",
+      stroke: "#4ea1ff",
+      strokeWidth: 4
+    }),
+    Plot.ruleX([likeEpsilonHat], {
+      stroke: "#ff8c42",
+      strokeWidth: 4
+    })
   ]
 })
 
@@ -32,10 +64,9 @@ html`
 <div class="book-applet-panel">
   ${likePlot}
   <div class="book-applet-summary">
-    <span>N — число испытаний, k — число успехов</span>
-    <span>p̂ = k/N = ${likePhat.toFixed(3)}</span>
-    <span>стандартная ошибка ≈ ${Math.sqrt(likePhat * (1 - likePhat) / likeN).toFixed(3)}</span>
-    <span>увеличение N сужает максимум</span>
+    <span>N = ${likeN}, k = ${likeK}</span>
+    <span>оценка эффективности ε̂ = k/N = ${likeEpsilonHat.toFixed(3)}</span>
+    <span>оценка стандартной ошибки = ${likeStandardError.toFixed(3)}</span>
   </div>
 </div>
 `

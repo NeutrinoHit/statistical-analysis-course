@@ -1,12 +1,28 @@
 viewof rejectN = Inputs.range([100, 6000], {value: 1200, step: 100, label: "N точек"})
-viewof regenerateReject = Inputs.button("Новое МК")
+viewof regenerateReject = Inputs.button("Новая выборка", {
+  value: 0,
+  reduce: value => value + 1
+})
+
+seededUniformReject = seed => {
+  let state = seed >>> 0;
+  return () => {
+    state = (state + 0x6D2B79F5) >>> 0;
+    let value = state;
+    value = Math.imul(value ^ (value >>> 15), value | 1);
+    value ^= value + Math.imul(value ^ (value >>> 7), value | 61);
+    return ((value ^ (value >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+rejectSeed = (20260908 + 1009 * rejectN + 104729 * regenerateReject) >>> 0
 
 rejectPoints = {
-  regenerateReject;
+  const random = seededUniformReject(rejectSeed);
   const values = [];
   for (let i = 0; i < rejectN; ++i) {
-    const x = Math.random();
-    const y = 1.5 * Math.random();
+    const x = random();
+    const y = 1.5 * random();
     values.push({x, y, accepted: y <= 6 * x * (1 - x)});
   }
   return values;
@@ -37,8 +53,8 @@ html`
 <div class="book-applet-panel">
   ${rejectPlot}
   <div class="book-applet-summary">
-    <span> Принято: ${acceptedReject.length} из ${rejectPoints.length}; </span>
-    <span>эффективность = ${(100 * rejectRate).toFixed(1)} %</span>
-    <span> теоретическая эффективность = 66.7%</span>
+    <span>Принято: ${acceptedReject.length} из ${rejectPoints.length};</span>
+    <span>эффективность: ${(100 * rejectRate).toFixed(1)}%;</span>
+    <span>теоретическое значение: 66.7%.</span>
   </div>
 </div>`

@@ -1,54 +1,86 @@
-viewof contourProb = Inputs.range([0.1, 0.99], {value: 0.683, step: 0.001, label: "Вер. P"})
-viewof contourRho = Inputs.range([-0.95, 0.95], {value: -0.55, step: 0.05, label: "Корр. ρ"})
+viewof contourProb = Inputs.range([0.1, 0.99], {
+  value: 0.683,
+  step: 0.001,
+  label: "Вероятность внутри P"
+})
 
-contourC = -2 * Math.log(1 - contourProb)
-contourCurve = {
-  const q = Math.sqrt(contourC);
-  const sx = 1.5;
-  const sy = 0.8;
-  const s = Math.sqrt(1 - contourRho * contourRho);
+viewof contourRho = Inputs.range([-0.95, 0.95], {
+  value: -0.55,
+  step: 0.05,
+  label: "Корреляция ρ"
+})
+
+contourThreshold = -2 * Math.log(1 - contourProb)
+
+contourCurveCh7 = {
+  const radius = Math.sqrt(contourThreshold);
+  const sigmaX = 1.5;
+  const sigmaY = 0.8;
+  const residualScale = Math.sqrt(1 - contourRho * contourRho);
   return Array.from({length: 241}, (_, i) => {
-    const a = 2 * Math.PI * i / 240;
-    const z1 = q * Math.cos(a);
-    const z2 = q * Math.sin(a);
-    return {x: sx * z1, y: sy * (contourRho * z1 + s * z2)};
+    const angle = 2 * Math.PI * i / 240;
+    const z1 = radius * Math.cos(angle);
+    const z2 = radius * Math.sin(angle);
+    return {
+      x: sigmaX * z1,
+      y: sigmaY * (contourRho * z1 + residualScale * z2)
+    };
   });
 }
 
-unitCurve = {
-  const q = 1;
-  const sx = 1.5;
-  const sy = 0.8;
-  const s = Math.sqrt(1 - contourRho * contourRho);
+unitCurveCh7 = {
+  const sigmaX = 1.5;
+  const sigmaY = 0.8;
+  const residualScale = Math.sqrt(1 - contourRho * contourRho);
   return Array.from({length: 241}, (_, i) => {
-    const a = 2 * Math.PI * i / 240;
-    const z1 = q * Math.cos(a);
-    const z2 = q * Math.sin(a);
-    return {x: sx * z1, y: sy * (contourRho * z1 + s * z2)};
+    const angle = 2 * Math.PI * i / 240;
+    const z1 = Math.cos(angle);
+    const z2 = Math.sin(angle);
+    return {
+      x: sigmaX * z1,
+      y: sigmaY * (contourRho * z1 + residualScale * z2)
+    };
   });
 }
 
-contourPlot = Plot.plot({
-  width: 850,
-  height: 500,
-  marginLeft: 70,
-  x: {label: "X", domain: [-5, 5], grid: true},
-  y: {label: "Y", domain: [-4, 4], grid: true},
+contourScaleCh7 = 1.25 * Math.sqrt(Math.max(contourThreshold, 1))
+contourExtentXCh7 = contourScaleCh7 * 1.5
+contourExtentYCh7 = contourScaleCh7 * 0.8
+
+contourPlotCh7 = Plot.plot({
+  width: 700,
+  aspectRatio: 1,
+  marginLeft: 62,
+  x: {label: "X", domain: [-contourExtentXCh7, contourExtentXCh7], grid: true},
+  y: {label: "Y", domain: [-contourExtentYCh7, contourExtentYCh7], grid: true},
   marks: [
+    Plot.frame(),
     Plot.ruleX([0], {stroke: "#777"}),
     Plot.ruleY([0], {stroke: "#777"}),
-    Plot.line(unitCurve, {x: "x", y: "y", stroke: "#8ec5ff", strokeWidth: 3, strokeDasharray: "8,6"}),
-    Plot.line(contourCurve, {x: "x", y: "y", stroke: "#ffb347", strokeWidth: 5})
+    Plot.line(unitCurveCh7, {
+      x: "x",
+      y: "y",
+      stroke: "#4ea1ff",
+      strokeWidth: 3,
+      strokeDasharray: "8,6"
+    }),
+    Plot.line(contourCurveCh7, {
+      x: "x",
+      y: "y",
+      stroke: "#ff8c42",
+      strokeWidth: 4
+    })
   ]
 })
 
 html`
 <div class="book-applet-panel">
-  ${contourPlot}
+  ${contourPlotCh7}
   <div class="book-applet-summary">
-    <span>оранжевый: P = ${(100 * contourProb).toFixed(1)}%</span>
-    <span>Delta chi^2 = ${contourC.toFixed(2)}</span>
-    <span>голубой пунктир: Delta chi^2 = 1, P = 39.3%</span>
+    <span>сплошная линия: P = ${(100 * contourProb).toFixed(1)}%;</span>
+    <span>D² = ${contourThreshold.toFixed(2)};</span>
+    <span>пунктир: D² = 1, внутри 39.3% распределения;</span>
+    <span>ρ = ${contourRho.toFixed(2)}.</span>
   </div>
 </div>
 `

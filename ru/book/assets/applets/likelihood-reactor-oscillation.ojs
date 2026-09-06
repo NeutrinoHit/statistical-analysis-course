@@ -1,9 +1,9 @@
 
-oscExposureInput = Inputs.range([300, 100000], {value: 2500, step: 100, label: "N₀"})
-oscATrueInput = Inputs.range([0.00, 0.20], {value: 0.085, step: 0.005, label: "A₀"})
-oscDmTrueInput = Inputs.range([1.6, 3.4], {value: 2.50, step: 0.05, label: "Δm²₀"})
-oscNBinsInput = Inputs.range([8, 80], {value: 18, step: 1, label: "Nbins"})
-oscRegenerateInput = Inputs.button("Новая стат", {value: 0, reduce: () => Date.now()})
+oscExposureInput = Inputs.range([300, 100000], {value: 2500, step: 100, label: "N₀ без осцилляций"})
+oscATrueInput = Inputs.range([0.00, 0.20], {value: 0.085, step: 0.005, label: "истинное A₀"})
+oscDmTrueInput = Inputs.range([1.6, 3.4], {value: 2.50, step: 0.05, label: "Δm²₀, 10⁻³ эВ²"})
+oscNBinsInput = Inputs.range([8, 80], {value: 18, step: 1, label: "число бинов"})
+oscRegenerateInput = Inputs.button("Новый псевдоэксперимент", {value: 0, reduce: value => value + 1})
 
 oscExposure = Generators.input(oscExposureInput)
 oscATrue = Generators.input(oscATrueInput)
@@ -11,7 +11,7 @@ oscDmTrue = Generators.input(oscDmTrueInput)
 oscNBins = Generators.input(oscNBinsInput)
 oscRegenerate = Generators.input(oscRegenerateInput)
 
-oscBaselineKm = 1.6
+oscBaselineM = 1600
 
 oscBins = Array.from({length: oscNBins}, (_, i) => {
   const e1 = 1.8 + i * (6.2 / oscNBins);
@@ -49,7 +49,7 @@ oscCrossSection = E => {
 
 oscSurvival = (Emev, A, dmMilli) => {
   const dm2 = dmMilli * 1e-3;
-  const phase = 1.267 * dm2 * oscBaselineKm / (Emev / 1000);
+  const phase = 1.267 * dm2 * oscBaselineM / Emev;
   const s = Math.sin(phase);
   return Math.max(1e-4, 1 - A * s * s);
 }
@@ -61,29 +61,40 @@ oscExpected = (A, dmMilli) => {
   return oscBins.map(b => scale * oscFlux(b.e) * oscCrossSection(b.e) * oscSurvival(b.e, A, dmMilli) * b.width);
 }
 
-oscRandn = () => {
-  const u1 = Math.max(Math.random(), 1e-12);
-  const u2 = Math.random();
-  return Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
+oscUniform = seed => {
+  let state = seed >>> 0;
+  return () => {
+    state = (state + 0x6D2B79F5) >>> 0;
+    let value = state;
+    value = Math.imul(value ^ (value >>> 15), value | 1);
+    value ^= value + Math.imul(value ^ (value >>> 7), value | 61);
+    return ((value ^ (value >>> 14)) >>> 0) / 4294967296;
+  };
 }
 
-oscPoisson = lambda => {
-  if (lambda <= 0) return 0;
-  if (lambda > 80) return Math.max(0, Math.round(lambda + Math.sqrt(lambda) * oscRandn()));
-  const limit = Math.exp(-lambda);
-  let k = 0;
-  let product = 1;
-  do {
-    ++k;
-    product *= Math.random();
-  } while (product > limit);
-  return k - 1;
+oscPoisson = (lambda, random) => {
+  // A sum of independent Poisson variables is Poisson. Small components
+  // keep exp(-mean) representable without a Gaussian approximation.
+  const parts = Math.max(1, Math.ceil(lambda / 30));
+  const limit = Math.exp(-lambda / parts);
+  let total = 0;
+  for (let part = 0; part < parts; ++part) {
+    let k = 0, product = 1;
+    do {
+      ++k;
+      product *= random();
+    } while (product > limit);
+    total += k - 1;
+  }
+  return total;
 }
 
 oscData = {
-  oscRegenerate;
+  const random = oscUniform((20260910 + 17 * oscNBins + Math.round(oscExposure)
+    + 101 * Math.round(1000 * oscATrue) + 1009 * Math.round(100 * oscDmTrue)
+    + 104729 * oscRegenerate) >>> 0);
   const mu = oscExpected(oscATrue, oscDmTrue);
-  return oscBins.map((b, i) => ({...b, n: oscPoisson(mu[i]), muTrue: mu[i]}));
+  return oscBins.map((b, i) => ({...b, n: oscPoisson(mu[i], random), muTrue: mu[i]}));
 }
 
 oscLogLike = (A, dmMilli) => {
@@ -125,23 +136,24 @@ oscFit = {
 }
 
 oscRegion68 = oscFit.rows.filter(row => row.q <= 2.30)
-oscRegion95 = oscFit.rows.filter(row => row.q <= 6.18)
+oscRegion954 = oscFit.rows.filter(row => row.q <= 6.18)
 oscObservedTotal = oscData.reduce((sum, row) => sum + row.n, 0)
 oscMuNoOsc = oscExpected(0, oscDmTrue)
 oscMuBest = oscExpected(oscFit.best.A, oscFit.best.dm)
 oscSpectrumRows = oscData.map((row, i) => ({...row, muNoOsc: oscMuNoOsc[i], muBest: oscMuBest[i]}))
 
 oscMapPlot = Plot.plot({
+  style: {fontSize: "14px"},
   width: 700,
   height: 430,
   marginLeft: 64,
   marginBottom: 50,
-  x: {label: "Δm² × 10³, эВ²", domain: [1.6, 3.4], grid: true},
+  x: {label: "Δm², 10⁻³ эВ²", domain: [1.6, 3.4], grid: true},
   y: {label: "A = sin² 2θ", domain: [0, 0.20], grid: true},
   color: {scheme: "magma", domain: [0, 1]},
   marks: [
     Plot.dot(oscFit.rows, {x: "dm", y: "A", fill: "relative", r: 3.4}),
-    Plot.dot(oscRegion95, {x: "dm", y: "A", fill: "#ffffff", fillOpacity: 0.14, r: 3.6}),
+    Plot.dot(oscRegion954, {x: "dm", y: "A", fill: "#ffffff", fillOpacity: 0.14, r: 3.6}),
     Plot.dot(oscRegion68, {x: "dm", y: "A", fill: "#ffffff", fillOpacity: 0.55, r: 3.9}),
     Plot.dot([{dm: oscDmTrue, A: oscATrue}], {x: "dm", y: "A", r: 8, fill: "#00d084", stroke: "#111", strokeWidth: 1.5}),
     Plot.dot([{dm: oscFit.best.dm, A: oscFit.best.A}], {x: "dm", y: "A", r: 8, fill: "#ffb347", stroke: "#111", strokeWidth: 1.5})
@@ -149,6 +161,7 @@ oscMapPlot = Plot.plot({
 })
 
 oscSpectrumPlot = Plot.plot({
+  style: {fontSize: "14px"},
   width: 700,
   height: 205,
   marginLeft: 66,
@@ -164,6 +177,7 @@ oscSpectrumPlot = Plot.plot({
 })
 
 oscProfileAPlot = Plot.plot({
+  style: {fontSize: "14px"},
   width: 700,
   height: 205,
   marginLeft: 66,
@@ -171,7 +185,7 @@ oscProfileAPlot = Plot.plot({
   x: {label: "A = sin² 2θ", domain: [0, 0.20], grid: true},
   y: {label: "q_p(A)", domain: [0, 9], grid: true},
   marks: [
-    Plot.line(oscFit.profileA, {x: "A", y: "q", stroke: "#ffb347", strokeWidth: 3}),
+    Plot.line(oscFit.profileA, {clip: true,x: "A", y: "q", stroke: "#ffb347", strokeWidth: 3}),
     Plot.ruleY([1], {stroke: "#999", strokeDasharray: "5,5"}),
     Plot.ruleX([oscATrue], {stroke: "#00d084", strokeDasharray: "5,4"}),
     Plot.ruleX([oscFit.best.A], {stroke: "#ffb347"})
@@ -179,14 +193,15 @@ oscProfileAPlot = Plot.plot({
 })
 
 oscProfileDmPlot = Plot.plot({
+  style: {fontSize: "14px"},
   width: 700,
   height: 205,
   marginLeft: 66,
   marginBottom: 30,
-  x: {label: "Δm² × 10³, эВ²", domain: [1.6, 3.4], grid: true},
+  x: {label: "Δm², 10⁻³ эВ²", domain: [1.6, 3.4], grid: true},
   y: {label: "q_p(Δm²)", domain: [0, 9], grid: true},
   marks: [
-    Plot.line(oscFit.profileDm, {x: "dm", y: "q", stroke: "#4ea1ff", strokeWidth: 3}),
+    Plot.line(oscFit.profileDm, {clip: true,x: "dm", y: "q", stroke: "#4ea1ff", strokeWidth: 3}),
     Plot.ruleY([1], {stroke: "#999", strokeDasharray: "5,5"}),
     Plot.ruleX([oscDmTrue], {stroke: "#00d084", strokeDasharray: "5,4"}),
     Plot.ruleX([oscFit.best.dm], {stroke: "#ffb347"})
@@ -195,7 +210,7 @@ oscProfileDmPlot = Plot.plot({
 
 html`
 <div class="book-applet-panel">
-  <div class="book-applet-grid">
+  <div class="book-applet-column">
     <div>
       <div class="book-applet-controls">
         ${oscExposureInput}
@@ -213,11 +228,13 @@ html`
     </div>
   </div>
   <div class="book-applet-summary">
+    <span>Цвет карты — L/Lmax; светлые области: q ≤ 2.30 и q ≤ 6.18. </span>
     <span>Зелёным цветом обозначена генерация,</span>
     <span> оранжевым — максимум; </span>
     <span>N = ${oscObservedTotal}; </span>
-    <span> Nbins = ${oscNBins}; </span>
+    <span> число бинов = ${oscNBins}; </span>
     <span> Â = ${oscFit.best.A.toFixed(3)}, Δm̂² = ${oscFit.best.dm.toFixed(2)}·10⁻³ эВ²</span>
+    <span>${oscFit.best.A === 0 || oscFit.best.A === 0.2 || oscFit.best.dm === oscDmGrid[0] || oscFit.best.dm === oscDmGrid[60] ? " Максимум на краю сетки: диапазон поиска может ограничивать результат." : ""}</span>
   </div>
 </div>
 `

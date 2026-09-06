@@ -1,5 +1,5 @@
-viewof geomXbar = Inputs.range([-3, 3], {value: 1.8, step: 0.1, label: "центр x̄_w"})
-viewof geomSpread = Inputs.range([0.45, 2.5], {value: 1.0, step: 0.05, label: "разброс по x"})
+viewof geomXbar = Inputs.range([-3, 3], {value: 1.8, step: 0.1, label: "Центр x̄_w"})
+viewof geomSpread = Inputs.range([0.45, 2.5], {value: 1.0, step: 0.05, label: "Разброс s_x"})
 
 geomS = 18
 geomQx = geomS * geomSpread * geomSpread
@@ -16,43 +16,50 @@ geomLineData = geomSlopeSteps.flatMap(k => {
   const b = geomB0 + k * geomSigmaB;
   const a = geomYbar - b * geomXbar;
   return Array.from({length: 121}, (_, i) => {
-    const x = -4.5 + 9 * i / 120;
+    const x = geomXLimits[0] + (geomXLimits[1] - geomXLimits[0]) * i / 120;
     return {x, y: a + b * x, k};
   });
 })
 geomFanLineData = geomLineData.filter(d => d.k !== 0)
 geomBestLineData = geomLineData.filter(d => d.k === 0)
 
-geomOffsets = [-1.55, -1.05, -0.55, -0.12, 0.35, 0.82, 1.28, 1.62]
+geomOffsets = {
+  const raw = [-1.55, -1.05, -0.55, -0.12, 0.35, 0.82, 1.28, 1.62];
+  const mean = raw.reduce((a, b) => a + b, 0) / raw.length;
+  const rms = Math.sqrt(raw.reduce((s, u) => s + (u - mean) ** 2, 0) / raw.length);
+  return raw.map(u => (u - mean) / rms);
+}
 geomPointSigma = Math.sqrt(geomOffsets.length / geomS)
-geomResidualPattern = [0.09, -0.04, 0.06, -0.08, 0.02, 0.07, -0.05, -0.07]
+geomResidualPattern = {
+  const raw = [0.09, -0.04, 0.06, -0.08, 0.02, 0.07, -0.05, -0.07];
+  const mean = raw.reduce((a, b) => a + b, 0) / raw.length;
+  const slope = raw.reduce((s, r, i) => s + r * geomOffsets[i], 0) / raw.length;
+  return raw.map((r, i) => r - mean - slope * geomOffsets[i]);
+}
 geomPoints = geomOffsets.map((u, i) => {
   const x = geomXbar + geomSpread * u;
   return {x, y: geomA0 + geomB0 * x + geomResidualPattern[i]};
 })
 
 geomCenterPoint = [{x: geomXbar, y: geomYbar}]
-geomLabels = [
-  {x: 0, y: 3.25, text: "x = 0"},
-  {x: geomXbar, y: 3.0, text: "центр данных"}
-]
+geomXLimits = [Math.min(0, ...geomPoints.map(d => d.x)) - 0.5, Math.max(0, ...geomPoints.map(d => d.x)) + 0.5]
 
 geomDataPlot = Plot.plot({
-  width: 650,
-  height: 420,
+  width: 760,
+  height: 320,
+  style: {fontSize: "14px"},
   marginLeft: 58,
   marginBottom: 46,
-  x: {label: "x", domain: [-4.5, 4.5], grid: true},
-  y: {label: "y", domain: [-2.0, 3.5], grid: true},
+  x: {label: "x", domain: geomXLimits, grid: true},
+  y: {label: "y", grid: true},
   marks: [
     Plot.ruleX([0], {stroke: "#aaa", strokeDasharray: "6,5"}),
     Plot.ruleX([geomXbar], {stroke: "#ffb347", strokeWidth: 3}),
-    Plot.line(geomFanLineData, {x: "x", y: "y", z: "k", stroke: "#70b7ff", strokeWidth: 2.4, strokeOpacity: 0.58}),
+    Plot.line(geomFanLineData, {x: "x", y: "y", z: "k", stroke: "#367ab5", strokeWidth: 2.4, strokeDasharray: "7,5"}),
     Plot.line(geomBestLineData, {x: "x", y: "y", stroke: "#ffb347", strokeWidth: 4}),
     Plot.ruleX(geomPoints, {x: "x", y1: d => d.y - geomPointSigma, y2: d => d.y + geomPointSigma, stroke: "#aaa", strokeOpacity: 0.65}),
     Plot.dot(geomPoints, {x: "x", y: "y", r: 6, fill: "#4ea1ff", fillOpacity: 0.82}),
-    Plot.dot(geomCenterPoint, {x: "x", y: "y", r: 8, fill: "#ffb347", stroke: "#111", strokeWidth: 1}),
-    Plot.text(geomLabels, {x: "x", y: "y", text: "text", fill: "#f2f2f2", fontSize: 16, dy: -8})
+    Plot.dot(geomCenterPoint, {x: "x", y: "y", r: 8, fill: "#ffb347", stroke: "#111", strokeWidth: 1})
   ]
 })
 
@@ -79,8 +86,9 @@ geomCompLine = [
 ]
 
 geomParamPlot = Plot.plot({
-  width: 560,
-  height: 420,
+  width: 760,
+  height: 320,
+  style: {fontSize: "14px"},
   marginLeft: 66,
   marginBottom: 46,
   x: {label: "δa", domain: [-geomDaMax, geomDaMax], grid: true},
@@ -89,23 +97,24 @@ geomParamPlot = Plot.plot({
     Plot.ruleX([0], {stroke: "#888"}),
     Plot.ruleY([0], {stroke: "#888"}),
     Plot.line(geomEllipse, {x: "da", y: "db", stroke: "#ffb347", strokeWidth: 4}),
-    Plot.line(geomCompLine, {x: "da", y: "db", stroke: "#70b7ff", strokeWidth: 3, strokeDasharray: "7,5"}),
-    Plot.dot([{da: 0, db: 0}], {x: "da", y: "db", r: 6, fill: "#f2f2f2"})
+    Plot.line(geomCompLine, {x: "da", y: "db", stroke: "#367ab5", strokeWidth: 3, strokeDasharray: "7,5", clip: true}),
+    Plot.dot([{da: 0, db: 0}], {x: "da", y: "db", r: 6, fill: "#263640"})
   ]
 })
 
 html`
 <div class="book-applet-panel">
-  <div class="book-applet-row">
+  <div class="book-applet-column">
     ${geomDataPlot}
     ${geomParamPlot}
   </div>
   <div class="book-applet-summary">
-    <span>Q_x = ${geomQx.toFixed(1)}</span>
+    <span>S = ${geomS}; Q_x = ${geomQx.toFixed(2)}</span>
     <span>σ_y фиксирована: ${geomPointSigma.toFixed(2)}</span>
     <span>σ_b = ${geomSigmaB.toFixed(3)}</span>
     <span>σ_a = ${geomSigmaA.toFixed(3)}</span>
-    <span>corr(a,b) = ${geomCorrAB.toFixed(2)}</span>
+    <span>ρ(â,b̂) = ${geomCorrAB.toFixed(2)}</span>
+    <span>Контур: Δχ² = 2.30</span>
   </div>
 </div>
 `

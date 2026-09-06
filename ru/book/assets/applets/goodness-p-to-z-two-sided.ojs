@@ -1,47 +1,30 @@
-twoSideGaussZ = 2
-twoSideGaussPdf = z => Math.exp(-0.5 * z * z) / Math.sqrt(2 * Math.PI)
-twoSideGaussData = Array.from({length: 900}, (_, i) => {
-  const z = -4.5 + 9 * i / 899;
-  return {
-    z,
-    y: twoSideGaussPdf(z),
-    leftTail: z <= -twoSideGaussZ,
-    rightTail: z >= twoSideGaussZ
-  };
+viewof twoSideGaussZ = Inputs.range([0, 6], {value: 2, step: 0.1, label: "Граница |G|: Z"})
+twoSideGaussPdf = g => Math.exp(-g*g/2)/Math.sqrt(2*Math.PI)
+twoSideGaussP = chiDistSf(twoSideGaussZ**2,1)
+twoSideGaussXmax = Math.max(4.5, twoSideGaussZ+1)
+twoSideGaussData = Array.from({length:1201},(_,i)=>{
+  const g = -twoSideGaussXmax + 2*twoSideGaussXmax*i/1200;
+  return {g, density:twoSideGaussPdf(g)};
 })
-twoSideGaussLeftTail = twoSideGaussData.filter(d => d.leftTail)
-twoSideGaussRightTail = twoSideGaussData.filter(d => d.rightTail)
-
+twoSideGaussRight = [{g:twoSideGaussZ,density:twoSideGaussPdf(twoSideGaussZ)},...twoSideGaussData.filter(d=>d.g>twoSideGaussZ)]
+twoSideGaussLeft = [...twoSideGaussData.filter(d=>d.g<-twoSideGaussZ),{g:-twoSideGaussZ,density:twoSideGaussPdf(twoSideGaussZ)}]
 twoSideGaussPlot = Plot.plot({
-  width: 1050,
-  height: 420,
-  marginLeft: 70,
-  marginBottom: 55,
-  x: {label: "Z", domain: [-4.5, 4.5], grid: true},
-  y: {label: "f_Z(z)", domain: [0, 0.43], grid: true},
-  marks: [
-    Plot.areaY(twoSideGaussLeftTail, {x: "z", y: "y", fill: "#ff4f5e", fillOpacity: 0.65}),
-    Plot.areaY(twoSideGaussRightTail, {x: "z", y: "y", fill: "#ff4f5e", fillOpacity: 0.65}),
-    Plot.line(twoSideGaussData, {x: "z", y: "y", stroke: "#6ea8ff", strokeWidth: 4}),
-    Plot.ruleX([-twoSideGaussZ, twoSideGaussZ], {stroke: "#ffb347", strokeWidth: 4}),
-    Plot.text([
-      {z: -2.85, y: 0.055, text: "p/2"},
-      {z: 2.85, y: 0.055, text: "p/2"}
-    ], {
-      x: "z",
-      y: "y",
-      text: "text",
-      fill: "#ffffff",
-      fontSize: 26
-    })
+  width:760,height:340,marginLeft:58,marginBottom:48,
+  style:{fontSize:"14px"},
+  x:{label:"g",domain:[-twoSideGaussXmax,twoSideGaussXmax],grid:true},
+  y:{label:"φ(g)",domain:[0,0.43],grid:true},
+  marks:[
+    Plot.areaY(twoSideGaussRight,{x:"g",y:"density",fill:"#c44536",fillOpacity:0.4}),
+    Plot.areaY(twoSideGaussLeft,{x:"g",y:"density",fill:"#c44536",fillOpacity:0.4}),
+    Plot.line(twoSideGaussData,{x:"g",y:"density",stroke:"#367ab5",strokeWidth:2.5}),
+    Plot.ruleX([-twoSideGaussZ,twoSideGaussZ],{stroke:"#c44536",strokeWidth:2})
   ]
 })
-
-html`
-<div class="book-applet-panel">
-  <div class="book-applet-center">${twoSideGaussPlot}</div>
+html`<div class="book-applet-panel">
+  ${twoSideGaussPlot}
   <div class="book-applet-summary">
-    <span>двусторонний перевод: p = P(|Z_G| ≥ Z)</span>
-    <span>для одного параметра затем получается Δχ² = Z²</span>
+    <span>Z = ${twoSideGaussZ.toFixed(1)}</span>
+    <span>p = P(|G| ≥ Z) = ${chiDistProbabilityText(twoSideGaussP)}</span>
+    <span>Каждый хвост: ${chiDistProbabilityText(twoSideGaussP/2)}</span>
   </div>
 </div>`

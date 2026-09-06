@@ -25,11 +25,53 @@ function mcRange(label, domain, options) {
 viewof grid_m = mcRange("точек по каждой координате", [2, 12], {value: 5, step: 1})
 viewof grid_d = mcRange("размерность", [1, 12], {value: 8, step: 1})
 
-grid_points_text = {
-  const N = Math.pow(grid_m, grid_d);
-  return html`<div class="book-applet-metric">
-    <b>Регулярная сетка:</b><br>
-    ${grid_m} точек по каждой координате в ${grid_d}-мерном пространстве<br>
-    <span class="book-applet-metric-value">N = ${N.toLocaleString("ru-RU")}</span>
+gridPoints = Array.from({length: 12}, (_, index) => {
+  const dimension = index + 1;
+  return {
+    dimension,
+    points: Math.pow(grid_m, dimension)
+  };
+})
+
+gridPlot = Plot.plot({
+  width: 820,
+  height: 390,
+  marginLeft: 82,
+  x: {
+    label: "размерность d",
+    domain: [1, 12],
+    ticks: 12,
+    grid: true
+  },
+  y: {
+    label: "число узлов mᵈ",
+    type: "log",
+    grid: true
+  },
+  marks: [
+    Plot.line(gridPoints, {
+      x: "dimension",
+      y: "points",
+      stroke: "#216b73",
+      strokeWidth: 3
+    }),
+    Plot.dot(gridPoints.filter(point => point.dimension === grid_d), {
+      x: "dimension",
+      y: "points",
+      fill: "#ff8c42",
+      r: 6
+    })
+  ]
+})
+
+gridResult = {
+  const points = Math.pow(grid_m, grid_d);
+  return html`<div class="book-applet-panel">
+    ${gridPlot}
+    <div class="book-applet-summary">
+      <span>${grid_m} узлов по каждой координате;</span>
+      <span>размерность ${grid_d};</span>
+      <span>всего ${points.toLocaleString("ru-RU")} вычислений.</span>
+    </div>
   </div>`
 }

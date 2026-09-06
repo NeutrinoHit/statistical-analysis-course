@@ -1,22 +1,25 @@
 viewof sampleLandau = Inputs.range([1000, 50000], {
   value: 15000,
   step: 1000,
-  label: "N"
+  label: "Число событий N"
 })
 
 viewof landauScale = Inputs.range([0.3, 2.5], {
   value: 1.0,
   step: 0.05,
-  label: "scale"
+  label: "Масштаб"
 })
 
 viewof landauShift = Inputs.range([-3.0, 3.0], {
   value: 0.0,
   step: 0.1,
-  label: "shift"
+  label: "Сдвиг"
 })
 
-viewof regenerateLandau = Inputs.button("Новая статистика")
+viewof regenerateLandau = Inputs.button("Новая статистика", {
+  value: 0,
+  reduce: value => value + 1
+})
 
 randnLandau = () => {
   let u = 0;
@@ -43,11 +46,11 @@ histogramLandau = (values, bins, min, max) => {
 // Landau-подобная случайная величина.
 // Это alpha-stable распределение с alpha = 1 и максимальной правой асимметрией.
 // Оно имеет тот же физический смысл: длинный правый хвост и отсутствие обычной дисперсии.
-landauStableRandom = () => {
+landauStableRandom = (random) => {
   const beta = 1.0;
-  const V = Math.PI * (Math.random() - 0.5);
+  const V = Math.PI * (random() - 0.5);
   let W = 0;
-  while (W === 0) W = -Math.log(Math.random());
+  while (W === 0) W = -Math.log(random());
 
   return (2 / Math.PI) * (
     (Math.PI / 2 + beta * V) * Math.tan(V)
@@ -59,10 +62,16 @@ landauStableRandom = () => {
 }
 
 landauValues = {
-  regenerateLandau;
+  const random = seededUniformCh5(
+    91009
+    + 1019 * regenerateLandau
+    + sampleLandau
+    + Math.round(100 * landauScale)
+    + Math.round(100 * landauShift)
+  );
   const values = new Array(sampleLandau);
   for (let i = 0; i < sampleLandau; ++i) {
-    values[i] = landauShift + landauScale * landauStableRandom();
+    values[i] = landauShift + landauScale * landauStableRandom(random);
   }
   return values;
 }
@@ -97,8 +106,8 @@ landauPlot = Plot.plot({
   width: 760,
   height: 390,
   marginLeft: 55,
-  x: {label: "energy loss variable", domain: [-8, 25]},
-  y: {label: "density", domain: [0, 0.42]},
+  x: {label: "Потеря энергии Δ", domain: [-8, 25]},
+  y: {label: "Плотность", domain: [0, 0.42]},
   grid: true,
   marks: [
     Plot.rectY(histLandau, {
@@ -122,10 +131,10 @@ html`
 <div class="book-applet-panel">
   ${landauPlot}
   <div class="book-applet-summary">
-    <span> Синий: Landau-like stable law;</span>
-    <span> оранжевый: Gaussian с той же медианой и центральной шириной;</span>
-    <span> median = ${landauMedian.toFixed(2)};</span>
-    <span> central sigma = ${landauRobustSigma.toFixed(2)}.</span>
+    <span>Синий: ландау-подобное распределение;</span>
+    <span>оранжевый: гаусс с той же медианой и центральной шириной;</span>
+    <span>медиана = ${landauMedian.toFixed(2)};</span>
+    <span>центральная ширина = ${landauRobustSigma.toFixed(2)}.</span>
   </div>
 </div>
 `

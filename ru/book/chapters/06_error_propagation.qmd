@@ -1,150 +1,277 @@
 ---
 title: "Распространение ошибок"
-description: "Линейное распространение неопределённостей, нелинейные функции, выборочные оценки и ковариационные матрицы."
+description: "Линейное распространение неопределённостей, разброс выборочных оценок и ковариационные матрицы."
 ---
 
 ::: chapter-opening
 [Аннотация]{.chapter-opening-label}
 
-Глава посвящена переносу неопределённостей исходных измерений на производные величины. Рассматриваются линейное приближение, его проверка для нелинейных функций, разброс оценок дисперсии и общий матричный закон распространения с учётом корреляций.
+Физический результат обычно вычисляется по нескольким величинам, которые
+измеряет детектор. Вместе с результатом требуется найти его неопределённость.
+В этой главе мы получим линейный закон распространения ошибок, проверим его на
+нелинейной функции и запишем в матричном виде с учётом корреляций. Отдельный
+раздел посвящён разбросу оценок дисперсии и стандартного отклонения.
 :::
 
-## От измерения к физическому результату
+## Физическая задача: измерение сечения
 
-Эксперимент обычно не измеряет непосредственно ту величину, которая затем появляется в физическом результате. Детектор регистрирует набор исходных величин: $$\mathbf X=(X_1,\ldots,X_n),$$ а интересующий результат строится как функция этих измерений: $$\mathbf Y=\mathbf f(\mathbf X).$$ Вместе со значением $\mathbf Y$ необходимо сообщить его неопределённость. Если $\mathbf Y$ зависит от нескольких исходных измерений, знания только их отдельных ошибок недостаточно: нужно также понимать, как эти величины флуктуируют совместно.
+Эксперимент зарегистрировал $N=1000$ сигнальных событий. Эффективность отбора
+равна
 
-::: book-note
-Типичные производные величины в эксперименте:
+$$
+\varepsilon=0.80\pm0.02,
+$$ {#eq-ch6-cross-section-efficiency-example}
 
-- поперечный импульс заряженной частицы из радиуса кривизны трека: $$p_T=qBR;$$
-- сечение процесса по числу событий, эффективности и интегральной светимости: $$\sigma=\frac{N_{\mathrm{sig}}}{\varepsilon L};$$
-- инвариантная масса двух безмассовых частиц: $$m^2=2E_1E_2(1-\cos\theta);$$
-- координаты точки пересечения восстановленных треков.
+а интегральная светимость составляет
 
-Во всех этих случаях неопределённости исходных измерений нужно перенести на итоговый результат.
-:::
+$$
+L=(100\pm2)\ \text{фб}^{-1}.
+$$ {#eq-ch6-cross-section-luminosity-example}
 
-Линейное распространение ошибок основано на разложении функции в окрестности среднего значения. Если ошибки достаточно малы, достаточно оставить касательную: $$\boxed{
-f(X)\approx f(\mu_X)+f'(\mu_X)(X-\mu_X).
-}$$ Случайное отклонение $X-\mu_X$ тогда преобразуется почти линейно, и его дисперсию можно вычислить аналитически. Это приближение называется **линейным распространением ошибок** [@jcgm2008gum].
+В упрощённой модели фон отсутствует, число событий имеет распределение
+Пуассона, а эффективность и светимость измерены независимо от $N$ и друг от
+друга. Оценка сечения процесса равна
+
+$$
+\widehat\sigma_{\mathrm{proc}}
+=\frac{N}{\varepsilon L}
+=12.5\ \text{фб}.
+$$ {#eq-ch6-cross-section-estimate-example}
+
+Для пуассоновского счёта стандартное отклонение числа событий можно оценить
+как $\sigma_N=\sqrt N$. Относительная неопределённость сечения в линейном
+приближении тогда равна
+
+$$
+\begin{aligned}
+\left(
+\frac{\sigma_{\widehat\sigma_{\mathrm{proc}}}}
+     {\widehat\sigma_{\mathrm{proc}}}
+\right)^2
+&\simeq
+\left(\frac{\sigma_N}{N}\right)^2
++\left(\frac{\sigma_\varepsilon}{\varepsilon}\right)^2
++\left(\frac{\sigma_L}{L}\right)^2\\
+&=
+\left(\frac{\sqrt{1000}}{1000}\right)^2
++\left(\frac{0.02}{0.80}\right)^2
++\left(\frac{2}{100}\right)^2
+=0.045^2.
+\end{aligned}
+$$ {#eq-ch6-cross-section-relative-uncertainty-example}
+
+Результат можно записать как
+
+$$
+\widehat\sigma_{\mathrm{proc}}
+=(12.5\pm0.6)\ \text{фб}.
+$$ {#eq-ch6-cross-section-result-example}
+
+В одной строке под корнем встретились статистика событий, эффективность
+детектора и светимость ускорителя. Формулу мы пока использовали как готовую.
+Ниже выведем её и увидим, где в ней должны стоять ковариации. В реальном
+анализе $N$ получают после вычитания фона, а эффективность и нормировки могут
+зависеть от общих калибровок. Тогда три квадрата уже не исчерпывают задачу.
+
+## Что называется ошибкой
+
+В названии главы используется привычное физикам выражение «распространение
+ошибок». В строгой метрологической терминологии ошибка — это разность между
+измеренным и опорным значениями, а неопределённость описывает разброс возможных
+результатов. В формулах этой главы речь идёт о стандартной неопределённости,
+которую мы обозначаем через $\sigma_X$.
+
+Стандартное отклонение описывает масштаб случайного разброса. Смещение метода,
+неопределённость калибровки и физические границы параметра требуют отдельного
+учёта. Общие правила представления неопределённостей измерения собраны в
+руководстве JCGM [@jcgm2008gum].
 
 ## Одна измеряемая величина
 
-### Линейное распространение ошибки
+Пусть детектор измеряет случайную величину $X$, а результат вычисляется по
+формуле
 
-Пусть $$Y=f(X),
-\qquad
+$$
+Y=f(X).
+$$ {#eq-ch6-one-variable-transformation}
+
+Обозначим
+
+$$
 \mathbb E[X]=\mu_X,
 \qquad
-\operatorname{Var}(X)=\sigma_X^2.$$ Разложим функцию вблизи $\mu_X$ и оставим только линейный член.
+\operatorname{Var}(X)=\sigma_X^2.
+$$ {#eq-ch6-input-mean-variance}
+
+### Линейное распространение ошибки
+
+На масштабе $\sigma_X$ функцию $f$ можно заменить её касательной в точке
+$\mu_X$, если кривизна функции на этом интервале мала.
 
 ::: book-derivation
-#### Вывод формулы для одной переменной
+#### Формула для одной переменной
 
-Первый порядок разложения Тейлора: $$f(X)\approx f(\mu_X)+f'(\mu_X)(X-\mu_X).$$ При таком приближении среднее значение результата равно: $$\mathbb E[Y]\approx f(\mu_X),$$ а отклонение от среднего имеет вид: $$Y-\mathbb E[Y]
-\approx
-f'(\mu_X)(X-\mu_X).$$ Возводя это выражение в квадрат и усредняя, получаем $$\begin{aligned}
-\sigma_Y^2
-&=\operatorname{Var}(Y)
-\approx
+Первый порядок разложения Тейлора даёт
+
+$$
+f(X)\simeq
+f(\mu_X)+f'(\mu_X)(X-\mu_X).
+$$ {#eq-ch6-one-variable-taylor}
+
+В этом приближении
+
+$$
+\mathbb E[Y]\simeq f(\mu_X),
+\qquad
+Y-\mathbb E[Y]
+\simeq f'(\mu_X)(X-\mu_X).
+$$ {#eq-ch6-one-variable-centered-output}
+
+Квадрат производной можно вынести из математического ожидания:
+
+$$
+\begin{aligned}
+\operatorname{Var}(Y)
+&\simeq
 \mathbb E\!\left[
-\bigl(f'(\mu_X)(X-\mu_X)\bigr)^2
+f'(\mu_X)^2(X-\mu_X)^2
 \right]\\
-&=
-\left[f'(\mu_X)\right]^2
-\mathbb E[(X-\mu_X)^2].
-\end{aligned}$$
+&=f'(\mu_X)^2\sigma_X^2.
+\end{aligned}
+$$ {#eq-ch6-one-variable-variance-derivation}
 
-Следовательно,
+Поэтому
 
 $$
 \boxed{
-\sigma_Y^2
-\approx
-\left[f'(\mu_X)\right]^2\sigma_X^2,
-\qquad
-\sigma_Y
-\approx
-\left|f'(\mu_X)\right|\sigma_X.
+\sigma_Y\simeq |f'(\mu_X)|\sigma_X.
 }
-\quad\blacksquare
 $$ {#eq-error-propagation-one-variable}
 :::
 
-В @eq-error-propagation-one-variable производная показывает, насколько исходная флуктуация $X$ усиливается при переходе к $Y$.
+Производная в уравнении [-@eq-error-propagation-one-variable] показывает,
+во сколько раз небольшое отклонение входной величины растягивается или
+сжимается при переходе к $Y$. Для линейной функции формула точна. Для
+нелинейной её точность определяется размером области, занятой распределением
+$X$.
 
-### Пример: степенная зависимость
+### Поперечный импульс в магнитном поле
 
-Для $$Y=X^a$$ производная равна: $$\frac{dY}{dX}=aX^{a-1}.$$ Отсюда $$\sigma_Y\approx |a|\mu_X^{a-1}\sigma_X.$$ Разделив обе части на $|Y|=|\mu_X|^a$, получаем относительную форму: $$\boxed{
-\frac{\sigma_Y}{|Y|}
-\approx
+Радиус $R$ траектории заряженной частицы в однородном магнитном поле связан с
+поперечным импульсом соотношением
+
+$$
+p_T=|q|BR.
+$$ {#eq-ch6-transverse-momentum-radius}
+
+В единицах, обычных для физики частиц,
+
+$$
+p_T[\text{ГэВ}/c]
+\simeq
+0.2998\,|q/e|\,B[\text{Тл}]\,R[\text{м}].
+$$ {#eq-ch6-transverse-momentum-practical-units}
+
+Если $q$ и $B$ считаются известными, неопределённость создаёт измерение
+радиуса. Поскольку зависимость линейна,
+
+$$
+\sigma_{p_T}=|q|B\sigma_R,
+\qquad
+\frac{\sigma_{p_T}}{p_T}=\frac{\sigma_R}{R}.
+$$ {#eq-ch6-transverse-momentum-uncertainty}
+
+Ошибка радиуса переходит в такую же относительную ошибку импульса. Если
+неопределённость магнитного поля существенна, $B$ становится второй входной
+величиной. Такой случай разберём в разделе о ковариациях.
+
+### Степенная зависимость
+
+Для функции
+
+$$
+Y=X^a
+$$ {#eq-ch6-power-transformation}
+
+производная равна
+
+$$
+f'(x)=ax^{a-1}.
+$$ {#eq-ch6-power-derivative}
+
+В точке $x=\mu_X$ уравнение
+[-@eq-error-propagation-one-variable] принимает вид
+
+$$
+\frac{\sigma_Y}{|f(\mu_X)|}
+\simeq
 |a|\frac{\sigma_X}{|\mu_X|}.
-}$$ Несколько часто используемых следствий этой формулы:
+$$ {#eq-ch6-power-relative-uncertainty}
 
-| Функция   | Распространённая ошибка               |
-|-----------|---------------------------------------|
-| $Y=aX+b$  | $\sigma_Y=|a|\sigma_X$                |
-| $Y=X^a$   | $\sigma_Y/|Y|\approx |a|\sigma_X/|X|$ |
-| $Y=1/X$   | $\sigma_Y/|Y|\approx \sigma_X/|X|$    |
-| $Y=\ln X$ | $\sigma_Y\approx \sigma_X/|X|$        |
-| $Y=e^X$   | $\sigma_Y/|Y|\approx \sigma_X$        |
+Несколько часто встречающихся функций собраны в таблице
+[-@tbl-error-propagation-functions]. Здесь $x_0=\mu_X$ и $y_0=f(x_0)$.
+
+| Функция $f(x)$ | Линейная неопределённость | Условие на точку разложения |
+|:---|:---|:---|
+| $ax+b$ | $\sigma_Y=|a|\sigma_X$ | формула точна |
+| $x^a$ | $\sigma_Y/|y_0|\simeq |a|\sigma_X/|x_0|$ | функция определена около $x_0$ |
+| $1/x$ | $\sigma_Y/|y_0|\simeq\sigma_X/|x_0|$ | $x_0$ далёк от нуля |
+| $\ln x$ | $\sigma_Y\simeq\sigma_X/x_0$ | $x_0>0$, вероятность $X\le0$ мала |
+| $e^x$ | $\sigma_Y/y_0\simeq\sigma_X$ | $X$ безразмерна |
 
 : Линейное распространение ошибки для часто встречающихся функций {#tbl-error-propagation-functions}
 
-::: book-note
-Эти формулы являются локальными. Производная не должна заметно изменяться на масштабе исходной неопределённости. Если функция сильно искривлена внутри области, где находится существенная часть распределения $X$, линейная формула может стать неточной.
-:::
+Таблица даёт локальные формулы. У отношения, логарифма и других функций с
+границей одной малости $\sigma_X$ недостаточно. Распределение $X$ должно с
+большой вероятностью оставаться в области, где функция гладкая.
 
-### Пример: поперечный импульс в магнитном поле
+## Где линейное приближение перестаёт работать
 
-Пусть $R$ — измеренный радиус кривизны трека, а $B$ — магнитное поле. Тогда $$p_T=qBR.$$ Если $B$ и $q$ считаются известными, а неопределённость связана только с измерением $R$, то $$\frac{\partial p_T}{\partial R}=qB,$$ и линейное распространение даёт: $$\boxed{
-\sigma_{p_T}=qB\sigma_R,
-\qquad
-\frac{\sigma_{p_T}}{p_T}=\frac{\sigma_R}{R}.
-}$$
+Касательная описывает функцию в малой окрестности точки разложения. Размер
+этой окрестности задаёт $\sigma_X$. Линейная формула требует проверки в
+четырёх типичных ситуациях:
 
-### Пример: сечение процесса
+- производная заметно меняется на интервале порядка $\sigma_X$;
+- $f'(\mu_X)$ близка к нулю и первым ненулевым оказывается квадратичный член;
+- рядом находится полюс, порог или физическая граница;
+- преобразованное распределение заметно асимметрично.
 
-Рассмотрим $$\sigma=\frac{N}{\varepsilon L},$$ где $N$ — число событий, $\varepsilon$ — эффективность, а $L$ — интегральная светимость. Если ковариации между этими величинами равны нулю, то результат для дисперсии имеет вид: $$\sigma_\sigma^2
-=
-\frac{\sigma_N^2}{\varepsilon^2L^2}
-+
-\frac{N^2\sigma_\varepsilon^2}{\varepsilon^4L^2}
-+
-\frac{N^2\sigma_L^2}{\varepsilon^2L^4}.$$ Удобнее переписать его в относительной форме: $$\boxed{
-\left(\frac{\sigma_\sigma}{\sigma}\right)^2
-=
-\left(\frac{\sigma_N}{N}\right)^2
-+
-\left(\frac{\sigma_\varepsilon}{\varepsilon}\right)^2
-+
-\left(\frac{\sigma_L}{L}\right)^2.
-}$$ Обратите внимание: здесь специально предполагается нулевая ковариация. Общая формула с корреляциями будет получена ниже.
-
-## Когда линейное приближение работает плохо
-
-Линейная формула основана на замене функции касательной. Из этого сразу видно несколько ситуаций, где приближение становится ненадёжным:
-
-- $\sigma_X$ велика по сравнению с масштабом изменения $f(X)$;
-- производная в точке разложения близка к нулю, и квадратичный член становится главным;
-- функция имеет порог, особенность или физическую границу;
-- после преобразования распределение становится заметно асимметричным.
-
-Простейший пример: $Y=X^2$ при $\mu_X=0$. Производная $dY/dX=2X$ в точке среднего равна нулю, поэтому линейная формула формально даёт $\sigma_Y\approx0$, хотя дисперсия $X^2$ положительна.
+Возьмём $Y=X^2$ и $\mu_X=0$. Касательная к параболе в нуле горизонтальна, и
+линейная формула даёт $\sigma_Y\simeq0$. Сама величина $X^2$ при этом
+флуктуирует. Нулевой ответ сообщает о непригодности первого порядка
+разложения.
 
 ### Нелинейное преобразование $Y=X+aX^2$ {#interactive-error-propagation-nonlinear}
 
-Рассмотрим $$X\sim\mathrm N(1,\sigma_X^2),
+Рассмотрим модель из лекции:
+
+$$
+X\sim\mathcal N(1,\sigma_X^2),
 \qquad
-Y=X+aX^2.$$ Линейное приближение около $\mu_X=1$ предсказывает: $$\boxed{
-\mathbb E[Y]\approx1+a,
+Y=X+aX^2.
+$$ {#eq-ch6-quadratic-transformation-model}
+
+Касательная в точке $\mu_X=1$ даёт
+
+$$
+\mathbb E[Y]\simeq1+a,
 \qquad
-\sigma_Y\approx |1+2a|\sigma_X.
-}$$ Для гауссовой $X$ точные первые два момента равны: $$\boxed{
+\sigma_Y\simeq|1+2a|\sigma_X.
+$$ {#eq-ch6-quadratic-linear-prediction}
+
+Для гауссовой величины моменты можно вычислить без приближения:
+
+$$
 \mathbb E[Y]=1+a+a\sigma_X^2,
-\qquad
-\sigma_Y^2=(1+2a)^2\sigma_X^2+2a^2\sigma_X^4.
-}$$ Отброшенные квадратичные члены создают одновременно смещение среднего и дополнительную дисперсию.
+$$ {#eq-ch6-quadratic-exact-mean}
+
+$$
+\operatorname{Var}(Y)
+=(1+2a)^2\sigma_X^2+2a^2\sigma_X^4.
+$$ {#eq-ch6-quadratic-exact-variance}
+
+Член $a\sigma_X^2$ сдвигает среднее, а $2a^2\sigma_X^4$ добавляет дисперсию.
+Оба исчезают в линейном приближении.
 
 ```{ojs}
 //| echo: false
@@ -152,281 +279,287 @@ Y=X+aX^2.$$ Линейное приближение около $\mu_X=1$ пре�
 {{< include ../assets/applets/error-propagation-nonlinear.ojs >}}
 ```
 
-::::: {.content-visible unless-format="html:js"}
-::: {.animation title="Нелинейное преобразование $Y=X+aX^2$" poster="../assets/figures/error_propagation_nonlinear_default.png" url="https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/06_error_propagation.html#interactive-error-propagation-nonlinear" qr="../assets/qr/error-propagation-nonlinear.png"}
-При $\sigma_X=0.35$ и $a=0.35$ линейное приближение ещё хорошо описывает центральную часть распределения, хотя точное среднее уже немного смещено.
+::: {.animation .applet-fallback title="Нелинейное преобразование $Y=X+aX^2$" poster="../assets/figures/error_propagation_nonlinear_default.png" url="https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/06_error_propagation.html#interactive-error-propagation-nonlinear" qr="../assets/qr/error-propagation-nonlinear.png"}
+Меняйте ширину исходного гаусса и коэффициент $a$. Гистограмма показывает
+распределение $Y$, а гладкая кривая — линейный прогноз.
 :::
+
+На рисунке [-@fig-error-propagation-nonlinear-strong] показан режим, в котором
+кривизна уже существенна на масштабе входного распределения.
 
 ::: figure-panel
-![При больших $\sigma_X$ и $a$ нелинейность становится существенной: распределение $Y$ заметно асимметрично, а линейный гауссовский прогноз уже не описывает его форму.](../assets/figures/error_propagation_nonlinear_strong.png){#fig-error-propagation-nonlinear-strong}
+![Распределение $Y=X+aX^2$ при $\sigma_X=0.9$ и $a=0.9$. Синяя гистограмма получена методом Монте-Карло, оранжевая кривая показывает гауссово распределение с параметрами линейного приближения.](../assets/figures/error_propagation_nonlinear_strong.png){#fig-error-propagation-nonlinear-strong}
 :::
-:::::
 
-При малых $a$ и $\sigma_X$ линейная формула и фактическое распределение согласуются хорошо. При усилении нелинейности распределение смещается и становится асимметричным, а одной симметричной ошибки $\sigma_Y$ уже недостаточно для точного описания.
+Здесь расхождение видно по положению максимума, ширине и длинному правому
+хвосту. Запись $y\pm\sigma_Y$ сохраняет два числа, но уже не описывает форму
+распределения. В такой ситуации используют преобразование полного
+распределения или численное моделирование.
 
 ## Разброс оценки стандартного отклонения
 
-До сих пор $\mu$ и $\sigma$ рассматривались как параметры распределения. В реальном эксперименте они обычно неизвестны и оцениваются по конечной выборке. Пусть $$X_1,\ldots,X_N\sim\mathrm N(\mu,\sigma^2)$$ — независимые измерения одной и той же величины. По выборке строятся оценки: $$\widehat\mu
-=
-\frac1N\sum_{k=1}^{N}X_k,
-\qquad
+До сих пор $\mu$ и $\sigma$ были известными параметрами распределения. В
+эксперименте их оценивают по выборке
+
+$$
+X_1,\ldots,X_N\sim\mathcal N(\mu,\sigma^2),
+$$ {#eq-ch6-gaussian-sample-model}
+
+где измерения независимы. Определим оценки среднего, дисперсии и стандартного
+отклонения:
+
+$$
+\widehat\mu=\overline X
+=\frac1N\sum_{k=1}^{N}X_k,
+$$ {#eq-ch6-sample-mean-estimator}
+
+$$
 \widehat{\sigma^2}
-=
-\frac{1}{N-1}\sum_{k=1}^{N}(X_k-\widehat\mu)^2,$$ и $$\widehat\sigma=\sqrt{\widehat{\sigma^2}}.$$
+=\frac1{N-1}\sum_{k=1}^{N}(X_k-\overline X)^2,
+\qquad
+\widehat\sigma=\sqrt{\widehat{\sigma^2}}.
+$$ {#eq-ch6-sample-variance-estimators}
 
-::: book-note
-Величины $\widehat\mu$, $\widehat{\sigma^2}$ и $\widehat\sigma$ сами являются случайными. Если повторить весь эксперимент много раз, в каждом повторении получится своё значение оценки. Поэтому у оценки дисперсии тоже можно вычислить дисперсию.
-:::
+Если повторить весь эксперимент, выборка изменится вместе со всеми тремя
+оценками. Поэтому у $\widehat\sigma$ есть собственное распределение и
+собственная дисперсия.
 
-Для среднего при независимых гауссовых измерениях истинная дисперсия равна: $$\operatorname{Var}(\widehat\mu)=\frac{\sigma^2}{N}.$$ Поскольку истинное $\sigma^2$ обычно неизвестно, на практике используют: $$\widehat{\operatorname{Var}}(\widehat\mu)
-=
-\frac{\widehat{\sigma^2}}{N},
+Для выборочного среднего
+
+$$
+\operatorname{Var}(\widehat\mu)=\frac{\sigma^2}{N}.
+$$ {#eq-ch6-sample-mean-variance}
+
+Параметр $\sigma^2$ неизвестен, и в оценке дисперсии среднего его заменяют
+выборочной дисперсией:
+
+$$
+\widehat{\operatorname{Var}}(\widehat\mu)
+=\frac{\widehat{\sigma^2}}{N},
 \qquad
 \widehat\sigma_{\widehat\mu}
-=
-\frac{\widehat\sigma}{\sqrt N}.$$ Но $\widehat\sigma$ тоже найдено по конечной выборке. Теперь оценим, насколько оно само флуктуирует.
+=\frac{\widehat\sigma}{\sqrt N}.
+$$ {#eq-ch6-estimated-mean-uncertainty}
 
-### Несмещённость выборочной дисперсии
+Возникает следующий вопрос: насколько устойчиво значение
+$\widehat\sigma$, найденное по конечной выборке?
 
-Для дальнейшего вывода удобно ввести отклонения от **истинного**, а не выборочного среднего: $$Y_k=X_k-\mu.$$ Тогда $$\mathbb E[Y_k]=0,
+### Почему в выборочной дисперсии стоит $N-1$
+
+Введём отклонения от истинного среднего
+
+$$
+Y_k=X_k-\mu.
+$$ {#eq-ch6-centered-observations}
+
+Для независимой выборки с конечной дисперсией
+
+$$
+\mathbb E[Y_k]=0,
 \qquad
-\mathbb E[Y_k^2]=\sigma^2,
-\qquad
-\mathbb E[Y_k^4]=3\sigma^4.$$ Последнее равенство использует гауссовость исходного распределения.
+\mathbb E[Y_k^2]=\sigma^2.
+$$ {#eq-ch6-centered-first-two-moments}
+
+Гауссовость для доказательства несмещённости выборочной дисперсии не нужна.
 
 ::: book-derivation
-#### Почему в оценке дисперсии появляется $N-1$
+#### Несмещённость выборочной дисперсии
 
-Обозначим
+Обозначим две суммы
 
-$$A=\sum_{k=1}^{N}Y_k^2,
+$$
+A=\sum_{k=1}^{N}Y_k^2,
 \qquad
-B=\sum_{k=1}^{N}Y_k.$$
+B=\sum_{k=1}^{N}Y_k.
+$$ {#eq-ch6-centered-sums-ab}
 
-Разность выборочного и истинного среднего равна:
+Разность выборочного и истинного среднего равна
 
-$$\widehat\mu-\mu
-=
-\frac1N\sum_{k=1}^{N}(X_k-\mu)
-=
-\frac{B}{N}.$$
+$$
+\overline X-\mu=\frac{B}{N}.
+$$ {#eq-ch6-sample-mean-centered-sum}
 
-Следовательно,
+Сумма квадратов отклонений от выборочного среднего принимает вид
 
-$$X_k-\widehat\mu
-=Y_k-\frac{B}{N}.$$
-
-Рассмотрим сумму квадратов отклонений от выборочного среднего:
-
-$$T=\sum_{k=1}^{N}(X_k-\widehat\mu)^2.$$
-
-Подставляя предыдущее выражение и раскрывая квадрат, получаем
-
-$$\begin{aligned}
+$$
+\begin{aligned}
 T
-&=\sum_{k=1}^{N}\left(Y_k-\frac{B}{N}\right)^2\\
-&=\sum_{k=1}^{N}Y_k^2
--2\frac{B}{N}\sum_{k=1}^{N}Y_k
-+\sum_{k=1}^{N}\frac{B^2}{N^2}\\
-&=A-\frac{2B^2}{N}+\frac{B^2}{N}
-=A-\frac{B^2}{N}.
-\end{aligned}$$
+&=\sum_{k=1}^{N}(X_k-\overline X)^2\\
+&=\sum_{k=1}^{N}\left(Y_k-\frac BN\right)^2\\
+&=A-\frac{B^2}{N}.
+\end{aligned}
+$$ {#eq-ch6-residual-sum-of-squares}
 
-Математическое ожидание первой суммы равно:
+Независимость и центрирование дают
 
-$$\mathbb E[A]=N\sigma^2.$$
+$$
+\mathbb E[A]=N\sigma^2,
+\qquad
+\mathbb E[B^2]=N\sigma^2.
+$$ {#eq-ch6-ab-expectations}
 
-Для $B$ имеем:
+Отсюда
 
-$$\mathbb E[B^2]=N\sigma^2,$$
+$$
+\mathbb E[T]
+=N\sigma^2-\frac1N N\sigma^2
+=(N-1)\sigma^2.
+$$ {#eq-ch6-residual-sum-expectation}
 
-так как это сумма независимых центрированных величин. Значит,
+После деления на $N-1$
 
-$$\mathbb E[T]
-=
-N\sigma^2-\frac1N N\sigma^2
-=(N-1)\sigma^2.$$
-
-Поскольку
-
-$$\widehat{\sigma^2}=\frac{T}{N-1},$$
-
-получаем:
-
-$$\boxed{
+$$
+\boxed{
 \mathbb E[\widehat{\sigma^2}]=\sigma^2.
 }
-\quad\blacksquare$$
+$$ {#eq-ch6-sample-variance-unbiased}
 :::
 
-Делитель $N-1$ делает оценку выборочной дисперсии несмещённой. Одно число $\widehat\mu$ уже определено по той же выборке, и в этом смысле число независимых отклонений уменьшается на единицу.
+Выборочные отклонения связаны условием
+
+$$
+\sum_{k=1}^{N}(X_k-\overline X)=0.
+$$ {#eq-ch6-residuals-constraint}
+
+Одно из $N$ отклонений определяется через остальные. Поэтому сумма их
+квадратов содержит $N-1$ степеней свободы, и такой же делитель появляется в
+несмещённой оценке дисперсии.
 
 ### Дисперсия оценки дисперсии
 
-Теперь найдем
+Теперь понадобится гауссовость. Для центрированной гауссовой величины
 
-$$\operatorname{Var}(\widehat{\sigma^2}).$$ Поскольку $\widehat{\sigma^2}=T/(N-1)$, достаточно вычислить второй момент $T$.
+$$
+\mathbb E[Y_k^4]=3\sigma^4.
+$$ {#eq-ch6-gaussian-fourth-moment}
+
+Поскольку $\widehat{\sigma^2}=T/(N-1)$, достаточно найти дисперсию $T$.
 
 ::: book-derivation
-#### Вывод $\operatorname{Var}(\widehat{\sigma^2})$
+#### Вычисление $\operatorname{Var}(\widehat{\sigma^2})$
 
-Из
+Из уравнения [-@eq-ch6-residual-sum-of-squares]
 
-$$T=A-\frac{B^2}{N}$$
+$$
+T^2=A^2-\frac2N AB^2+\frac1{N^2}B^4.
+$$ {#eq-ch6-residual-sum-square-expanded}
 
-следует:
+Первый момент вычисляется раскрытием квадрата суммы:
 
-$$T^2
-=A^2-\frac{2}{N}AB^2+\frac{1}{N^2}B^4.$$
+$$
+\begin{aligned}
+\mathbb E[A^2]
+&=\sum_{k=1}^{N}\mathbb E[Y_k^4]
++2\sum_{i<j}\mathbb E[Y_i^2Y_j^2]\\
+&=3N\sigma^4+N(N-1)\sigma^4\\
+&=N(N+2)\sigma^4.
+\end{aligned}
+$$ {#eq-ch6-a-second-moment}
 
-Сначала найдём $\mathbb E[A^2]$. Поскольку
+Для смешанного момента выделим одно слагаемое,
+$B=Y_i+C_i$, где $C_i=\sum_{j\ne i}Y_j$. Величины $Y_i$ и $C_i$
+независимы, $\mathbb E[C_i]=0$ и
+$\mathbb E[C_i^2]=(N-1)\sigma^2$. Поэтому
 
-$$A^2
-=\left(\sum_{k=1}^{N}Y_k^2\right)^2
-=\sum_{k=1}^{N}Y_k^4+2\sum_{i<j}Y_i^2Y_j^2,$$
+$$
+\begin{aligned}
+\mathbb E[Y_i^2B^2]
+&=\mathbb E[Y_i^2(Y_i+C_i)^2]\\
+&=3\sigma^4+(N-1)\sigma^4\\
+&=(N+2)\sigma^4,
+\end{aligned}
+$$ {#eq-ch6-one-term-ab2-moment}
 
-а независимость даёт:
+и после суммирования по $i$
 
-$$\mathbb E[Y_i^2Y_j^2]=\sigma^4\qquad(i\ne j),$$
-
-то
-
-$$\mathbb E[A^2]
-=3N\sigma^4+N(N-1)\sigma^4
-=N(N+2)\sigma^4.$$
-
-Для второго среднего запишем:
-
-$$AB^2=\sum_{i=1}^{N}Y_i^2B^2.$$
-
-Для фиксированного $i$ представим:
-
-$$B=Y_i+C_i,
-\qquad
-C_i=\sum_{j\ne i}Y_j.$$
-
-Величины $Y_i$ и $C_i$ независимы, поэтому
-
-$$\mathbb E[Y_i^2B^2]
-=\mathbb E[Y_i^2(Y_i+C_i)^2]
-=\mathbb E[Y_i^4]
-+2\mathbb E[Y_i^3C_i]
-+\mathbb E[Y_i^2C_i^2].$$
-
-Средний смешанный член равен нулю, а
-
-$$\mathbb E[Y_i^2C_i^2]
-=\sigma^2(N-1)\sigma^2.$$
-
-Следовательно,
-
-$$\mathbb E[Y_i^2B^2]=(N+2)\sigma^4,$$
-
-и после суммирования по $i$:
-
-$$\boxed{
+$$
 \mathbb E[AB^2]=N(N+2)\sigma^4.
-}$$
+$$ {#eq-ch6-ab2-moment}
 
-Наконец, $B=\sum_kY_k$ является центрированной гауссовой величиной с дисперсией $N\sigma^2$. Для центрированной гауссовой величины четвёртый момент равен трём квадратам дисперсии, значит
+Сумма $B$ также гауссова, причём
+$\operatorname{Var}(B)=N\sigma^2$. Её четвёртый момент равен
 
-$$\boxed{
+$$
 \mathbb E[B^4]=3N^2\sigma^4.
-}$$
+$$ {#eq-ch6-b-fourth-moment}
 
-Подставим три найденных среднего:
+Подстановка трёх средних в уравнение
+[-@eq-ch6-residual-sum-square-expanded] даёт
 
-$$\mathbb E[T^2]
-=N(N+2)\sigma^4
--\frac{2}{N}N(N+2)\sigma^4
-+\frac{1}{N^2}3N^2\sigma^4
-=(N^2-1)\sigma^4.$$
+$$
+\mathbb E[T^2]=(N^2-1)\sigma^4.
+$$ {#eq-ch6-residual-sum-second-moment}
 
-Так как
+Вместе с уравнением [-@eq-ch6-residual-sum-expectation] это приводит к
 
-$$\mathbb E[T]=(N-1)\sigma^2,$$
+$$
+\operatorname{Var}(T)
+=2(N-1)\sigma^4.
+$$ {#eq-ch6-residual-sum-variance}
 
-то
+Искомая дисперсия оценки равна
 
-$$\operatorname{Var}(T)
-=\mathbb E[T^2]-\mathbb E[T]^2
-=(N^2-1)\sigma^4-(N-1)^2\sigma^4
-=2(N-1)\sigma^4.$$
-
-После деления на $(N-1)^2$ получаем точный результат для гауссовой выборки:
-
-$$\boxed{
+$$
+\boxed{
 \operatorname{Var}(\widehat{\sigma^2})
 =\frac{2\sigma^4}{N-1}.
 }
-\quad\blacksquare$$
+$$ {#eq-ch6-sample-variance-variance}
 :::
 
-### От $\widehat{\sigma^2}$ к $\widehat\sigma$
+Уравнение [-@eq-ch6-sample-variance-variance] является точным для независимой
+гауссовой выборки. Для другого исходного распределения в ответ входит его
+четвёртый центральный момент.
 
-Оценка стандартного отклонения связана с оценкой дисперсии нелинейно: $$\widehat\sigma=\sqrt{\widehat{\sigma^2}}.$$ Для достаточно большого $N$ применим уже полученную линейную формулу распространения ошибки к функции $f(y)=\sqrt y$ в окрестности $y=\sigma^2$.
+### Разброс оценки стандартного отклонения
 
-::: book-derivation
-#### Разброс оценки стандартного отклонения
+Оценка $\widehat\sigma$ связана с $\widehat{\sigma^2}$ функцией квадратного
+корня. Применим к ней формулу
+[-@eq-error-propagation-one-variable] в точке $\sigma^2$:
 
-Производная функции $f(y)=\sqrt y$ равна:
-
-$$f'(y)=\frac{1}{2\sqrt y},
+$$
+f(y)=\sqrt y,
 \qquad
-f'(\sigma^2)=\frac{1}{2\sigma}.$$
+f'(\sigma^2)=\frac1{2\sigma}.
+$$ {#eq-ch6-square-root-derivative}
 
-Следовательно,
+Получаем
 
-$$\operatorname{Var}(\widehat\sigma)
-\approx
-\left(\frac{1}{2\sigma}\right)^2
-\operatorname{Var}(\widehat{\sigma^2}).$$
+$$
+\operatorname{Var}(\widehat\sigma)
+\simeq
+\frac1{4\sigma^2}
+\operatorname{Var}(\widehat{\sigma^2})
+=\frac{\sigma^2}{2(N-1)}.
+$$ {#eq-ch6-standard-deviation-estimator-variance}
 
-Подставляя точную дисперсию оценки дисперсии, получим:
+Относительный разброс оценки стандартного отклонения равен
 
-$$\operatorname{Var}(\widehat\sigma)
-\approx
-\frac{1}{4\sigma^2}\frac{2\sigma^4}{N-1}
-=
-\frac{\sigma^2}{2(N-1)}.$$
-
-После подстановки получаем
-
-$$\boxed{
-\frac{\operatorname{Var}(\widehat\sigma)}{\sigma^2}
-\approx
-\frac{1}{2(N-1)},
-\qquad
+$$
+\boxed{
 \frac{\sqrt{\operatorname{Var}(\widehat\sigma)}}{\sigma}
-\approx
-\frac{1}{\sqrt{2(N-1)}}.
+\simeq
+\frac1{\sqrt{2(N-1)}}.
 }
-\quad\blacksquare$$
-:::
+$$ {#eq-ch6-standard-deviation-relative-spread}
 
-Например, чтобы относительный разброс оценки стандартного отклонения был порядка $10\%$, требуется: $$\frac{1}{\sqrt{2(N-1)}}\approx0.1,$$ откуда $$2(N-1)\approx100,
+Здесь снова использовано линейное приближение, теперь уже для квадратного
+корня. При конечном $N$ оценка $\widehat\sigma$ немного смещена вниз; с ростом
+выборки смещение исчезает, и формула становится точнее.
+
+Для относительного разброса около $10\%$
+
+$$
+\frac1{\sqrt{2(N-1)}}\simeq0.1,
 \qquad
-N\approx51.$$
+N\simeq51.
+$$ {#eq-ch6-sample-size-for-ten-percent-sigma}
 
-::: book-note
-Для независимой гауссовой выборки удобно помнить четыре связанные оценки:
+Пятьдесят измерений нужны лишь для того, чтобы сама оценка ширины
+флуктуировала примерно на десять процентов. Ширину распределения обычно
+измерить труднее, чем его среднее.
 
-$$\widehat\mu=\frac1N\sum_{k=1}^{N}X_k,$$
-
-$$\widehat{\sigma^2}
-=\frac1{N-1}\sum_{k=1}^{N}(X_k-\widehat\mu)^2,
-\qquad
-\widehat\sigma=\sqrt{\widehat{\sigma^2}},$$
-
-$$\widehat{\operatorname{Var}}(\widehat\mu)
-=\frac{\widehat{\sigma^2}}{N},$$
-
-$$\widehat{\operatorname{Var}}(\widehat\sigma)
-\approx
-\frac{\widehat{\sigma^2}}{2(N-1)}.$$
-:::
-
-### Интерактив: десять гауссовских измерений {#interactive-error-propagation-sample-variance}
+### Десять гауссовских измерений {#interactive-error-propagation-sample-variance}
 
 ```{ojs}
 //| echo: false
@@ -434,130 +567,170 @@ $$\widehat{\operatorname{Var}}(\widehat\sigma)
 {{< include ../assets/applets/error-propagation-sample-variance.ojs >}}
 ```
 
-:::: {.content-visible unless-format="html:js"}
-::: {.animation title="Интерактив: десять гауссовских измерений" poster="../assets/figures/error_propagation_sample10.png" url="https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/06_error_propagation.html#interactive-error-propagation-sample-variance" qr="../assets/qr/error-propagation-sample-variance.png"}
-Один из возможных наборов десяти измерений для $\mu=0.8$ и $\sigma=1.5$. Вместе с исходными значениями показаны выборочное среднее, выборочная дисперсия и оценки неопределённостей.
+::: {.animation .applet-fallback title="Десять гауссовских измерений" poster="../assets/figures/error_propagation_sample10.png" url="https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/06_error_propagation.html#interactive-error-propagation-sample-variance" qr="../assets/qr/error-propagation-sample-variance.png"}
+Меняйте параметры распределения и начальное состояние генератора. Таблица
+показывает выборку, оценки $\widehat\mu$, $\widehat{\sigma^2}$,
+$\widehat\sigma$ и их расчётные неопределённости.
 :::
-::::
 
-При изменении параметров или генерации новой выборки меняются и $\widehat\mu$, и $\widehat\sigma$. Это наглядно подчёркивает, что сами оценки являются случайными величинами.
+Десять чисел выглядят вполне убедительно, пока рядом не написаны истинные
+параметры. Новая выборка даёт другие $\widehat\mu$ и $\widehat\sigma$.
+Формулы выше описывают разброс этих результатов в серии повторений.
 
 ## Несколько измеряемых величин
 
-### Ошибка суммы двух величин
+В задаче о сечении использовались три входные величины. Теперь выведем формулу,
+которая учитывает их совместные флуктуации.
 
-Пусть $$S=X+Y.$$ Тогда $$\begin{aligned}
-\operatorname{Var}(S)
-&=\mathbb E\!\left[
-\bigl((X-\mu_X)+(Y-\mu_Y)\bigr)^2
-\right]\\
-&=\sigma_X^2+\sigma_Y^2+2\operatorname{Cov}(X,Y).
-\end{aligned}$$ Следовательно, $$\boxed{
-\sigma_{X+Y}^2
-=\sigma_X^2+\sigma_Y^2+2\operatorname{Cov}(X,Y).
-}$$
+### Ковариация и ошибка суммы
 
-### Ковариация и коэффициент корреляции
+Ковариация $X$ и $Y$ равна
 
-::: book-note
-Ковариация двух случайных величин определяется как:
-
-$$\boxed{
-\operatorname{Cov}(X,Y)
+$$
+\operatorname{cov}(X,Y)
 =\mathbb E[(X-\mu_X)(Y-\mu_Y)].
-}$$
+$$ {#eq-ch6-covariance-definition}
 
-- $\operatorname{Cov}(X,Y)>0$: величины обычно отклоняются в одну сторону;
-- $\operatorname{Cov}(X,Y)<0$: отклонения обычно направлены в противоположные стороны;
-- $\operatorname{Cov}(X,Y)=0$: линейной связи нет.
+Для суммы $S=X+Y$
 
-Независимость влечёт нулевую ковариацию. Обратное утверждение в общем случае неверно.
-:::
+$$
+\operatorname{Var}(S)
+=\sigma_X^2+\sigma_Y^2
++2\operatorname{cov}(X,Y).
+$$ {#eq-ch6-sum-variance-with-covariance}
 
-Чтобы убрать размерность ковариации, вводят коэффициент корреляции: $$\boxed{
+Коэффициент корреляции убирает размерность ковариации:
+
+$$
 \rho_{XY}
-=\frac{\operatorname{Cov}(X,Y)}{\sigma_X\sigma_Y},
+=\frac{\operatorname{cov}(X,Y)}{\sigma_X\sigma_Y},
 \qquad
 -1\le\rho_{XY}\le1.
-}$$ Тогда для суммы и разности: $$\boxed{
+$$ {#eq-ch6-correlation-coefficient}
+
+Для суммы и разности
+
+$$
 \sigma_{X\pm Y}^2
 =\sigma_X^2+\sigma_Y^2
 \pm2\rho_{XY}\sigma_X\sigma_Y.
-}$$ Если $\sigma_X=\sigma_Y=\sigma$, формулы сильно упрощаются: $$\sigma_{X+Y}^2=2\sigma^2(1+\rho),
-\qquad
-\sigma_{X-Y}^2=2\sigma^2(1-\rho).$$ Положительная корреляция увеличивает ошибку суммы и уменьшает ошибку разности; отрицательная корреляция действует противоположным образом. Именно из-за этого нельзя автоматически складывать все ошибки в квадратуре.
+$$ {#eq-ch6-sum-difference-uncertainty}
 
-### Как оценить корреляцию по выборке
+Положительная корреляция увеличивает ошибку суммы и уменьшает ошибку
+разности. При отрицательной корреляции знаки меняются. Складывать ошибки в
+квадратуре можно при нулевой ковариации.
 
-Для наблюдений $(x_k,y_k)$, $k=1,\ldots,N$, выборочная ковариация оценивается как: $$\widehat{\operatorname{Cov}}(X,Y)
-=
-\frac{1}{N-1}
-\sum_{k=1}^{N}
-(x_k-\langle x\rangle)(y_k-\langle y\rangle),$$ а коэффициент корреляции — как: $$\boxed{
+Независимость влечёт $\rho_{XY}=0$. Обратное утверждение для произвольного
+распределения неверно: при нулевой корреляции нелинейная зависимость может
+сохраняться.
+
+### Оценка корреляции по выборке
+
+Пусть получены $N$ независимых пар $(x_k,y_k)$ из одного совместного
+распределения. Выборочная ковариация равна
+
+$$
+\widehat{\operatorname{cov}}(X,Y)
+=\frac1{N-1}\sum_{k=1}^{N}
+(x_k-\overline x)(y_k-\overline y),
+$$ {#eq-ch6-sample-covariance}
+
+а выборочный коэффициент корреляции —
+
+$$
 \widehat\rho
-=
-\frac{\widehat{\operatorname{Cov}}(X,Y)}{s_Xs_Y}.
-}$$ При небольшом числе наблюдений сама оценка $\widehat\rho$ может заметно флуктуировать. Корреляцию можно определять по данным или по моделированию отклика детектора.
+=\frac{\widehat{\operatorname{cov}}(X,Y)}{s_Xs_Y}.
+$$ {#eq-ch6-sample-correlation}
 
-### Общая формула распространения ошибки
+При небольшом $N$ значение $\widehat\rho$ заметно меняется от выборки к
+выборке. В детекторных задачах ковариации получают также из моделирования,
+калибровочных данных и вариаций систематических параметров.
 
-Пусть $$F=f(X_1,\ldots,X_n).$$ В первом порядке разложения около средних значений: $$F-\mathbb E[F]
-\approx
-\sum_i
+### Общая формула распространения
+
+Пусть
+
+$$
+F=f(X_1,\ldots,X_n),
+$$ {#eq-ch6-multivariable-transformation}
+
+а средние входных величин образуют вектор
+$\boldsymbol\mu=(\mu_1,\ldots,\mu_n)^{\mathsf T}$.
+Первый порядок разложения имеет вид
+
+$$
+F-\mathbb E[F]
+\simeq
+\sum_{i=1}^{n}
+\left.
 \frac{\partial f}{\partial x_i}
-(X_i-\mu_i).$$
+\right|_{\boldsymbol\mu}
+(X_i-\mu_i).
+$$ {#eq-ch6-multivariable-linearization}
 
 ::: book-derivation
-#### Вывод общей формулы
+#### Дисперсия функции нескольких переменных
 
-Обозначим
+Обозначим производные в точке $\boldsymbol\mu$ через
 
-$$f_i=\left.\frac{\partial f}{\partial x_i}\right|_{\mathbf x=\boldsymbol\mu}.$$
+$$
+g_i=
+\left.
+\frac{\partial f}{\partial x_i}
+\right|_{\boldsymbol\mu}.
+$$ {#eq-ch6-gradient-components}
 
-Тогда
+После возведения линейного разложения в квадрат
 
-$$F-\mathbb E[F]\approx\sum_i f_i(X_i-\mu_i).$$
-
-Возводя в квадрат и усредняя, имеем:
-
-$$\begin{aligned}
+$$
+\begin{aligned}
 \operatorname{Var}(F)
-&\approx
+&\simeq
 \mathbb E\!\left[
-\left(\sum_i f_i(X_i-\mu_i)\right)
-\left(\sum_j f_j(X_j-\mu_j)\right)
+\left(\sum_i g_i(X_i-\mu_i)\right)
+\left(\sum_j g_j(X_j-\mu_j)\right)
 \right]\\
-&=
-\sum_{i,j}f_i f_j
-\mathbb E[(X_i-\mu_i)(X_j-\mu_j)].
-\end{aligned}$$
+&=\sum_{i,j}g_i
+\operatorname{cov}(X_i,X_j)g_j.
+\end{aligned}
+$$ {#eq-ch6-multivariable-variance-derivation}
 
-По определению ковариации получаем
+Итак,
 
 $$
 \boxed{
 \operatorname{Var}(F)
-\approx
+\simeq
 \sum_{i,j}
 \frac{\partial f}{\partial x_i}
-\operatorname{Cov}(X_i,X_j)
+\operatorname{cov}(X_i,X_j)
 \frac{\partial f}{\partial x_j}.
 }
-\quad\blacksquare
 $$ {#eq-error-propagation-covariance}
 :::
 
-В @eq-error-propagation-covariance учтены как дисперсии исходных величин, так и их ковариации. Для двух переменных $F=f(X,Y)$ формула принимает вид: $$\boxed{
-\sigma_F^2\approx{}
-\left(\frac{\partial f}{\partial x}\right)^2\sigma_X^2
-+\left(\frac{\partial f}{\partial y}\right)^2\sigma_Y^2
-+2\rho_{XY}
+Все производные в уравнении [-@eq-error-propagation-covariance] вычисляются в
+одной точке $\boldsymbol\mu$. На практике неизвестные средние заменяют
+полученными центральными значениями.
+
+Для двух переменных формула разворачивается в три слагаемых:
+
+$$
+\begin{aligned}
+\sigma_F^2\simeq{}
+&\left(\frac{\partial f}{\partial x}\right)^2\sigma_X^2
++\left(\frac{\partial f}{\partial y}\right)^2\sigma_Y^2\\
+&+2\rho_{XY}
 \frac{\partial f}{\partial x}
 \frac{\partial f}{\partial y}
 \sigma_X\sigma_Y.
-}$$ Все производные вычисляются в точке центральных значений.
+\end{aligned}
+$$ {#eq-ch6-two-variable-error-propagation}
 
-### Интерактив: вклад корреляции в дисперсию {#interactive-error-propagation-correlation}
+Знак корреляционного вклада определяется одновременно знаком $\rho_{XY}$ и
+знаками двух производных.
+
+### Корреляционный вклад в дисперсию {#interactive-error-propagation-correlation}
 
 ```{ojs}
 //| echo: false
@@ -565,113 +738,264 @@ $$ {#eq-error-propagation-covariance}
 {{< include ../assets/applets/error-propagation-correlation.ojs >}}
 ```
 
-::::: {.content-visible unless-format="html:js"}
-::: {.animation title="Интерактив: вклад корреляции в дисперсию" poster="../assets/figures/error_propagation_corr_positive.png" url="https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/06_error_propagation.html#interactive-error-propagation-correlation" qr="../assets/qr/error-propagation-correlation.png"}
-При положительной корреляции $\rho=0.8$ корреляционный член увеличивает итоговую дисперсию для производных одного знака.
+::: {.animation .applet-fallback title="Корреляционный вклад в дисперсию" poster="../assets/figures/error_propagation_corr_positive.png" url="https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/06_error_propagation.html#interactive-error-propagation-correlation" qr="../assets/qr/error-propagation-correlation.png"}
+Меняйте производные, стандартные отклонения и $\rho$. Три полосы показывают
+два диагональных и один корреляционный вклад в $\sigma_F^2$.
 :::
+
+На рисунке [-@fig-error-propagation-negative-correlation] производные имеют
+одинаковый знак, а корреляция отрицательна. Корреляционный член вычитается из
+двух положительных вкладов.
 
 ::: figure-panel
-![При отрицательной корреляции $\rho=-0.8$ тот же корреляционный член вычитается из дисперсии и уменьшает итоговую ошибку.](../assets/figures/error_propagation_corr_negative.png){#fig-error-propagation-negative-correlation}
+![Вклады в дисперсию функции двух переменных при $\partial f/\partial x=\partial f/\partial y=1$, $\sigma_X=1$, $\sigma_Y=0.8$ и $\rho=-0.8$. Отрицательный корреляционный член уменьшает полную дисперсию до $0.36$.](../assets/figures/error_propagation_corr_negative.png){#fig-error-propagation-negative-correlation}
 :::
-:::::
 
-### Пример: отношение двух величин
+### Отношение двух величин
 
-Для $$R=\frac{X}{Y}$$ имеем: $$\frac{\partial R}{\partial X}=\frac1Y,
+Для
+
+$$
+R=\frac XY
+$$ {#eq-ch6-ratio-definition}
+
+две производные равны
+
+$$
+\frac{\partial R}{\partial X}=\frac1Y,
 \qquad
-\frac{\partial R}{\partial Y}=-\frac{X}{Y^2}.$$ После подстановки в общую формулу получаем: $$\boxed{
+\frac{\partial R}{\partial Y}=-\frac{X}{Y^2}.
+$$ {#eq-ch6-ratio-derivatives}
+
+Линейная относительная неопределённость составляет
+
+$$
+\boxed{
 \left(\frac{\sigma_R}{R}\right)^2
-\approx
+\simeq
 \left(\frac{\sigma_X}{X}\right)^2
-+
-\left(\frac{\sigma_Y}{Y}\right)^2
--
-2\rho_{XY}
++\left(\frac{\sigma_Y}{Y}\right)^2
+-2\rho_{XY}
 \frac{\sigma_X}{X}
 \frac{\sigma_Y}{Y}.
-}$$ Для отношения положительная корреляция уменьшает ошибку, поскольку производные по числителю и знаменателю имеют противоположные знаки.
+}
+$$ {#eq-ch6-ratio-relative-uncertainty}
+
+Производные по числителю и знаменателю имеют разные знаки. Поэтому
+положительная корреляция уменьшает ошибку отношения. Формула требует, чтобы
+знаменатель с большой вероятностью оставался вдали от нуля. В главе 5 мы
+видели крайний случай: отношение двух независимых стандартных гауссовых
+величин имеет распределение Коши.
+
+### Возвращение к сечению
+
+Для функции
+
+$$
+\widehat\sigma_{\mathrm{proc}}(N,\varepsilon,L)
+=\frac{N}{\varepsilon L}
+$$ {#eq-ch6-cross-section-function}
+
+производные удобно записать через само сечение:
+
+$$
+\frac{\partial\widehat\sigma_{\mathrm{proc}}}{\partial N}
+=\frac{\widehat\sigma_{\mathrm{proc}}}{N},
+\qquad
+\frac{\partial\widehat\sigma_{\mathrm{proc}}}{\partial\varepsilon}
+=-\frac{\widehat\sigma_{\mathrm{proc}}}{\varepsilon},
+\qquad
+\frac{\partial\widehat\sigma_{\mathrm{proc}}}{\partial L}
+=-\frac{\widehat\sigma_{\mathrm{proc}}}{L}.
+$$ {#eq-ch6-cross-section-derivatives}
+
+Общая относительная дисперсия равна
+
+$$
+\begin{aligned}
+\left(
+\frac{\sigma_{\widehat\sigma_{\mathrm{proc}}}}
+     {\widehat\sigma_{\mathrm{proc}}}
+\right)^2
+\simeq{}
+&\frac{\sigma_N^2}{N^2}
++\frac{\sigma_\varepsilon^2}{\varepsilon^2}
++\frac{\sigma_L^2}{L^2}\\
+&-2\frac{\operatorname{cov}(N,\varepsilon)}{N\varepsilon}
+-2\frac{\operatorname{cov}(N,L)}{NL}
++2\frac{\operatorname{cov}(\varepsilon,L)}{\varepsilon L}.
+\end{aligned}
+$$ {#eq-ch6-cross-section-full-uncertainty}
+
+При нулевых ковариациях остаётся формула, использованная в начале главы.
+Знаки трёх ковариационных членов следуют из знаков производных, поэтому
+механическое сложение всех вкладов в квадратуре может дать неверный ответ.
 
 ## Ковариационная матрица
 
-Для случайного вектора $$\mathbf X=(X_1,\ldots,X_n)^T$$ ковариационная матрица определяется элементами: $$\boxed{
-V_{ij}=\operatorname{Cov}(X_i,X_j).
-}$$ Для двух величин: $$\boxed{
-V=
+Для случайного вектора
+
+$$
+\mathbf X=(X_1,\ldots,X_n)^{\mathsf T}
+$$ {#eq-ch6-random-vector-definition}
+
+определим матрицу
+
+$$
+(\mathbf V_X)_{ij}
+=\operatorname{cov}(X_i,X_j).
+$$ {#eq-ch6-covariance-matrix-definition}
+
+В двумерном случае
+
+$$
+\mathbf V_X=
 \begin{pmatrix}
-\sigma_X^2&\rho\sigma_X\sigma_Y\\
-\rho\sigma_X\sigma_Y&\sigma_Y^2
+\sigma_X^2 & \rho\sigma_X\sigma_Y\\
+\rho\sigma_X\sigma_Y & \sigma_Y^2
 \end{pmatrix}.
-}$$
+$$ {#eq-ch6-two-dimensional-covariance-matrix}
 
-::: book-note
-Ковариационная матрица обладает тремя важными свойствами:
+Ковариационная матрица симметрична. На диагонали стоят дисперсии, а для любого
+вектора $\mathbf a$
 
-1.  $V$ симметрична: $V_{ij}=V_{ji}$;
-2.  на диагонали стоят дисперсии $V_{ii}=\operatorname{Var}(X_i)$;
-3.  для любого вектора $\mathbf a$ выполняется $\mathbf a^TV\mathbf a\ge0$, то есть $V$ положительно полуопределена.
-:::
+$$
+\mathbf a^{\mathsf T}\mathbf V_X\mathbf a
+=\operatorname{Var}(\mathbf a^{\mathsf T}\mathbf X)
+\ge0.
+$$ {#eq-ch6-covariance-positive-semidefinite}
 
-Последнее свойство имеет непосредственный статистический смысл:
-
-$$\mathbf a^TV\mathbf a
-=
-\mathbb E\!\left[
-\left(\mathbf a^T(\mathbf X-\boldsymbol\mu)\right)^2
-\right]
-=
-\operatorname{Var}(\mathbf a^T\mathbf X)
-\ge0.$$
+Последнее равенство объясняет требование положительной полуопределённости:
+никакая линейная комбинация измерений не может иметь отрицательную дисперсию.
+Матрица с нарушенным условием не описывает совместное распределение случайных
+величин.
 
 ### Матричная запись распространения ошибки
 
-Введём градиент: $$\nabla f
+Соберём производные скалярной функции в градиент
+
+$$
+\mathbf g=
+\left.
+\nabla f
+\right|_{\boldsymbol\mu}
 =
 \begin{pmatrix}
 \partial f/\partial x_1\\
 \vdots\\
 \partial f/\partial x_n
-\end{pmatrix}.$$ Тогда общая формула распространения принимает компактный вид: $$\boxed{
-\sigma_f^2
-\approx
-(\nabla f)^TV(\nabla f).
-}$$ Если выходных величин несколько: $$\mathbf Y=\mathbf f(\mathbf X),$$ то вводится матрица Якоби: $$J_{ai}=\frac{\partial f_a}{\partial x_i}.$$ Универсальный закон линейного преобразования ковариационной матрицы: $$\boxed{
-V_Y\approx JV_XJ^T.
-}$$
+\end{pmatrix}_{\boldsymbol\mu}.
+$$ {#eq-ch6-gradient-vector}
 
-### Пример: сумма и разность
+Уравнение [-@eq-error-propagation-covariance] записывается одной строкой:
 
-Пусть $$\mathbf X=
+$$
+\boxed{
+\sigma_F^2\simeq
+\mathbf g^{\mathsf T}\mathbf V_X\mathbf g.
+}
+$$ {#eq-ch6-gradient-covariance-form}
+
+Пусть выходных величин несколько,
+
+$$
+\mathbf Y=\mathbf f(\mathbf X),
+$$ {#eq-ch6-vector-transformation}
+
+а матрица Якоби имеет элементы
+
+$$
+J_{ai}=
+\left.
+\frac{\partial f_a}{\partial x_i}
+\right|_{\boldsymbol\mu}.
+$$ {#eq-ch6-jacobian-definition}
+
+Тогда
+
+$$
+\boxed{
+\mathbf V_Y
+\simeq
+\mathbf J\mathbf V_X\mathbf J^{\mathsf T}.
+}
+$$ {#eq-ch6-covariance-matrix-propagation}
+
+Для линейного преобразования матрица $\mathbf J$ постоянна и уравнение
+[-@eq-ch6-covariance-matrix-propagation] является точным. Для нелинейной
+функции это первый порядок разложения около $\boldsymbol\mu$.
+
+### Сумма и разность
+
+Возьмём
+
+$$
+\mathbf X=
 \begin{pmatrix}X\\Y\end{pmatrix},
 \qquad
 \mathbf U=
 \begin{pmatrix}S\\D\end{pmatrix}
 =
-\begin{pmatrix}X+Y\\X-Y\end{pmatrix}.$$ Матрица Якоби равна: $$J=
+\begin{pmatrix}X+Y\\X-Y\end{pmatrix}.
+$$ {#eq-ch6-sum-difference-vector-transformation}
+
+Матрица Якоби равна
+
+$$
+\mathbf J=
 \begin{pmatrix}
 1&1\\
 1&-1
-\end{pmatrix}.$$ Для $$V_X=
+\end{pmatrix}.
+$$ {#eq-ch6-sum-difference-jacobian}
+
+Для входной матрицы
+
+$$
+\mathbf V_X=
 \begin{pmatrix}
 \sigma_X^2&\sigma_{XY}\\
 \sigma_{XY}&\sigma_Y^2
-\end{pmatrix}$$ получаем $$\boxed{
-V_U
-=JV_XJ^T
+\end{pmatrix}
+$$ {#eq-ch6-sum-difference-input-covariance}
+
+получаем
+
+$$
+\mathbf V_U
+=\mathbf J\mathbf V_X\mathbf J^{\mathsf T}
 =
 \begin{pmatrix}
-\sigma_X^2+\sigma_Y^2+2\sigma_{XY}&\sigma_X^2-\sigma_Y^2\\
-\sigma_X^2-\sigma_Y^2&\sigma_X^2+\sigma_Y^2-2\sigma_{XY}
+\sigma_X^2+\sigma_Y^2+2\sigma_{XY}
+&\sigma_X^2-\sigma_Y^2\\
+\sigma_X^2-\sigma_Y^2
+&\sigma_X^2+\sigma_Y^2-2\sigma_{XY}
 \end{pmatrix}.
-}$$ Из внедиагонального элемента видно, что $$\operatorname{Cov}(S,D)=\sigma_X^2-\sigma_Y^2.$$ Если $\sigma_X=\sigma_Y$, сумма и разность оказываются некоррелированными.
+$$ {#eq-ch6-sum-difference-output-covariance}
+
+Диагональные элементы воспроизводят ошибки суммы и разности. Внедиагональный
+элемент даёт
+
+$$
+\operatorname{cov}(S,D)=\sigma_X^2-\sigma_Y^2.
+$$ {#eq-ch6-sum-difference-covariance}
+
+При $\sigma_X=\sigma_Y$ сумма и разность некоррелированы даже при
+$\sigma_{XY}\ne0$. В следующей главе мы увидим геометрический смысл этого
+результата на двумерном гауссовом распределении.
 
 ::: chapter-summary
 ## Итоги главы
 
-- Для одной переменной линейное приближение даёт $\sigma_Y\approx|f'(\mu_X)|\sigma_X$.
-- Точность линейной формулы определяется кривизной функции на масштабе входной неопределённости.
-- Оценки дисперсии и стандартного отклонения сами являются случайными величинами; их разброс уменьшается с размером выборки.
-- Корреляции исходных величин входят в неопределённость результата через ковариационные члены.
-- Для векторной функции общий закон имеет вид $V_Y\approx JV_XJ^{\mathsf T}$.
+- При малой входной неопределённости функция заменяется касательной, и для
+  одной переменной $\sigma_Y\simeq|f'(\mu_X)|\sigma_X$.
+- Выборочная дисперсия с делителем $N-1$ является несмещённой. Для гауссовой
+  выборки её дисперсия равна $2\sigma^4/(N-1)$.
+- Корреляции входят в ошибку результата со знаками, заданными производными.
+  Квадратурная сумма применима при нулевых ковариациях.
+- Ковариационная матрица преобразуется по закону
+  $\mathbf V_Y\simeq\mathbf J\mathbf V_X\mathbf J^{\mathsf T}$; для линейной
+  функции это равенство точное.
 :::
 
 ## Задачи

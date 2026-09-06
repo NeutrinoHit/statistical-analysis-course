@@ -1,38 +1,77 @@
+viewof pppFraction = Inputs.range([0, 0.3], {value: 0.1, step: 0.01, label: "Ошибка f_N"})
+pppY = [8, 8.5]
+pppS = [0.16, 0.17]
+pppSummary = {
+  const w = pppS.map(s => 1 / s ** 2);
+  const sum = w[0] + w[1];
+  const m = (w[0] * pppY[0] + w[1] * pppY[1]) / sum;
+  const v = 1 / sum;
+  const q0 = (pppY[1] - pppY[0]) ** 2 / (pppS[0] ** 2 + pppS[1] ** 2);
+  const f2 = pppFraction ** 2;
+  const a = pppS[0] ** 2 + f2 * pppY[0] ** 2;
+  const b = f2 * pppY[0] * pppY[1];
+  const d = pppS[1] ** 2 + f2 * pppY[1] ** 2;
+  const weight1 = (d - b) / (a + d - 2 * b);
+  const weight2 = 1 - weight1;
+  const bad = weight1 * pppY[0] + weight2 * pppY[1];
+  const badVariance = (a * d - b * b) / (a + d - 2 * b);
+  const error = Math.sqrt(v + f2 * m * m);
+  const radical = Math.sqrt(f2 * m * m + (1 - f2) * v);
+  return {m, v, q0, bad, badVariance, error, weight1, weight2,
+    low: (m - radical) / (1 - f2), high: (m + radical) / (1 - f2)};
+}
 pppPoints = [
-  {x: 7.8737, y: 0, label: "наивная ковариация", kind: "bad"},
-  {x: 8.0, y: 1, label: "x₁ = 8.0", kind: "data"},
-  {x: 8.2349, y: 2, label: "правильная модель", kind: "good"},
-  {x: 8.5, y: 1, label: "x₂ = 8.5", kind: "data"}
+  {x: pppY[0], y: 2, label: "y₁ = 8.00 пб"},
+  {x: pppY[1], y: 2, label: "y₂ = 8.50 пб"}
 ]
-
-pppPlot = Plot.plot({
-  width: 920,
-  height: 190,
-  marginLeft: 80,
-  marginRight: 70,
-  marginBottom: 45,
-  marginTop: 18,
-  x: {label: "значение μ", domain: [7.75, 8.62], grid: true},
-  y: {axis: null, domain: [-0.7, 2.55]},
+pppEstimates = [
+  {x: pppSummary.bad, y: 0, label: "Ковариация из данных", color: "#c44536", symbol: "square"},
+  {x: pppSummary.m, y: 1, label: "Модель общей нормировки", color: "#367ab5", symbol: "diamond"}
+]
+pppCurves = Array.from({length: 701}, (_, i) => {
+  const mu = 3.5 + 10 * i / 700;
+  return {mu, profile: (mu - pppSummary.m) ** 2 /
+    (pppSummary.v + pppFraction ** 2 * mu * mu),
+    bad: (mu - pppSummary.bad) ** 2 / pppSummary.badVariance};
+})
+pppPointPlot = Plot.plot({
+  width: 760, height: 270, marginLeft: 40, marginRight: 24, marginBottom: 45, marginTop: 32,
+  style: {fontSize: "14px"},
+  x: {label: "Сечение μ, пб", domain: [5.5, 9.3], grid: true},
+  y: {axis: null, domain: [-0.65, 2.6]},
   marks: [
-    Plot.ruleY([1], {stroke: "#777", strokeDasharray: "6,5"}),
-    Plot.dot(pppPoints, {
-      x: "x",
-      y: "y",
-      r: 8,
-      fill: d => d.kind === "bad" ? "#ff5a5f" : d.kind === "good" ? "#2dd881" : "#4ea1ff",
-      stroke: "#111",
-      strokeWidth: 1.2
-    }),
-    Plot.text(pppPoints, {
-      x: "x",
-      y: "y",
-      text: "label",
-      fill: "#f2f2f2",
-      dy: d => d.kind === "data" ? -18 : 18,
-      fontSize: 16
-    })
+    Plot.ruleY([2], {stroke: "#89949b", strokeDasharray: "5,4"}),
+    Plot.dot(pppPoints, {x: "x", y: "y", r: 5, fill: "#263640"}),
+    Plot.text(pppPoints.slice(0, 1), {x: "x", y: "y", text: "label", dy: -15,
+      dx: -6, textAnchor: "end", fill: "#263640", fontSize: 13}),
+    Plot.text(pppPoints.slice(1), {x: "x", y: "y", text: "label", dy: -15,
+      dx: 6, textAnchor: "start", fill: "#263640", fontSize: 13}),
+    Plot.dot(pppEstimates, {x: "x", y: "y", r: 6, fill: "color", symbol: "symbol"}),
+    Plot.text(pppEstimates, {x: "x", y: "y", text: "label", dy: 22, fill: "#263640", fontSize: 13})
   ]
 })
-
-html`${pppPlot}`
+pppProfilePlot = Plot.plot({
+  width: 760, height: 330, marginLeft: 58, marginRight: 24, marginBottom: 48,
+  style: {fontSize: "14px"},
+  x: {label: "Сечение μ, пб", domain: [3.5, 13.5], grid: true},
+  y: {label: "Δχ²", domain: [0, 5], grid: true},
+  marks: [
+    Plot.ruleY([1], {stroke: "#89949b", strokeDasharray: "4,4"}),
+    Plot.line(pppCurves, {x: "mu", y: "profile", stroke: "#367ab5", strokeWidth: 2.5, clip: true}),
+    Plot.line(pppCurves, {x: "mu", y: "bad", stroke: "#c44536", strokeWidth: 2.5,
+      strokeDasharray: "7,4", clip: true}),
+    Plot.dot([{mu: pppSummary.low, q: 1}, {mu: pppSummary.high, q: 1}],
+      {x: "mu", y: "q", fill: "#367ab5", r: 4})
+  ]
+})
+html`<div class="book-applet-panel">
+  <div class="book-applet-column">${pppPointPlot}${pppProfilePlot}</div>
+  <div class="book-applet-summary">
+    <span>f_N = ${(100 * pppFraction).toFixed(0)}%</span>
+    <span>Модель: ${pppSummary.m.toFixed(3)} ± ${pppSummary.error.toFixed(3)} пб (кривизна)</span>
+    <span>Границы профиля Δχ² = 1: [${pppSummary.low.toFixed(3)}; ${pppSummary.high.toFixed(3)}] пб</span>
+    <span>Ковариация из данных: ${pppSummary.bad.toFixed(3)} пб</span>
+    <span>Её веса: ${pppSummary.weight1.toFixed(3)}; ${pppSummary.weight2.toFixed(3)}</span>
+  </div>
+  <p>Сплошная синяя кривая — профиль модели; красный пунктир — функция с ковариацией из данных. Из каждой вычтен её собственный минимум.</p>
+</div>`

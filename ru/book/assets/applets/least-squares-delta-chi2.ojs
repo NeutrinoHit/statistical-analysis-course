@@ -1,56 +1,34 @@
-chiOneSigma = 1
-chiOneMin = 1
-chiOneCut = chiOneMin + 1
-chiOneData = Array.from({length: 241}, (_, i) => {
-  const delta = -1.5 + 3.0 * i / 240;
-  return {
-    delta,
-    chi2: chiOneMin + (delta / chiOneSigma) ** 2
-  };
+viewof chiOneSigma = Inputs.range([0.3, 2], {value: 1, step: 0.1, label: "Ошибка σθ"})
+viewof chiOneCut = Inputs.range([0.25, 4], {value: 1, step: 0.25, label: "Уровень c"})
+chiOneExtent = Math.max(2.5, 1.25 * Math.sqrt(chiOneCut) * chiOneSigma)
+chiOneBoundary = Math.sqrt(chiOneCut) * chiOneSigma
+chiOneData = Array.from({length: 401}, (_, i) => {
+  const delta = -chiOneExtent + 2 * chiOneExtent * i / 400;
+  return {delta, q: (delta / chiOneSigma) ** 2};
 })
 chiOneMarks = [
-  {delta: -chiOneSigma, chi2: chiOneCut},
-  {delta: 0, chi2: chiOneMin},
-  {delta: chiOneSigma, chi2: chiOneCut}
+  {delta: -chiOneBoundary, q: chiOneCut},
+  {delta: chiOneBoundary, q: chiOneCut}
 ]
-chiOneCutLine = [
-  {delta: -chiOneSigma, chi2: chiOneCut},
-  {delta: chiOneSigma, chi2: chiOneCut}
-]
-
 chiOnePlot = Plot.plot({
-  width: 980,
-  height: 460,
-  marginLeft: 70,
-  marginBottom: 54,
-  marginTop: 36,
-  x: {label: "δθ", domain: [-1.5, 1.5], grid: true},
-  y: {label: "χ²(θ)", domain: [0.9, 3.5], grid: true},
+  width: 760, height: 340, marginLeft: 58, marginBottom: 48, marginRight: 24,
+  style: {fontSize: "14px"},
+  x: {label: "θ − θ̂", domain: [-chiOneExtent, chiOneExtent], grid: true},
+  y: {label: "Δχ²", domain: [0, Math.max(5, 1.4 * chiOneCut)], grid: true},
   marks: [
-    Plot.line(chiOneData, {x: "delta", y: "chi2", stroke: "#4ea1ff", strokeWidth: 4}),
-    Plot.line(chiOneCutLine, {x: "delta", y: "chi2", stroke: "#ff5a5f", strokeWidth: 3}),
-    Plot.ruleY([chiOneMin], {stroke: "#777", strokeDasharray: "5,5"}),
-    Plot.ruleX([-chiOneSigma, chiOneSigma], {
-      y1: chiOneMin,
-      y2: chiOneCut,
-      stroke: "#ff5a5f",
-      strokeWidth: 3,
-      strokeDasharray: "7,5"
-    }),
-    Plot.dot(chiOneMarks, {x: "delta", y: "chi2", r: 6, fill: d => d.delta === 0 ? "#f2f2f2" : "#ff5a5f", stroke: "#111"})
+    Plot.ruleY([chiOneCut], {stroke: "#c44536", strokeDasharray: "6,4"}),
+    Plot.ruleX([-chiOneBoundary, chiOneBoundary], {y1: 0, y2: chiOneCut,
+      stroke: "#c44536", strokeDasharray: "6,4"}),
+    Plot.line(chiOneData, {x: "delta", y: "q", stroke: "#367ab5", strokeWidth: 2.5, clip: true}),
+    Plot.dot(chiOneMarks, {x: "delta", y: "q", r: 5, fill: "#c44536"}),
+    Plot.dot([{delta: 0, q: 0}], {x: "delta", y: "q", r: 5, fill: "#263640"})
   ]
 })
-
-html`
-<div class="book-applet-panel">
-  <div class="book-applet-metric">
-    χ²(δθ = ±σ<sub>θ</sub>) − χ²<sub>min</sub> = 1
-  </div>
+html`<div class="book-applet-panel">
   ${chiOnePlot}
   <div class="book-applet-summary">
-    <span>минимум: δθ = 0</span>
-    <span>красная отсечка: χ²<sub>min</sub> + 1</span>
-    <span>пересечения дают ±σ<sub>θ</sub></span>
+    <span>σθ = ${chiOneSigma.toFixed(2)}</span>
+    <span>c = ${chiOneCut.toFixed(2)}</span>
+    <span>Границы θ − θ̂: ±${chiOneBoundary.toFixed(3)}</span>
   </div>
-</div>
-`
+</div>`

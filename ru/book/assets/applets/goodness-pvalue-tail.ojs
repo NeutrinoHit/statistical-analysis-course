@@ -1,40 +1,27 @@
-viewof pLevelNu = Inputs.range([1, 120], {value: 50, step: 1, label: "ν"})
-viewof pLevelObs = Inputs.range([0, 180], {value: 70, step: 0.5, label: "χ²_obs"})
-
-pLevelXmax = Math.max(12, pLevelObs + 8 * Math.sqrt(2 * pLevelNu), pLevelNu + 8 * Math.sqrt(2 * pLevelNu));
-pLevelData = Array.from({length: 1400}, (_, i) => {
-  const x = 1e-4 + pLevelXmax * i / 1399;
-  return {x, y: chiDistPdf(x, pLevelNu)};
-});
-pLevelTailData = pLevelData.filter(d => d.x >= pLevelObs);
-pLevelTailArea = pLevelTailData.slice(1).reduce((s, d, i) => {
-  const p = pLevelTailData[i];
-  return s + 0.5 * (d.y + p.y) * (d.x - p.x);
-}, 0);
-pLevelYmax = 1.08 * Math.max(...pLevelData.filter(d => Number.isFinite(d.y)).map(d => d.y));
-
+viewof pLevelNu = Inputs.range([1, 120], {value: 50, step: 1, label: "Степени свободы ν"})
+viewof pLevelObs = Inputs.range([0, 180], {value: 70, step: 0.5, label: "Значение t_obs"})
+pLevelXmax = Math.max(12, pLevelObs + 5, pLevelNu + 6 * Math.sqrt(2 * pLevelNu))
+pLevelData = chiDistGrid(pLevelNu, pLevelXmax)
+pLevelTailData = [{t: Math.max(pLevelObs, 1e-8), density: chiDistPdf(Math.max(pLevelObs, 1e-8), pLevelNu)},
+  ...pLevelData.filter(d => d.t > pLevelObs)]
+pLevelTailArea = chiDistSf(pLevelObs, pLevelNu)
 pLevelPlot = Plot.plot({
-  width: 1050,
-  height: 430,
-  marginLeft: 70,
-  marginBottom: 50,
-  x: {label: "χ²", domain: [0, pLevelXmax], grid: true},
-  y: {label: "f(χ²; ν)", domain: [0, pLevelYmax], grid: true},
+  width: 760, height: 340, marginLeft: 58, marginBottom: 48,
+  style: {fontSize: "14px"},
+  x: {label: "t", domain: [0, pLevelXmax], grid: true},
+  y: {label: "f(t; ν)", domain: [0, chiDistPlotLimit(pLevelNu)], grid: true},
   marks: [
-    Plot.line(pLevelData, {x: "x", y: "y", stroke: "#6ea8ff", strokeWidth: 5}),
-    Plot.areaY(pLevelTailData, {x: "x", y: "y", fill: "#ff4d4d", fillOpacity: 0.62}),
-    Plot.ruleX([pLevelObs], {stroke: "#ff4d4d", strokeWidth: 3}),
-    Plot.text([{x: Math.min(pLevelObs + 0.12 * pLevelXmax, 0.88 * pLevelXmax), y: 0.35 * pLevelYmax, label: "p"}],
-      {x: "x", y: "y", text: "label", fill: "#ffffff", fontSize: 26, fontWeight: 700})
+    Plot.areaY(pLevelTailData, {x: "t", y: "density", fill: "#c44536", fillOpacity: 0.35, clip: true}),
+    Plot.line(pLevelData, {x: "t", y: "density", stroke: "#367ab5", strokeWidth: 2.5, clip: true}),
+    Plot.ruleX([pLevelObs], {stroke: "#c44536", strokeWidth: 2})
   ]
-});
-
-html`
-<div class="book-applet-panel">
-  <div class="book-applet-center">${pLevelPlot}</div>
+})
+html`<div class="book-applet-panel">
+  ${pLevelPlot}
   <div class="book-applet-summary">
     <span>ν = ${pLevelNu}</span>
-    <span>χ²_obs = ${pLevelObs.toFixed(1)}</span>
-    <span>p ≈ ${pLevelTailArea < 1e-3 ? pLevelTailArea.toExponential(2) : pLevelTailArea.toFixed(3)}</span>
+    <span>t_obs = ${pLevelObs.toFixed(1)}</span>
+    <span>p = ${chiDistProbabilityText(pLevelTailArea)}</span>
+    <span>${pLevelNu === 1 ? "Плотность у нуля обрезана сверху. Вероятность вычислена по полному хвосту." : ""}</span>
   </div>
 </div>`

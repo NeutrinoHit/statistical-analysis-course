@@ -1,27 +1,70 @@
-viewof toySignal = mcRange("ожидаемый сигнал s", [0, 20], {value: 5, step: 0.5})
-viewof toyBackground = mcRange("ожидаемый фон b", [0.5, 30], {value: 10, step: 0.5})
-viewof toyN = mcRange("псевдоэксперименты", [500, 20000], {value: 6000, step: 500})
-viewof regenerateToys = Inputs.button("Новый ансамбль")
+viewof toySignal = Inputs.range([0, 20], {
+  value: 5,
+  step: 0.5,
+  label: "ожидаемый сигнал s"
+})
 
-poissonToy = lambda => {
-  const limit = Math.exp(-lambda);
-  let p = 1;
-  let k = 0;
-  do {
-    k += 1;
-    p *= Math.random();
-  } while (p > limit);
-  return k - 1;
+viewof toyBackground = Inputs.range([0.5, 30], {
+  value: 10,
+  step: 0.5,
+  label: "ожидаемый фон b"
+})
+
+viewof toyN = Inputs.range([500, 20000], {
+  value: 6000,
+  step: 500,
+  label: "число псевдоэкспериментов"
+})
+
+viewof regenerateToys = Inputs.button("Новый ансамбль", {
+  value: 0,
+  reduce: value => value + 1
+})
+
+seededUniformToys = seed => {
+  let state = seed >>> 0;
+  return () => {
+    state = (state + 0x6D2B79F5) >>> 0;
+    let value = state;
+    value = Math.imul(value ^ (value >>> 15), value | 1);
+    value ^= value + Math.imul(value ^ (value >>> 7), value | 61);
+    return ((value ^ (value >>> 14)) >>> 0) / 4294967296;
+  };
 }
 
+poissonToyCh8 = (lambda, random) => {
+  const limit = Math.exp(-lambda);
+  let product = 1;
+  let count = 0;
+  do {
+    count += 1;
+    product *= random();
+  } while (product > limit);
+  return count - 1;
+}
+
+toySeed = (
+  20260908
+  + 101 * Math.round(2 * toySignal)
+  + 1009 * Math.round(2 * toyBackground)
+  + 17 * toyN
+  + 104729 * regenerateToys
+) >>> 0
+
 toyEstimates = {
-  regenerateToys;
-  return Array.from({length: toyN}, () => poissonToy(toySignal + toyBackground) - toyBackground);
+  const random = seededUniformToys(toySeed);
+  const lambda = toySignal + toyBackground;
+  return Array.from(
+    {length: toyN},
+    () => poissonToyCh8(lambda, random) - toyBackground
+  );
 }
 
 toyBins = {
   const counts = new Map();
-  for (const value of toyEstimates) counts.set(value, (counts.get(value) || 0) + 1);
+  for (const value of toyEstimates) {
+    counts.set(value, (counts.get(value) || 0) + 1);
+  }
   return Array.from(counts, ([value, count]) => ({
     value,
     x1: value - 0.45,
@@ -30,19 +73,82 @@ toyBins = {
   })).sort((a, b) => a.value - b.value);
 }
 
-toyMin = Math.floor(Math.min(...toyEstimates)) - 0.5
-toyMax = Math.ceil(Math.max(...toyEstimates)) + 0.5
-toyYMax = Math.max(0.12, 1.18 * Math.max(...toyBins.map(d => d.probability)))
+toyExact = {
+  const lambda = toySignal + toyBackground;
+  const maxCount = Math.max(
+    Math.ceil(lambda + 8 * Math.sqrt(lambda)),
+    Math.ceil(Math.max(...toyEstimates) + toyBackground)
+  );
+  const values = [];
+  let probability = Math.exp(-lambda);
+  for (let count = 0; count <= maxCount; ++count) {
+    if (count > 0) probability *= lambda / count;
+    values.push({
+      value: count - toyBackground,
+      probability
+    });
+  }
+  return values;
+}
+
+toyMean = toyEstimates.reduce((sum, value) => sum + value, 0) / toyEstimates.length
+toySigma = Math.sqrt(
+  toyEstimates.reduce((sum, value) => sum + (value - toyMean) ** 2, 0)
+  / (toyEstimates.length - 1)
+)
+toyNegative = toyEstimates.filter(value => value < 0).length / toyEstimates.length
+toyNegativeExact = toyExact
+  .filter(point => point.value < 0)
+  .reduce((sum, point) => sum + point.probability, 0)
+
+toyMin = Math.min(
+  Math.floor(Math.min(...toyEstimates)) - 0.5,
+  -toyBackground - 0.5
+)
+toyMax = Math.max(
+  Math.ceil(Math.max(...toyEstimates)) + 0.5,
+  toySignal + 7 * Math.sqrt(toySignal + toyBackground)
+)
+toyYMax = 1.18 * Math.max(
+  ...toyBins.map(point => point.probability),
+  ...toyExact.map(point => point.probability)
+)
 
 toyPlot = Plot.plot({
   width: 900,
-  height: 360,
+  height: 390,
   marginLeft: 72,
-  x: {label: "оценка сигнала ŝ = N - b", domain: [toyMin, toyMax], grid: true},
-  y: {label: "вероятность", domain: [0, toyYMax], grid: true},
+  x: {
+    label: "оценка сигнала ŝ = N − b",
+    domain: [toyMin, toyMax],
+    grid: true
+  },
+  y: {
+    label: "вероятность",
+    domain: [0, toyYMax],
+    grid: true
+  },
   marks: [
-    Plot.rectY(toyBins, {x1: "x1", x2: "x2", y: "probability", fill: "#4ea1ff", fillOpacity: 0.9}),
-    Plot.ruleX([toySignal], {stroke: "#ffb347", strokeWidth: 4}),
+    Plot.rectY(toyBins, {
+      x1: "x1",
+      x2: "x2",
+      y: "probability",
+      fill: "#4ea1ff",
+      fillOpacity: 0.72
+    }),
+    Plot.line(toyExact, {
+      x: "value",
+      y: "probability",
+      stroke: "#ff8c42",
+      strokeWidth: 2.2
+    }),
+    Plot.dot(toyExact, {
+      x: "value",
+      y: "probability",
+      fill: "#ff8c42",
+      r: 3.3
+    }),
+    Plot.ruleX([toySignal], {stroke: "#216b73", strokeWidth: 3}),
     Plot.ruleX([0], {stroke: "#777", strokeDasharray: "4,4"})
   ]
 })
@@ -51,7 +157,8 @@ html`
 <div class="book-applet-panel">
   ${toyPlot}
   <div class="book-applet-summary">
-    <span>Модель: s = ${toySignal.toFixed(1)}, b = ${toyBackground.toFixed(1)};</span>
-    <span> реальный эксперимент даст одну точку из этого распределения</span>
+    <span>Монте-Карло: среднее ${toyMean.toFixed(3)}, σ ${toySigma.toFixed(3)}, P(ŝ&lt;0) ${(100 * toyNegative).toFixed(2)}%;</span>
+    <span>точно: среднее ${toySignal.toFixed(3)}, σ ${Math.sqrt(toySignal + toyBackground).toFixed(3)}, P(ŝ&lt;0) ${(100 * toyNegativeExact).toFixed(2)}%;</span>
+    <span>синие столбцы — ансамбль, оранжевые точки — распределение Пуассона.</span>
   </div>
 </div>`

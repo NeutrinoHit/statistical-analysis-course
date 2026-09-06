@@ -21,7 +21,8 @@ profilePath = Array.from({length: 121}, (_, i) => {
 profileEta = profileRho * profileTheta
 
 profileJointPlot = Plot.plot({
-  width: 590,
+  style: {fontSize: "14px"},
+  width: 760,
   height: 480,
   marginLeft: 65,
   x: {label: "θ", domain: [-3, 3], grid: true},
@@ -41,22 +42,23 @@ profileCurve = Array.from({length: 201}, (_, i) => {
 })
 
 profileCurvePlot = Plot.plot({
-  width: 590,
+  style: {fontSize: "14px"},
+  width: 760,
   height: 480,
   marginLeft: 65,
   x: {label: "θ", domain: [-3, 3], grid: true},
   y: {label: "q(θ)", domain: [0, 9], grid: true},
   color: {domain: ["профиль", "η = 0"], range: ["#ffb347", "#4ea1ff"], legend: true},
   marks: [
-    Plot.line(profileCurve, {x: "theta", y: "qProfile", stroke: "#ffb347", strokeWidth: 4}),
-    Plot.line(profileCurve, {x: "theta", y: "qFixed", stroke: "#4ea1ff", strokeWidth: 3}),
+    Plot.line(profileCurve, {clip: true,x: "theta", y: "qProfile", stroke: "#ffb347", strokeWidth: 4}),
+    Plot.line(profileCurve, {clip: true,x: "theta", y: "qFixed", stroke: "#4ea1ff", strokeWidth: 3}),
     Plot.ruleY([1], {stroke: "#999", strokeDasharray: "6,5"})
   ]
 })
 
 html`
 <div class="book-applet-panel">
-  <div class="book-applet-row">
+  <div class="book-applet-column">
     ${profileJointPlot}
     ${profileCurvePlot}
   </div>
