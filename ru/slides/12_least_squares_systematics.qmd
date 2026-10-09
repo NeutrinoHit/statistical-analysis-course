@@ -55,7 +55,9 @@ $$
 - Значит матрица при этой квадратичной форме есть $V_\theta^{-1}$.
 - Ее элементы находятся так:
 $$
-\left(V_\theta^{-1}\right)_{ij} = \frac{\partial^2\chi^2}{\partial\theta_i\partial\theta_j}.
+\left(V_\theta^{-1}\right)_{ij} \simeq \frac12\left.
+\frac{\partial^2\chi^2}{\partial\theta_i\partial\theta_j}
+\right|_{\widehat{\boldsymbol\theta}}.
 $$
 - Чтобы найти ковариационную матрицу $V_\theta$, нужно обратить $V_\theta^{-1}$.
 :::
