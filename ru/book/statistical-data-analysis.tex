@@ -10,7 +10,7 @@
   a4paper,
   open=any]{scrbook}
 \usepackage{xcolor}
-\usepackage[top=18mm,bottom=20mm,inner=20mm,outer=50mm,marginparwidth=36mm,marginparsep=6mm,headheight=6mm,headsep=5mm,footskip=9mm]{geometry}
+\usepackage[top=22mm,bottom=20mm,inner=20mm,outer=40mm,marginparwidth=28mm,marginparsep=5mm,headheight=8.5mm,headsep=5.5mm,footskip=9mm]{geometry}
 \usepackage{amsmath,amssymb}
 \setcounter{secnumdepth}{3}
 \usepackage{iftex}
@@ -236,6 +236,11 @@
 \definecolor{BookBiography}{HTML}{465B8C}
 \definecolor{BookBiographySoft}{HTML}{F0F2F8}
 \definecolor{BookMargin}{HTML}{F1F3F4}
+\definecolor{BookSticky}{HTML}{FFF2A8}
+\definecolor{BookStickyDeep}{HTML}{FFE06D}
+\definecolor{BookStickyInk}{HTML}{211700}
+\definecolor{BookStickyBorder}{HTML}{7A5C00}
+\definecolor{BookStickyTape}{HTML}{F4C542}
 
 % Compatibility aliases let established books keep their local command style.
 \colorlet{bookInk}{BookInk}
@@ -261,6 +266,41 @@
   urlcolor=BookTeal
 }
 
+% Short remarks rendered in the outer margin of the printed book. In HTML
+% and EPUB the Lua filter turns the same source block into a disclosure.
+\newcommand{\bookmarginnote}[2][]{%
+  \marginpar{%
+    \begin{tcolorbox}[
+      enhanced,
+      width=\marginparwidth,
+      colback=BookSticky,
+      colframe=BookStickyBorder!28!BookSticky,
+      interior style={top color=BookSticky,bottom color=BookStickyDeep},
+      boxrule=0.25pt,
+      arc=0.6mm,
+      left=2mm,
+      right=2mm,
+      top=2.6mm,
+      bottom=2mm,
+      boxsep=0pt,
+      drop fuzzy shadow=BookInk!35!white,
+      overlay={%
+        \fill[BookStickyTape,opacity=0.9,rounded corners=0.7mm]
+          ([xshift=-5.5mm,yshift=-0.8mm]frame.north)
+          rectangle
+          ([xshift=5.5mm,yshift=0.8mm]frame.north);%
+      }
+    ]%
+      \raggedright\setlength{\parindent}{0pt}%
+      \sffamily\footnotesize\color{BookStickyInk}%
+      \if\relax\detokenize{#1}\relax\else
+        {\bfseries\color{BookStickyInk}#1\par}\vspace{0.5mm}%
+      \fi
+      #2%
+    \end{tcolorbox}%
+  }%
+}
+
 % Shared semantic boxes used by biographies, media cards, notes and exercises.
 \newtcolorbox{semanticpdfbox}[1][]{
   enhanced,
@@ -277,59 +317,6 @@
   #1
 }
 
-% Reusable ordered process. Source nodes are generic process-flow/process-step
-% Divs; the Lua filter maps them to these vertical PDF cards.
-\newenvironment{bookprocessflow}{%
-  \par\vspace{2mm}\begingroup
-  \setlength{\parindent}{0pt}%
-}{%
-  \endgroup\par\vspace{2mm}%
-}
-
-\newcommand{\BookProcessBadge}[1]{%
-  \tikz[baseline=(bookprocessnumber.base)]{%
-    \node[
-      circle,
-      fill=BookTeal,
-      text=white,
-      minimum size=8mm,
-      inner sep=0pt,
-      font=\sffamily\bfseries\footnotesize
-    ] (bookprocessnumber) {#1};%
-  }%
-}
-
-\newtcolorbox{bookprocessstep}[2][]{
-  enhanced,
-  breakable,
-  sharp corners,
-  colback=BookPaper,
-  colframe=BookLineStrong,
-  boxrule=0.35pt,
-  borderline west={1.2mm}{0pt}{BookTeal},
-  left=4mm,
-  right=3mm,
-  top=2mm,
-  bottom=2mm,
-  before skip=2pt,
-  after skip=2pt,
-  title={\BookProcessBadge{#1}\hspace{2.5mm}#2},
-  colbacktitle=BookPaper,
-  coltitle=BookInk,
-  fonttitle=\sffamily\bfseries,
-  titlerule=0pt
-}
-
-\newcommand{\BookProcessConnector}{%
-  \par\nopagebreak[4]
-  \begin{center}
-    \vspace{-1mm}%
-    {\color{BookTeal}\Large$\downarrow$}%
-    \vspace{-1mm}%
-  \end{center}
-  \nopagebreak[4]
-}
-
 % Public labels and colour hook. A book changes these without copying the
 % layout machinery: for example, "Лекция" in the neutrino book and "Глава"
 % in the statistics book.
@@ -338,10 +325,15 @@
 \newcommand{\BookPartLabel}{РАЗДЕЛ КНИГИ}
 \newcommand{\BookPartContentsLabel}{Главы}
 \newcommand{\BookTocChapterLabel}{Глава}
+\DeclareRobustCommand{\BookTitleBreak}{\space}
 
 \clearpairofpagestyles
 \ihead{\headmark}
-\newcommand{\BookHeaderPage}{\ifnum\value{chapter}=0\pagemark\fi}
+\newcommand{\BookHeaderPage}{%
+  \ifnum\value{part}=0\relax
+    \ifnum\value{chapter}=0\relax\pagemark\fi
+  \fi
+}
 \ohead{\BookHeaderPage}
 \setkomafont{pageheadfoot}{\small\sffamily\color{BookMuted}}
 \setkomafont{pagehead}{\small\sffamily\color{BookInk}}
@@ -358,10 +350,12 @@
       {\sffamily\bfseries\color{\bookchaptercolor}%
        \fontsize{15}{18}\selectfont \BookChapterLabel~\thechapter\par}%
       \vspace{7mm}%
-      {\sffamily\bfseries\color{BookInk}%
-       \fontsize{34}{38}\selectfont #3\par}%
+      {\RaggedRight\sffamily\bfseries\color{BookInk}%
+       \hyphenpenalty=10000\exhyphenpenalty=10000\pretolerance=10000%
+       \let\BookTitleBreak\\%
+       \fontsize{32}{36}\selectfont #3\par}%
       \vspace{9mm}%
-      {\color{\bookchaptercolor}\rule{\linewidth}{1.3mm}}%
+      {\noindent\color{\bookchaptercolor}\rule{\linewidth}{1.3mm}\par}%
     }%
   \else
     \parbox[t]{\linewidth}{#3}%
@@ -376,15 +370,17 @@
     {\sffamily\bfseries\color{\bookchaptercolor}%
      \fontsize{13}{16}\selectfont \BookPartLabel\par}%
     \vspace{9mm}%
-    {\sffamily\bfseries\color{BookInk}%
-     \fontsize{32}{37}\selectfont #3\par}%
+    {\RaggedRight\sffamily\bfseries\color{BookInk}%
+     \hyphenpenalty=10000\exhyphenpenalty=10000\pretolerance=10000%
+     \let\BookTitleBreak\\%
+     \fontsize{30}{35}\selectfont #3\par}%
     \vspace{11mm}%
-    {\color{\bookchaptercolor}\rule{\linewidth}{1.5mm}}\par
+    {\noindent\color{\bookchaptercolor}\rule{\linewidth}{1.3mm}\par}%
     \vspace{13mm}%
     {\sffamily\bfseries\color{BookInk}%
      \fontsize{18}{22}\selectfont \BookPartContentsLabel\par}%
     \vspace{3mm}%
-    {\color{\bookchaptercolor}\rule{18mm}{0.8mm}}\par
+    {\noindent\color{\bookchaptercolor}\rule{18mm}{0.75mm}\par}%
     \vspace{5mm}%
     \begingroup
       \normalfont
@@ -408,7 +404,7 @@
   {\sffamily\bfseries\color{BookInk}\fontsize{18}{22}\selectfont
    Содержание\par}%
   \vspace{3mm}%
-  {\color{\bookchaptercolor}\rule{18mm}{0.8mm}}%
+  {\noindent\color{\bookchaptercolor}\rule{18mm}{0.75mm}\par}%
   \vspace{5mm}%
   \begingroup
     \setlength{\parindent}{0pt}%
@@ -420,66 +416,39 @@
   \clearpage
 }
 
-% Outer navigation rail and circular page number. Dimensions are shared; the
-% colour follows the current part through \bookchaptercolor.
+% A quiet outer-edge navigator. The thin strip follows the current topic. The
+% folio is deliberately unframed: a large, light numeral in the outer margin.
 \newif\ifbookpagenavigator
 \bookpagenavigatortrue
-\newlength{\bookpagerailwidth}
-\newlength{\bookpagerailcenter}
-\newlength{\bookpagetabheight}
-\newlength{\bookpagetabcenter}
-\newlength{\bookpagenumberdiameter}
-\setlength{\bookpagerailwidth}{48mm}
-\setlength{\bookpagerailcenter}{24mm}
-\setlength{\bookpagetabheight}{28mm}
-\setlength{\bookpagetabcenter}{14mm}
-\setlength{\bookpagenumberdiameter}{17mm}
-\newcommand{\bookpagerailcolor}{BookMargin}
-\newcommand{\bookpagetabcolor}{\bookchaptercolor}
-\newcommand{\bookpagenumberfill}{white}
-\newcommand{\bookpagenumbercolor}{\bookchaptercolor}
+\newlength{\bookpageedgewidth}
+\newlength{\bookfoliooffset}
+\newlength{\bookfoliotopoffset}
+\setlength{\bookpageedgewidth}{1.5mm}
+\setlength{\bookfoliooffset}{20mm}
+\setlength{\bookfoliotopoffset}{15mm}
 
-\tikzset{
-  book page rail/.style={fill=\bookpagerailcolor,draw=none},
-  book page tab/.style={fill=\bookpagetabcolor,draw=none},
-  book page number/.style={
-    circle,
-    fill=\bookpagenumberfill,
-    draw=none,
-    minimum size=\bookpagenumberdiameter,
-    inner sep=0pt,
-    font=\sffamily\bfseries\fontsize{22}{22}\selectfont,
-    text=\bookpagenumbercolor
-  }
+\newcommand{\BookFolioNumber}[1]{%
+  \node[inner sep=0pt,font=\sffamily\fontsize{16}{16}\selectfont,
+        text=BookMuted] at #1 {\thepage};
 }
 
 \newcommand{\BookPageNavigatorLeft}{%
-  \path[book page rail]
+  \fill[\bookchaptercolor]
     (current page.north west) rectangle
-    ([xshift=\bookpagerailwidth]current page.south west);
-  \path[book page tab]
-    (current page.north west) rectangle
-    ([xshift=\bookpagerailwidth,yshift=-\bookpagetabheight]current page.north west);
-  \node[book page number]
-    at ([xshift=\bookpagerailcenter,yshift=-\bookpagetabcenter]current page.north west)
-    {\thepage};
+    ([xshift=\bookpageedgewidth]current page.south west);
+  \BookFolioNumber{([xshift=\bookfoliooffset,yshift=-\bookfoliotopoffset]current page.north west)}%
 }
 
 \newcommand{\BookPageNavigatorRight}{%
-  \path[book page rail]
-    ([xshift=-\bookpagerailwidth]current page.north east) rectangle
+  \fill[\bookchaptercolor]
+    ([xshift=-\bookpageedgewidth]current page.north east) rectangle
     (current page.south east);
-  \path[book page tab]
-    ([xshift=-\bookpagerailwidth]current page.north east) rectangle
-    ([yshift=-\bookpagetabheight]current page.north east);
-  \node[book page number]
-    at ([xshift=-\bookpagerailcenter,yshift=-\bookpagetabcenter]current page.north east)
-    {\thepage};
+  \BookFolioNumber{([xshift=-\bookfoliooffset,yshift=-\bookfoliotopoffset]current page.north east)}%
 }
 
 \newcommand{\BookRenderPageNavigator}{%
   \ifbookpagenavigator
-    \ifnum\value{chapter}>0\relax
+    \ifnum\value{part}>0\relax
       \begin{tikzpicture}[remember picture,overlay]
         \ifodd\value{page}
           \BookPageNavigatorRight
@@ -490,7 +459,7 @@
     \fi
   \fi
 }
-\AddToHook{shipout/background}{\BookRenderPageNavigator}
+\AddToHook{shipout/foreground}{\BookRenderPageNavigator}
 \setmainlanguage{russian}
 \setotherlanguage{english}
 \PolyglossiaSetup{russian}{
@@ -553,7 +522,7 @@
   \setlength{\parskip}{0.18\baselineskip}%
   \setlength{\emergencystretch}{3em}%
   \setcounter{secnumdepth}{3}%
-  \setcounter{tocdepth}{0}%
+  \setcounter{tocdepth}{2}%
 }
 
 \setlist[itemize]{leftmargin=1.55em,itemsep=0.14em,topsep=0.35em,parsep=0pt}
@@ -608,8 +577,8 @@
 \AddToHook{begindocument/end}{%
   \hypersetup{
     colorlinks=true,
-    linkcolor=BookTeal,
-    citecolor=BookTeal,
+    linkcolor=BookInk,
+    citecolor=BookInk,
     urlcolor=BookTeal,
     filecolor=BookTeal,
     linktoc=section
@@ -846,21 +815,14 @@
 \makeatother
 
 % -----------------------------------------------------------------------------
-% TOC and chapter-entry color accents
+% TOC
 % -----------------------------------------------------------------------------
-\RedeclareSectionCommand[tocbeforeskip=0.12\baselineskip]{chapter}
-\RedeclareSectionCommand[tocbeforeskip=0.55\baselineskip]{part}
+% Keep the global contents typography identical to the neutrino book. The only
+% subject-specific adjustment is the number column needed for sections 10--13.
 % The local chapter TOC reaches two-digit chapter and section numbers
 % (for example 13.10). Reserve enough width so the title never touches the
 % number.
 \DeclareTOCStyleEntry[numwidth=3.6em]{tocline}{section}
-
-\AtBeginDocument{%
-  \addtokomafont{partentry}{\sffamily\bfseries\color{BookTeal}}%
-  \addtokomafont{partentrypagenumber}{\sffamily\bfseries\color{BookInk}}%
-  \addtokomafont{chapterentry}{\sffamily\bfseries\color{BookTeal}}%
-  \addtokomafont{chapterentrypagenumber}{\sffamily\bfseries\color{BookInk}}%
-}
 % Full-page vector covers. Interior geometry and page styles remain unchanged.
 \usepackage{pdfpages}
 \hypersetup{pdfpagelayout=TwoPageRight}
@@ -1775,24 +1737,26 @@ N\int_{\text{бин }i} f(x;\sigma)\,dx,
 включите результат фита и сравните свою оценку с \(\widehat{\sigma}\) и
 истинным значением \(\sigma_{\mathrm{true}}\).
 
-\begin{semanticpdfbox}[breakable=false]
-
 \begin{center}
 
 \includegraphics[width=0.74\linewidth,height=\textheight,keepaspectratio,alt={Подбор ширины распределения}]{assets/figures/distribution_width.png}
 
 \end{center}
 
-\noindent\begin{minipage}[c]{\dimexpr\linewidth-30mm\relax}
+\begin{semanticpdfbox}[breakable=false,title={Отсканируйте\ifdefined\faIcon\ \faIcon{mobile-alt}\fi},fonttitle=\sffamily\small,coltitle=BookInk,top=3mm,attach boxed title to top left={xshift=4mm,yshift*=-\tcboxedtitleheight/2},boxed title style={colback=BookPaper,colframe=BookTeal,boxrule=0.5pt,sharp corners}]
 
-\textbf{Интерактив}. \textbf{Подбор ширины распределения}
+\noindent\begin{minipage}[t]{0.25\linewidth}\vspace{0pt}\centering
+
+\href{https://neutrinohit.github.io/qr/statistics/0001/}{\includegraphics[width=1\linewidth,height=\textheight,keepaspectratio,alt={QR-код}]{assets/qr/first_fit.png}}
+
+{\fontsize{5pt}{6pt}\selectfont\ttfamily\centering\href{https://neutrinohit.github.io/qr/statistics/0001/}{neutrinohit.github.io\\/\allowbreak{}qr/\allowbreak{}statistics/\allowbreak{}0001/\allowbreak{}}\par}
+
+\end{minipage}\hfill\begin{minipage}[t]{\dimexpr0.75\linewidth-3mm\relax}\vspace{0pt}
+
+\textbf{Анимация}. \textbf{Подбор ширины распределения}
 
 Отсканируйте QR-код, чтобы открыть интерактив и самостоятельно подобрать
 ширину распределения.
-
-\end{minipage}\hfill\begin{minipage}[c]{26mm}\centering
-
-\href{https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/01_why_statistics.html\#interactive-first-fit}{\includegraphics[width=24mm,height=\textheight,keepaspectratio,alt={QR-код интерактива}]{assets/qr/first_fit.png}}
 
 \end{minipage}
 
@@ -1838,7 +1802,7 @@ N\int_{\text{бин }i} f(x;\sigma)\,dx,
 
 \section{Задачи}\label{ux437ux430ux434ux430ux447ux438}
 
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral},breakable=false]
+\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
 
 \noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 1. Модель и данные}\par\nopagebreak[4]\vspace{1.2mm}
 
@@ -1873,7 +1837,7 @@ N\int_{\text{бин }i} f(x;\sigma)\,dx,
 
 \end{semanticpdfbox}
 
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral},breakable=false]
+\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
 
 \noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 2. Случайная величина и измеренное значение}\par\nopagebreak[4]\vspace{1.2mm}
 
@@ -1903,7 +1867,7 @@ x=7.3.
 
 \end{semanticpdfbox}
 
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral},breakable=false]
+\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
 
 \noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 3. Частота как оценка вероятности}\par\nopagebreak[4]\vspace{1.2mm}
 
@@ -1928,7 +1892,7 @@ x=7.3.
 
 \end{semanticpdfbox}
 
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral},breakable=false]
+\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
 
 \noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 4. Условная вероятность без формул}\par\nopagebreak[4]\vspace{1.2mm}
 
@@ -1972,7 +1936,7 @@ x=7.3.
 
 \end{semanticpdfbox}
 
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral},breakable=false]
+\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
 
 \noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 5. Точка наилучшего согласия}\par\nopagebreak[4]\vspace{1.2mm}
 
@@ -2017,7 +1981,7 @@ x=7.3.
 
 \end{semanticpdfbox}
 
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral},breakable=false]
+\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
 
 \noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 6. Флуктуация или систематический сдвиг?}\par\nopagebreak[4]\vspace{1.2mm}
 
@@ -2055,7 +2019,7 @@ x=7.3.
 
 \end{semanticpdfbox}
 
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral},breakable=false]
+\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
 
 \noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 7. Следы априорного распределения}\par\nopagebreak[4]\vspace{1.2mm}
 
@@ -2144,8 +2108,7 @@ doi:\href{https://doi.org/10.1103/PhysRevLett.133.051801}{10.1103/PhysRevLett.13
 
 \end{CSLReferences}
 
-\chapter{Случайные величины, распределения,
-моменты}\label{ux441ux43bux443ux447ux430ux439ux43dux44bux435-ux432ux435ux43bux438ux447ux438ux43dux44b-ux440ux430ux441ux43fux440ux435ux434ux435ux43bux435ux43dux438ux44f-ux43cux43eux43cux435ux43dux442ux44b}
+\chapter{\texorpdfstring{Случайные величины,\BookTitleBreak{}распределения, моменты}{}}\label{ux441ux43bux443ux447ux430ux439ux43dux44bux435-ux432ux435ux43bux438ux447ux438ux43dux44b-ux440ux430ux441ux43fux440ux435ux434ux435ux43bux435ux43dux438ux44f-ux43cux43eux43cux435ux43dux442ux44b}
 
 \bookchapteropeningcontents
 
@@ -2974,7 +2937,7 @@ dx=\sigma\,dz,
 
 \section{Задачи}\label{ux437ux430ux434ux430ux447ux438-1}
 
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral},breakable=false]
+\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
 
 \noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 1. Предел биномиального распределения}\par\nopagebreak[4]\vspace{1.2mm}
 
@@ -2991,7 +2954,7 @@ n\to\infty,\qquad p\to 0,\qquad np=\lambda=\text{const}
 
 \end{semanticpdfbox}
 
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral},breakable=false]
+\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
 
 \noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 2. Предел Пуассона к гауссову распределению}\par\nopagebreak[4]\vspace{1.2mm}
 
@@ -3003,7 +2966,7 @@ P(N=n)\approx
 
 \end{semanticpdfbox}
 
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral},breakable=false]
+\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
 
 \noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 3. Моменты равномерного распределения}\par\nopagebreak[4]\vspace{1.2mm}
 
@@ -3022,7 +2985,7 @@ P(N=n)\approx
 
 \end{semanticpdfbox}
 
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral},breakable=false]
+\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
 
 \noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 4. Когда моменты однозначно задают распределение}\par\nopagebreak[4]\vspace{1.2mm}
 
@@ -3035,7 +2998,7 @@ P(N=n)\approx
 
 \end{semanticpdfbox}
 
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral},breakable=false]
+\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
 
 \noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 5. Восстановление распределения на конечном носителе}\par\nopagebreak[4]\vspace{1.2mm}
 
@@ -3046,7 +3009,7 @@ P(N=n)\approx
 
 \end{semanticpdfbox}
 
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral},breakable=false]
+\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
 
 \noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 6. Факториальные моменты распределения Пуассона}\par\nopagebreak[4]\vspace{1.2mm}
 
@@ -3074,8 +3037,7 @@ doi:\href{https://doi.org/10.1093/biomet/13.1.25}{10.1093/biomet/13.1.25}.
 
 \end{CSLReferences}
 
-\chapter{Характеристические функции и суммы случайных
-величин}\label{ux445ux430ux440ux430ux43aux442ux435ux440ux438ux441ux442ux438ux447ux435ux441ux43aux438ux435-ux444ux443ux43dux43aux446ux438ux438-ux438-ux441ux443ux43cux43cux44b-ux441ux43bux443ux447ux430ux439ux43dux44bux445-ux432ux435ux43bux438ux447ux438ux43d}
+\chapter{\texorpdfstring{Характеристические функции\BookTitleBreak{}и суммы случайных величин}{}}\label{ux445ux430ux440ux430ux43aux442ux435ux440ux438ux441ux442ux438ux447ux435ux441ux43aux438ux435-ux444ux443ux43dux43aux446ux438ux438-ux438-ux441ux443ux43cux43cux44b-ux441ux43bux443ux447ux430ux439ux43dux44bux445-ux432ux435ux43bux438ux447ux438ux43d}
 
 \bookchapteropeningcontents
 
@@ -3319,24 +3281,26 @@ f_S(s)=\frac{2}{\pi(s^2+4)}.
 Стандартное распределение Коши и распределение суммы двух независимых
 стандартных величин Коши.
 
-\begin{semanticpdfbox}[breakable=false]
-
 \begin{center}
 
 \includegraphics[width=0.74\linewidth,height=\textheight,keepaspectratio,alt={Сумма двух величин Коши}]{assets/figures/cauchy_sum.png}
 
 \end{center}
 
-\noindent\begin{minipage}[c]{\dimexpr\linewidth-30mm\relax}
+\begin{semanticpdfbox}[breakable=false,title={Отсканируйте\ifdefined\faIcon\ \faIcon{mobile-alt}\fi},fonttitle=\sffamily\small,coltitle=BookInk,top=3mm,attach boxed title to top left={xshift=4mm,yshift*=-\tcboxedtitleheight/2},boxed title style={colback=BookPaper,colframe=BookTeal,boxrule=0.5pt,sharp corners}]
 
-\textbf{Интерактив}. \textbf{Сумма двух величин Коши}
+\noindent\begin{minipage}[t]{0.25\linewidth}\vspace{0pt}\centering
+
+\href{https://neutrinohit.github.io/qr/statistics/0002/}{\includegraphics[width=1\linewidth,height=\textheight,keepaspectratio,alt={QR-код}]{assets/qr/cauchy_sum.png}}
+
+{\fontsize{5pt}{6pt}\selectfont\ttfamily\centering\href{https://neutrinohit.github.io/qr/statistics/0002/}{neutrinohit.github.io\\/\allowbreak{}qr/\allowbreak{}statistics/\allowbreak{}0002/\allowbreak{}}\par}
+
+\end{minipage}\hfill\begin{minipage}[t]{\dimexpr0.75\linewidth-3mm\relax}\vspace{0pt}
+
+\textbf{Анимация}. \textbf{Сумма двух величин Коши}
 
 В HTML-книге график строится из характеристических функций исходной
 величины и её суммы с независимой копией.
-
-\end{minipage}\hfill\begin{minipage}[c]{26mm}\centering
-
-\href{https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/03_characteristic_functions.html\#interactive-cauchy-sum}{\includegraphics[width=24mm,height=\textheight,keepaspectratio,alt={QR-код интерактива}]{assets/qr/cauchy_sum.png}}
 
 \end{minipage}
 
@@ -3350,9 +3314,7 @@ f_S(s)=\frac{2}{\pi(s^2+4)}.
 
 Весь метод состоит из трёх операций.
 
-\begin{bookprocessflow}
-
-\begin{bookprocessstep}[01]{Преобразовать плотности}
+\par\medskip\noindent{\sffamily\bfseries\color{BookTeal} 01.}\hspace{0.8em}{\sffamily\bfseries Преобразовать плотности}\par\nobreak\smallskip
 
 Найти характеристические функции
 
@@ -3362,11 +3324,7 @@ f_S(s)=\frac{2}{\pi(s^2+4)}.
 \varphi_Y(t)=\int e^{ity}f_Y(y)\,dy.
 }\end{equation}
 
-\end{bookprocessstep}
-
-\BookProcessConnector
-
-\begin{bookprocessstep}[02]{Перемножить}
+\par\medskip\noindent{\sffamily\bfseries\color{BookTeal} 02.}\hspace{0.8em}{\sffamily\bfseries Перемножить}\par\nobreak\smallskip
 
 Для независимой суммы использовать
 
@@ -3374,11 +3332,7 @@ f_S(s)=\frac{2}{\pi(s^2+4)}.
 \varphi_{X+Y}(t)=\varphi_X(t)\varphi_Y(t).
 }\end{equation}
 
-\end{bookprocessstep}
-
-\BookProcessConnector
-
-\begin{bookprocessstep}[03]{Вернуться к плотности}
+\par\medskip\noindent{\sffamily\bfseries\color{BookTeal} 03.}\hspace{0.8em}{\sffamily\bfseries Вернуться к плотности}\par\nobreak\smallskip
 
 Выполнить обратное преобразование
 
@@ -3387,9 +3341,7 @@ f_{X+Y}(s)=
 \frac{1}{2\pi}\int e^{-its}\varphi_{X+Y}(t)\,dt.
 }\end{equation}
 
-\end{bookprocessstep}
-
-\end{bookprocessflow}
+\par\medskip
 
 Для десяти слагаемых вместо девятикратной свёртки получается
 произведение десяти функций и одно обратное преобразование.
@@ -3922,24 +3874,26 @@ X_k\sim U(-\sqrt3,\sqrt3),
 предельная функция \(e^{-t^2/2}\). Ползунок меняет число слагаемых
 \(n\).
 
-\begin{semanticpdfbox}[breakable=false]
-
 \begin{center}
 
 \includegraphics[width=0.74\linewidth,height=\textheight,keepaspectratio,alt={Гауссов предел в пространстве Фурье}]{assets/figures/clt_fourier_n10.png}
 
 \end{center}
 
-\noindent\begin{minipage}[c]{\dimexpr\linewidth-30mm\relax}
+\begin{semanticpdfbox}[breakable=false,title={Отсканируйте\ifdefined\faIcon\ \faIcon{mobile-alt}\fi},fonttitle=\sffamily\small,coltitle=BookInk,top=3mm,attach boxed title to top left={xshift=4mm,yshift*=-\tcboxedtitleheight/2},boxed title style={colback=BookPaper,colframe=BookTeal,boxrule=0.5pt,sharp corners}]
 
-\textbf{Интерактив}. \textbf{Гауссов предел в пространстве Фурье}
+\noindent\begin{minipage}[t]{0.25\linewidth}\vspace{0pt}\centering
+
+\href{https://neutrinohit.github.io/qr/statistics/0003/}{\includegraphics[width=1\linewidth,height=\textheight,keepaspectratio,alt={QR-код}]{assets/qr/clt_fourier.png}}
+
+{\fontsize{5pt}{6pt}\selectfont\ttfamily\centering\href{https://neutrinohit.github.io/qr/statistics/0003/}{neutrinohit.github.io\\/\allowbreak{}qr/\allowbreak{}statistics/\allowbreak{}0003/\allowbreak{}}\par}
+
+\end{minipage}\hfill\begin{minipage}[t]{\dimexpr0.75\linewidth-3mm\relax}\vspace{0pt}
+
+\textbf{Анимация}. \textbf{Гауссов предел в пространстве Фурье}
 
 Меняя число слагаемых, можно проследить, как характеристическая функция
 нормированной суммы приближается к \(e^{-t^2/2}\).
-
-\end{minipage}\hfill\begin{minipage}[c]{26mm}\centering
-
-\href{https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/03_characteristic_functions.html\#interactive-clt-fourier}{\includegraphics[width=24mm,height=\textheight,keepaspectratio,alt={QR-код интерактива}]{assets/qr/clt_fourier.png}}
 
 \end{minipage}
 
@@ -3970,7 +3924,7 @@ X_k\sim U(-\sqrt3,\sqrt3),
 
 \section{Задачи}\label{ux437ux430ux434ux430ux447ux438-2}
 
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral},breakable=false]
+\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
 
 \noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 1. Сумма двух равномерных величин}\par\nopagebreak[4]\vspace{1.2mm}
 
@@ -4007,7 +3961,7 @@ f_X(x)=f_Y(x)=\theta(x)\theta(1-x).
 
 \end{semanticpdfbox}
 
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral},breakable=false]
+\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
 
 \noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 2. Распределение Бернулли}\par\nopagebreak[4]\vspace{1.2mm}
 
@@ -4029,7 +3983,7 @@ P(X=1)=p,\qquad P(X=0)=1-p.
 
 \end{semanticpdfbox}
 
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral},breakable=false]
+\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
 
 \noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 3. Сумма пуассоновских величин}\par\nopagebreak[4]\vspace{1.2mm}
 
@@ -4042,7 +3996,7 @@ N_1+N_2\sim\mathrm{Pois}(\lambda_1+\lambda_2).
 
 \end{semanticpdfbox}
 
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral},breakable=false]
+\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
 
 \noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 4. Сумма гауссовых величин}\par\nopagebreak[4]\vspace{1.2mm}
 
@@ -4056,7 +4010,7 @@ X_k\sim\mathrm{N}(\mu_k,\sigma_k^2).
 
 \end{semanticpdfbox}
 
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral},breakable=false]
+\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
 
 \noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 5. Моменты и производные}\par\nopagebreak[4]\vspace{1.2mm}
 
@@ -4067,7 +4021,7 @@ X_k\sim\mathrm{N}(\mu_k,\sigma_k^2).
 
 \end{semanticpdfbox}
 
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral},breakable=false]
+\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
 
 \noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 6. Распределение Коши}\par\nopagebreak[4]\vspace{1.2mm}
 
@@ -4079,7 +4033,7 @@ X_k\sim\mathrm{N}(\mu_k,\sigma_k^2).
 
 \end{semanticpdfbox}
 
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral},breakable=false]
+\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
 
 \noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 7. Распределение \(S_n=X_1+\dots+X_n\) в пределе \(n\to\infty\)}\par\nopagebreak[4]\vspace{1.2mm}
 
@@ -4151,8 +4105,7 @@ Applications}. John Wiley \& Sons. 1971.
 
 \end{CSLReferences}
 
-\chapter{Центральная предельная теорема и нормальное
-распределение}\label{ux446ux435ux43dux442ux440ux430ux43bux44cux43dux430ux44f-ux43fux440ux435ux434ux435ux43bux44cux43dux430ux44f-ux442ux435ux43eux440ux435ux43cux430-ux438-ux43dux43eux440ux43cux430ux43bux44cux43dux43eux435-ux440ux430ux441ux43fux440ux435ux434ux435ux43bux435ux43dux438ux435}
+\chapter{\texorpdfstring{Центральная предельная теорема\BookTitleBreak{}и нормальное распределение}{}}\label{ux446ux435ux43dux442ux440ux430ux43bux44cux43dux430ux44f-ux43fux440ux435ux434ux435ux43bux44cux43dux430ux44f-ux442ux435ux43eux440ux435ux43cux430-ux438-ux43dux43eux440ux43cux430ux43bux44cux43dux43eux435-ux440ux430ux441ux43fux440ux435ux434ux435ux43bux435ux43dux438ux435}
 
 \bookchapteropeningcontents
 
@@ -4526,25 +4479,27 @@ CDF может быть заметной относительной ошибко
 прямоугольников даёт треугольник. Дальше углы сглаживаются, и
 распределение нормированной суммы приближается к стандартному гауссу.
 
-\begin{semanticpdfbox}[breakable=false]
-
 \begin{center}
 
 \includegraphics[width=0.74\linewidth,height=\textheight,keepaspectratio,alt={Форма нормированной суммы}]{assets/figures/clt_uniform_sum_m5.png}
 
 \end{center}
 
-\noindent\begin{minipage}[c]{\dimexpr\linewidth-30mm\relax}
+\begin{semanticpdfbox}[breakable=false,title={Отсканируйте\ifdefined\faIcon\ \faIcon{mobile-alt}\fi},fonttitle=\sffamily\small,coltitle=BookInk,top=3mm,attach boxed title to top left={xshift=4mm,yshift*=-\tcboxedtitleheight/2},boxed title style={colback=BookPaper,colframe=BookTeal,boxrule=0.5pt,sharp corners}]
 
-\textbf{Интерактив}. \textbf{Форма нормированной суммы}
+\noindent\begin{minipage}[t]{0.25\linewidth}\vspace{0pt}\centering
+
+\href{https://neutrinohit.github.io/qr/statistics/0004/}{\includegraphics[width=1\linewidth,height=\textheight,keepaspectratio,alt={QR-код}]{assets/qr/clt_sums.png}}
+
+{\fontsize{5pt}{6pt}\selectfont\ttfamily\centering\href{https://neutrinohit.github.io/qr/statistics/0004/}{neutrinohit.github.io\\/\allowbreak{}qr/\allowbreak{}statistics/\allowbreak{}0004/\allowbreak{}}\par}
+
+\end{minipage}\hfill\begin{minipage}[t]{\dimexpr0.75\linewidth-3mm\relax}\vspace{0pt}
+
+\textbf{Анимация}. \textbf{Форма нормированной суммы}
 
 Меняйте число слагаемых и объём выборки. Гистограмма показывает новую
 реализацию численного эксперимента, а гладкая кривая --- плотность
 \(\mathcal N(0,1)\).
-
-\end{minipage}\hfill\begin{minipage}[c]{26mm}\centering
-
-\href{https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/04_central_limit_theorem.html\#interactive-clt-sums}{\includegraphics[width=24mm,height=\textheight,keepaspectratio,alt={QR-код интерактива}]{assets/qr/clt_sums.png}}
 
 \end{minipage}
 
@@ -4859,25 +4814,27 @@ c=z_{1-\alpha/2}.
 доказывает, что оба измерения правильны. Два эксперимента могут иметь
 общий неучтённый сдвиг и прекрасно соглашаться друг с другом.
 
-\begin{semanticpdfbox}[breakable=false]
-
 \begin{center}
 
 \includegraphics[width=0.74\linewidth,height=\textheight,keepaspectratio,alt={Совместимость двух измерений}]{assets/figures/compatibility_example_a.png}
 
 \end{center}
 
-\noindent\begin{minipage}[c]{\dimexpr\linewidth-30mm\relax}
+\begin{semanticpdfbox}[breakable=false,title={Отсканируйте\ifdefined\faIcon\ \faIcon{mobile-alt}\fi},fonttitle=\sffamily\small,coltitle=BookInk,top=3mm,attach boxed title to top left={xshift=4mm,yshift*=-\tcboxedtitleheight/2},boxed title style={colback=BookPaper,colframe=BookTeal,boxrule=0.5pt,sharp corners}]
 
-\textbf{Интерактив}. \textbf{Совместимость двух измерений}
+\noindent\begin{minipage}[t]{0.25\linewidth}\vspace{0pt}\centering
+
+\href{https://neutrinohit.github.io/qr/statistics/0005/}{\includegraphics[width=1\linewidth,height=\textheight,keepaspectratio,alt={QR-код}]{assets/qr/compatibility.png}}
+
+{\fontsize{5pt}{6pt}\selectfont\ttfamily\centering\href{https://neutrinohit.github.io/qr/statistics/0005/}{neutrinohit.github.io\\/\allowbreak{}qr/\allowbreak{}statistics/\allowbreak{}0005/\allowbreak{}}\par}
+
+\end{minipage}\hfill\begin{minipage}[t]{\dimexpr0.75\linewidth-3mm\relax}\vspace{0pt}
+
+\textbf{Анимация}. \textbf{Совместимость двух измерений}
 
 Изменяйте уровень \(\alpha\) и полученное значение \(z_{\mathrm{obs}}\).
 На графике показаны центральная область неотвержения, два хвоста и
 двустороннее \(p\)-значение.
-
-\end{minipage}\hfill\begin{minipage}[c]{26mm}\centering
-
-\href{https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/04_central_limit_theorem.html\#interactive-compatibility}{\includegraphics[width=24mm,height=\textheight,keepaspectratio,alt={QR-код интерактива}]{assets/qr/compatibility.png}}
 
 \end{minipage}
 
@@ -4964,7 +4921,7 @@ p\approx1.5\cdot10^{-12}.
 
 \section{Задачи}\label{ux437ux430ux434ux430ux447ux438-3}
 
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral},breakable=false]
+\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
 
 \noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 1. Квантили и отклонения в сигмах}\par\nopagebreak[4]\vspace{1.2mm}
 
@@ -4989,7 +4946,7 @@ X\sim\mathrm{N}(12.0,0.8^2).
 
 \end{semanticpdfbox}
 
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral},breakable=false]
+\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
 
 \noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 2. Совместимость независимых измерений}\par\nopagebreak[4]\vspace{1.2mm}
 
@@ -5006,7 +4963,7 @@ x_3=125.05\pm0.24.
 
 \end{semanticpdfbox}
 
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral},breakable=false]
+\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
 
 \noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 3. Фотоэлектронная статистика}\par\nopagebreak[4]\vspace{1.2mm}
 
@@ -5235,24 +5192,26 @@ S_n=\sum_{i=1}^{n}X_i.
 Распределение среднего при \(n=1\) и \(n=200\) совпадает. Для гауссовых
 слагаемых ширина среднего уменьшилась бы в \(\sqrt{200}\) раз.
 
-\begin{semanticpdfbox}[breakable=false]
-
 \begin{center}
 
 \includegraphics[width=0.74\linewidth,height=\textheight,keepaspectratio,alt={Среднее распределения Коши}]{assets/figures/cauchy_mean_n100.png}
 
 \end{center}
 
-\noindent\begin{minipage}[c]{\dimexpr\linewidth-30mm\relax}
+\begin{semanticpdfbox}[breakable=false,title={Отсканируйте\ifdefined\faIcon\ \faIcon{mobile-alt}\fi},fonttitle=\sffamily\small,coltitle=BookInk,top=3mm,attach boxed title to top left={xshift=4mm,yshift*=-\tcboxedtitleheight/2},boxed title style={colback=BookPaper,colframe=BookTeal,boxrule=0.5pt,sharp corners}]
 
-\textbf{Интерактив}. \textbf{Среднее распределения Коши}
+\noindent\begin{minipage}[t]{0.25\linewidth}\vspace{0pt}\centering
+
+\href{https://neutrinohit.github.io/qr/statistics/0006/}{\includegraphics[width=1\linewidth,height=\textheight,keepaspectratio,alt={QR-код}]{assets/qr/cauchy_mean.png}}
+
+{\fontsize{5pt}{6pt}\selectfont\ttfamily\centering\href{https://neutrinohit.github.io/qr/statistics/0006/}{neutrinohit.github.io\\/\allowbreak{}qr/\allowbreak{}statistics/\allowbreak{}0006/\allowbreak{}}\par}
+
+\end{minipage}\hfill\begin{minipage}[t]{\dimexpr0.75\linewidth-3mm\relax}\vspace{0pt}
+
+\textbf{Анимация}. \textbf{Среднее распределения Коши}
 
 Меняя число слагаемых, можно сравнить среднее величин Коши с
 нормированной суммой гауссовых величин.
-
-\end{minipage}\hfill\begin{minipage}[c]{26mm}\centering
-
-\href{https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/05_non_gaussian_clt_violations.html\#interactive-cauchy-mean}{\includegraphics[width=24mm,height=\textheight,keepaspectratio,alt={QR-код интерактива}]{assets/qr/cauchy_mean.png}}
 
 \end{minipage}
 
@@ -5361,24 +5320,26 @@ L(\lambda)\sim\frac1{\lambda^2}.
 распределения Ландау не определены. Подробное описание флуктуаций
 ионизационных потерь в тонких кремниевых детекторах дано в {[}1{]}.
 
-\begin{semanticpdfbox}[breakable=false]
-
 \begin{center}
 
 \includegraphics[width=0.74\linewidth,height=\textheight,keepaspectratio,alt={Длинный хвост распределения Ландау}]{assets/figures/landau_like_default.png}
 
 \end{center}
 
-\noindent\begin{minipage}[c]{\dimexpr\linewidth-30mm\relax}
+\begin{semanticpdfbox}[breakable=false,title={Отсканируйте\ifdefined\faIcon\ \faIcon{mobile-alt}\fi},fonttitle=\sffamily\small,coltitle=BookInk,top=3mm,attach boxed title to top left={xshift=4mm,yshift*=-\tcboxedtitleheight/2},boxed title style={colback=BookPaper,colframe=BookTeal,boxrule=0.5pt,sharp corners}]
 
-\textbf{Интерактив}. \textbf{Длинный хвост распределения Ландау}
+\noindent\begin{minipage}[t]{0.25\linewidth}\vspace{0pt}\centering
+
+\href{https://neutrinohit.github.io/qr/statistics/0007/}{\includegraphics[width=1\linewidth,height=\textheight,keepaspectratio,alt={QR-код}]{assets/qr/landau_tail.png}}
+
+{\fontsize{5pt}{6pt}\selectfont\ttfamily\centering\href{https://neutrinohit.github.io/qr/statistics/0007/}{neutrinohit.github.io\\/\allowbreak{}qr/\allowbreak{}statistics/\allowbreak{}0007/\allowbreak{}}\par}
+
+\end{minipage}\hfill\begin{minipage}[t]{\dimexpr0.75\linewidth-3mm\relax}\vspace{0pt}
+
+\textbf{Анимация}. \textbf{Длинный хвост распределения Ландау}
 
 Интерактив сопоставляет ландау-подобное распределение с гауссовой
 кривой, имеющей ту же медиану и ту же центральную ширину.
-
-\end{minipage}\hfill\begin{minipage}[c]{26mm}\centering
-
-\href{https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/05_non_gaussian_clt_violations.html\#interactive-landau-tail}{\includegraphics[width=24mm,height=\textheight,keepaspectratio,alt={QR-код интерактива}]{assets/qr/landau_tail.png}}
 
 \end{minipage}
 
@@ -5530,24 +5491,26 @@ C\sim\mathcal N(0,\sigma_C^2),
 например, неопределённость энергетической шкалы, нормировки потока или
 светимости, коэффициента усиления и общий временной сдвиг.
 
-\begin{semanticpdfbox}[breakable=false]
-
 \begin{center}
 
 \includegraphics[width=0.74\linewidth,height=\textheight,keepaspectratio,alt={Статистическая и общая ошибки}]{assets/figures/correlated_error_sigma06.png}
 
 \end{center}
 
-\noindent\begin{minipage}[c]{\dimexpr\linewidth-30mm\relax}
+\begin{semanticpdfbox}[breakable=false,title={Отсканируйте\ifdefined\faIcon\ \faIcon{mobile-alt}\fi},fonttitle=\sffamily\small,coltitle=BookInk,top=3mm,attach boxed title to top left={xshift=4mm,yshift*=-\tcboxedtitleheight/2},boxed title style={colback=BookPaper,colframe=BookTeal,boxrule=0.5pt,sharp corners}]
 
-\textbf{Интерактив}. \textbf{Статистическая и общая ошибки}
+\noindent\begin{minipage}[t]{0.25\linewidth}\vspace{0pt}\centering
+
+\href{https://neutrinohit.github.io/qr/statistics/0008/}{\includegraphics[width=1\linewidth,height=\textheight,keepaspectratio,alt={QR-код}]{assets/qr/correlated_errors.png}}
+
+{\fontsize{5pt}{6pt}\selectfont\ttfamily\centering\href{https://neutrinohit.github.io/qr/statistics/0008/}{neutrinohit.github.io\\/\allowbreak{}qr/\allowbreak{}statistics/\allowbreak{}0008/\allowbreak{}}\par}
+
+\end{minipage}\hfill\begin{minipage}[t]{\dimexpr0.75\linewidth-3mm\relax}\vspace{0pt}
+
+\textbf{Анимация}. \textbf{Статистическая и общая ошибки}
 
 Меняйте статистическую и общую составляющие ошибки и следите за шириной
 распределения среднего при росте выборки.
-
-\end{minipage}\hfill\begin{minipage}[c]{26mm}\centering
-
-\href{https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/05_non_gaussian_clt_violations.html\#interactive-correlated-errors}{\includegraphics[width=24mm,height=\textheight,keepaspectratio,alt={QR-код интерактива}]{assets/qr/correlated_errors.png}}
 
 \end{minipage}
 
@@ -5640,24 +5603,26 @@ N\mid K=2\sim\operatorname{Pois}(100).
 почти целиком определяется различием двух классов. Пуассоновские
 флуктуации внутри классов дают меньше трёх десятых процента результата.
 
-\begin{semanticpdfbox}[breakable=false]
-
 \begin{center}
 
 \includegraphics[width=0.74\linewidth,height=\textheight,keepaspectratio,alt={Смесь двух гауссовых классов}]{assets/figures/gaussian_mixture_sep1_9.png}
 
 \end{center}
 
-\noindent\begin{minipage}[c]{\dimexpr\linewidth-30mm\relax}
+\begin{semanticpdfbox}[breakable=false,title={Отсканируйте\ifdefined\faIcon\ \faIcon{mobile-alt}\fi},fonttitle=\sffamily\small,coltitle=BookInk,top=3mm,attach boxed title to top left={xshift=4mm,yshift*=-\tcboxedtitleheight/2},boxed title style={colback=BookPaper,colframe=BookTeal,boxrule=0.5pt,sharp corners}]
 
-\textbf{Интерактив}. \textbf{Смесь двух гауссовых классов}
+\noindent\begin{minipage}[t]{0.25\linewidth}\vspace{0pt}\centering
+
+\href{https://neutrinohit.github.io/qr/statistics/0009/}{\includegraphics[width=1\linewidth,height=\textheight,keepaspectratio,alt={QR-код}]{assets/qr/gaussian_mixture.png}}
+
+{\fontsize{5pt}{6pt}\selectfont\ttfamily\centering\href{https://neutrinohit.github.io/qr/statistics/0009/}{neutrinohit.github.io\\/\allowbreak{}qr/\allowbreak{}statistics/\allowbreak{}0009/\allowbreak{}}\par}
+
+\end{minipage}\hfill\begin{minipage}[t]{\dimexpr0.75\linewidth-3mm\relax}\vspace{0pt}
+
+\textbf{Анимация}. \textbf{Смесь двух гауссовых классов}
 
 Интерактив показывает, как веса, ширины и расстояние между средними
 меняют форму смеси.
-
-\end{minipage}\hfill\begin{minipage}[c]{26mm}\centering
-
-\href{https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/05_non_gaussian_clt_violations.html\#interactive-gaussian-mixture}{\includegraphics[width=24mm,height=\textheight,keepaspectratio,alt={QR-код интерактива}]{assets/qr/gaussian_mixture.png}}
 
 \end{minipage}
 
@@ -5736,24 +5701,26 @@ A=\frac{N_1-N_2}{N_1+N_2}.
 редкие значения отношения уходят далеко в хвост. Симметричная запись
 \(r\pm\sigma_r\) перестаёт описывать такое распределение.
 
-\begin{semanticpdfbox}[breakable=false]
-
 \begin{center}
 
 \includegraphics[width=0.74\linewidth,height=\textheight,keepaspectratio,alt={Отношение гауссовых величин}]{assets/figures/ratio_gaussians_cauchy.png}
 
 \end{center}
 
-\noindent\begin{minipage}[c]{\dimexpr\linewidth-30mm\relax}
+\begin{semanticpdfbox}[breakable=false,title={Отсканируйте\ifdefined\faIcon\ \faIcon{mobile-alt}\fi},fonttitle=\sffamily\small,coltitle=BookInk,top=3mm,attach boxed title to top left={xshift=4mm,yshift*=-\tcboxedtitleheight/2},boxed title style={colback=BookPaper,colframe=BookTeal,boxrule=0.5pt,sharp corners}]
 
-\textbf{Интерактив}. \textbf{Отношение гауссовых величин}
+\noindent\begin{minipage}[t]{0.25\linewidth}\vspace{0pt}\centering
+
+\href{https://neutrinohit.github.io/qr/statistics/0010/}{\includegraphics[width=1\linewidth,height=\textheight,keepaspectratio,alt={QR-код}]{assets/qr/ratio_cauchy.png}}
+
+{\fontsize{5pt}{6pt}\selectfont\ttfamily\centering\href{https://neutrinohit.github.io/qr/statistics/0010/}{neutrinohit.github.io\\/\allowbreak{}qr/\allowbreak{}statistics/\allowbreak{}0010/\allowbreak{}}\par}
+
+\end{minipage}\hfill\begin{minipage}[t]{\dimexpr0.75\linewidth-3mm\relax}\vspace{0pt}
+
+\textbf{Анимация}. \textbf{Отношение гауссовых величин}
 
 Меняйте среднее и ширину знаменателя и следите за появлением длинных
 хвостов у отношения.
-
-\end{minipage}\hfill\begin{minipage}[c]{26mm}\centering
-
-\href{https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/05_non_gaussian_clt_violations.html\#interactive-ratio-cauchy}{\includegraphics[width=24mm,height=\textheight,keepaspectratio,alt={QR-код интерактива}]{assets/qr/ratio_cauchy.png}}
 
 \end{minipage}
 
@@ -5844,7 +5811,7 @@ A=\frac{N_1-N_2}{N_1+N_2}.
 
 \section{Задачи}\label{ux437ux430ux434ux430ux447ux438-4}
 
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral},breakable=false]
+\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
 
 \noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 1. Среднее распределения Коши}\par\nopagebreak[4]\vspace{1.2mm}
 
@@ -5855,7 +5822,7 @@ A=\frac{N_1-N_2}{N_1+N_2}.
 
 \end{semanticpdfbox}
 
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral},breakable=false]
+\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
 
 \noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 2. Тяжёлый хвост с конечной дисперсией}\par\nopagebreak[4]\vspace{1.2mm}
 
@@ -5875,7 +5842,7 @@ p(x)\sim\frac{C}{|x|^{1+\alpha}}.
 
 \end{semanticpdfbox}
 
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral},breakable=false]
+\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
 
 \noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 3. Один доминирующий вклад}\par\nopagebreak[4]\vspace{1.2mm}
 
@@ -5888,7 +5855,7 @@ S=X_0+\epsilon_1+\dots+\epsilon_n,
 
 \end{semanticpdfbox}
 
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral},breakable=false]
+\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
 
 \noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 4. Общая систематическая ошибка}\par\nopagebreak[4]\vspace{1.2mm}
 
@@ -5901,7 +5868,7 @@ X_i=\mu+C+\epsilon_i,
 
 \end{semanticpdfbox}
 
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral},breakable=false]
+\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
 
 \noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 5. Усреднение коррелированных измерений}\par\nopagebreak[4]\vspace{1.2mm}
 
@@ -5921,7 +5888,7 @@ X_i=\mu+C+\epsilon_i,
 
 \end{semanticpdfbox}
 
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral},breakable=false]
+\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
 
 \noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 6. Смесь двух гауссов}\par\nopagebreak[4]\vspace{1.2mm}
 
@@ -5933,7 +5900,7 @@ X|B\sim\mathrm{N}(\mu_B,\sigma_B^2),
 
 \end{semanticpdfbox}
 
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral},breakable=false]
+\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
 
 \noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 7. Скрытая топология в жидком сцинтилляторе}\par\nopagebreak[4]\vspace{1.2mm}
 
@@ -5974,7 +5941,7 @@ Q|\theta=B\sim\mathrm{Pois}(980).
 
 \end{semanticpdfbox}
 
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral},breakable=false]
+\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
 
 \noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 8. Отношение гауссовых величин}\par\nopagebreak[4]\vspace{1.2mm}
 
@@ -6329,24 +6296,26 @@ Y=X+aX^2.
 Член \(a\sigma_X^2\) сдвигает среднее, а \(2a^2\sigma_X^4\) добавляет
 дисперсию. Оба исчезают в линейном приближении.
 
-\begin{semanticpdfbox}[breakable=false]
-
 \begin{center}
 
 \includegraphics[width=0.74\linewidth,height=\textheight,keepaspectratio,alt={Нелинейное преобразование \$Y=X+aX\^{}2\$}]{assets/figures/error_propagation_nonlinear_default.png}
 
 \end{center}
 
-\noindent\begin{minipage}[c]{\dimexpr\linewidth-30mm\relax}
+\begin{semanticpdfbox}[breakable=false,title={Отсканируйте\ifdefined\faIcon\ \faIcon{mobile-alt}\fi},fonttitle=\sffamily\small,coltitle=BookInk,top=3mm,attach boxed title to top left={xshift=4mm,yshift*=-\tcboxedtitleheight/2},boxed title style={colback=BookPaper,colframe=BookTeal,boxrule=0.5pt,sharp corners}]
 
-\textbf{Интерактив}. \textbf{Нелинейное преобразование \(Y=X+aX^2\)}
+\noindent\begin{minipage}[t]{0.25\linewidth}\vspace{0pt}\centering
+
+\href{https://neutrinohit.github.io/qr/statistics/0011/}{\includegraphics[width=1\linewidth,height=\textheight,keepaspectratio,alt={QR-код}]{assets/qr/error-propagation-nonlinear.png}}
+
+{\fontsize{5pt}{6pt}\selectfont\ttfamily\centering\href{https://neutrinohit.github.io/qr/statistics/0011/}{neutrinohit.github.io\\/\allowbreak{}qr/\allowbreak{}statistics/\allowbreak{}0011/\allowbreak{}}\par}
+
+\end{minipage}\hfill\begin{minipage}[t]{\dimexpr0.75\linewidth-3mm\relax}\vspace{0pt}
+
+\textbf{Анимация}. \textbf{Нелинейное преобразование \(Y=X+aX^2\)}
 
 Меняйте ширину исходного гаусса и коэффициент \(a\). Гистограмма
 показывает распределение \(Y\), а гладкая кривая --- линейный прогноз.
-
-\end{minipage}\hfill\begin{minipage}[c]{26mm}\centering
-
-\href{https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/06_error_propagation.html\#interactive-error-propagation-nonlinear}{\includegraphics[width=24mm,height=\textheight,keepaspectratio,alt={QR-код интерактива}]{assets/qr/error-propagation-nonlinear.png}}
 
 \end{minipage}
 
@@ -6653,26 +6622,28 @@ N\simeq51.
 \subsection{Десять гауссовских
 измерений}\label{interactive-error-propagation-sample-variance}
 
-\begin{semanticpdfbox}[breakable=false]
-
 \begin{center}
 
 \includegraphics[width=0.74\linewidth,height=\textheight,keepaspectratio,alt={Десять гауссовских измерений}]{assets/figures/error_propagation_sample10.png}
 
 \end{center}
 
-\noindent\begin{minipage}[c]{\dimexpr\linewidth-30mm\relax}
+\begin{semanticpdfbox}[breakable=false,title={Отсканируйте\ifdefined\faIcon\ \faIcon{mobile-alt}\fi},fonttitle=\sffamily\small,coltitle=BookInk,top=3mm,attach boxed title to top left={xshift=4mm,yshift*=-\tcboxedtitleheight/2},boxed title style={colback=BookPaper,colframe=BookTeal,boxrule=0.5pt,sharp corners}]
 
-\textbf{Интерактив}. \textbf{Десять гауссовских измерений}
+\noindent\begin{minipage}[t]{0.25\linewidth}\vspace{0pt}\centering
+
+\href{https://neutrinohit.github.io/qr/statistics/0012/}{\includegraphics[width=1\linewidth,height=\textheight,keepaspectratio,alt={QR-код}]{assets/qr/error-propagation-sample-variance.png}}
+
+{\fontsize{5pt}{6pt}\selectfont\ttfamily\centering\href{https://neutrinohit.github.io/qr/statistics/0012/}{neutrinohit.github.io\\/\allowbreak{}qr/\allowbreak{}statistics/\allowbreak{}0012/\allowbreak{}}\par}
+
+\end{minipage}\hfill\begin{minipage}[t]{\dimexpr0.75\linewidth-3mm\relax}\vspace{0pt}
+
+\textbf{Анимация}. \textbf{Десять гауссовских измерений}
 
 Меняйте параметры распределения и начальное состояние генератора.
 Таблица показывает выборку, оценки \(\widehat\mu\),
 \(\widehat{\sigma^2}\), \(\widehat\sigma\) и их расчётные
 неопределённости.
-
-\end{minipage}\hfill\begin{minipage}[c]{26mm}\centering
-
-\href{https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/06_error_propagation.html\#interactive-error-propagation-sample-variance}{\includegraphics[width=24mm,height=\textheight,keepaspectratio,alt={QR-код интерактива}]{assets/qr/error-propagation-sample-variance.png}}
 
 \end{minipage}
 
@@ -6847,25 +6818,27 @@ g_i=
 \subsection{Корреляционный вклад в
 дисперсию}\label{interactive-error-propagation-correlation}
 
-\begin{semanticpdfbox}[breakable=false]
-
 \begin{center}
 
 \includegraphics[width=0.74\linewidth,height=\textheight,keepaspectratio,alt={Корреляционный вклад в дисперсию}]{assets/figures/error_propagation_corr_positive.png}
 
 \end{center}
 
-\noindent\begin{minipage}[c]{\dimexpr\linewidth-30mm\relax}
+\begin{semanticpdfbox}[breakable=false,title={Отсканируйте\ifdefined\faIcon\ \faIcon{mobile-alt}\fi},fonttitle=\sffamily\small,coltitle=BookInk,top=3mm,attach boxed title to top left={xshift=4mm,yshift*=-\tcboxedtitleheight/2},boxed title style={colback=BookPaper,colframe=BookTeal,boxrule=0.5pt,sharp corners}]
 
-\textbf{Интерактив}. \textbf{Корреляционный вклад в дисперсию}
+\noindent\begin{minipage}[t]{0.25\linewidth}\vspace{0pt}\centering
+
+\href{https://neutrinohit.github.io/qr/statistics/0013/}{\includegraphics[width=1\linewidth,height=\textheight,keepaspectratio,alt={QR-код}]{assets/qr/error-propagation-correlation.png}}
+
+{\fontsize{5pt}{6pt}\selectfont\ttfamily\centering\href{https://neutrinohit.github.io/qr/statistics/0013/}{neutrinohit.github.io\\/\allowbreak{}qr/\allowbreak{}statistics/\allowbreak{}0013/\allowbreak{}}\par}
+
+\end{minipage}\hfill\begin{minipage}[t]{\dimexpr0.75\linewidth-3mm\relax}\vspace{0pt}
+
+\textbf{Анимация}. \textbf{Корреляционный вклад в дисперсию}
 
 Меняйте производные, стандартные отклонения и \(\rho\). Три полосы
 показывают два диагональных и один корреляционный вклад в
 \(\sigma_F^2\).
-
-\end{minipage}\hfill\begin{minipage}[c]{26mm}\centering
-
-\href{https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/06_error_propagation.html\#interactive-error-propagation-correlation}{\includegraphics[width=24mm,height=\textheight,keepaspectratio,alt={QR-код интерактива}]{assets/qr/error-propagation-correlation.png}}
 
 \end{minipage}
 
@@ -7155,7 +7128,7 @@ J_{ai}=
 
 \section{Задачи}\label{ux437ux430ux434ux430ux447ux438-5}
 
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral},breakable=false]
+\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
 
 \noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 1. Радиус и площадь круга}\par\nopagebreak[4]\vspace{1.2mm}
 
@@ -7177,7 +7150,7 @@ R=(10.0\pm0.3)\ \text{см}.
 
 \end{semanticpdfbox}
 
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral},breakable=false]
+\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
 
 \noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 2. Сумма и разность коррелированных величин}\par\nopagebreak[4]\vspace{1.2mm}
 
@@ -7200,7 +7173,7 @@ D=X-Y.
 
 \end{semanticpdfbox}
 
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral},breakable=false]
+\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
 
 \noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 3. Ошибка отношения}\par\nopagebreak[4]\vspace{1.2mm}
 
@@ -7224,7 +7197,7 @@ D=X-Y.
 
 \end{semanticpdfbox}
 
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral},breakable=false]
+\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
 
 \noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 4. Преобразование ковариационной матрицы}\par\nopagebreak[4]\vspace{1.2mm}
 
@@ -7258,7 +7231,7 @@ D=X-Y
 
 \end{semanticpdfbox}
 
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral},breakable=false]
+\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
 
 \noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 5. Проверка линейного приближения}\par\nopagebreak[4]\vspace{1.2mm}
 
@@ -7638,24 +7611,26 @@ a_i=\sqrt{c\lambda_i}.
 \subsection{Интерактив: корреляция и
 эллипс}\label{interactive-gaussian-correlation-ellipse}
 
-\begin{semanticpdfbox}[breakable=false]
-
 \begin{center}
 
-\includegraphics[width=0.74\linewidth,height=\textheight,keepaspectratio,alt={корреляция и эллипс}]{assets/figures/gaussian2d_correlation_ellipse.png}
+\includegraphics[width=0.74\linewidth,height=\textheight,keepaspectratio,alt={Интерактив: корреляция и эллипс}]{assets/figures/gaussian2d_correlation_ellipse.png}
 
 \end{center}
 
-\noindent\begin{minipage}[c]{\dimexpr\linewidth-30mm\relax}
+\begin{semanticpdfbox}[breakable=false,title={Отсканируйте\ifdefined\faIcon\ \faIcon{mobile-alt}\fi},fonttitle=\sffamily\small,coltitle=BookInk,top=3mm,attach boxed title to top left={xshift=4mm,yshift*=-\tcboxedtitleheight/2},boxed title style={colback=BookPaper,colframe=BookTeal,boxrule=0.5pt,sharp corners}]
 
-\textbf{Интерактив}. \textbf{корреляция и эллипс}
+\noindent\begin{minipage}[t]{0.25\linewidth}\vspace{0pt}\centering
+
+\href{https://neutrinohit.github.io/qr/statistics/0014/}{\includegraphics[width=1\linewidth,height=\textheight,keepaspectratio,alt={QR-код}]{assets/qr/gaussian-correlation-ellipse.png}}
+
+{\fontsize{5pt}{6pt}\selectfont\ttfamily\centering\href{https://neutrinohit.github.io/qr/statistics/0014/}{neutrinohit.github.io\\/\allowbreak{}qr/\allowbreak{}statistics/\allowbreak{}0014/\allowbreak{}}\par}
+
+\end{minipage}\hfill\begin{minipage}[t]{\dimexpr0.75\linewidth-3mm\relax}\vspace{0pt}
+
+\textbf{Анимация}. \textbf{Интерактив: корреляция и эллипс}
 
 Меняйте \(\rho\), \(\sigma_X\) и \(\sigma_Y\). Точки показывают выборку
 из двумерного гаусса, линия --- эллипс \(D^2=2.30\).
-
-\end{minipage}\hfill\begin{minipage}[c]{26mm}\centering
-
-\href{https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/07_two_dimensional_gaussian.html\#interactive-gaussian-correlation-ellipse}{\includegraphics[width=24mm,height=\textheight,keepaspectratio,alt={QR-код интерактива}]{assets/qr/gaussian-correlation-ellipse.png}}
 
 \end{minipage}
 
@@ -7733,25 +7708,27 @@ P(D^2\leq1)=1-e^{-1/2}=0.393.
 \subsection{Интерактив: вероятность и размер
 контура}\label{interactive-gaussian-probability-contour}
 
-\begin{semanticpdfbox}[breakable=false]
-
 \begin{center}
 
-\includegraphics[width=0.74\linewidth,height=\textheight,keepaspectratio,alt={вероятность и размер контура}]{assets/figures/gaussian2d_probability_contour.png}
+\includegraphics[width=0.74\linewidth,height=\textheight,keepaspectratio,alt={Интерактив: вероятность и размер контура}]{assets/figures/gaussian2d_probability_contour.png}
 
 \end{center}
 
-\noindent\begin{minipage}[c]{\dimexpr\linewidth-30mm\relax}
+\begin{semanticpdfbox}[breakable=false,title={Отсканируйте\ifdefined\faIcon\ \faIcon{mobile-alt}\fi},fonttitle=\sffamily\small,coltitle=BookInk,top=3mm,attach boxed title to top left={xshift=4mm,yshift*=-\tcboxedtitleheight/2},boxed title style={colback=BookPaper,colframe=BookTeal,boxrule=0.5pt,sharp corners}]
 
-\textbf{Интерактив}. \textbf{вероятность и размер контура}
+\noindent\begin{minipage}[t]{0.25\linewidth}\vspace{0pt}\centering
+
+\href{https://neutrinohit.github.io/qr/statistics/0015/}{\includegraphics[width=1\linewidth,height=\textheight,keepaspectratio,alt={QR-код}]{assets/qr/gaussian-probability-contour.png}}
+
+{\fontsize{5pt}{6pt}\selectfont\ttfamily\centering\href{https://neutrinohit.github.io/qr/statistics/0015/}{neutrinohit.github.io\\/\allowbreak{}qr/\allowbreak{}statistics/\allowbreak{}0015/\allowbreak{}}\par}
+
+\end{minipage}\hfill\begin{minipage}[t]{\dimexpr0.75\linewidth-3mm\relax}\vspace{0pt}
+
+\textbf{Анимация}. \textbf{Интерактив: вероятность и размер контура}
 
 Сплошная линия ограничивает выбранную долю распределения. Пунктир
 показывает \(D^2=1\), который в двух измерениях содержит \(39.3\%\)
 вероятности.
-
-\end{minipage}\hfill\begin{minipage}[c]{26mm}\centering
-
-\href{https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/07_two_dimensional_gaussian.html\#interactive-gaussian-probability-contour}{\includegraphics[width=24mm,height=\textheight,keepaspectratio,alt={QR-код интерактива}]{assets/qr/gaussian-probability-contour.png}}
 
 \end{minipage}
 
@@ -8004,7 +7981,7 @@ m=(9.78\pm0.30)\ \text{ГэВ}.
 
 \section{Задачи}\label{ux437ux430ux434ux430ux447ux438-6}
 
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral},breakable=false]
+\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
 
 \noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 1. Вероятность внутри эллипса}\par\nopagebreak[4]\vspace{1.2mm}
 
@@ -8035,7 +8012,7 @@ V^{-1}(\mathbf X-\boldsymbol\mu)
 
 \end{semanticpdfbox}
 
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral},breakable=false]
+\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
 
 \noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 2. Геометрия ковариационной матрицы}\par\nopagebreak[4]\vspace{1.2mm}
 
@@ -8068,7 +8045,7 @@ V=
 
 \end{semanticpdfbox}
 
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral},breakable=false]
+\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
 
 \noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 3. Объединение двух измерений}\par\nopagebreak[4]\vspace{1.2mm}
 
@@ -8096,7 +8073,7 @@ x_2=11.1\pm0.4.
 
 \end{semanticpdfbox}
 
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral},breakable=false]
+\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
 
 \noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 4. Инвариантная масса}\par\nopagebreak[4]\vspace{1.2mm}
 
@@ -8148,8 +8125,7 @@ Press. 1998.
 
 \end{CSLReferences}
 
-\chapter{Метод Монте-Карло и
-псевдоэксперименты}\label{ux43cux435ux442ux43eux434-ux43cux43eux43dux442ux435-ux43aux430ux440ux43bux43e-ux438-ux43fux441ux435ux432ux434ux43eux44dux43aux441ux43fux435ux440ux438ux43cux435ux43dux442ux44b}
+\chapter{\texorpdfstring{Метод Монте-Карло\BookTitleBreak{}и псевдоэксперименты}{}}\label{ux43cux435ux442ux43eux434-ux43cux43eux43dux442ux435-ux43aux430ux440ux43bux43e-ux438-ux43fux441ux435ux432ux434ux43eux44dux43aux441ux43fux435ux440ux438ux43cux435ux43dux442ux44b}
 
 \bookchapteropeningcontents
 
@@ -8433,24 +8409,26 @@ f(x)=6x(1-x),
 генерируем точки в прямоугольнике \(0\leq x\leq1\), \(0\leq y\leq3/2\) и
 принимаем точку, если \(y\leq f(x)\).
 
-\begin{semanticpdfbox}[breakable=false]
-
 \begin{center}
 
 \includegraphics[width=0.74\linewidth,height=\textheight,keepaspectratio,alt={Метод отбора для плотности \$6x(1-x)\$}]{assets/figures/mc_rejection_sampling.png}
 
 \end{center}
 
-\noindent\begin{minipage}[c]{\dimexpr\linewidth-30mm\relax}
+\begin{semanticpdfbox}[breakable=false,title={Отсканируйте\ifdefined\faIcon\ \faIcon{mobile-alt}\fi},fonttitle=\sffamily\small,coltitle=BookInk,top=3mm,attach boxed title to top left={xshift=4mm,yshift*=-\tcboxedtitleheight/2},boxed title style={colback=BookPaper,colframe=BookTeal,boxrule=0.5pt,sharp corners}]
 
-\textbf{Интерактив}. \textbf{Метод отбора для плотности \(6x(1-x)\)}
+\noindent\begin{minipage}[t]{0.25\linewidth}\vspace{0pt}\centering
+
+\href{https://neutrinohit.github.io/qr/statistics/0016/}{\includegraphics[width=1\linewidth,height=\textheight,keepaspectratio,alt={QR-код}]{assets/qr/monte-carlo-rejection-sampling.png}}
+
+{\fontsize{5pt}{6pt}\selectfont\ttfamily\centering\href{https://neutrinohit.github.io/qr/statistics/0016/}{neutrinohit.github.io\\/\allowbreak{}qr/\allowbreak{}statistics/\allowbreak{}0016/\allowbreak{}}\par}
+
+\end{minipage}\hfill\begin{minipage}[t]{\dimexpr0.75\linewidth-3mm\relax}\vspace{0pt}
+
+\textbf{Анимация}. \textbf{Метод отбора для плотности \(6x(1-x)\)}
 
 Синие точки приняты, серые отброшены. Теоретическая доля принятых
 событий равна \(2/3\).
-
-\end{minipage}\hfill\begin{minipage}[c]{26mm}\centering
-
-\href{https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/08_monte_carlo_method.html\#interactive-monte-carlo-rejection-sampling}{\includegraphics[width=24mm,height=\textheight,keepaspectratio,alt={QR-код интерактива}]{assets/qr/monte-carlo-rejection-sampling.png}}
 
 \end{minipage}
 
@@ -8590,23 +8568,25 @@ P(X^2+Y^2\leq1)=\frac{\pi}{4},
 }
 }\end{equation}
 
-\begin{semanticpdfbox}[breakable=false]
-
 \begin{center}
 
 \includegraphics[width=0.74\linewidth,height=\textheight,keepaspectratio,alt={Оценка числа \$\textbackslash pi\$ методом Монте-Карло}]{assets/figures/mc_pi_estimate.png}
 
 \end{center}
 
-\noindent\begin{minipage}[c]{\dimexpr\linewidth-30mm\relax}
+\begin{semanticpdfbox}[breakable=false,title={Отсканируйте\ifdefined\faIcon\ \faIcon{mobile-alt}\fi},fonttitle=\sffamily\small,coltitle=BookInk,top=3mm,attach boxed title to top left={xshift=4mm,yshift*=-\tcboxedtitleheight/2},boxed title style={colback=BookPaper,colframe=BookTeal,boxrule=0.5pt,sharp corners}]
 
-\textbf{Интерактив}. \textbf{Оценка числа \(\pi\) методом Монте-Карло}
+\noindent\begin{minipage}[t]{0.25\linewidth}\vspace{0pt}\centering
+
+\href{https://neutrinohit.github.io/qr/statistics/0017/}{\includegraphics[width=1\linewidth,height=\textheight,keepaspectratio,alt={QR-код}]{assets/qr/monte-carlo-pi.png}}
+
+{\fontsize{5pt}{6pt}\selectfont\ttfamily\centering\href{https://neutrinohit.github.io/qr/statistics/0017/}{neutrinohit.github.io\\/\allowbreak{}qr/\allowbreak{}statistics/\allowbreak{}0017/\allowbreak{}}\par}
+
+\end{minipage}\hfill\begin{minipage}[t]{\dimexpr0.75\linewidth-3mm\relax}\vspace{0pt}
+
+\textbf{Анимация}. \textbf{Оценка числа \(\pi\) методом Монте-Карло}
 
 Доля синих точек внутри четверти круга оценивает \(\pi/4\).
-
-\end{minipage}\hfill\begin{minipage}[c]{26mm}\centering
-
-\href{https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/08_monte_carlo_method.html\#interactive-monte-carlo-pi}{\includegraphics[width=24mm,height=\textheight,keepaspectratio,alt={QR-код интерактива}]{assets/qr/monte-carlo-pi.png}}
 
 \end{minipage}
 
@@ -8632,24 +8612,26 @@ N_{\mathrm{grid}}=m^d
 вычислений функции. Сетка ещё довольно грубая, а вычислительная задача
 уже нет.
 
-\begin{semanticpdfbox}[breakable=false]
-
 \begin{center}
 
 \includegraphics[width=0.74\linewidth,height=\textheight,keepaspectratio,alt={Рост числа узлов регулярной сетки}]{assets/figures/mc_grid_m5_d8.png}
 
 \end{center}
 
-\noindent\begin{minipage}[c]{\dimexpr\linewidth-30mm\relax}
+\begin{semanticpdfbox}[breakable=false,title={Отсканируйте\ifdefined\faIcon\ \faIcon{mobile-alt}\fi},fonttitle=\sffamily\small,coltitle=BookInk,top=3mm,attach boxed title to top left={xshift=4mm,yshift*=-\tcboxedtitleheight/2},boxed title style={colback=BookPaper,colframe=BookTeal,boxrule=0.5pt,sharp corners}]
 
-\textbf{Интерактив}. \textbf{Рост числа узлов регулярной сетки}
+\noindent\begin{minipage}[t]{0.25\linewidth}\vspace{0pt}\centering
+
+\href{https://neutrinohit.github.io/qr/statistics/0018/}{\includegraphics[width=1\linewidth,height=\textheight,keepaspectratio,alt={QR-код}]{assets/qr/monte-carlo-grid-dimension.png}}
+
+{\fontsize{5pt}{6pt}\selectfont\ttfamily\centering\href{https://neutrinohit.github.io/qr/statistics/0018/}{neutrinohit.github.io\\/\allowbreak{}qr/\allowbreak{}statistics/\allowbreak{}0018/\allowbreak{}}\par}
+
+\end{minipage}\hfill\begin{minipage}[t]{\dimexpr0.75\linewidth-3mm\relax}\vspace{0pt}
+
+\textbf{Анимация}. \textbf{Рост числа узлов регулярной сетки}
 
 При пяти узлах по каждой из восьми координат требуется \(5^8=390\,625\)
 вычислений.
-
-\end{minipage}\hfill\begin{minipage}[c]{26mm}\centering
-
-\href{https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/08_monte_carlo_method.html\#interactive-monte-carlo-grid-dimension}{\includegraphics[width=24mm,height=\textheight,keepaspectratio,alt={QR-код интерактива}]{assets/qr/monte-carlo-grid-dimension.png}}
 
 \end{minipage}
 
@@ -8732,23 +8714,25 @@ N_{\mathrm{eff}}
 вклад. При численном интегрировании изменение плотности обязательно
 компенсируется весом из формулы \ref{eq-ch8-importance-weight}.
 
-\begin{semanticpdfbox}[breakable=false]
-
 \begin{center}
 
 \includegraphics[width=0.74\linewidth,height=\textheight,keepaspectratio,alt={Равномерная выборка и выборка по важности}]{assets/figures/mc_rare_uniform.png}
 
 \end{center}
 
-\noindent\begin{minipage}[c]{\dimexpr\linewidth-30mm\relax}
+\begin{semanticpdfbox}[breakable=false,title={Отсканируйте\ifdefined\faIcon\ \faIcon{mobile-alt}\fi},fonttitle=\sffamily\small,coltitle=BookInk,top=3mm,attach boxed title to top left={xshift=4mm,yshift*=-\tcboxedtitleheight/2},boxed title style={colback=BookPaper,colframe=BookTeal,boxrule=0.5pt,sharp corners}]
 
-\textbf{Интерактив}. \textbf{Равномерная выборка и выборка по важности}
+\noindent\begin{minipage}[t]{0.25\linewidth}\vspace{0pt}\centering
+
+\href{https://neutrinohit.github.io/qr/statistics/0019/}{\includegraphics[width=1\linewidth,height=\textheight,keepaspectratio,alt={QR-код}]{assets/qr/monte-carlo-importance-sampling.png}}
+
+{\fontsize{5pt}{6pt}\selectfont\ttfamily\centering\href{https://neutrinohit.github.io/qr/statistics/0019/}{neutrinohit.github.io\\/\allowbreak{}qr/\allowbreak{}statistics/\allowbreak{}0019/\allowbreak{}}\par}
+
+\end{minipage}\hfill\begin{minipage}[t]{\dimexpr0.75\linewidth-3mm\relax}\vspace{0pt}
+
+\textbf{Анимация}. \textbf{Равномерная выборка и выборка по важности}
 
 При равномерной генерации малая доля точек попадает в важную область.
-
-\end{minipage}\hfill\begin{minipage}[c]{26mm}\centering
-
-\href{https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/08_monte_carlo_method.html\#interactive-monte-carlo-importance-sampling}{\includegraphics[width=24mm,height=\textheight,keepaspectratio,alt={QR-код интерактива}]{assets/qr/monte-carlo-importance-sampling.png}}
 
 \end{minipage}
 
@@ -8938,24 +8922,26 @@ I_{\mathrm{exact}}=0.9978196359.
 \(\widehat s=N-b\). Повторив эти действия несколько тысяч раз, получим
 распределение оценки.
 
-\begin{semanticpdfbox}[breakable=false]
-
 \begin{center}
 
 \includegraphics[width=0.74\linewidth,height=\textheight,keepaspectratio,alt={Ансамбль счётных экспериментов}]{assets/figures/mc_counting_pseudoexperiments.png}
 
 \end{center}
 
-\noindent\begin{minipage}[c]{\dimexpr\linewidth-30mm\relax}
+\begin{semanticpdfbox}[breakable=false,title={Отсканируйте\ifdefined\faIcon\ \faIcon{mobile-alt}\fi},fonttitle=\sffamily\small,coltitle=BookInk,top=3mm,attach boxed title to top left={xshift=4mm,yshift*=-\tcboxedtitleheight/2},boxed title style={colback=BookPaper,colframe=BookTeal,boxrule=0.5pt,sharp corners}]
 
-\textbf{Интерактив}. \textbf{Ансамбль счётных экспериментов}
+\noindent\begin{minipage}[t]{0.25\linewidth}\vspace{0pt}\centering
+
+\href{https://neutrinohit.github.io/qr/statistics/0020/}{\includegraphics[width=1\linewidth,height=\textheight,keepaspectratio,alt={QR-код}]{assets/qr/monte-carlo-counting-experiment.png}}
+
+{\fontsize{5pt}{6pt}\selectfont\ttfamily\centering\href{https://neutrinohit.github.io/qr/statistics/0020/}{neutrinohit.github.io\\/\allowbreak{}qr/\allowbreak{}statistics/\allowbreak{}0020/\allowbreak{}}\par}
+
+\end{minipage}\hfill\begin{minipage}[t]{\dimexpr0.75\linewidth-3mm\relax}\vspace{0pt}
+
+\textbf{Анимация}. \textbf{Ансамбль счётных экспериментов}
 
 При \(s=5\) и \(b=10\) среднее распределения равно пяти, а около семи
 процентов псевдоэкспериментов дают \(\widehat s<0\).
-
-\end{minipage}\hfill\begin{minipage}[c]{26mm}\centering
-
-\href{https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/08_monte_carlo_method.html\#interactive-monte-carlo-counting-experiment}{\includegraphics[width=24mm,height=\textheight,keepaspectratio,alt={QR-код интерактива}]{assets/qr/monte-carlo-counting-experiment.png}}
 
 \end{minipage}
 
@@ -8997,21 +8983,23 @@ I_{\mathrm{exact}}=0.9978196359.
 Каждый этап содержит приближения. Их проверяют по контрольным данным, а
 оставшиеся расхождения входят в систематическую неопределённость.
 
-\begin{semanticpdfbox}[breakable=false]
+\begin{semanticpdfbox}[breakable=false,title={Отсканируйте\ifdefined\faIcon\ \faIcon{mobile-alt}\fi},fonttitle=\sffamily\small,coltitle=BookInk,top=3mm,attach boxed title to top left={xshift=4mm,yshift*=-\tcboxedtitleheight/2},boxed title style={colback=BookPaper,colframe=BookTeal,boxrule=0.5pt,sharp corners}]
 
-\noindent\begin{minipage}[c]{\dimexpr\linewidth-30mm\relax}
+\noindent\begin{minipage}[t]{0.25\linewidth}\vspace{0pt}\centering
 
-\textbf{Интерактив}. \textbf{Моделирование оптических фотонов в Daya Bay
-и JUNO}
+\href{https://neutrinohit.github.io/qr/statistics/0021/}{\includegraphics[width=1\linewidth,height=\textheight,keepaspectratio,alt={QR-код}]{assets/qr/opticks-video.png}}
+
+{\fontsize{5pt}{6pt}\selectfont\ttfamily\centering\href{https://neutrinohit.github.io/qr/statistics/0021/}{neutrinohit.github.io\\/\allowbreak{}qr/\allowbreak{}statistics/\allowbreak{}0021/\allowbreak{}}\par}
+
+\end{minipage}\hfill\begin{minipage}[t]{\dimexpr0.75\linewidth-3mm\relax}\vspace{0pt}
+
+\textbf{Анимация}. \textbf{Моделирование оптических фотонов в Daya Bay и
+JUNO}
 
 В ролике Саймона Блита показана работа Opticks: распространение
 оптических фотонов рассчитывается на графическом процессоре для
 геометрий детекторов Daya Bay и JUNO. Описание проекта опубликовано на
 странице автора {[}3{]}.
-
-\end{minipage}\hfill\begin{minipage}[c]{26mm}\centering
-
-\href{https://juno.ihep.ac.cn/~blyth/}{\includegraphics[width=24mm,height=\textheight,keepaspectratio,alt={QR-код интерактива}]{assets/qr/opticks-video.png}}
 
 \end{minipage}
 
@@ -9174,7 +9162,7 @@ N_{\mathrm{sel}}
 
 \section{Задачи}\label{ux437ux430ux434ux430ux447ux438-7}
 
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral},breakable=false]
+\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
 
 \noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 1. Обратная функция распределения}\par\nopagebreak[4]\vspace{1.2mm}
 
@@ -9198,7 +9186,7 @@ U\sim\mathrm U(0,1).
 
 \end{semanticpdfbox}
 
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral},breakable=false]
+\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
 
 \noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 2. Метод отбора}\par\nopagebreak[4]\vspace{1.2mm}
 
@@ -9222,7 +9210,7 @@ f(x)=6x(1-x),
 
 \end{semanticpdfbox}
 
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral},breakable=false]
+\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
 
 \noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 3. Интегрирование методом Монте-Карло}\par\nopagebreak[4]\vspace{1.2mm}
 
@@ -9245,7 +9233,7 @@ I=\int_0^1\frac{4}{1+x^2}\,dx=\pi
 
 \end{semanticpdfbox}
 
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral},breakable=false]
+\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
 
 \noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 4. Редкое событие и выборка по важности}\par\nopagebreak[4]\vspace{1.2mm}
 
@@ -9273,7 +9261,7 @@ Z\sim\mathrm N(0,1).
 
 \end{semanticpdfbox}
 
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral},breakable=false]
+\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
 
 \noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 5. Псевдоэксперименты для счётного эксперимента}\par\nopagebreak[4]\vspace{1.2mm}
 
@@ -9299,7 +9287,7 @@ N\sim\operatorname{Pois}(s+b),
 
 \end{semanticpdfbox}
 
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral},breakable=false]
+\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
 
 \noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 6. Нелинейное распространение ошибки}\par\nopagebreak[4]\vspace{1.2mm}
 
@@ -9334,7 +9322,7 @@ R=\frac{X}{Y}
 
 \end{semanticpdfbox}
 
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral},breakable=false]
+\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
 
 \noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 7. Эффективность отбора}\par\nopagebreak[4]\vspace{1.2mm}
 
@@ -9357,7 +9345,7 @@ R=\frac{X}{Y}
 
 \end{semanticpdfbox}
 
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral},breakable=false]
+\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
 
 \noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 8. Эффективный размер выборки}\par\nopagebreak[4]\vspace{1.2mm}
 
@@ -9410,8 +9398,7 @@ doi:\href{https://doi.org/10.1016/0021-9991(78)90004-9}{10.1016/0021-9991(78)900
 
 \end{CSLReferences}
 
-\chapter{Правдоподобие и оценки максимального
-правдоподобия}\label{ux43fux440ux430ux432ux434ux43eux43fux43eux434ux43eux431ux438ux435-ux438-ux43eux446ux435ux43dux43aux438-ux43cux430ux43aux441ux438ux43cux430ux43bux44cux43dux43eux433ux43e-ux43fux440ux430ux432ux434ux43eux43fux43eux434ux43eux431ux438ux44f}
+\chapter{\texorpdfstring{Правдоподобие и оценки\BookTitleBreak{}максимального правдоподобия}{}}\label{ux43fux440ux430ux432ux434ux43eux43fux43eux434ux43eux431ux438ux435-ux438-ux43eux446ux435ux43dux43aux438-ux43cux430ux43aux441ux438ux43cux430ux43bux44cux43dux43eux433ux43e-ux43fux440ux430ux432ux434ux43eux43fux43eux434ux43eux431ux438ux44f}
 
 \bookchapteropeningcontents
 
@@ -9783,25 +9770,27 @@ k(1-\varepsilon)=\varepsilon(N-k),
 \subsection{Интерактив: форма биномиального
 правдоподобия}\label{interactive-likelihood-binomial}
 
-\begin{semanticpdfbox}[breakable=false]
-
 \begin{center}
 
 \includegraphics[width=0.74\linewidth,height=\textheight,keepaspectratio,alt={Биномиальное правдоподобие}]{assets/figures/mle_binomial_n20_k7.png}
 
 \end{center}
 
-\noindent\begin{minipage}[c]{\dimexpr\linewidth-30mm\relax}
+\begin{semanticpdfbox}[breakable=false,title={Отсканируйте\ifdefined\faIcon\ \faIcon{mobile-alt}\fi},fonttitle=\sffamily\small,coltitle=BookInk,top=3mm,attach boxed title to top left={xshift=4mm,yshift*=-\tcboxedtitleheight/2},boxed title style={colback=BookPaper,colframe=BookTeal,boxrule=0.5pt,sharp corners}]
 
-\textbf{Интерактив}. \textbf{Биномиальное правдоподобие}
+\noindent\begin{minipage}[t]{0.25\linewidth}\vspace{0pt}\centering
+
+\href{https://neutrinohit.github.io/qr/statistics/0022/}{\includegraphics[width=1\linewidth,height=\textheight,keepaspectratio,alt={QR-код}]{assets/qr/likelihood-binomial.png}}
+
+{\fontsize{5pt}{6pt}\selectfont\ttfamily\centering\href{https://neutrinohit.github.io/qr/statistics/0022/}{neutrinohit.github.io\\/\allowbreak{}qr/\allowbreak{}statistics/\allowbreak{}0022/\allowbreak{}}\par}
+
+\end{minipage}\hfill\begin{minipage}[t]{\dimexpr0.75\linewidth-3mm\relax}\vspace{0pt}
+
+\textbf{Анимация}. \textbf{Биномиальное правдоподобие}
 
 Меняйте число частиц \(N\) и число срабатываний \(k\). Вертикальная
 линия показывает оценку \(\widehat\varepsilon=k/N\). При увеличении
 выборки максимум становится уже.
-
-\end{minipage}\hfill\begin{minipage}[c]{26mm}\centering
-
-\href{https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/09_maximum_likelihood.html\#interactive-likelihood-binomial}{\includegraphics[width=24mm,height=\textheight,keepaspectratio,alt={QR-код интерактива}]{assets/qr/likelihood-binomial.png}}
 
 \end{minipage}
 
@@ -10038,7 +10027,7 @@ s^2
 
 \section{Задачи}\label{ux437ux430ux434ux430ux447ux438-8}
 
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral},breakable=false]
+\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
 
 \noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 1. Вероятность и правдоподобие}\par\nopagebreak[4]\vspace{1.2mm}
 
@@ -10069,7 +10058,7 @@ f(x\mid\lambda)=\lambda e^{-\lambda x},
 
 \end{semanticpdfbox}
 
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral},breakable=false]
+\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
 
 \noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 2. Биномиальная оценка}\par\nopagebreak[4]\vspace{1.2mm}
 
@@ -10093,7 +10082,7 @@ f(x\mid\lambda)=\lambda e^{-\lambda x},
 
 \end{semanticpdfbox}
 
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral},breakable=false]
+\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
 
 \noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 3. Пуассоновский счёт с известным фоном}\par\nopagebreak[4]\vspace{1.2mm}
 
@@ -10117,7 +10106,7 @@ N\sim\operatorname{Pois}(s+b),
 
 \end{semanticpdfbox}
 
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral},breakable=false]
+\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
 
 \noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 4. Гауссово среднее}\par\nopagebreak[4]\vspace{1.2mm}
 
@@ -10138,7 +10127,7 @@ X_i\sim\mathrm N(\mu,\sigma^2),
 
 \end{semanticpdfbox}
 
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral},breakable=false]
+\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
 
 \noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 5. Взвешенное среднее}\par\nopagebreak[4]\vspace{1.2mm}
 
@@ -10183,8 +10172,7 @@ Press. 1998.
 
 \end{CSLReferences}
 
-\chapter{Свойства оценок и профильное
-правдоподобие}\label{ux441ux432ux43eux439ux441ux442ux432ux430-ux43eux446ux435ux43dux43eux43a-ux438-ux43fux440ux43eux444ux438ux43bux44cux43dux43eux435-ux43fux440ux430ux432ux434ux43eux43fux43eux434ux43eux431ux438ux435}
+\chapter{\texorpdfstring{Свойства оценок\BookTitleBreak{}и профильное правдоподобие}{}}\label{ux441ux432ux43eux439ux441ux442ux432ux430-ux43eux446ux435ux43dux43eux43a-ux438-ux43fux440ux43eux444ux438ux43bux44cux43dux43eux435-ux43fux440ux430ux432ux434ux43eux43fux43eux434ux43eux431ux438ux435}
 
 \bookchapteropeningcontents
 
@@ -10340,25 +10328,27 @@ s^2=\frac1{N-1}\sum_{i=1}^{N}(X_i-\overline X)^2.
 гауссовых выборок вычисляются обе оценки. Сравните положения гистограмм,
 их ширины и средние квадраты ошибок. Затем увеличьте \(N\).
 
-\begin{semanticpdfbox}[breakable=false]
-
 \begin{center}
 
 \includegraphics[width=0.74\linewidth,height=\textheight,keepaspectratio,alt={Две оценки дисперсии}]{assets/figures/mle_variance_estimators_n6.png}
 
 \end{center}
 
-\noindent\begin{minipage}[c]{\dimexpr\linewidth-30mm\relax}
+\begin{semanticpdfbox}[breakable=false,title={Отсканируйте\ifdefined\faIcon\ \faIcon{mobile-alt}\fi},fonttitle=\sffamily\small,coltitle=BookInk,top=3mm,attach boxed title to top left={xshift=4mm,yshift*=-\tcboxedtitleheight/2},boxed title style={colback=BookPaper,colframe=BookTeal,boxrule=0.5pt,sharp corners}]
 
-\textbf{Интерактив}. \textbf{Две оценки дисперсии}
+\noindent\begin{minipage}[t]{0.25\linewidth}\vspace{0pt}\centering
+
+\href{https://neutrinohit.github.io/qr/statistics/0023/}{\includegraphics[width=1\linewidth,height=\textheight,keepaspectratio,alt={QR-код}]{assets/qr/likelihood-variance-estimators.png}}
+
+{\fontsize{5pt}{6pt}\selectfont\ttfamily\centering\href{https://neutrinohit.github.io/qr/statistics/0023/}{neutrinohit.github.io\\/\allowbreak{}qr/\allowbreak{}statistics/\allowbreak{}0023/\allowbreak{}}\par}
+
+\end{minipage}\hfill\begin{minipage}[t]{\dimexpr0.75\linewidth-3mm\relax}\vspace{0pt}
+
+\textbf{Анимация}. \textbf{Две оценки дисперсии}
 
 Распределения оценок дисперсии для \(6000\) гауссовых выборок размера
 \(N=6\) при \(\sigma^2=1\). Делитель \(N-1\) устраняет смещение и
 одновременно увеличивает разброс оценки.
-
-\end{minipage}\hfill\begin{minipage}[c]{26mm}\centering
-
-\href{https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/10_estimator_properties_profile_likelihood.html\#interactive-likelihood-variance-estimators}{\includegraphics[width=24mm,height=\textheight,keepaspectratio,alt={QR-код интерактива}]{assets/qr/likelihood-variance-estimators.png}}
 
 \end{minipage}
 
@@ -10692,25 +10682,27 @@ q(\tau)=2N\left[
 увеличьте выборку. Максимум меняется от опыта к опыту; масштаб этого
 разброса задаётся формулой \ref{eq-ch10-lifetime-estimator-moments}.
 
-\begin{semanticpdfbox}[breakable=false]
-
 \begin{center}
 
 \includegraphics[width=0.74\linewidth,height=\textheight,keepaspectratio,alt={Оценка времени жизни}]{assets/figures/mle_lifetime_n20.png}
 
 \end{center}
 
-\noindent\begin{minipage}[c]{\dimexpr\linewidth-30mm\relax}
+\begin{semanticpdfbox}[breakable=false,title={Отсканируйте\ifdefined\faIcon\ \faIcon{mobile-alt}\fi},fonttitle=\sffamily\small,coltitle=BookInk,top=3mm,attach boxed title to top left={xshift=4mm,yshift*=-\tcboxedtitleheight/2},boxed title style={colback=BookPaper,colframe=BookTeal,boxrule=0.5pt,sharp corners}]
 
-\textbf{Интерактив}. \textbf{Оценка времени жизни}
+\noindent\begin{minipage}[t]{0.25\linewidth}\vspace{0pt}\centering
+
+\href{https://neutrinohit.github.io/qr/statistics/0024/}{\includegraphics[width=1\linewidth,height=\textheight,keepaspectratio,alt={QR-код}]{assets/qr/likelihood-lifetime.png}}
+
+{\fontsize{5pt}{6pt}\selectfont\ttfamily\centering\href{https://neutrinohit.github.io/qr/statistics/0024/}{neutrinohit.github.io\\/\allowbreak{}qr/\allowbreak{}statistics/\allowbreak{}0024/\allowbreak{}}\par}
+
+\end{minipage}\hfill\begin{minipage}[t]{\dimexpr0.75\linewidth-3mm\relax}\vspace{0pt}
+
+\textbf{Анимация}. \textbf{Оценка времени жизни}
 
 Одна выборка из \(N=20\) распадов при \(\tau_0=2\ \text{мкс}\). Показаны
 разность \(\ell(\tau)-\ell_{\max}\), её квадратичное приближение и
 границы \(q=1\). Все данные в этом примере сгенерированы.
-
-\end{minipage}\hfill\begin{minipage}[c]{26mm}\centering
-
-\href{https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/10_estimator_properties_profile_likelihood.html\#interactive-likelihood-lifetime}{\includegraphics[width=24mm,height=\textheight,keepaspectratio,alt={QR-код интерактива}]{assets/qr/likelihood-lifetime.png}}
 
 \end{minipage}
 
@@ -10857,25 +10849,27 @@ q(\theta,0)=\frac{\theta^2}{1-\rho^2}.
 Изменяйте \(\rho\) и следите за разницей между профилем и сечением. При
 \(\rho=0\) они совпадут.
 
-\begin{semanticpdfbox}[breakable=false]
-
 \begin{center}
 
 \includegraphics[width=0.74\linewidth,height=\textheight,keepaspectratio,alt={Профиль и фиксированное сечение}]{assets/figures/mle_profile_likelihood_rho075.png}
 
 \end{center}
 
-\noindent\begin{minipage}[c]{\dimexpr\linewidth-30mm\relax}
+\begin{semanticpdfbox}[breakable=false,title={Отсканируйте\ifdefined\faIcon\ \faIcon{mobile-alt}\fi},fonttitle=\sffamily\small,coltitle=BookInk,top=3mm,attach boxed title to top left={xshift=4mm,yshift*=-\tcboxedtitleheight/2},boxed title style={colback=BookPaper,colframe=BookTeal,boxrule=0.5pt,sharp corners}]
 
-\textbf{Интерактив}. \textbf{Профиль и фиксированное сечение}
+\noindent\begin{minipage}[t]{0.25\linewidth}\vspace{0pt}\centering
+
+\href{https://neutrinohit.github.io/qr/statistics/0025/}{\includegraphics[width=1\linewidth,height=\textheight,keepaspectratio,alt={QR-код}]{assets/qr/likelihood-profile.png}}
+
+{\fontsize{5pt}{6pt}\selectfont\ttfamily\centering\href{https://neutrinohit.github.io/qr/statistics/0025/}{neutrinohit.github.io\\/\allowbreak{}qr/\allowbreak{}statistics/\allowbreak{}0025/\allowbreak{}}\par}
+
+\end{minipage}\hfill\begin{minipage}[t]{\dimexpr0.75\linewidth-3mm\relax}\vspace{0pt}
+
+\textbf{Анимация}. \textbf{Профиль и фиксированное сечение}
 
 Двумерное относительное правдоподобие при \(\rho=0.75\) и две одномерные
 кривые: профиль \(q_{\mathrm p}(\theta)\) и сечение \(q(\theta,0)\).
 Белая линия показывает \(\widehat{\widehat\eta}(\theta)=\rho\theta\).
-
-\end{minipage}\hfill\begin{minipage}[c]{26mm}\centering
-
-\href{https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/10_estimator_properties_profile_likelihood.html\#interactive-likelihood-profile}{\includegraphics[width=24mm,height=\textheight,keepaspectratio,alt={QR-код интерактива}]{assets/qr/likelihood-profile.png}}
 
 \end{minipage}
 
@@ -11049,27 +11043,29 @@ q_{\mathrm p}(\Delta m^2)&=\min_A q(A,\Delta m^2).
 Здесь оба параметра представляют физический интерес. Но при построении
 одномерного профиля одного из них второй играет роль мешающего.
 
-\begin{semanticpdfbox}[breakable=false]
-
 \begin{center}
 
 \includegraphics[width=0.74\linewidth,height=\textheight,keepaspectratio,alt={Подгонка реакторного спектра}]{assets/figures/mle_reactor_oscillation_default.png}
 
 \end{center}
 
-\noindent\begin{minipage}[c]{\dimexpr\linewidth-30mm\relax}
+\begin{semanticpdfbox}[breakable=false,title={Отсканируйте\ifdefined\faIcon\ \faIcon{mobile-alt}\fi},fonttitle=\sffamily\small,coltitle=BookInk,top=3mm,attach boxed title to top left={xshift=4mm,yshift*=-\tcboxedtitleheight/2},boxed title style={colback=BookPaper,colframe=BookTeal,boxrule=0.5pt,sharp corners}]
 
-\textbf{Интерактив}. \textbf{Подгонка реакторного спектра}
+\noindent\begin{minipage}[t]{0.25\linewidth}\vspace{0pt}\centering
+
+\href{https://neutrinohit.github.io/qr/statistics/0026/}{\includegraphics[width=1\linewidth,height=\textheight,keepaspectratio,alt={QR-код}]{assets/qr/likelihood-reactor-oscillation.png}}
+
+{\fontsize{5pt}{6pt}\selectfont\ttfamily\centering\href{https://neutrinohit.github.io/qr/statistics/0026/}{neutrinohit.github.io\\/\allowbreak{}qr/\allowbreak{}statistics/\allowbreak{}0026/\allowbreak{}}\par}
+
+\end{minipage}\hfill\begin{minipage}[t]{\dimexpr0.75\linewidth-3mm\relax}\vspace{0pt}
+
+\textbf{Анимация}. \textbf{Подгонка реакторного спектра}
 
 Псевдоэксперимент при \(N_0=2500\), \(A_0=0.085\),
 \(\Delta m_0^2=2.5\cdot10^{-3}\ \text{эВ}^2\) и 18 энергетических бинах.
 Зелёным обозначены параметры генерации, оранжевым --- максимум на сетке.
 Показаны двумерное правдоподобие, спектр событий и два одномерных
 профиля.
-
-\end{minipage}\hfill\begin{minipage}[c]{26mm}\centering
-
-\href{https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/10_estimator_properties_profile_likelihood.html\#interactive-likelihood-reactor-oscillation}{\includegraphics[width=24mm,height=\textheight,keepaspectratio,alt={QR-код интерактива}]{assets/qr/likelihood-reactor-oscillation.png}}
 
 \end{minipage}
 
@@ -11295,7 +11291,7 @@ L(\boldsymbol\theta)
 
 \section{Задачи}\label{ux437ux430ux434ux430ux447ux438-9}
 
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral},breakable=false]
+\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
 
 \noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 1. Информация Фишера для гауссова среднего}\par\nopagebreak[4]\vspace{1.2mm}
 
@@ -11317,7 +11313,7 @@ X_i\sim\mathrm N(\mu,\sigma^2),
 
 \end{semanticpdfbox}
 
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral},breakable=false]
+\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
 
 \noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 2. Смещённая оценка дисперсии}\par\nopagebreak[4]\vspace{1.2mm}
 
@@ -11347,7 +11343,7 @@ X_i\sim\mathrm N(\mu,\sigma^2),
 
 \end{semanticpdfbox}
 
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral},breakable=false]
+\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
 
 \noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 3. Профилирование мешающего параметра}\par\nopagebreak[4]\vspace{1.2mm}
 
@@ -11380,7 +11376,7 @@ X_i\sim\mathrm N(\mu,\sigma^2),
 
 \end{semanticpdfbox}
 
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral},breakable=false]
+\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
 
 \noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 4. Расширенная функция правдоподобия для сигнала и фона}\par\nopagebreak[4]\vspace{1.2mm}
 
@@ -11409,7 +11405,7 @@ X_i\sim\mathrm N(\mu,\sigma^2),
 
 \end{semanticpdfbox}
 
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral},breakable=false]
+\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
 
 \noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 5. Проверка подгонки на псевдоэкспериментах}\par\nopagebreak[4]\vspace{1.2mm}
 
@@ -11468,8 +11464,7 @@ doi:\href{https://doi.org/10.1103/PhysRevC.83.054615}{10.1103/PhysRevC.83.054615
 
 \end{CSLReferences}
 
-\chapter{Метод наименьших квадратов и линейная
-подгонка}\label{ux43cux435ux442ux43eux434-ux43dux430ux438ux43cux435ux43dux44cux448ux438ux445-ux43aux432ux430ux434ux440ux430ux442ux43eux432-ux438-ux43bux438ux43dux435ux439ux43dux430ux44f-ux43fux43eux434ux433ux43eux43dux43aux430}
+\chapter{\texorpdfstring{Метод наименьших квадратов\BookTitleBreak{}и линейная подгонка}{}}\label{ux43cux435ux442ux43eux434-ux43dux430ux438ux43cux435ux43dux44cux448ux438ux445-ux43aux432ux430ux434ux440ux430ux442ux43eux432-ux438-ux43bux438ux43dux435ux439ux43dux430ux44f-ux43fux43eux434ux433ux43eux43dux43aux430}
 
 \bookchapteropeningcontents
 
@@ -11881,25 +11876,27 @@ V_\beta=\frac1\Delta
 \(\Delta\chi^2=2.30\) и направление профилирования
 \(\delta a=-\bar x_w\delta b\).
 
-\begin{semanticpdfbox}[breakable=false]
-
 \begin{center}
 
 \includegraphics[width=0.74\linewidth,height=\textheight,keepaspectratio,alt={Геометрия корреляции параметров}]{assets/figures/lsq_parameter_geometry.png}
 
 \end{center}
 
-\noindent\begin{minipage}[c]{\dimexpr\linewidth-30mm\relax}
+\begin{semanticpdfbox}[breakable=false,title={Отсканируйте\ifdefined\faIcon\ \faIcon{mobile-alt}\fi},fonttitle=\sffamily\small,coltitle=BookInk,top=3mm,attach boxed title to top left={xshift=4mm,yshift*=-\tcboxedtitleheight/2},boxed title style={colback=BookPaper,colframe=BookTeal,boxrule=0.5pt,sharp corners}]
 
-\textbf{Интерактив}. \textbf{Геометрия корреляции параметров}
+\noindent\begin{minipage}[t]{0.25\linewidth}\vspace{0pt}\centering
+
+\href{https://neutrinohit.github.io/qr/statistics/0027/}{\includegraphics[width=1\linewidth,height=\textheight,keepaspectratio,alt={QR-код}]{assets/qr/least-squares-parameter-geometry.png}}
+
+{\fontsize{5pt}{6pt}\selectfont\ttfamily\centering\href{https://neutrinohit.github.io/qr/statistics/0027/}{neutrinohit.github.io\\/\allowbreak{}qr/\allowbreak{}statistics/\allowbreak{}0027/\allowbreak{}}\par}
+
+\end{minipage}\hfill\begin{minipage}[t]{\dimexpr0.75\linewidth-3mm\relax}\vspace{0pt}
+
+\textbf{Анимация}. \textbf{Геометрия корреляции параметров}
 
 При \(\bar x_w=1.8\) и \(s_x=1\) корреляция оценок равна \(-0.87\).
 Перенос центра к нулю устраняет наклон эллипса. Увеличение разброса
 точек уменьшает ошибку наклона прямой.
-
-\end{minipage}\hfill\begin{minipage}[c]{26mm}\centering
-
-\href{https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/11_least_squares_linear_fit.html\#interactive-least-squares-parameter-geometry}{\includegraphics[width=24mm,height=\textheight,keepaspectratio,alt={QR-код интерактива}]{assets/qr/least-squares-parameter-geometry.png}}
 
 \end{minipage}
 
@@ -12189,26 +12186,28 @@ s^2=\frac1{N-2}\sum_i r_i^2,
 При изменении сдвига остальные точки сохраняются. Кнопка «Новые данные»
 меняет всю случайную выборку.
 
-\begin{semanticpdfbox}[breakable=false]
-
 \begin{center}
 
 \includegraphics[width=0.74\linewidth,height=\textheight,keepaspectratio,alt={Прямая, остатки и выброс}]{assets/figures/lsq_fit_no_outlier.png}
 
 \end{center}
 
-\noindent\begin{minipage}[c]{\dimexpr\linewidth-30mm\relax}
+\begin{semanticpdfbox}[breakable=false,title={Отсканируйте\ifdefined\faIcon\ \faIcon{mobile-alt}\fi},fonttitle=\sffamily\small,coltitle=BookInk,top=3mm,attach boxed title to top left={xshift=4mm,yshift*=-\tcboxedtitleheight/2},boxed title style={colback=BookPaper,colframe=BookTeal,boxrule=0.5pt,sharp corners}]
 
-\textbf{Интерактив}. \textbf{Прямая, остатки и выброс}
+\noindent\begin{minipage}[t]{0.25\linewidth}\vspace{0pt}\centering
+
+\href{https://neutrinohit.github.io/qr/statistics/0028/}{\includegraphics[width=1\linewidth,height=\textheight,keepaspectratio,alt={QR-код}]{assets/qr/least-squares-outlier.png}}
+
+{\fontsize{5pt}{6pt}\selectfont\ttfamily\centering\href{https://neutrinohit.github.io/qr/statistics/0028/}{neutrinohit.github.io\\/\allowbreak{}qr/\allowbreak{}statistics/\allowbreak{}0028/\allowbreak{}}\par}
+
+\end{minipage}\hfill\begin{minipage}[t]{\dimexpr0.75\linewidth-3mm\relax}\vspace{0pt}
+
+\textbf{Анимация}. \textbf{Прямая, остатки и выброс}
 
 Подгонка \(16\) псевдоизмерений при масштабе ошибок \(0.55\) и без
 дополнительного сдвига. Пунктиром показана истинная прямая, сплошной
 линией --- результат подгонки. Нижний график содержит остатки, делённые
 на ошибки точек.
-
-\end{minipage}\hfill\begin{minipage}[c]{26mm}\centering
-
-\href{https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/11_least_squares_linear_fit.html\#interactive-least-squares-outlier}{\includegraphics[width=24mm,height=\textheight,keepaspectratio,alt={QR-код интерактива}]{assets/qr/least-squares-outlier.png}}
 
 \end{minipage}
 
@@ -12283,7 +12282,7 @@ s^2=\frac1{N-2}\sum_i r_i^2,
 
 \section{Задачи}\label{ux437ux430ux434ux430ux447ux438-10}
 
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral},breakable=false]
+\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
 
 \noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 1. Среднее как результат МНК}\par\nopagebreak[4]\vspace{1.2mm}
 
@@ -12310,7 +12309,7 @@ Y_i\sim\mathrm N(\mu,\sigma_i^2).
 
 \end{semanticpdfbox}
 
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral},breakable=false]
+\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
 
 \noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 2. Аналитическая подгонка прямой}\par\nopagebreak[4]\vspace{1.2mm}
 
@@ -12340,7 +12339,7 @@ y=a+bx.
 
 \end{semanticpdfbox}
 
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral},breakable=false]
+\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
 
 \noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 3. Ошибка подогнанной кривой}\par\nopagebreak[4]\vspace{1.2mm}
 
@@ -12370,7 +12369,7 @@ y=a+bx.
 
 \end{semanticpdfbox}
 
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral},breakable=false]
+\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
 
 \noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 4. Остатки и диагональные элементы матрицы влияния}\par\nopagebreak[4]\vspace{1.2mm}
 
@@ -12402,7 +12401,7 @@ y=a+bx.
 
 \end{semanticpdfbox}
 
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral},breakable=false]
+\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
 
 \noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 5. Влияние одной точки}\par\nopagebreak[4]\vspace{1.2mm}
 
@@ -12447,8 +12446,7 @@ Press. 1998.
 
 \end{CSLReferences}
 
-\chapter{χ²-интервалы и систематические
-неопределённости}\label{ux3c7uxb2-ux438ux43dux442ux435ux440ux432ux430ux43bux44b-ux438-ux441ux438ux441ux442ux435ux43cux430ux442ux438ux447ux435ux441ux43aux438ux435-ux43dux435ux43eux43fux440ux435ux434ux435ux43bux451ux43dux43dux43eux441ux442ux438}
+\chapter{\texorpdfstring{χ²-интервалы\BookTitleBreak{}и систематические неопределённости}{}}\label{ux3c7uxb2-ux438ux43dux442ux435ux440ux432ux430ux43bux44b-ux438-ux441ux438ux441ux442ux435ux43cux430ux442ux438ux447ux435ux441ux43aux438ux435-ux43dux435ux43eux43fux440ux435ux434ux435ux43bux451ux43dux43dux43eux441ux442ux438}
 
 \bookchapteropeningcontents
 
@@ -12645,25 +12643,27 @@ K_{ij}&=\frac12\left.
 \(\theta-\widehat\theta=\pm\sqrt c\,\sigma_\theta\). Попробуйте поднять
 уровень с \(1\) до \(4\): интервал расширится вдвое.
 
-\begin{semanticpdfbox}[breakable=false]
-
 \begin{center}
 
 \includegraphics[width=0.74\linewidth,height=\textheight,keepaspectratio,alt={Интервал по пересечению с уровнем χ²}]{assets/figures/lsq_delta_chi2_one_sigma.png}
 
 \end{center}
 
-\noindent\begin{minipage}[c]{\dimexpr\linewidth-30mm\relax}
+\begin{semanticpdfbox}[breakable=false,title={Отсканируйте\ifdefined\faIcon\ \faIcon{mobile-alt}\fi},fonttitle=\sffamily\small,coltitle=BookInk,top=3mm,attach boxed title to top left={xshift=4mm,yshift*=-\tcboxedtitleheight/2},boxed title style={colback=BookPaper,colframe=BookTeal,boxrule=0.5pt,sharp corners}]
 
-\textbf{Интерактив}. \textbf{Интервал по пересечению с уровнем χ²}
+\noindent\begin{minipage}[t]{0.25\linewidth}\vspace{0pt}\centering
+
+\href{https://neutrinohit.github.io/qr/statistics/0029/}{\includegraphics[width=1\linewidth,height=\textheight,keepaspectratio,alt={QR-код}]{assets/qr/least-squares-delta-chi2.png}}
+
+{\fontsize{5pt}{6pt}\selectfont\ttfamily\centering\href{https://neutrinohit.github.io/qr/statistics/0029/}{neutrinohit.github.io\\/\allowbreak{}qr/\allowbreak{}statistics/\allowbreak{}0029/\allowbreak{}}\par}
+
+\end{minipage}\hfill\begin{minipage}[t]{\dimexpr0.75\linewidth-3mm\relax}\vspace{0pt}
+
+\textbf{Анимация}. \textbf{Интервал по пересечению с уровнем χ²}
 
 При \(\sigma_\theta=1\) и \(c=1\) границы лежат при
 \(\theta-\widehat\theta=\pm1\). Пунктир задаёт уровень отсечения,
 сплошная кривая показывает \(\Delta\chi^2\).
-
-\end{minipage}\hfill\begin{minipage}[c]{26mm}\centering
-
-\href{https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/12_least_squares_systematics.html\#interactive-least-squares-delta-chi2}{\includegraphics[width=24mm,height=\textheight,keepaspectratio,alt={QR-код интерактива}]{assets/qr/least-squares-delta-chi2.png}}
 
 \end{minipage}
 
@@ -13171,27 +13171,29 @@ q_0=\frac{(y_1-y_2)^2}{s_1^2+s_2^2}.
 и квадратичная функция с матрицей из данных. Из каждой функции вычтен её
 собственный минимум.
 
-\begin{semanticpdfbox}[breakable=false]
-
 \begin{center}
 
 \includegraphics[width=0.74\linewidth,height=\textheight,keepaspectratio,alt={Общая нормировка: модель и подстановка данных}]{assets/figures/lsq_dagostini_comparison.png}
 
 \end{center}
 
-\noindent\begin{minipage}[c]{\dimexpr\linewidth-30mm\relax}
+\begin{semanticpdfbox}[breakable=false,title={Отсканируйте\ifdefined\faIcon\ \faIcon{mobile-alt}\fi},fonttitle=\sffamily\small,coltitle=BookInk,top=3mm,attach boxed title to top left={xshift=4mm,yshift*=-\tcboxedtitleheight/2},boxed title style={colback=BookPaper,colframe=BookTeal,boxrule=0.5pt,sharp corners}]
 
-\textbf{Интерактив}. \textbf{Общая нормировка: модель и подстановка
+\noindent\begin{minipage}[t]{0.25\linewidth}\vspace{0pt}\centering
+
+\href{https://neutrinohit.github.io/qr/statistics/0030/}{\includegraphics[width=1\linewidth,height=\textheight,keepaspectratio,alt={QR-код}]{assets/qr/least-squares-normalization.png}}
+
+{\fontsize{5pt}{6pt}\selectfont\ttfamily\centering\href{https://neutrinohit.github.io/qr/statistics/0030/}{neutrinohit.github.io\\/\allowbreak{}qr/\allowbreak{}statistics/\allowbreak{}0030/\allowbreak{}}\par}
+
+\end{minipage}\hfill\begin{minipage}[t]{\dimexpr0.75\linewidth-3mm\relax}\vspace{0pt}
+
+\textbf{Анимация}. \textbf{Общая нормировка: модель и подстановка
 данных}
 
 При \(f_N=0.10\) модель даёт центральное значение \(8.235\) пб, а
 подстановка данных в нормировочную ковариацию --- \(7.874\) пб. Профиль
 модели асимметричен; пунктирная функция с фиксированной матрицей
 является параболой.
-
-\end{minipage}\hfill\begin{minipage}[c]{26mm}\centering
-
-\href{https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/12_least_squares_systematics.html\#interactive-least-squares-normalization}{\includegraphics[width=24mm,height=\textheight,keepaspectratio,alt={QR-код интерактива}]{assets/qr/least-squares-normalization.png}}
 
 \end{minipage}
 
@@ -13294,7 +13296,7 @@ J_{ij}=\left.\frac{\partial g_i}{\partial\theta_j}\right|_{\widehat{\boldsymbol\
 
 \section{Задачи}\label{ux437ux430ux434ux430ux447ux438-11}
 
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral},breakable=false]
+\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
 
 \noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 1. Коррелированные измерения}\par\nopagebreak[4]\vspace{1.2mm}
 
@@ -13329,7 +13331,7 @@ V=\sigma^2
 
 \end{semanticpdfbox}
 
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral},breakable=false]
+\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
 
 \noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 2. Одна калибровка для многих измерений}\par\nopagebreak[4]\vspace{1.2mm}
 
@@ -13363,7 +13365,7 @@ V=\sigma^2
 
 \end{semanticpdfbox}
 
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral},breakable=false]
+\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
 
 \noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 3. Кривизна и нелинейная подгонка}\par\nopagebreak[4]\vspace{1.2mm}
 
@@ -13396,7 +13398,7 @@ V=\sigma^2
 
 \end{semanticpdfbox}
 
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral},breakable=false]
+\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
 
 \noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 4. Общая нормировка}\par\nopagebreak[4]\vspace{1.2mm}
 
@@ -13430,7 +13432,7 @@ V=\sigma^2
 
 \end{semanticpdfbox}
 
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral},breakable=false]
+\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
 
 \noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 5. Энергия по калибровке}\par\nopagebreak[4]\vspace{1.2mm}
 
@@ -13483,8 +13485,7 @@ Press. 1998.
 
 \part{III. Статистический вывод}
 
-\chapter{Качество согласия и статистическая
-значимость}\label{ux43aux430ux447ux435ux441ux442ux432ux43e-ux441ux43eux433ux43bux430ux441ux438ux44f-ux438-ux441ux442ux430ux442ux438ux441ux442ux438ux447ux435ux441ux43aux430ux44f-ux437ux43dux430ux447ux438ux43cux43eux441ux442ux44c}
+\chapter{\texorpdfstring{Качество согласия\BookTitleBreak{}и статистическая значимость}{}}\label{ux43aux430ux447ux435ux441ux442ux432ux43e-ux441ux43eux433ux43bux430ux441ux438ux44f-ux438-ux441ux442ux430ux442ux438ux441ux442ux438ux447ux435ux441ux43aux430ux44f-ux437ux43dux430ux447ux438ux43cux43eux441ux442ux44c}
 
 \bookchapteropeningcontents
 
@@ -13708,25 +13709,27 @@ f(t;\nu)=
 \(\nu=1\) верхушка плотности у нуля выходит за пределы рисунка; сама
 формула остаётся той же.
 
-\begin{semanticpdfbox}[breakable=false]
-
 \begin{center}
 
 \includegraphics[width=0.74\linewidth,height=\textheight,keepaspectratio,alt={Форма распределения χ²}]{assets/figures/gof_chi2_nu10.png}
 
 \end{center}
 
-\noindent\begin{minipage}[c]{\dimexpr\linewidth-30mm\relax}
+\begin{semanticpdfbox}[breakable=false,title={Отсканируйте\ifdefined\faIcon\ \faIcon{mobile-alt}\fi},fonttitle=\sffamily\small,coltitle=BookInk,top=3mm,attach boxed title to top left={xshift=4mm,yshift*=-\tcboxedtitleheight/2},boxed title style={colback=BookPaper,colframe=BookTeal,boxrule=0.5pt,sharp corners}]
 
-\textbf{Интерактив}. \textbf{Форма распределения χ²}
+\noindent\begin{minipage}[t]{0.25\linewidth}\vspace{0pt}\centering
+
+\href{https://neutrinohit.github.io/qr/statistics/0031/}{\includegraphics[width=1\linewidth,height=\textheight,keepaspectratio,alt={QR-код}]{assets/qr/goodness-chi2-shape.png}}
+
+{\fontsize{5pt}{6pt}\selectfont\ttfamily\centering\href{https://neutrinohit.github.io/qr/statistics/0031/}{neutrinohit.github.io\\/\allowbreak{}qr/\allowbreak{}statistics/\allowbreak{}0031/\allowbreak{}}\par}
+
+\end{minipage}\hfill\begin{minipage}[t]{\dimexpr0.75\linewidth-3mm\relax}\vspace{0pt}
+
+\textbf{Анимация}. \textbf{Форма распределения χ²}
 
 При \(\nu=10\) среднее равно \(10\), стандартное отклонение ---
 \(\sqrt{20}\). Плотность асимметрична. Отметки среднего и ширины не
 являются границами интервала с заданной вероятностью.
-
-\end{minipage}\hfill\begin{minipage}[c]{26mm}\centering
-
-\href{https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/13_goodness_of_fit_and_significance.html\#interactive-goodness-chi2-shape}{\includegraphics[width=24mm,height=\textheight,keepaspectratio,alt={QR-код интерактива}]{assets/qr/goodness-chi2-shape.png}}
 
 \end{minipage}
 
@@ -13888,25 +13891,27 @@ p=P_{H_0}(T\ge t_{\mathrm{obs}})
 площадь уменьшается. Вероятность вычисляется по функции распределения;
 точность числа не зависит от густоты точек на графике.
 
-\begin{semanticpdfbox}[breakable=false]
-
 \begin{center}
 
 \includegraphics[width=0.74\linewidth,height=\textheight,keepaspectratio,alt={p-значение как площадь хвоста}]{assets/figures/gof_pvalue_nu50_obs70.png}
 
 \end{center}
 
-\noindent\begin{minipage}[c]{\dimexpr\linewidth-30mm\relax}
+\begin{semanticpdfbox}[breakable=false,title={Отсканируйте\ifdefined\faIcon\ \faIcon{mobile-alt}\fi},fonttitle=\sffamily\small,coltitle=BookInk,top=3mm,attach boxed title to top left={xshift=4mm,yshift*=-\tcboxedtitleheight/2},boxed title style={colback=BookPaper,colframe=BookTeal,boxrule=0.5pt,sharp corners}]
 
-\textbf{Интерактив}. \textbf{p-значение как площадь хвоста}
+\noindent\begin{minipage}[t]{0.25\linewidth}\vspace{0pt}\centering
+
+\href{https://neutrinohit.github.io/qr/statistics/0032/}{\includegraphics[width=1\linewidth,height=\textheight,keepaspectratio,alt={QR-код}]{assets/qr/goodness-pvalue-tail.png}}
+
+{\fontsize{5pt}{6pt}\selectfont\ttfamily\centering\href{https://neutrinohit.github.io/qr/statistics/0032/}{neutrinohit.github.io\\/\allowbreak{}qr/\allowbreak{}statistics/\allowbreak{}0032/\allowbreak{}}\par}
+
+\end{minipage}\hfill\begin{minipage}[t]{\dimexpr0.75\linewidth-3mm\relax}\vspace{0pt}
+
+\textbf{Анимация}. \textbf{p-значение как площадь хвоста}
 
 Для \(\nu=50\) и \(t_{\mathrm{obs}}=70\) площадь правого хвоста равна
 \(p\simeq0.0324\). Закрашена вероятность получить \(T\ge70\) при этой
 модели.
-
-\end{minipage}\hfill\begin{minipage}[c]{26mm}\centering
-
-\href{https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/13_goodness_of_fit_and_significance.html\#interactive-goodness-pvalue-tail}{\includegraphics[width=24mm,height=\textheight,keepaspectratio,alt={QR-код интерактива}]{assets/qr/goodness-pvalue-tail.png}}
 
 \end{minipage}
 
@@ -13944,25 +13949,27 @@ P_{H_0}(p\le u)=u,
 опытов во второй выборке можно менять. Для каждого результата
 подсчитывается правый хвост калибровочной выборки.
 
-\begin{semanticpdfbox}[breakable=false]
-
 \begin{center}
 
 \includegraphics[width=0.74\linewidth,height=\textheight,keepaspectratio,alt={Распределение p-значений}]{assets/figures/gof_p_uniform.png}
 
 \end{center}
 
-\noindent\begin{minipage}[c]{\dimexpr\linewidth-30mm\relax}
+\begin{semanticpdfbox}[breakable=false,title={Отсканируйте\ifdefined\faIcon\ \faIcon{mobile-alt}\fi},fonttitle=\sffamily\small,coltitle=BookInk,top=3mm,attach boxed title to top left={xshift=4mm,yshift*=-\tcboxedtitleheight/2},boxed title style={colback=BookPaper,colframe=BookTeal,boxrule=0.5pt,sharp corners}]
 
-\textbf{Интерактив}. \textbf{Распределение p-значений}
+\noindent\begin{minipage}[t]{0.25\linewidth}\vspace{0pt}\centering
+
+\href{https://neutrinohit.github.io/qr/statistics/0033/}{\includegraphics[width=1\linewidth,height=\textheight,keepaspectratio,alt={QR-код}]{assets/qr/goodness-pvalue-calibration.png}}
+
+{\fontsize{5pt}{6pt}\selectfont\ttfamily\centering\href{https://neutrinohit.github.io/qr/statistics/0033/}{neutrinohit.github.io\\/\allowbreak{}qr/\allowbreak{}statistics/\allowbreak{}0033/\allowbreak{}}\par}
+
+\end{minipage}\hfill\begin{minipage}[t]{\dimexpr0.75\linewidth-3mm\relax}\vspace{0pt}
+
+\textbf{Анимация}. \textbf{Распределение p-значений}
 
 20 000 опытов задают калибровку; для 5000 независимых опытов построена
 гистограмма p-значений. Пунктир показывает единичную плотность.
 Отклонения столбцов связаны с конечным размером обеих выборок.
-
-\end{minipage}\hfill\begin{minipage}[c]{26mm}\centering
-
-\href{https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/13_goodness_of_fit_and_significance.html\#interactive-goodness-pvalue-calibration}{\includegraphics[width=24mm,height=\textheight,keepaspectratio,alt={QR-код интерактива}]{assets/qr/goodness-pvalue-calibration.png}}
 
 \end{minipage}
 
@@ -14078,24 +14085,26 @@ p=P(G\ge Z)=1-\Phi(Z),
 стандартное отклонение. У асимметричного распределения эта операция не
 воспроизводит точную вероятность хвоста.
 
-\begin{semanticpdfbox}[breakable=false]
-
 \begin{center}
 
 \includegraphics[width=0.74\linewidth,height=\textheight,keepaspectratio,alt={Односторонняя гауссова шкала}]{assets/figures/gof_p_to_z_one_sided.png}
 
 \end{center}
 
-\noindent\begin{minipage}[c]{\dimexpr\linewidth-30mm\relax}
+\begin{semanticpdfbox}[breakable=false,title={Отсканируйте\ifdefined\faIcon\ \faIcon{mobile-alt}\fi},fonttitle=\sffamily\small,coltitle=BookInk,top=3mm,attach boxed title to top left={xshift=4mm,yshift*=-\tcboxedtitleheight/2},boxed title style={colback=BookPaper,colframe=BookTeal,boxrule=0.5pt,sharp corners}]
 
-\textbf{Интерактив}. \textbf{Односторонняя гауссова шкала}
+\noindent\begin{minipage}[t]{0.25\linewidth}\vspace{0pt}\centering
+
+\href{https://neutrinohit.github.io/qr/statistics/0034/}{\includegraphics[width=1\linewidth,height=\textheight,keepaspectratio,alt={QR-код}]{assets/qr/goodness-p-to-z-one-sided.png}}
+
+{\fontsize{5pt}{6pt}\selectfont\ttfamily\centering\href{https://neutrinohit.github.io/qr/statistics/0034/}{neutrinohit.github.io\\/\allowbreak{}qr/\allowbreak{}statistics/\allowbreak{}0034/\allowbreak{}}\par}
+
+\end{minipage}\hfill\begin{minipage}[t]{\dimexpr0.75\linewidth-3mm\relax}\vspace{0pt}
+
+\textbf{Анимация}. \textbf{Односторонняя гауссова шкала}
 
 При \(Z=2\) правый хвост содержит \(p=0.02275\). Ползунок в HTML
 позволяет сопоставить положение границы с площадью хвоста.
-
-\end{minipage}\hfill\begin{minipage}[c]{26mm}\centering
-
-\href{https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/13_goodness_of_fit_and_significance.html\#interactive-goodness-p-to-z-one-sided}{\includegraphics[width=24mm,height=\textheight,keepaspectratio,alt={QR-код интерактива}]{assets/qr/goodness-p-to-z-one-sided.png}}
 
 \end{minipage}
 
@@ -14141,24 +14150,26 @@ p=P(|G|\ge Z)=2[1-\Phi(Z)],
 значения. Выбор определяется вопросом анализа. Его нельзя менять после
 того, как стал известен знак отклонения.
 
-\begin{semanticpdfbox}[breakable=false]
-
 \begin{center}
 
 \includegraphics[width=0.74\linewidth,height=\textheight,keepaspectratio,alt={Два гауссовых хвоста}]{assets/figures/gof_p_to_z_two_sided.png}
 
 \end{center}
 
-\noindent\begin{minipage}[c]{\dimexpr\linewidth-30mm\relax}
+\begin{semanticpdfbox}[breakable=false,title={Отсканируйте\ifdefined\faIcon\ \faIcon{mobile-alt}\fi},fonttitle=\sffamily\small,coltitle=BookInk,top=3mm,attach boxed title to top left={xshift=4mm,yshift*=-\tcboxedtitleheight/2},boxed title style={colback=BookPaper,colframe=BookTeal,boxrule=0.5pt,sharp corners}]
 
-\textbf{Интерактив}. \textbf{Два гауссовых хвоста}
+\noindent\begin{minipage}[t]{0.25\linewidth}\vspace{0pt}\centering
+
+\href{https://neutrinohit.github.io/qr/statistics/0035/}{\includegraphics[width=1\linewidth,height=\textheight,keepaspectratio,alt={QR-код}]{assets/qr/goodness-p-to-z-two-sided.png}}
+
+{\fontsize{5pt}{6pt}\selectfont\ttfamily\centering\href{https://neutrinohit.github.io/qr/statistics/0035/}{neutrinohit.github.io\\/\allowbreak{}qr/\allowbreak{}statistics/\allowbreak{}0035/\allowbreak{}}\par}
+
+\end{minipage}\hfill\begin{minipage}[t]{\dimexpr0.75\linewidth-3mm\relax}\vspace{0pt}
+
+\textbf{Анимация}. \textbf{Два гауссовых хвоста}
 
 За пределами \([-2,2]\) находится вероятность \(0.04550\). Каждый из
 двух хвостов содержит половину этой вероятности.
-
-\end{minipage}\hfill\begin{minipage}[c]{26mm}\centering
-
-\href{https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/13_goodness_of_fit_and_significance.html\#interactive-goodness-p-to-z-two-sided}{\includegraphics[width=24mm,height=\textheight,keepaspectratio,alt={QR-код интерактива}]{assets/qr/goodness-p-to-z-two-sided.png}}
 
 \end{minipage}
 
@@ -14394,27 +14405,29 @@ T_{\mathrm P}=\sum_{i=1}^{20}\frac{(N_i-\mu_i)^2}{\mu_i}.
 использует 80 000 опытов, поэтому последняя цифра его результата может
 отличаться.
 
-\begin{semanticpdfbox}[breakable=false]
-
 \begin{center}
 
 \includegraphics[width=0.74\linewidth,height=\textheight,keepaspectratio,alt={Проверка χ²-приближения при малых счётах}]{assets/figures/gof_low_count_toys.png}
 
 \end{center}
 
-\noindent\begin{minipage}[c]{\dimexpr\linewidth-30mm\relax}
+\begin{semanticpdfbox}[breakable=false,title={Отсканируйте\ifdefined\faIcon\ \faIcon{mobile-alt}\fi},fonttitle=\sffamily\small,coltitle=BookInk,top=3mm,attach boxed title to top left={xshift=4mm,yshift*=-\tcboxedtitleheight/2},boxed title style={colback=BookPaper,colframe=BookTeal,boxrule=0.5pt,sharp corners}]
 
-\textbf{Интерактив}. \textbf{Проверка χ²-приближения при малых счётах}
+\noindent\begin{minipage}[t]{0.25\linewidth}\vspace{0pt}\centering
+
+\href{https://neutrinohit.github.io/qr/statistics/0036/}{\includegraphics[width=1\linewidth,height=\textheight,keepaspectratio,alt={QR-код}]{assets/qr/goodness-low-count-calibration.png}}
+
+{\fontsize{5pt}{6pt}\selectfont\ttfamily\centering\href{https://neutrinohit.github.io/qr/statistics/0036/}{neutrinohit.github.io\\/\allowbreak{}qr/\allowbreak{}statistics/\allowbreak{}0036/\allowbreak{}}\par}
+
+\end{minipage}\hfill\begin{minipage}[t]{\dimexpr0.75\linewidth-3mm\relax}\vspace{0pt}
+
+\textbf{Анимация}. \textbf{Проверка χ²-приближения при малых счётах}
 
 Гистограмма построена по 80 000 опытов для ожиданий из таблицы
 \ref{tbl-ch13-small-poisson-means}. Пунктир --- плотность
 \(\chi^2_{20}\), вертикальная линия --- \(t_{\mathrm{obs}}=29.8\). Оба
 p-значения вычисляются по всему хвосту, включая значения за правой
 границей рисунка.
-
-\end{minipage}\hfill\begin{minipage}[c]{26mm}\centering
-
-\href{https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/13_goodness_of_fit_and_significance.html\#interactive-goodness-low-count-calibration}{\includegraphics[width=24mm,height=\textheight,keepaspectratio,alt={QR-код интерактива}]{assets/qr/goodness-low-count-calibration.png}}
 
 \end{minipage}
 
@@ -14502,7 +14515,7 @@ p-значений выше. Этот приём не заменяет пров�
 
 \section{Задачи}\label{ux437ux430ux434ux430ux447ux438-12}
 
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral},breakable=false]
+\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
 
 \noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 1. Две статистики для пуассоновских бинов}\par\nopagebreak[4]\vspace{1.2mm}
 
@@ -14535,7 +14548,7 @@ p-значений выше. Этот приём не заменяет пров�
 
 \end{semanticpdfbox}
 
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral},breakable=false]
+\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
 
 \noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 2. Степени свободы до и после подгонки}\par\nopagebreak[4]\vspace{1.2mm}
 
@@ -14566,7 +14579,7 @@ p-значений выше. Этот приём не заменяет пров�
 
 \end{semanticpdfbox}
 
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral},breakable=false]
+\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
 
 \noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 3. Одинаковый χ² и разная форма остатков}\par\nopagebreak[4]\vspace{1.2mm}
 
@@ -14601,7 +14614,7 @@ p-значений выше. Этот приём не заменяет пров�
 
 \end{semanticpdfbox}
 
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral},breakable=false]
+\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
 
 \noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 4. Когда p-значения равномерны}\par\nopagebreak[4]\vspace{1.2mm}
 
@@ -14633,7 +14646,7 @@ p-значений выше. Этот приём не заменяет пров�
 
 \end{semanticpdfbox}
 
-\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral},breakable=false]
+\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]
 
 \noindent{\sffamily\bfseries\fontsize{11.2}{13.5}\selectfont Задача 5. Один хвост, два хвоста и открытие}\par\nopagebreak[4]\vspace{1.2mm}
 

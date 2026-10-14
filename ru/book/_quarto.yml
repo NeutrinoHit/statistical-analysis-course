@@ -61,6 +61,37 @@ book-part-titles:
   - "II. Моделирование и оценивание"
   - "III. Статистический вывод"
 
+# Optional editorial line breaks for printed chapter titles. HTML, EPUB,
+# bookmarks and table-of-contents entries keep the original title.
+book-pdf-title-lines:
+  "Случайные величины, распределения, моменты":
+    - "Случайные величины,"
+    - "распределения, моменты"
+  "Характеристические функции и суммы случайных величин":
+    - "Характеристические функции"
+    - "и суммы случайных величин"
+  "Центральная предельная теорема и нормальное распределение":
+    - "Центральная предельная теорема"
+    - "и нормальное распределение"
+  "Метод Монте-Карло и псевдоэксперименты":
+    - "Метод Монте-Карло"
+    - "и псевдоэксперименты"
+  "Правдоподобие и оценки максимального правдоподобия":
+    - "Правдоподобие и оценки"
+    - "максимального правдоподобия"
+  "Свойства оценок и профильное правдоподобие":
+    - "Свойства оценок"
+    - "и профильное правдоподобие"
+  "Метод наименьших квадратов и линейная подгонка":
+    - "Метод наименьших квадратов"
+    - "и линейная подгонка"
+  "χ²-интервалы и систематические неопределённости":
+    - "χ²-интервалы"
+    - "и систематические неопределённости"
+  "Качество согласия и статистическая значимость":
+    - "Качество согласия"
+    - "и статистическая значимость"
+
 filters:
   - assets/filters/chapter-bibliographies.lua
   - assets/filters/hide-book-index.lua
@@ -97,7 +128,7 @@ format:
     fontsize: 11pt
     # Printed TOC is inserted by book-pdf-style.tex immediately after the title page.
     toc: false
-    toc-depth: 1
+    toc-depth: 2
     toc-title: "Содержание"
     number-sections: true
     number-depth: 3
@@ -105,14 +136,14 @@ format:
     pdf-engine: lualatex
     keep-tex: true
     geometry:
-      - top=18mm
+      - top=22mm
       - bottom=20mm
       - inner=20mm
-      - outer=50mm
-      - marginparwidth=36mm
-      - marginparsep=6mm
-      - headheight=6mm
-      - headsep=5mm
+      - outer=40mm
+      - marginparwidth=28mm
+      - marginparsep=5mm
+      - headheight=8.5mm
+      - headsep=5.5mm
       - footskip=9mm
     filters:
       - assets/filters/book-pdf-style.lua

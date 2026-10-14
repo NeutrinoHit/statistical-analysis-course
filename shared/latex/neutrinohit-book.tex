@@ -44,6 +44,11 @@
 \definecolor{BookBiography}{HTML}{465B8C}
 \definecolor{BookBiographySoft}{HTML}{F0F2F8}
 \definecolor{BookMargin}{HTML}{F1F3F4}
+\definecolor{BookSticky}{HTML}{FFF2A8}
+\definecolor{BookStickyDeep}{HTML}{FFE06D}
+\definecolor{BookStickyInk}{HTML}{211700}
+\definecolor{BookStickyBorder}{HTML}{7A5C00}
+\definecolor{BookStickyTape}{HTML}{F4C542}
 
 % Compatibility aliases let established books keep their local command style.
 \colorlet{bookInk}{BookInk}
@@ -69,6 +74,41 @@
   urlcolor=BookTeal
 }
 
+% Short remarks rendered in the outer margin of the printed book. In HTML
+% and EPUB the Lua filter turns the same source block into a disclosure.
+\newcommand{\bookmarginnote}[2][]{%
+  \marginpar{%
+    \begin{tcolorbox}[
+      enhanced,
+      width=\marginparwidth,
+      colback=BookSticky,
+      colframe=BookStickyBorder!28!BookSticky,
+      interior style={top color=BookSticky,bottom color=BookStickyDeep},
+      boxrule=0.25pt,
+      arc=0.6mm,
+      left=2mm,
+      right=2mm,
+      top=2.6mm,
+      bottom=2mm,
+      boxsep=0pt,
+      drop fuzzy shadow=BookInk!35!white,
+      overlay={%
+        \fill[BookStickyTape,opacity=0.9,rounded corners=0.7mm]
+          ([xshift=-5.5mm,yshift=-0.8mm]frame.north)
+          rectangle
+          ([xshift=5.5mm,yshift=0.8mm]frame.north);%
+      }
+    ]%
+      \raggedright\setlength{\parindent}{0pt}%
+      \sffamily\footnotesize\color{BookStickyInk}%
+      \if\relax\detokenize{#1}\relax\else
+        {\bfseries\color{BookStickyInk}#1\par}\vspace{0.5mm}%
+      \fi
+      #2%
+    \end{tcolorbox}%
+  }%
+}
+
 % Shared semantic boxes used by biographies, media cards, notes and exercises.
 \newtcolorbox{semanticpdfbox}[1][]{
   enhanced,
@@ -85,59 +125,6 @@
   #1
 }
 
-% Reusable ordered process. Source nodes are generic process-flow/process-step
-% Divs; the Lua filter maps them to these vertical PDF cards.
-\newenvironment{bookprocessflow}{%
-  \par\vspace{2mm}\begingroup
-  \setlength{\parindent}{0pt}%
-}{%
-  \endgroup\par\vspace{2mm}%
-}
-
-\newcommand{\BookProcessBadge}[1]{%
-  \tikz[baseline=(bookprocessnumber.base)]{%
-    \node[
-      circle,
-      fill=BookTeal,
-      text=white,
-      minimum size=8mm,
-      inner sep=0pt,
-      font=\sffamily\bfseries\footnotesize
-    ] (bookprocessnumber) {#1};%
-  }%
-}
-
-\newtcolorbox{bookprocessstep}[2][]{
-  enhanced,
-  breakable,
-  sharp corners,
-  colback=BookPaper,
-  colframe=BookLineStrong,
-  boxrule=0.35pt,
-  borderline west={1.2mm}{0pt}{BookTeal},
-  left=4mm,
-  right=3mm,
-  top=2mm,
-  bottom=2mm,
-  before skip=2pt,
-  after skip=2pt,
-  title={\BookProcessBadge{#1}\hspace{2.5mm}#2},
-  colbacktitle=BookPaper,
-  coltitle=BookInk,
-  fonttitle=\sffamily\bfseries,
-  titlerule=0pt
-}
-
-\newcommand{\BookProcessConnector}{%
-  \par\nopagebreak[4]
-  \begin{center}
-    \vspace{-1mm}%
-    {\color{BookTeal}\Large$\downarrow$}%
-    \vspace{-1mm}%
-  \end{center}
-  \nopagebreak[4]
-}
-
 % Public labels and colour hook. A book changes these without copying the
 % layout machinery: for example, "Лекция" in the neutrino book and "Глава"
 % in the statistics book.
@@ -146,10 +133,15 @@
 \newcommand{\BookPartLabel}{РАЗДЕЛ КНИГИ}
 \newcommand{\BookPartContentsLabel}{Главы}
 \newcommand{\BookTocChapterLabel}{Глава}
+\DeclareRobustCommand{\BookTitleBreak}{\space}
 
 \clearpairofpagestyles
 \ihead{\headmark}
-\newcommand{\BookHeaderPage}{\ifnum\value{chapter}=0\pagemark\fi}
+\newcommand{\BookHeaderPage}{%
+  \ifnum\value{part}=0\relax
+    \ifnum\value{chapter}=0\relax\pagemark\fi
+  \fi
+}
 \ohead{\BookHeaderPage}
 \setkomafont{pageheadfoot}{\small\sffamily\color{BookMuted}}
 \setkomafont{pagehead}{\small\sffamily\color{BookInk}}
@@ -166,10 +158,12 @@
       {\sffamily\bfseries\color{\bookchaptercolor}%
        \fontsize{15}{18}\selectfont \BookChapterLabel~\thechapter\par}%
       \vspace{7mm}%
-      {\sffamily\bfseries\color{BookInk}%
-       \fontsize{34}{38}\selectfont #3\par}%
+      {\RaggedRight\sffamily\bfseries\color{BookInk}%
+       \hyphenpenalty=10000\exhyphenpenalty=10000\pretolerance=10000%
+       \let\BookTitleBreak\\%
+       \fontsize{32}{36}\selectfont #3\par}%
       \vspace{9mm}%
-      {\color{\bookchaptercolor}\rule{\linewidth}{1.3mm}}%
+      {\noindent\color{\bookchaptercolor}\rule{\linewidth}{1.3mm}\par}%
     }%
   \else
     \parbox[t]{\linewidth}{#3}%
@@ -184,15 +178,17 @@
     {\sffamily\bfseries\color{\bookchaptercolor}%
      \fontsize{13}{16}\selectfont \BookPartLabel\par}%
     \vspace{9mm}%
-    {\sffamily\bfseries\color{BookInk}%
-     \fontsize{32}{37}\selectfont #3\par}%
+    {\RaggedRight\sffamily\bfseries\color{BookInk}%
+     \hyphenpenalty=10000\exhyphenpenalty=10000\pretolerance=10000%
+     \let\BookTitleBreak\\%
+     \fontsize{30}{35}\selectfont #3\par}%
     \vspace{11mm}%
-    {\color{\bookchaptercolor}\rule{\linewidth}{1.5mm}}\par
+    {\noindent\color{\bookchaptercolor}\rule{\linewidth}{1.3mm}\par}%
     \vspace{13mm}%
     {\sffamily\bfseries\color{BookInk}%
      \fontsize{18}{22}\selectfont \BookPartContentsLabel\par}%
     \vspace{3mm}%
-    {\color{\bookchaptercolor}\rule{18mm}{0.8mm}}\par
+    {\noindent\color{\bookchaptercolor}\rule{18mm}{0.75mm}\par}%
     \vspace{5mm}%
     \begingroup
       \normalfont
@@ -216,7 +212,7 @@
   {\sffamily\bfseries\color{BookInk}\fontsize{18}{22}\selectfont
    Содержание\par}%
   \vspace{3mm}%
-  {\color{\bookchaptercolor}\rule{18mm}{0.8mm}}%
+  {\noindent\color{\bookchaptercolor}\rule{18mm}{0.75mm}\par}%
   \vspace{5mm}%
   \begingroup
     \setlength{\parindent}{0pt}%
@@ -228,66 +224,39 @@
   \clearpage
 }
 
-% Outer navigation rail and circular page number. Dimensions are shared; the
-% colour follows the current part through \bookchaptercolor.
+% A quiet outer-edge navigator. The thin strip follows the current topic. The
+% folio is deliberately unframed: a large, light numeral in the outer margin.
 \newif\ifbookpagenavigator
 \bookpagenavigatortrue
-\newlength{\bookpagerailwidth}
-\newlength{\bookpagerailcenter}
-\newlength{\bookpagetabheight}
-\newlength{\bookpagetabcenter}
-\newlength{\bookpagenumberdiameter}
-\setlength{\bookpagerailwidth}{48mm}
-\setlength{\bookpagerailcenter}{24mm}
-\setlength{\bookpagetabheight}{28mm}
-\setlength{\bookpagetabcenter}{14mm}
-\setlength{\bookpagenumberdiameter}{17mm}
-\newcommand{\bookpagerailcolor}{BookMargin}
-\newcommand{\bookpagetabcolor}{\bookchaptercolor}
-\newcommand{\bookpagenumberfill}{white}
-\newcommand{\bookpagenumbercolor}{\bookchaptercolor}
+\newlength{\bookpageedgewidth}
+\newlength{\bookfoliooffset}
+\newlength{\bookfoliotopoffset}
+\setlength{\bookpageedgewidth}{1.5mm}
+\setlength{\bookfoliooffset}{20mm}
+\setlength{\bookfoliotopoffset}{15mm}
 
-\tikzset{
-  book page rail/.style={fill=\bookpagerailcolor,draw=none},
-  book page tab/.style={fill=\bookpagetabcolor,draw=none},
-  book page number/.style={
-    circle,
-    fill=\bookpagenumberfill,
-    draw=none,
-    minimum size=\bookpagenumberdiameter,
-    inner sep=0pt,
-    font=\sffamily\bfseries\fontsize{22}{22}\selectfont,
-    text=\bookpagenumbercolor
-  }
+\newcommand{\BookFolioNumber}[1]{%
+  \node[inner sep=0pt,font=\sffamily\fontsize{16}{16}\selectfont,
+        text=BookMuted] at #1 {\thepage};
 }
 
 \newcommand{\BookPageNavigatorLeft}{%
-  \path[book page rail]
+  \fill[\bookchaptercolor]
     (current page.north west) rectangle
-    ([xshift=\bookpagerailwidth]current page.south west);
-  \path[book page tab]
-    (current page.north west) rectangle
-    ([xshift=\bookpagerailwidth,yshift=-\bookpagetabheight]current page.north west);
-  \node[book page number]
-    at ([xshift=\bookpagerailcenter,yshift=-\bookpagetabcenter]current page.north west)
-    {\thepage};
+    ([xshift=\bookpageedgewidth]current page.south west);
+  \BookFolioNumber{([xshift=\bookfoliooffset,yshift=-\bookfoliotopoffset]current page.north west)}%
 }
 
 \newcommand{\BookPageNavigatorRight}{%
-  \path[book page rail]
-    ([xshift=-\bookpagerailwidth]current page.north east) rectangle
+  \fill[\bookchaptercolor]
+    ([xshift=-\bookpageedgewidth]current page.north east) rectangle
     (current page.south east);
-  \path[book page tab]
-    ([xshift=-\bookpagerailwidth]current page.north east) rectangle
-    ([yshift=-\bookpagetabheight]current page.north east);
-  \node[book page number]
-    at ([xshift=-\bookpagerailcenter,yshift=-\bookpagetabcenter]current page.north east)
-    {\thepage};
+  \BookFolioNumber{([xshift=-\bookfoliooffset,yshift=-\bookfoliotopoffset]current page.north east)}%
 }
 
 \newcommand{\BookRenderPageNavigator}{%
   \ifbookpagenavigator
-    \ifnum\value{chapter}>0\relax
+    \ifnum\value{part}>0\relax
       \begin{tikzpicture}[remember picture,overlay]
         \ifodd\value{page}
           \BookPageNavigatorRight
@@ -298,4 +267,4 @@
     \fi
   \fi
 }
-\AddToHook{shipout/background}{\BookRenderPageNavigator}
+\AddToHook{shipout/foreground}{\BookRenderPageNavigator}

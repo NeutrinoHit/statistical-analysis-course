@@ -314,7 +314,7 @@ $$ {#eq-berry-esseen-bound}
 {{< include ../assets/applets/clt-sums.ojs >}}
 ```
 
-::: {.animation .applet-fallback title="Форма нормированной суммы" poster="../assets/figures/clt_uniform_sum_m5.png" url="https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/04_central_limit_theorem.html#interactive-clt-sums" qr="../assets/qr/clt_sums.png"}
+::: {.animation .applet-fallback title="Форма нормированной суммы" poster="../assets/figures/clt_uniform_sum_m5.png" url="https://neutrinohit.github.io/qr/statistics/0004/" qr="../assets/qr/clt_sums.png"}
 Меняйте число слагаемых и объём выборки. Гистограмма показывает новую
 реализацию численного эксперимента, а гладкая кривая — плотность
 $\mathcal N(0,1)$.
@@ -558,7 +558,7 @@ $p\ge\alpha$ или $p<\alpha$.
 {{< include ../assets/applets/measurement-compatibility.ojs >}}
 ```
 
-::: {.animation .applet-fallback title="Совместимость двух измерений" poster="../assets/figures/compatibility_example_a.png" url="https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/04_central_limit_theorem.html#interactive-compatibility" qr="../assets/qr/compatibility.png"}
+::: {.animation .applet-fallback title="Совместимость двух измерений" poster="../assets/figures/compatibility_example_a.png" url="https://neutrinohit.github.io/qr/statistics/0005/" qr="../assets/qr/compatibility.png"}
 Изменяйте уровень $\alpha$ и полученное значение $z_{\mathrm{obs}}$. На
 графике показаны центральная область неотвержения, два хвоста и двустороннее
 $p$-значение.

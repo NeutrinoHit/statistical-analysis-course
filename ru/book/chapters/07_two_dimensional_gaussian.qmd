@@ -326,7 +326,7 @@ $$ {#eq-ch7-ellipse-semiaxes}
 {{< include ../assets/applets/gaussian-correlation-ellipse.ojs >}}
 ```
 
-::: {.animation .applet-fallback title="Интерактив: корреляция и эллипс" poster="../assets/figures/gaussian2d_correlation_ellipse.png" url="https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/07_two_dimensional_gaussian.html#interactive-gaussian-correlation-ellipse" qr="../assets/qr/gaussian-correlation-ellipse.png"}
+::: {.animation .applet-fallback title="Интерактив: корреляция и эллипс" poster="../assets/figures/gaussian2d_correlation_ellipse.png" url="https://neutrinohit.github.io/qr/statistics/0014/" qr="../assets/qr/gaussian-correlation-ellipse.png"}
 Меняйте $\rho$, $\sigma_X$ и $\sigma_Y$. Точки показывают выборку из
 двумерного гаусса, линия — эллипс $D^2=2.30$.
 :::
@@ -397,7 +397,7 @@ $$ {#eq-ch7-two-dimensional-unit-contour}
 {{< include ../assets/applets/gaussian-probability-contour.ojs >}}
 ```
 
-::: {.animation .applet-fallback title="Интерактив: вероятность и размер контура" poster="../assets/figures/gaussian2d_probability_contour.png" url="https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/07_two_dimensional_gaussian.html#interactive-gaussian-probability-contour" qr="../assets/qr/gaussian-probability-contour.png"}
+::: {.animation .applet-fallback title="Интерактив: вероятность и размер контура" poster="../assets/figures/gaussian2d_probability_contour.png" url="https://neutrinohit.github.io/qr/statistics/0015/" qr="../assets/qr/gaussian-probability-contour.png"}
 Сплошная линия ограничивает выбранную долю распределения. Пунктир показывает
 $D^2=1$, который в двух измерениях содержит $39.3\%$ вероятности.
 :::

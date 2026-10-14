@@ -179,7 +179,7 @@ $$ {#eq-ch5-cauchy-average}
 ```
 
 :::: {.content-visible unless-format="html:js"}
-::: {.animation title="Среднее распределения Коши" poster="../assets/figures/cauchy_mean_n100.png" url="https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/05_non_gaussian_clt_violations.html#interactive-cauchy-mean" qr="../assets/qr/cauchy_mean.png"}
+::: {.animation title="Среднее распределения Коши" poster="../assets/figures/cauchy_mean_n100.png" url="https://neutrinohit.github.io/qr/statistics/0006/" qr="../assets/qr/cauchy_mean.png"}
 Меняя число слагаемых, можно сравнить среднее величин Коши с нормированной
 суммой гауссовых величин.
 :::
@@ -291,7 +291,7 @@ $$ {#eq-ch5-landau-asymptotic-tail}
 ```
 
 :::: {.content-visible unless-format="html:js"}
-::: {.animation title="Длинный хвост распределения Ландау" poster="../assets/figures/landau_like_default.png" url="https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/05_non_gaussian_clt_violations.html#interactive-landau-tail" qr="../assets/qr/landau_tail.png"}
+::: {.animation title="Длинный хвост распределения Ландау" poster="../assets/figures/landau_like_default.png" url="https://neutrinohit.github.io/qr/statistics/0007/" qr="../assets/qr/landau_tail.png"}
 Интерактив сопоставляет ландау-подобное распределение с гауссовой кривой,
 имеющей ту же медиану и ту же центральную ширину.
 :::
@@ -421,7 +421,7 @@ $$ {#eq-ch5-common-shift-variance}
 ```
 
 :::: {.content-visible unless-format="html:js"}
-::: {.animation title="Статистическая и общая ошибки" poster="../assets/figures/correlated_error_sigma06.png" url="https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/05_non_gaussian_clt_violations.html#interactive-correlated-errors" qr="../assets/qr/correlated_errors.png"}
+::: {.animation title="Статистическая и общая ошибки" poster="../assets/figures/correlated_error_sigma06.png" url="https://neutrinohit.github.io/qr/statistics/0008/" qr="../assets/qr/correlated_errors.png"}
 Меняйте статистическую и общую составляющие ошибки и следите за шириной
 распределения среднего при росте выборки.
 :::
@@ -518,7 +518,7 @@ $$ {#eq-ch5-poisson-mixture-variance}
 ```
 
 :::: {.content-visible unless-format="html:js"}
-::: {.animation title="Смесь двух гауссовых классов" poster="../assets/figures/gaussian_mixture_sep1_9.png" url="https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/05_non_gaussian_clt_violations.html#interactive-gaussian-mixture" qr="../assets/qr/gaussian_mixture.png"}
+::: {.animation title="Смесь двух гауссовых классов" poster="../assets/figures/gaussian_mixture_sep1_9.png" url="https://neutrinohit.github.io/qr/statistics/0009/" qr="../assets/qr/gaussian_mixture.png"}
 Интерактив показывает, как веса, ширины и расстояние между средними меняют
 форму смеси.
 :::
@@ -599,7 +599,7 @@ $$ {#eq-ch5-counting-asymmetry}
 ```
 
 :::: {.content-visible unless-format="html:js"}
-::: {.animation title="Отношение гауссовых величин" poster="../assets/figures/ratio_gaussians_cauchy.png" url="https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/05_non_gaussian_clt_violations.html#interactive-ratio-cauchy" qr="../assets/qr/ratio_cauchy.png"}
+::: {.animation title="Отношение гауссовых величин" poster="../assets/figures/ratio_gaussians_cauchy.png" url="https://neutrinohit.github.io/qr/statistics/0010/" qr="../assets/qr/ratio_cauchy.png"}
 Меняйте среднее и ширину знаменателя и следите за появлением длинных хвостов у
 отношения.
 :::

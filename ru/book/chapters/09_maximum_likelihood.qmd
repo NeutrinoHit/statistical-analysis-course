@@ -309,7 +309,7 @@ $\widehat\varepsilon=1$. В обоих случаях максимум лежи�
 {{< include ../assets/applets/likelihood-binomial.ojs >}}
 ```
 
-::: {.animation .applet-fallback title="Биномиальное правдоподобие" poster="../assets/figures/mle_binomial_n20_k7.png" url="https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/09_maximum_likelihood.html#interactive-likelihood-binomial" qr="../assets/qr/likelihood-binomial.png"}
+::: {.animation .applet-fallback title="Биномиальное правдоподобие" poster="../assets/figures/mle_binomial_n20_k7.png" url="https://neutrinohit.github.io/qr/statistics/0022/" qr="../assets/qr/likelihood-binomial.png"}
 Меняйте число частиц $N$ и число срабатываний $k$. Вертикальная линия
 показывает оценку $\widehat\varepsilon=k/N$. При увеличении выборки максимум
 становится уже.

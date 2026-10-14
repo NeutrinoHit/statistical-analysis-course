@@ -49,7 +49,7 @@
   \setlength{\parskip}{0.18\baselineskip}%
   \setlength{\emergencystretch}{3em}%
   \setcounter{secnumdepth}{3}%
-  \setcounter{tocdepth}{0}%
+  \setcounter{tocdepth}{2}%
 }
 
 \setlist[itemize]{leftmargin=1.55em,itemsep=0.14em,topsep=0.35em,parsep=0pt}
@@ -104,8 +104,8 @@
 \AddToHook{begindocument/end}{%
   \hypersetup{
     colorlinks=true,
-    linkcolor=BookTeal,
-    citecolor=BookTeal,
+    linkcolor=BookInk,
+    citecolor=BookInk,
     urlcolor=BookTeal,
     filecolor=BookTeal,
     linktoc=section
@@ -342,18 +342,11 @@
 \makeatother
 
 % -----------------------------------------------------------------------------
-% TOC and chapter-entry color accents
+% TOC
 % -----------------------------------------------------------------------------
-\RedeclareSectionCommand[tocbeforeskip=0.12\baselineskip]{chapter}
-\RedeclareSectionCommand[tocbeforeskip=0.55\baselineskip]{part}
+% Keep the global contents typography identical to the neutrino book. The only
+% subject-specific adjustment is the number column needed for sections 10--13.
 % The local chapter TOC reaches two-digit chapter and section numbers
 % (for example 13.10). Reserve enough width so the title never touches the
 % number.
 \DeclareTOCStyleEntry[numwidth=3.6em]{tocline}{section}
-
-\AtBeginDocument{%
-  \addtokomafont{partentry}{\sffamily\bfseries\color{BookTeal}}%
-  \addtokomafont{partentrypagenumber}{\sffamily\bfseries\color{BookInk}}%
-  \addtokomafont{chapterentry}{\sffamily\bfseries\color{BookTeal}}%
-  \addtokomafont{chapterentrypagenumber}{\sffamily\bfseries\color{BookInk}}%
-}

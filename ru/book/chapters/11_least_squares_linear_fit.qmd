@@ -365,7 +365,7 @@ $$ {#eq-ch11-parameter-correlation}
 {{< include ../assets/applets/least-squares-parameter-geometry.ojs >}}
 ```
 
-::: {.animation .applet-fallback title="Геометрия корреляции параметров" poster="../assets/figures/lsq_parameter_geometry.png" url="https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/11_least_squares_linear_fit.html#interactive-least-squares-parameter-geometry" qr="../assets/qr/least-squares-parameter-geometry.png"}
+::: {.animation .applet-fallback title="Геометрия корреляции параметров" poster="../assets/figures/lsq_parameter_geometry.png" url="https://neutrinohit.github.io/qr/statistics/0027/" qr="../assets/qr/least-squares-parameter-geometry.png"}
 При $\bar x_w=1.8$ и $s_x=1$ корреляция оценок равна $-0.87$.
 Перенос центра к нулю устраняет наклон эллипса. Увеличение разброса точек
 уменьшает ошибку наклона прямой.
@@ -628,7 +628,7 @@ $$ {#eq-ch11-residual-scale-estimator}
 {{< include ../assets/applets/least-squares-outlier.ojs >}}
 ```
 
-::: {.animation .applet-fallback title="Прямая, остатки и выброс" poster="../assets/figures/lsq_fit_no_outlier.png" url="https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/11_least_squares_linear_fit.html#interactive-least-squares-outlier" qr="../assets/qr/least-squares-outlier.png"}
+::: {.animation .applet-fallback title="Прямая, остатки и выброс" poster="../assets/figures/lsq_fit_no_outlier.png" url="https://neutrinohit.github.io/qr/statistics/0028/" qr="../assets/qr/least-squares-outlier.png"}
 Подгонка $16$ псевдоизмерений при масштабе ошибок $0.55$ и без дополнительного
 сдвига. Пунктиром показана истинная прямая, сплошной линией — результат
 подгонки. Нижний график содержит остатки, делённые на ошибки точек.

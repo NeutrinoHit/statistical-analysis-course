@@ -253,7 +253,7 @@ $$ {#eq-ch8-rejection-example-density}
 {{< include ../assets/applets/monte-carlo-rejection-sampling.ojs >}}
 ```
 
-::: {.animation .applet-fallback title="Метод отбора для плотности $6x(1-x)$" poster="../assets/figures/mc_rejection_sampling.png" url="https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/08_monte_carlo_method.html#interactive-monte-carlo-rejection-sampling" qr="../assets/qr/monte-carlo-rejection-sampling.png"}
+::: {.animation .applet-fallback title="Метод отбора для плотности $6x(1-x)$" poster="../assets/figures/mc_rejection_sampling.png" url="https://neutrinohit.github.io/qr/statistics/0016/" qr="../assets/qr/monte-carlo-rejection-sampling.png"}
 Синие точки приняты, серые отброшены. Теоретическая доля принятых событий
 равна $2/3$.
 :::
@@ -361,7 +361,7 @@ $$ {#eq-ch8-pi-estimator}
 {{< include ../assets/applets/monte-carlo-pi.ojs >}}
 ```
 
-::: {.animation .applet-fallback title="Оценка числа $\pi$ методом Монте-Карло" poster="../assets/figures/mc_pi_estimate.png" url="https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/08_monte_carlo_method.html#interactive-monte-carlo-pi" qr="../assets/qr/monte-carlo-pi.png"}
+::: {.animation .applet-fallback title="Оценка числа $\pi$ методом Монте-Карло" poster="../assets/figures/mc_pi_estimate.png" url="https://neutrinohit.github.io/qr/statistics/0017/" qr="../assets/qr/monte-carlo-pi.png"}
 Доля синих точек внутри четверти круга оценивает $\pi/4$.
 :::
 
@@ -388,7 +388,7 @@ $$ {#eq-ch8-grid-size}
 {{< include ../assets/applets/monte-carlo-grid-dimension.ojs >}}
 ```
 
-::: {.animation .applet-fallback title="Рост числа узлов регулярной сетки" poster="../assets/figures/mc_grid_m5_d8.png" url="https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/08_monte_carlo_method.html#interactive-monte-carlo-grid-dimension" qr="../assets/qr/monte-carlo-grid-dimension.png"}
+::: {.animation .applet-fallback title="Рост числа узлов регулярной сетки" poster="../assets/figures/mc_grid_m5_d8.png" url="https://neutrinohit.github.io/qr/statistics/0018/" qr="../assets/qr/monte-carlo-grid-dimension.png"}
 При пяти узлах по каждой из восьми координат требуется $5^8=390\,625$
 вычислений.
 :::
@@ -464,7 +464,7 @@ $N_{\mathrm{eff}}\ll N$.
 {{< include ../assets/applets/monte-carlo-importance-sampling.ojs >}}
 ```
 
-::: {.animation .applet-fallback title="Равномерная выборка и выборка по важности" poster="../assets/figures/mc_rare_uniform.png" url="https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/08_monte_carlo_method.html#interactive-monte-carlo-importance-sampling" qr="../assets/qr/monte-carlo-importance-sampling.png"}
+::: {.animation .applet-fallback title="Равномерная выборка и выборка по важности" poster="../assets/figures/mc_rare_uniform.png" url="https://neutrinohit.github.io/qr/statistics/0019/" qr="../assets/qr/monte-carlo-importance-sampling.png"}
 При равномерной генерации малая доля точек попадает в важную область.
 :::
 
@@ -594,7 +594,7 @@ $\widehat s=N-b$. Повторив эти действия несколько т
 {{< include ../assets/applets/monte-carlo-counting-experiment.ojs >}}
 ```
 
-::: {.animation .applet-fallback title="Ансамбль счётных экспериментов" poster="../assets/figures/mc_counting_pseudoexperiments.png" url="https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/08_monte_carlo_method.html#interactive-monte-carlo-counting-experiment" qr="../assets/qr/monte-carlo-counting-experiment.png"}
+::: {.animation .applet-fallback title="Ансамбль счётных экспериментов" poster="../assets/figures/mc_counting_pseudoexperiments.png" url="https://neutrinohit.github.io/qr/statistics/0020/" qr="../assets/qr/monte-carlo-counting-experiment.png"}
 При $s=5$ и $b=10$ среднее распределения равно пяти, а около семи процентов
 псевдоэкспериментов дают $\widehat s<0$.
 :::
@@ -623,7 +623,7 @@ $\widehat s=N-b$. Повторив эти действия несколько т
 Каждый этап содержит приближения. Их проверяют по контрольным данным, а
 оставшиеся расхождения входят в систематическую неопределённость.
 
-::: {.animation title="Моделирование оптических фотонов в Daya Bay и JUNO" url="https://juno.ihep.ac.cn/~blyth/" embed-url="https://www.youtube-nocookie.com/embed/CBpOha4RzIs" qr="../assets/qr/opticks-video.png"}
+::: {.animation title="Моделирование оптических фотонов в Daya Bay и JUNO" url="https://neutrinohit.github.io/qr/statistics/0021/" embed-url="https://www.youtube-nocookie.com/embed/CBpOha4RzIs" qr="../assets/qr/opticks-video.png"}
 В ролике Саймона Блита показана работа Opticks: распространение оптических
 фотонов рассчитывается на графическом процессоре для геометрий детекторов
 Daya Bay и JUNO. Описание проекта опубликовано на странице автора

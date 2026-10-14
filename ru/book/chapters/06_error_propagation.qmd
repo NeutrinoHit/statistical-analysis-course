@@ -279,7 +279,7 @@ $$ {#eq-ch6-quadratic-exact-variance}
 {{< include ../assets/applets/error-propagation-nonlinear.ojs >}}
 ```
 
-::: {.animation .applet-fallback title="Нелинейное преобразование $Y=X+aX^2$" poster="../assets/figures/error_propagation_nonlinear_default.png" url="https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/06_error_propagation.html#interactive-error-propagation-nonlinear" qr="../assets/qr/error-propagation-nonlinear.png"}
+::: {.animation .applet-fallback title="Нелинейное преобразование $Y=X+aX^2$" poster="../assets/figures/error_propagation_nonlinear_default.png" url="https://neutrinohit.github.io/qr/statistics/0011/" qr="../assets/qr/error-propagation-nonlinear.png"}
 Меняйте ширину исходного гаусса и коэффициент $a$. Гистограмма показывает
 распределение $Y$, а гладкая кривая — линейный прогноз.
 :::
@@ -567,7 +567,7 @@ $$ {#eq-ch6-sample-size-for-ten-percent-sigma}
 {{< include ../assets/applets/error-propagation-sample-variance.ojs >}}
 ```
 
-::: {.animation .applet-fallback title="Десять гауссовских измерений" poster="../assets/figures/error_propagation_sample10.png" url="https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/06_error_propagation.html#interactive-error-propagation-sample-variance" qr="../assets/qr/error-propagation-sample-variance.png"}
+::: {.animation .applet-fallback title="Десять гауссовских измерений" poster="../assets/figures/error_propagation_sample10.png" url="https://neutrinohit.github.io/qr/statistics/0012/" qr="../assets/qr/error-propagation-sample-variance.png"}
 Меняйте параметры распределения и начальное состояние генератора. Таблица
 показывает выборку, оценки $\widehat\mu$, $\widehat{\sigma^2}$,
 $\widehat\sigma$ и их расчётные неопределённости.
@@ -738,7 +738,7 @@ $$ {#eq-ch6-two-variable-error-propagation}
 {{< include ../assets/applets/error-propagation-correlation.ojs >}}
 ```
 
-::: {.animation .applet-fallback title="Корреляционный вклад в дисперсию" poster="../assets/figures/error_propagation_corr_positive.png" url="https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/06_error_propagation.html#interactive-error-propagation-correlation" qr="../assets/qr/error-propagation-correlation.png"}
+::: {.animation .applet-fallback title="Корреляционный вклад в дисперсию" poster="../assets/figures/error_propagation_corr_positive.png" url="https://neutrinohit.github.io/qr/statistics/0013/" qr="../assets/qr/error-propagation-correlation.png"}
 Меняйте производные, стандартные отклонения и $\rho$. Три полосы показывают
 два диагональных и один корреляционный вклад в $\sigma_F^2$.
 :::

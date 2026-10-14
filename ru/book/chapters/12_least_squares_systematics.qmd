@@ -191,7 +191,7 @@ $\theta-\widehat\theta=\pm\sqrt c\,\sigma_\theta$. Попробуйте подн
 {{< include ../assets/applets/least-squares-delta-chi2.ojs >}}
 ```
 
-::: {.animation .applet-fallback title="Интервал по пересечению с уровнем χ²" poster="../assets/figures/lsq_delta_chi2_one_sigma.png" url="https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/12_least_squares_systematics.html#interactive-least-squares-delta-chi2" qr="../assets/qr/least-squares-delta-chi2.png"}
+::: {.animation .applet-fallback title="Интервал по пересечению с уровнем χ²" poster="../assets/figures/lsq_delta_chi2_one_sigma.png" url="https://neutrinohit.github.io/qr/statistics/0029/" qr="../assets/qr/least-squares-delta-chi2.png"}
 При $\sigma_\theta=1$ и $c=1$ границы лежат при
 $\theta-\widehat\theta=\pm1$. Пунктир задаёт уровень отсечения, сплошная
 кривая показывает $\Delta\chi^2$.
@@ -645,7 +645,7 @@ $q_0\simeq4.59$, и множитель $1/(1+f_N^2q_0)$ равен пример�
 {{< include ../assets/applets/least-squares-normalization.ojs >}}
 ```
 
-::: {.animation .applet-fallback title="Общая нормировка: модель и подстановка данных" poster="../assets/figures/lsq_dagostini_comparison.png" url="https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/12_least_squares_systematics.html#interactive-least-squares-normalization" qr="../assets/qr/least-squares-normalization.png"}
+::: {.animation .applet-fallback title="Общая нормировка: модель и подстановка данных" poster="../assets/figures/lsq_dagostini_comparison.png" url="https://neutrinohit.github.io/qr/statistics/0030/" qr="../assets/qr/least-squares-normalization.png"}
 При $f_N=0.10$ модель даёт центральное значение $8.235$ пб, а подстановка
 данных в нормировочную ковариацию — $7.874$ пб. Профиль модели асимметричен;
 пунктирная функция с фиксированной матрицей является параболой.

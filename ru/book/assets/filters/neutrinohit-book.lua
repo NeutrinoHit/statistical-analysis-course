@@ -74,6 +74,24 @@ local function heading(title, label)
   return pandoc.Para(content)
 end
 
+local function source_note(div)
+  local repo = value(div.attributes.repo)
+  if repo == "" then
+    return nil
+  end
+  local label = value(div.attributes["repo-label"])
+  if label == "" then
+    label = repo
+  end
+  return pandoc.Div({
+    pandoc.Para({
+      pandoc.Str("Исходный код:"),
+      pandoc.Space(),
+      pandoc.Link({pandoc.Str(label)}, repo)
+    })
+  }, pandoc.Attr("", {"media-source"}))
+end
+
 local function latex_box(blocks, identifier, options)
   local result = {}
   if identifier ~= "" then
@@ -118,38 +136,32 @@ local function render_process_flow(div)
         "latex", "\\hypertarget{" .. div.identifier .. "}{}"
       )
     end
-    blocks[#blocks + 1] = pandoc.RawBlock("latex", "\\begin{bookprocessflow}")
     for index, step in ipairs(steps) do
       local label = latex_escape(process_step_label(step, index))
-      local title = latex_escape(process_step_title(step))
+      local title = pandoc.write(
+        pandoc.Pandoc({pandoc.Plain(markdown_inlines(process_step_title(step)))}),
+        "latex"
+      ):gsub("%s+$", "")
       blocks[#blocks + 1] = pandoc.RawBlock(
-        "latex", "\\begin{bookprocessstep}[" .. label .. "]{" .. title .. "}"
+        "latex",
+        "\\par\\medskip\\noindent" ..
+        "{\\sffamily\\bfseries\\color{BookTeal} " .. label .. ".}" ..
+        "\\hspace{0.8em}{\\sffamily\\bfseries " .. title .. "}" ..
+        "\\par\\nobreak\\smallskip"
       )
       for _, block in ipairs(step.content) do
         blocks[#blocks + 1] = block
       end
-      blocks[#blocks + 1] = pandoc.RawBlock("latex", "\\end{bookprocessstep}")
-      if index < #steps then
-        blocks[#blocks + 1] = pandoc.RawBlock("latex", "\\BookProcessConnector")
-      end
     end
-    blocks[#blocks + 1] = pandoc.RawBlock("latex", "\\end{bookprocessflow}")
+    blocks[#blocks + 1] = pandoc.RawBlock("latex", "\\par\\medskip")
     return blocks
   end
 
   div.attributes.role = "list"
-  local layout = value(div.attributes.layout)
-  local columns = #steps <= 4 and #steps or 1
-  if layout == "vertical" then
-    columns = 1
+  if value(div.attributes.flow) == "vertical" then
     add_class(div, "process-flow-vertical")
   end
-  local style = value(div.attributes.style)
-  if style ~= "" and not style:match(";%s*$") then
-    style = style .. ";"
-  end
-  div.attributes.style = style .. "--process-columns: " .. tostring(columns) .. ";"
-  div.attributes.layout = nil
+  div.attributes.flow = nil
   for index, step in ipairs(steps) do
     local label = process_step_label(step, index)
     local title = process_step_title(step)
@@ -164,7 +176,7 @@ local function render_process_flow(div)
     }
     if title ~= "" then
       content[#content + 1] = pandoc.Div(
-        {pandoc.Plain({pandoc.Strong({pandoc.Str(title)})})},
+        {pandoc.Plain({pandoc.Strong(markdown_inlines(title))})},
         pandoc.Attr("", {"process-step-title"})
       )
     end
@@ -327,19 +339,93 @@ local function render_biography(div)
   return blocks
 end
 
+-- Printed QR card (the NeutrinoHit book standard, as in TheBook): a box of the
+-- text width titled «Отсканируйте», the code on the left with its short address
+-- printed under it in two lines (host / path), the caption on the right. The
+-- code and the address are links. No poster or film frame is printed next to it.
+local function qr_address(url)
+  local host, path = url:match("^%a[%w+.-]*://([^/]+)(/.*)$")
+  if not host then
+    return pandoc.RawInline("latex", latex_escape(url))
+  end
+  -- a long path (an applet, a slide) may break after / _ - #
+  local printed = latex_escape(path)
+    :gsub("/", "/\\allowbreak{}")
+    :gsub("\\_", "\\_\\allowbreak{}")
+    :gsub("%-", "-\\allowbreak{}")
+    :gsub("\\#", "\\#\\allowbreak{}")
+  return pandoc.RawInline("latex", latex_escape(host) .. "\\\\" .. printed)
+end
+
+local function qr_card(div, url, qr, caption)
+  local latex = FORMAT:match("latex")
+  local blocks = {}
+  if latex then
+    blocks[#blocks + 1] = pandoc.RawBlock(
+      "latex", "\\noindent\\begin{minipage}[t]{0.25\\linewidth}\\vspace{0pt}\\centering"
+    )
+  end
+  blocks[#blocks + 1] = pandoc.Para({
+    pandoc.Link({
+      pandoc.Image(
+        {pandoc.Str("QR-код")}, qr, "",
+        pandoc.Attr("", {"book-qr"}, {width = latex and "100%" or "24mm"})
+      )
+    }, url)
+  })
+  if latex then
+    blocks[#blocks + 1] = pandoc.Plain({
+      pandoc.RawInline("latex", "{\\fontsize{5pt}{6pt}\\selectfont\\ttfamily\\centering"),
+      pandoc.Link({qr_address(url)}, url),
+      pandoc.RawInline("latex", "\\par}")
+    })
+    blocks[#blocks + 1] = pandoc.RawBlock(
+      "latex",
+      "\\end{minipage}\\hfill\\begin{minipage}[t]{\\dimexpr0.75\\linewidth-3mm\\relax}\\vspace{0pt}"
+    )
+  end
+  for _, block in ipairs(caption) do
+    blocks[#blocks + 1] = block
+  end
+  if latex then
+    blocks[#blocks + 1] = pandoc.RawBlock("latex", "\\end{minipage}")
+    return latex_box(
+      blocks, div.identifier,
+      "[breakable=false,title={Отсканируйте\\ifdefined\\faIcon\\ \\faIcon{mobile-alt}\\fi},"
+        .. "fonttitle=\\sffamily\\small,coltitle=BookInk,top=3mm,"
+        .. "attach boxed title to top left={xshift=4mm,yshift*=-\\tcboxedtitleheight/2},"
+        .. "boxed title style={colback=BookPaper,colframe=BookTeal,boxrule=0.5pt,sharp corners}]"
+    )
+  end
+  return blocks
+end
+
+local function media_caption(div, title, label, source)
+  local blocks = {}
+  if title ~= "" then
+    blocks[#blocks + 1] = heading(title, label)
+  end
+  for _, block in ipairs(div.content) do
+    blocks[#blocks + 1] = block
+  end
+  if source then
+    blocks[#blocks + 1] = source
+  end
+  return blocks
+end
+
 local function render_animation(div)
-  local title = value(div.attributes.title):gsub("^%s*Интерактив%s*:%s*", "")
-  local applet_fallback = has_class(div, "applet-fallback")
+  local title = value(div.attributes.title)
   local src = value(div.attributes.src)
   local epub_src = value(div.attributes["epub-src"])
   local poster_html = value(div.attributes.poster)
   local poster_fixed = project_path(div.attributes.poster)
   local url = value(div.attributes.url)
-  local embed_url = value(div.attributes["embed-url"])
   local qr_fixed = project_path(div.attributes.qr)
+  local source = source_note(div)
 
   if FORMAT:match("html") or FORMAT:match("epub") then
-    local browser_src = src
+    local browser_src = src ~= "" and src or epub_src
     local browser_poster = poster_html
     if FORMAT:match("epub") then
       browser_src = project_path(epub_src ~= "" and epub_src or src)
@@ -354,41 +440,10 @@ local function render_animation(div)
         '<video controls="controls" loop="loop" muted="muted" playsinline="playsinline" preload="metadata"%s><source src="%s" type="video/mp4" /></video>',
         poster, html_escape(browser_src)
       )
-    elseif FORMAT:match("epub") then
-      if browser_poster ~= "" then
-        local image = string.format(
-          '<img src="%s" alt="%s" />',
-          html_escape(browser_poster), html_escape(title)
-        )
-        if url ~= "" then
-          media = string.format(
-            '<a href="%s">%s</a>', html_escape(url), image
-          )
-        else
-          media = image
-        end
-      elseif url ~= "" then
-        media = string.format(
-          '<p class="animation-link"><a href="%s">Открыть интерактивный материал</a></p>',
-          html_escape(url)
-        )
-      end
-    elseif applet_fallback and browser_poster ~= "" then
-      local image = string.format(
-        '<img src="%s" alt="%s" />',
-        html_escape(browser_poster), html_escape(title)
-      )
-      if url ~= "" then
-        media = string.format(
-          '<a href="%s">%s</a>', html_escape(url), image
-        )
-      else
-        media = image
-      end
-    elseif embed_url ~= "" or url ~= "" then
+    elseif url ~= "" then
       media = string.format(
         '<iframe class="animation-embed" src="%s" title="%s" loading="lazy" allowfullscreen="allowfullscreen"></iframe>',
-        html_escape(embed_url ~= "" and embed_url or url), html_escape(title)
+        html_escape(url), html_escape(title)
       )
     elseif browser_poster ~= "" then
       media = string.format(
@@ -399,16 +454,14 @@ local function render_animation(div)
 
     local identifier = div.identifier ~= "" and
       string.format(' id="%s"', html_escape(div.identifier)) or ""
-    local figure_class = applet_fallback and
-      "animation-block applet-fallback" or "animation-block"
     local blocks = {
-      pandoc.RawBlock(
-        "html",
-        '<figure class="' .. figure_class .. '"' .. identifier .. '>' .. media
-      )
+      pandoc.RawBlock("html", '<figure class="animation-block"' .. identifier .. '>' .. media)
     }
     for _, block in ipairs(div.content) do
       blocks[#blocks + 1] = block
+    end
+    if source then
+      blocks[#blocks + 1] = source
     end
     if title ~= "" then
       blocks[#blocks + 1] = pandoc.RawBlock(
@@ -419,8 +472,11 @@ local function render_animation(div)
     return blocks
   end
 
+  -- Print: the caption with the QR card. The poster of a video is a film frame
+  -- and is not printed; a block without a video (a static picture of an applet)
+  -- keeps its picture above the box.
   local blocks = {}
-  if poster_fixed ~= "" then
+  if poster_fixed ~= "" and src == "" and epub_src == "" then
     if FORMAT:match("latex") then
       blocks[#blocks + 1] = pandoc.RawBlock("latex", "\\begin{center}")
     end
@@ -435,43 +491,155 @@ local function render_animation(div)
     end
   end
 
-  local has_qr = qr_fixed ~= "" and url ~= ""
-  if FORMAT:match("latex") and has_qr then
-    blocks[#blocks + 1] = pandoc.RawBlock(
-      "latex", "\\noindent\\begin{minipage}[c]{\\dimexpr\\linewidth-30mm\\relax}"
-    )
+  local caption = media_caption(div, title, "Анимация", source)
+  local card
+  if qr_fixed ~= "" and url ~= "" then
+    card = qr_card(div, url, qr_fixed, caption)
+  else
+    card = FORMAT:match("latex") and
+      latex_box(caption, div.identifier, "[breakable=false]") or caption
   end
-  if title ~= "" then
-    blocks[#blocks + 1] = heading(title, "Интерактив")
-  end
-  for _, block in ipairs(div.content) do
+  for _, block in ipairs(card) do
     blocks[#blocks + 1] = block
   end
-  if FORMAT:match("latex") and has_qr then
-    blocks[#blocks + 1] = pandoc.RawBlock(
-      "latex", "\\end{minipage}\\hfill\\begin{minipage}[c]{26mm}\\centering"
-    )
-  end
-  if has_qr then
-    blocks[#blocks + 1] = pandoc.Para({
-      pandoc.Link({
-        pandoc.Image(
-          {pandoc.Str("QR-код интерактива")}, qr_fixed, "",
-          pandoc.Attr("", {"animation-qr"}, {width = "24mm"})
-        )
-      }, url)
-    })
-  end
-  if FORMAT:match("latex") and has_qr then
-    blocks[#blocks + 1] = pandoc.RawBlock("latex", "\\end{minipage}")
-  end
-
   if FORMAT:match("latex") then
-    return latex_box(blocks, div.identifier, "[breakable=false]")
+    return blocks
   end
   return pandoc.Div(
     blocks, pandoc.Attr(div.identifier, {"animation-block", "semantic-block"})
   )
+end
+
+local function render_interactive(div)
+  local title = value(div.attributes.title)
+  local embed = value(div.attributes.embed)
+  local url = value(div.attributes.url)
+  local poster_html = value(div.attributes.poster)
+  local poster_fixed = project_path(div.attributes.poster)
+  local qr_fixed = project_path(div.attributes.qr)
+  local source = source_note(div)
+  local height = value(div.attributes.height)
+
+  if FORMAT:match("html") or FORMAT:match("epub") then
+    local frame_src = FORMAT:match("epub") and url or
+      (embed ~= "" and embed or url)
+    if FORMAT:match("html") and embed ~= ""
+        and not frame_src:match("[?&]embed=") then
+      frame_src = frame_src .. (frame_src:match("%?") and "&" or "?") .. "embed=1"
+    end
+    local media = ""
+    if frame_src ~= "" then
+      local style = height ~= "" and
+        string.format(' style="height:%s"', html_escape(height)) or ""
+      media = string.format(
+        '<iframe class="interactive-embed" src="%s" title="%s" loading="lazy" allowfullscreen="allowfullscreen"%s></iframe>',
+        html_escape(frame_src), html_escape(title), style
+      )
+    elseif poster_html ~= "" then
+      local poster = FORMAT:match("epub") and poster_fixed or poster_html
+      media = string.format(
+        '<img src="%s" alt="%s" />',
+        html_escape(poster), html_escape(title)
+      )
+    end
+
+    local identifier = div.identifier ~= "" and
+      string.format(' id="%s"', html_escape(div.identifier)) or ""
+    local blocks = {
+      pandoc.RawBlock(
+        "html", '<figure class="interactive-block"' .. identifier .. '>' .. media
+      )
+    }
+    for _, block in ipairs(div.content) do
+      blocks[#blocks + 1] = block
+    end
+    if source then
+      blocks[#blocks + 1] = source
+    end
+    if title ~= "" then
+      blocks[#blocks + 1] = pandoc.RawBlock(
+        "html", "<figcaption>" .. markdown_inline_html(title) .. "</figcaption>"
+      )
+    end
+    blocks[#blocks + 1] = pandoc.RawBlock("html", "</figure>")
+    return blocks
+  end
+
+  -- Print: an applet screenshot stays above the box; the QR card follows.
+  local blocks = {}
+  if poster_fixed ~= "" then
+    if FORMAT:match("latex") then
+      blocks[#blocks + 1] = pandoc.RawBlock("latex", "\\begin{center}")
+    end
+    blocks[#blocks + 1] = pandoc.Para({
+      pandoc.Image(
+        {pandoc.Str(title)}, poster_fixed, title,
+        pandoc.Attr("", {"interactive-poster"}, {width = "74%"})
+      )
+    })
+    if FORMAT:match("latex") then
+      blocks[#blocks + 1] = pandoc.RawBlock("latex", "\\end{center}")
+    end
+  end
+
+  local caption = media_caption(div, title, "Интерактив", source)
+  local card
+  if qr_fixed ~= "" and url ~= "" then
+    card = qr_card(div, url, qr_fixed, caption)
+  else
+    if url ~= "" then
+      caption[#caption + 1] = pandoc.Para({
+        pandoc.Link({pandoc.Str("Открыть интерактив")}, url)
+      })
+    end
+    card = FORMAT:match("latex") and
+      latex_box(caption, div.identifier, "[breakable=false]") or caption
+  end
+  for _, block in ipairs(card) do
+    blocks[#blocks + 1] = block
+  end
+  if FORMAT:match("latex") then
+    return blocks
+  end
+  return pandoc.Div(
+    blocks, pandoc.Attr(div.identifier, {"interactive-block", "semantic-block"})
+  )
+end
+
+local function render_margin_note(div)
+  local title = value(div.attributes.title)
+  if title == "" then
+    title = "Заметка на полях"
+  end
+
+  if FORMAT:match("html") or FORMAT:match("epub") then
+    local identifier = div.identifier ~= "" and
+      string.format(' id="%s"', html_escape(div.identifier)) or ""
+    local blocks = {
+      pandoc.RawBlock(
+        "html",
+        '<details class="margin-note"' .. identifier .. '><summary>' ..
+        html_escape(title) .. "</summary>"
+      )
+    }
+    for _, block in ipairs(div.content) do
+      blocks[#blocks + 1] = block
+    end
+    blocks[#blocks + 1] = pandoc.RawBlock("html", "</details>")
+    return blocks
+  end
+
+  if FORMAT:match("latex") then
+    local rendered = pandoc.write(
+      pandoc.Pandoc(div.content), "latex"
+    ):gsub("%s+$", "")
+    return pandoc.RawBlock(
+      "latex",
+      "\\bookmarginnote[" .. latex_escape(title) .. "]{" .. rendered .. "}"
+    )
+  end
+
+  return div
 end
 
 local semantic_labels = {
@@ -487,8 +655,16 @@ function Div(div)
   if has_class(div, "biography") then
     return render_biography(div)
   end
+  if has_class(div, "interactive") then
+    return render_interactive(div)
+  end
   if has_class(div, "animation") then
     return render_animation(div)
+  end
+  if has_class(div, "margin-note")
+      or has_class(div, "marginnote")
+      or has_class(div, "margine-note") then
+    return render_margin_note(div)
   end
   if has_class(div, "book-lead") then
     add_class(div, "semantic-block")
@@ -518,12 +694,23 @@ end
 local inside_exercises = false
 local exercise_box_open = false
 local part_titles = {}
+local pdf_title_lines = {}
 
 local function configure_book_profile(meta)
   local configured_titles = meta["book-part-titles"]
   if configured_titles then
     for _, item in ipairs(configured_titles) do
       part_titles[pandoc.utils.stringify(item)] = true
+    end
+  end
+  local configured_lines = meta["book-pdf-title-lines"]
+  if configured_lines then
+    for title, lines in pairs(configured_lines) do
+      local rendered = {}
+      for _, line in ipairs(lines) do
+        rendered[#rendered + 1] = pandoc.utils.stringify(line)
+      end
+      pdf_title_lines[title] = table.concat(rendered, "|")
     end
   end
   return meta
@@ -534,6 +721,34 @@ local function close_exercise_box(blocks)
     blocks[#blocks + 1] = pandoc.RawBlock("latex", "\\end{semanticpdfbox}")
     exercise_box_open = false
   end
+end
+
+local function apply_pdf_title_lines(header, title)
+  if not FORMAT:match("latex") or header.level ~= 1 then
+    return header
+  end
+
+  local configured = value(header.attributes["pdf-title-lines"])
+  if configured == "" then
+    configured = value(pdf_title_lines[title])
+  end
+  if configured == "" then
+    return header
+  end
+
+  local inlines = {}
+  for line in configured:gmatch("[^|]+") do
+    line = line:match("^%s*(.-)%s*$")
+    if #inlines > 0 then
+      inlines[#inlines + 1] = pandoc.RawInline("latex", "\\BookTitleBreak{}")
+    end
+    inlines[#inlines + 1] = pandoc.RawInline("latex", latex_escape(line))
+  end
+  if #inlines > 0 then
+    header.content = inlines
+  end
+  header.attributes["pdf-title-lines"] = nil
+  return header
 end
 
 function Header(header)
@@ -554,7 +769,7 @@ function Header(header)
       close_exercise_box(prefix)
       prefix[#prefix + 1] = pandoc.RawBlock(
         "latex",
-        "\\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral},breakable=false]"
+        "\\begin{semanticpdfbox}[colback=BookCoralSoft,borderline west={1.2mm}{0pt}{BookCoral}]"
       )
       exercise_box_open = true
       local rendered = pandoc.write(
@@ -572,6 +787,8 @@ function Header(header)
     close_exercise_box(prefix)
     inside_exercises = false
   end
+
+  header = apply_pdf_title_lines(header, title)
 
   if FORMAT:match("latex")
       and header.level == 1
@@ -598,9 +815,9 @@ function Pandoc(doc)
   return doc
 end
 
--- Quarto executes OJS cells only for JavaScript-capable HTML.  In PDF and
--- EPUB the same source arrives at Pandoc as a regular code block; remove it
--- here because every applet has a format-independent static counterpart.
+-- Quarto executes OJS cells only in JavaScript-capable HTML. In PDF and EPUB
+-- the same source reaches Pandoc as an ordinary code block. Every applet has a
+-- static counterpart for these formats, so the executable source is omitted.
 function CodeBlock(block)
   if (FORMAT:match("latex") or FORMAT:match("epub"))
       and (has_class(block, "ojs") or has_class(block, "{ojs}")) then

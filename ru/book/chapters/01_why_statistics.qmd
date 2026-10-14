@@ -487,7 +487,7 @@ $$
 {{< include ../assets/applets/first-fit.ojs >}}
 ```
 
-::: {.animation .applet-fallback title="Подбор ширины распределения" poster="../assets/figures/distribution_width.png" url="https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/01_why_statistics.html#interactive-first-fit" qr="../assets/qr/first_fit.png"}
+::: {.animation .applet-fallback title="Подбор ширины распределения" poster="../assets/figures/distribution_width.png" url="https://neutrinohit.github.io/qr/statistics/0001/" qr="../assets/qr/first_fit.png"}
 Отсканируйте QR-код, чтобы открыть интерактив и самостоятельно подобрать ширину распределения.
 :::
 

@@ -151,7 +151,7 @@ $$ {#eq-ch10-variance-estimator-mse}
 {{< include ../assets/applets/likelihood-variance-estimators.ojs >}}
 ```
 
-::: {.animation .applet-fallback title="Две оценки дисперсии" poster="../assets/figures/mle_variance_estimators_n6.png" url="https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/10_estimator_properties_profile_likelihood.html#interactive-likelihood-variance-estimators" qr="../assets/qr/likelihood-variance-estimators.png"}
+::: {.animation .applet-fallback title="Две оценки дисперсии" poster="../assets/figures/mle_variance_estimators_n6.png" url="https://neutrinohit.github.io/qr/statistics/0023/" qr="../assets/qr/likelihood-variance-estimators.png"}
 Распределения оценок дисперсии для $6000$ гауссовых выборок размера $N=6$ при
 $\sigma^2=1$. Делитель $N-1$ устраняет смещение и одновременно увеличивает
 разброс оценки.
@@ -470,7 +470,7 @@ $0.45\ \text{мкс}$ передаёт местную кривизну, но т�
 {{< include ../assets/applets/likelihood-lifetime.ojs >}}
 ```
 
-::: {.animation .applet-fallback title="Оценка времени жизни" poster="../assets/figures/mle_lifetime_n20.png" url="https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/10_estimator_properties_profile_likelihood.html#interactive-likelihood-lifetime" qr="../assets/qr/likelihood-lifetime.png"}
+::: {.animation .applet-fallback title="Оценка времени жизни" poster="../assets/figures/mle_lifetime_n20.png" url="https://neutrinohit.github.io/qr/statistics/0024/" qr="../assets/qr/likelihood-lifetime.png"}
 Одна выборка из $N=20$ распадов при $\tau_0=2\ \text{мкс}$. Показаны
 разность $\ell(\tau)-\ell_{\max}$, её квадратичное приближение и границы
 $q=1$. Все данные в этом примере сгенерированы.
@@ -607,7 +607,7 @@ $\sqrt{1-\rho^2}\simeq0.66$, тогда как профиль даёт един�
 {{< include ../assets/applets/likelihood-profile.ojs >}}
 ```
 
-::: {.animation .applet-fallback title="Профиль и фиксированное сечение" poster="../assets/figures/mle_profile_likelihood_rho075.png" url="https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/10_estimator_properties_profile_likelihood.html#interactive-likelihood-profile" qr="../assets/qr/likelihood-profile.png"}
+::: {.animation .applet-fallback title="Профиль и фиксированное сечение" poster="../assets/figures/mle_profile_likelihood_rho075.png" url="https://neutrinohit.github.io/qr/statistics/0025/" qr="../assets/qr/likelihood-profile.png"}
 Двумерное относительное правдоподобие при $\rho=0.75$ и две одномерные
 кривые: профиль $q_{\mathrm p}(\theta)$ и сечение $q(\theta,0)$.
 Белая линия показывает $\widehat{\widehat\eta}(\theta)=\rho\theta$.
@@ -745,7 +745,7 @@ $$ {#eq-ch10-reactor-profiles}
 {{< include ../assets/applets/likelihood-reactor-oscillation.ojs >}}
 ```
 
-::: {.animation .applet-fallback title="Подгонка реакторного спектра" poster="../assets/figures/mle_reactor_oscillation_default.png" url="https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/10_estimator_properties_profile_likelihood.html#interactive-likelihood-reactor-oscillation" qr="../assets/qr/likelihood-reactor-oscillation.png"}
+::: {.animation .applet-fallback title="Подгонка реакторного спектра" poster="../assets/figures/mle_reactor_oscillation_default.png" url="https://neutrinohit.github.io/qr/statistics/0026/" qr="../assets/qr/likelihood-reactor-oscillation.png"}
 Псевдоэксперимент при $N_0=2500$, $A_0=0.085$,
 $\Delta m_0^2=2.5\cdot10^{-3}\ \text{эВ}^2$ и 18 энергетических бинах.
 Зелёным обозначены параметры генерации, оранжевым — максимум на сетке.

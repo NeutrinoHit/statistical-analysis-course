@@ -216,7 +216,7 @@ $$ {#eq-cauchy-sum-distribution}
 стандартных величин Коши.
 
 :::: {.content-visible unless-format="html:js"}
-::: {.animation title="Сумма двух величин Коши" poster="../assets/figures/cauchy_sum.png" url="https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/03_characteristic_functions.html#interactive-cauchy-sum" qr="../assets/qr/cauchy_sum.png"}
+::: {.animation title="Сумма двух величин Коши" poster="../assets/figures/cauchy_sum.png" url="https://neutrinohit.github.io/qr/statistics/0002/" qr="../assets/qr/cauchy_sum.png"}
 В HTML-книге график строится из характеристических функций исходной величины
 и её суммы с независимой копией.
 :::
@@ -229,7 +229,7 @@ $1$ до $2$.
 
 Весь метод состоит из трёх операций.
 
-:::: {.process-flow layout="vertical" aria-label="Вычисление распределения суммы через преобразование Фурье"}
+:::: {.process-flow flow="vertical" aria-label="Вычисление распределения суммы через преобразование Фурье"}
 ::: {.process-step label="01" title="Преобразовать плотности"}
 Найти характеристические функции
 
@@ -765,7 +765,7 @@ $$ {#eq-uniform-unit-variance}
 ```
 
 :::: {.content-visible unless-format="html:js"}
-::: {.animation title="Гауссов предел в пространстве Фурье" poster="../assets/figures/clt_fourier_n10.png" url="https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/03_characteristic_functions.html#interactive-clt-fourier" qr="../assets/qr/clt_fourier.png"}
+::: {.animation title="Гауссов предел в пространстве Фурье" poster="../assets/figures/clt_fourier_n10.png" url="https://neutrinohit.github.io/qr/statistics/0003/" qr="../assets/qr/clt_fourier.png"}
 Меняя число слагаемых, можно проследить, как характеристическая функция
 нормированной суммы приближается к $e^{-t^2/2}$.
 :::

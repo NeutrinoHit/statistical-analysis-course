@@ -215,7 +215,7 @@ $0.447$, при $\nu=1000$ — $0.0447$. То же превышение един
 {{< include ../assets/applets/goodness-chi2-shape.ojs >}}
 ```
 
-::: {.animation .applet-fallback title="Форма распределения χ²" poster="../assets/figures/gof_chi2_nu10.png" url="https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/13_goodness_of_fit_and_significance.html#interactive-goodness-chi2-shape" qr="../assets/qr/goodness-chi2-shape.png"}
+::: {.animation .applet-fallback title="Форма распределения χ²" poster="../assets/figures/gof_chi2_nu10.png" url="https://neutrinohit.github.io/qr/statistics/0031/" qr="../assets/qr/goodness-chi2-shape.png"}
 При $\nu=10$ среднее равно $10$, стандартное отклонение — $\sqrt{20}$.
 Плотность асимметрична. Отметки среднего и ширины не являются границами
 интервала с заданной вероятностью.
@@ -377,7 +377,7 @@ $p=0.03$ нельзя получить утверждение «вероятно
 {{< include ../assets/applets/goodness-pvalue-tail.ojs >}}
 ```
 
-::: {.animation .applet-fallback title="p-значение как площадь хвоста" poster="../assets/figures/gof_pvalue_nu50_obs70.png" url="https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/13_goodness_of_fit_and_significance.html#interactive-goodness-pvalue-tail" qr="../assets/qr/goodness-pvalue-tail.png"}
+::: {.animation .applet-fallback title="p-значение как площадь хвоста" poster="../assets/figures/gof_pvalue_nu50_obs70.png" url="https://neutrinohit.github.io/qr/statistics/0032/" qr="../assets/qr/goodness-pvalue-tail.png"}
 Для $\nu=50$ и $t_{\mathrm{obs}}=70$ площадь правого хвоста равна
 $p\simeq0.0324$. Закрашена вероятность получить $T\ge70$ при этой модели.
 :::
@@ -419,7 +419,7 @@ $0.5$ ничем не выделены. При пороге $\alpha=0.05$ при
 {{< include ../assets/applets/goodness-pvalue-calibration.ojs >}}
 ```
 
-::: {.animation .applet-fallback title="Распределение p-значений" poster="../assets/figures/gof_p_uniform.png" url="https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/13_goodness_of_fit_and_significance.html#interactive-goodness-pvalue-calibration" qr="../assets/qr/goodness-pvalue-calibration.png"}
+::: {.animation .applet-fallback title="Распределение p-значений" poster="../assets/figures/gof_p_uniform.png" url="https://neutrinohit.github.io/qr/statistics/0033/" qr="../assets/qr/goodness-pvalue-calibration.png"}
 20 000 опытов задают калибровку; для 5000 независимых опытов построена
 гистограмма p-значений. Пунктир показывает единичную плотность.
 Отклонения столбцов связаны с конечным размером обеих выборок.
@@ -504,7 +504,7 @@ $$ {#eq-ch13-one-sided-significance}
 {{< include ../assets/applets/goodness-p-to-z-one-sided.ojs >}}
 ```
 
-::: {.animation .applet-fallback title="Односторонняя гауссова шкала" poster="../assets/figures/gof_p_to_z_one_sided.png" url="https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/13_goodness_of_fit_and_significance.html#interactive-goodness-p-to-z-one-sided" qr="../assets/qr/goodness-p-to-z-one-sided.png"}
+::: {.animation .applet-fallback title="Односторонняя гауссова шкала" poster="../assets/figures/gof_p_to_z_one_sided.png" url="https://neutrinohit.github.io/qr/statistics/0034/" qr="../assets/qr/goodness-p-to-z-one-sided.png"}
 При $Z=2$ правый хвост содержит $p=0.02275$. Ползунок в HTML позволяет
 сопоставить положение границы с площадью хвоста.
 :::
@@ -545,7 +545,7 @@ $$ {#eq-ch13-two-sided-significance}
 {{< include ../assets/applets/goodness-p-to-z-two-sided.ojs >}}
 ```
 
-::: {.animation .applet-fallback title="Два гауссовых хвоста" poster="../assets/figures/gof_p_to_z_two_sided.png" url="https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/13_goodness_of_fit_and_significance.html#interactive-goodness-p-to-z-two-sided" qr="../assets/qr/goodness-p-to-z-two-sided.png"}
+::: {.animation .applet-fallback title="Два гауссовых хвоста" poster="../assets/figures/gof_p_to_z_two_sided.png" url="https://neutrinohit.github.io/qr/statistics/0035/" qr="../assets/qr/goodness-p-to-z-two-sided.png"}
 За пределами $[-2,2]$ находится вероятность $0.04550$.
 Каждый из двух хвостов содержит половину этой вероятности.
 :::
@@ -717,7 +717,7 @@ $0.0003$. Формула для $\chi^2_{20}$ даёт $0.07316$.
 {{< include ../assets/applets/goodness-low-count-calibration.ojs >}}
 ```
 
-::: {.animation .applet-fallback title="Проверка χ²-приближения при малых счётах" poster="../assets/figures/gof_low_count_toys.png" url="https://neutrinohit.github.io/statistical-analysis-course/ru/book/chapters/13_goodness_of_fit_and_significance.html#interactive-goodness-low-count-calibration" qr="../assets/qr/goodness-low-count-calibration.png"}
+::: {.animation .applet-fallback title="Проверка χ²-приближения при малых счётах" poster="../assets/figures/gof_low_count_toys.png" url="https://neutrinohit.github.io/qr/statistics/0036/" qr="../assets/qr/goodness-low-count-calibration.png"}
 Гистограмма построена по 80 000 опытов для ожиданий из
 таблицы [-@tbl-ch13-small-poisson-means]. Пунктир — плотность
 $\chi^2_{20}$, вертикальная линия — $t_{\mathrm{obs}}=29.8$.
