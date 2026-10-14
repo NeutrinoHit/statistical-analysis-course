@@ -55,5 +55,5 @@ format:
     toc: false
     include-after-body:
       - text: |
-          <script data-external="1" data-context-home="https://neutrinohit.github.io/ru/education.html#stat" data-context-home-label="Карта курса статистики" src="shared/reveal/neutrinohit-reveal-footer.js"></script>
+          <script data-external="1" data-context-home="https://neutrinohit.github.io/statistical-analysis-course/" data-context-home-label="Главная курса" src="shared/reveal/neutrinohit-reveal-footer.js"></script>
       - analytics/cloudflare-web-analytics.html
