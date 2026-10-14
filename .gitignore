@@ -47,3 +47,6 @@ Makefile.local
 # Python cache
 __pycache__/
 *.pyc
+
+# Local working files
+/.work/
