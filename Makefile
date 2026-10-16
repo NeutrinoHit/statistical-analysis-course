@@ -9,8 +9,6 @@ CHAPTER_PYTHON ?= $(PYTHON)
 
 export QUARTO_PYTHON
 
-RU_NOTEBOOKS := probability_demo uniform_sample_demo binomial_sample_demo poisson_sample_demo normal_sample_demo binomial_pmf_demo poisson_pmf_demo normal_density_demo poisson_gaussian_demo likelihood_demo fitting_demo intervals_demo feldman_cousins_demo hypothesis_tests_demo systematics_demo neutrino_cases_demo
-EN_NOTEBOOKS := $(RU_NOTEBOOKS)
 BOOK_RU_DIR := ru/book
 BOOK_EN_DIR := en/book
 SLIDES_RU_DIR := ru/slides
@@ -35,13 +33,14 @@ SITE_OUTPUTS := \
 	_site/ru/book/index.html \
 	_site/ru/book/statistical-data-analysis.pdf \
 	$(addprefix _site/ru/book/chapters/,$(addsuffix .pdf,$(RU_PDF_CHAPTERS))) \
-	_site/en/book/index.html
+	_site/en/book/index.html \
+	_site/ru/slides/index.html \
+	_site/en/slides/index.html
 
-.PHONY: help check-env check-book-sources ci-setup site all books notebooks figures book-qr slides \
+.PHONY: help check-env check-book-sources ci-setup site home figures book-qr \
 	ru-slides en-slides \
-	ru ru-html ru-preview ru-pdf ru-chapters ru-epub en en-html en-pdf en-epub \
-	ru-notebooks en-notebooks ru-notebook en-notebook \
-	clean clean-site clean-ru clean-en clean-notebooks clean-figures clean-cache
+	ru-html ru-preview ru-pdf ru-chapters ru-epub en-html en-pdf en-epub \
+	ru-notebook en-notebook clean
 
 help: ## Показать цели сборки
 	@printf '%s\n' 'Доступные цели:'
@@ -70,10 +69,8 @@ ci-setup: check-env ## Установить зависимости для CI
 
 site: check-env check-book-sources book-qr ## Собрать полный сайт в _site
 	rm -rf _site $(BOOK_RU_DIR)/_book $(BOOK_EN_DIR)/_book $(SLIDES_RU_DIR)/_site $(SLIDES_EN_DIR)/_site
-	mkdir -p _site/shared
-	cp pages/index.html pages/applets.html pages/robots.txt _site/
+	$(QUARTO) render
 	$(PYTHON) scripts/build_figures.py
-	cp -R shared/analytics shared/styles shared/applets _site/shared/
 	$(QUARTO) render $(BOOK_RU_DIR) --to html
 	$(QUARTO) render $(BOOK_RU_DIR) --to pdf
 	$(PYTHON) scripts/finalize_chapter_bibliographies.py
@@ -81,13 +78,10 @@ site: check-env check-book-sources book-qr ## Собрать полный сай
 	$(QUARTO) render $(BOOK_EN_DIR) --to html
 	$(QUARTO) render $(SLIDES_RU_DIR)
 	$(QUARTO) render $(SLIDES_EN_DIR)
-	$(PYTHON) scripts/wait_for_files.py $(SITE_OUTPUTS)
+	@for f in $(SITE_OUTPUTS); do test -s "$$f" || { echo "Нет или пуст: $$f"; exit 1; }; done
 
-all: figures books ## Собрать фигуры и обе книги
-
-books: ru en ## Собрать обе книги
-
-slides: ru-slides en-slides ## Собрать сайты со слайдами RU и EN
+home: check-env ## Собрать только страницу курса (_site/index.html, апплеты, shared)
+	$(QUARTO) render
 
 ru-slides: check-env ## Собрать русские слайды
 	$(QUARTO) render $(SLIDES_RU_DIR)
@@ -98,13 +92,6 @@ en-slides: check-env ## Собрать английские слайды
 	$(QUARTO) render $(SLIDES_EN_DIR)
 	mkdir -p _site/shared
 	cp -R shared/applets _site/shared/
-
-ru: check-env check-book-sources book-qr ## Собрать русскую книгу целиком
-	$(QUARTO) render $(BOOK_RU_DIR)
-	$(PYTHON) scripts/finalize_chapter_bibliographies.py
-
-en: check-env ## Собрать английскую книгу целиком
-	$(QUARTO) render $(BOOK_EN_DIR)
 
 ru-html: check-env check-book-sources book-qr ## Собрать HTML русской книги
 	$(QUARTO) render $(BOOK_RU_DIR) --to html
@@ -126,6 +113,8 @@ ru-epub: check-env check-book-sources book-qr ## Собрать EPUB русск�
 	@if command -v epubcheck >/dev/null 2>&1; then epubcheck _site/ru/book/statistical-data-analysis.epub; else echo "epubcheck не найден: внутренняя проверка выполнена"; fi
 
 en-html: check-env ## Собрать HTML английской книги
+	# Quarto does not replace notebook figures left in _site by an earlier render.
+	rm -rf _site/en/book
 	$(QUARTO) render $(BOOK_EN_DIR) --to html
 
 en-pdf: check-env ## Собрать PDF английской книги
@@ -143,16 +132,6 @@ book-qr: check-env ## Создать недостающие QR-коды для �
 check-book-sources: check-env ## Проверить структуру исходников русской книги
 	$(PYTHON) scripts/check_book_sources.py
 
-ru-notebooks: check-env ## Пересобрать все русские ноутбуки как отдельные входы
-	@for nb in $(RU_NOTEBOOKS); do \
-	  scripts/render_notebook_standalone.sh ru $$nb; \
-	done
-
-en-notebooks: check-env ## Пересобрать все английские ноутбуки как отдельные входы
-	@for nb in $(EN_NOTEBOOKS); do \
-	  scripts/render_notebook_standalone.sh en $$nb; \
-	done
-
 ru-notebook: check-env ## Собрать один русский notebook: make ru-notebook NOTEBOOK=probability_demo
 	@test -n "$(NOTEBOOK)" || { echo "Укажи NOTEBOOK=<slug>"; exit 1; }
 	scripts/render_notebook_standalone.sh ru $(NOTEBOOK)
@@ -161,22 +140,5 @@ en-notebook: check-env ## Собрать один английский notebook:
 	@test -n "$(NOTEBOOK)" || { echo "Укажи NOTEBOOK=<slug>"; exit 1; }
 	scripts/render_notebook_standalone.sh en $(NOTEBOOK)
 
-clean: clean-site clean-ru clean-en clean-notebooks clean-figures clean-cache ## Очистить артефакты сборки
-
-clean-site: ## Очистить полный сайт
-	rm -rf _site .quarto
-
-clean-ru: ## Очистить артефакты русской книги
-	rm -rf _site/ru/book $(BOOK_RU_DIR)/_book $(BOOK_RU_DIR)/.quarto
-
-clean-en: ## Очистить артефакты английской книги
-	rm -rf _site/en/book $(BOOK_EN_DIR)/_book $(BOOK_EN_DIR)/.quarto
-
-clean-notebooks: ## Очистить standalone-артефакты ноутбуков
-	rm -rf $(BOOK_RU_DIR)/notebooks/*.html $(BOOK_RU_DIR)/notebooks/*.pdf $(BOOK_RU_DIR)/notebooks/*_files $(BOOK_EN_DIR)/notebooks/*.html $(BOOK_EN_DIR)/notebooks/*.pdf $(BOOK_EN_DIR)/notebooks/*_files
-
-clean-figures: ## Очистить shared/figures/generated
-	rm -rf shared/figures/generated/*
-
-clean-cache: ## Очистить временные кэши
-	rm -rf .make-tmp
+clean: ## Очистить артефакты сборки
+	rm -rf _site .quarto $(BOOK_RU_DIR)/_book $(BOOK_RU_DIR)/.quarto $(BOOK_EN_DIR)/_book $(BOOK_EN_DIR)/.quarto .make-tmp

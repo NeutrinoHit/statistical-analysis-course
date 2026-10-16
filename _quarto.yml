@@ -1,0 +1,33 @@
+project:
+  type: default
+  output-dir: _site
+  # Only the course home page. Books and slides are separate projects in
+  # ru/book, en/book, ru/slides and en/slides; see Makefile.
+  render:
+    - index.qmd
+  resources:
+    - /applets.html
+    - /robots.txt
+    - /shared/analytics/**
+    - /shared/styles/**
+    - /shared/applets/**
+
+lang: ru
+
+format:
+  html:
+    # The page keeps its own layout and styles, without Bootstrap.
+    minimal: true
+    document-css: false
+    css:
+      - https://neutrinohit.github.io/assets/site/neutrinohit-tokens.css
+      - https://neutrinohit.github.io/assets/site/neutrinohit-base.css
+      - https://neutrinohit.github.io/assets/site/neutrinohit-components.css
+      - https://neutrinohit.github.io/assets/site/neutrinohit-projects.css
+      - styles.css
+    include-in-header:
+      text: |
+        <meta name="robots" content="noindex,nofollow,noarchive">
+    include-after-body:
+      text: |
+        <script defer src="https://neutrinohit.github.io/assets/analytics/cloudflare-web-analytics.js"></script>

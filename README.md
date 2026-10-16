@@ -4,6 +4,8 @@
 
 ## Structure
 
+- `index.qmd`, `_quarto.yml`, `styles.css` — страница курса; `applets.html` и
+  `robots.txt` копируются на сайт как есть
 - `ru/book/` — русская книга
 - `ru/slides/` — русские слайды
 - `en/book/` — английская книга
@@ -63,10 +65,11 @@ Push в `main` автоматически публикует сайт. `workflow
   `common-pdf.tex` также определены макросы `\E`, `\Var`, `\cov`, `\dd`, которые
   обе книги получают через свой `_metadata.yml`.
 
-В Git сохраняются полная LaTeX-версия `ru/book/statistical-data-analysis.tex`
-и иллюстрации из `ru/book/assets/figures/`, используемые в публикации.
-Они обновляются сборкой и генераторами, без ручного редактирования.
-Готовые PDF и HTML в `_site/`, а также кэши в коммит не включаются.
+В Git сохраняются иллюстрации из `ru/book/assets/figures/`, используемые в
+публикации; они обновляются генераторами, без ручного редактирования.
+LaTeX-версии книг (`ru/book/statistical-data-analysis.tex`,
+`en/book/statistical-analysis.tex`) создаёт сборка с `keep-tex`; в Git они не
+входят. Готовые PDF и HTML в `_site/`, а также кэши в коммит не включаются.
 
 ## Правила для авторов
 
