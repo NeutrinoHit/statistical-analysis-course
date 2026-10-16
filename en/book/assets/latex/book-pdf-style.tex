@@ -72,10 +72,6 @@
   \or BookCoral%
   \else BookTeal\fi
 }
-\renewcommand{\BookChapterLabel}{Chapter}
-\renewcommand{\BookPartLabel}{PART}
-\renewcommand{\BookPartContentsLabel}{Chapters}
-\renewcommand{\BookTocChapterLabel}{Chapter}
 \RedeclareSectionCommand[
   beforeskip=1.55\baselineskip,
   afterskip=0.45\baselineskip
@@ -350,42 +346,3 @@
 % (for example 13.10). Reserve enough width so the title never touches the
 % number.
 \DeclareTOCStyleEntry[numwidth=3.6em]{tocline}{section}
-
-% -----------------------------------------------------------------------------
-% English labels and a book without parts
-% -----------------------------------------------------------------------------
-% The shared chapter opener prints a fixed Russian heading above the local
-% chapter contents. Redefine it with the English label.
-\renewcommand{\bookchapteropeningcontents}{%
-  \vspace{14mm}%
-  \noindent
-  {\sffamily\bfseries\color{BookInk}\fontsize{18}{22}\selectfont
-   Contents\par}%
-  \vspace{3mm}%
-  {\noindent\color{\bookchaptercolor}\rule{18mm}{0.75mm}\par}%
-  \vspace{5mm}%
-  \begingroup
-    \setlength{\parindent}{0pt}%
-    \etocsettocstyle{}{}%
-    \etocsetnexttocdepth{section}%
-    \localtableofcontents
-  \endgroup
-  \vfill
-  \clearpage
-}
-
-% The shared page navigator, which also prints the folio, starts with the first
-% part. This book has no parts, so the navigator starts with the first chapter.
-\renewcommand{\BookRenderPageNavigator}{%
-  \ifbookpagenavigator
-    \ifnum\value{chapter}>0\relax
-      \begin{tikzpicture}[remember picture,overlay]
-        \ifodd\value{page}
-          \BookPageNavigatorRight
-        \else
-          \BookPageNavigatorLeft
-        \fi
-      \end{tikzpicture}%
-    \fi
-  \fi
-}
