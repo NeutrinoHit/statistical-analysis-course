@@ -59,7 +59,10 @@ check-env: ## Проверить Quarto и Python
 ci-setup: check-env ## Установить зависимости для CI
 	$(PYTHON) -m pip install --upgrade pip
 	$(PYTHON) -m pip install -r requirements.txt
-	@if command -v lualatex >/dev/null 2>&1; then \
+	@if [ "$(GITHUB_ACTIONS)" = true ]; then \
+	  $(QUARTO) install tinytex --no-prompt && \
+	  sh scripts/setup_book_tex.sh; \
+	elif command -v lualatex >/dev/null 2>&1; then \
 	  echo 'LuaLaTeX уже установлен.'; \
 	else \
 	  $(QUARTO) install tinytex --no-prompt; \
