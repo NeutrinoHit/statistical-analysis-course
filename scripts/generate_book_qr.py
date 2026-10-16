@@ -83,12 +83,14 @@ def main() -> int:
         found[destination] = url
 
     if not args.check:
-        generator = load_generator()
+        # The shared generator lives in the sibling neutrinohit-map checkout, which
+        # a CI build does not have; it is needed only when a code must be (re)made.
+        todo = [(d, u) for d, u in sorted(found.items()) if args.force or not d.exists()]
+        generator = load_generator() if todo else None
         created = reduced = 0
-        for destination, url in sorted(found.items()):
-            if args.force or not destination.exists():
-                reduced += generate(generator, url, destination)
-                created += 1
+        for destination, url in todo:
+            reduced += generate(generator, url, destination)
+            created += 1
         print(f"QR-коды: создано {created}, всего объявлено {len(found)}, "
               f"с уменьшенным логотипом (длинный адрес) {reduced}")
 
