@@ -77,3 +77,8 @@ a quick plot for a toy dataset.
   <a class="notebook-link notebook-link-primary" href="../notebooks/probability_demo.qmd">Open notebook</a>
 </div>
 :::
+
+## References {.unnumbered}
+
+::: {#refs}
+:::

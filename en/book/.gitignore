@@ -1,2 +1,4 @@
 /.quarto/
 **/*.quarto_ipynb
+# LaTeX source kept by keep-tex in _quarto.yml
+/statistical-analysis.tex

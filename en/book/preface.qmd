@@ -1,4 +1,4 @@
-#Preface
+# Preface {.unnumbered}
 
 Modern experiments are practically impossible without statistical data analysis. The choice of the likelihood function, the proper treatment of background and systematic uncertainties, the construction of confidence intervals, and hypothesis testing all have a direct impact on the physical result. In experimental physics, statistics is therefore not an auxiliary topic but one of the researcher’s main working tools.
 

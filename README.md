@@ -48,9 +48,20 @@ Push в `main` автоматически публикует сайт. `workflow
 - отдельные PDF сохраняют нумерацию полной книги, но не содержат оглавлений
   следующих частей и задней обложки;
 - `make ru-epub` и `make en-epub` собирают EPUB отдельно от сайта;
-- русская книга подключает общую книжную основу NeutrinoHit из
-  `ru/book/assets/styles/neutrinohit-book.css` и сохраняет предметные правила в
-  `ru/book/assets/styles/book.css`.
+- обе книги подключают общую книжную основу NeutrinoHit из
+  `<lang>/book/assets/styles/neutrinohit-book.css` и `assets/filters/` и сохраняют
+  предметные правила в `<lang>/book/assets/styles/book.css`; английский
+  `book.css` совпадает с русским, а карточки companion notebooks описаны в
+  `en/book/assets/styles/notebooks.css`;
+- английская книга подключает ноутбуки через симлинк
+  `en/book/notebooks -> shared/notebooks/common`; Pandoc открывает Lua-фильтры
+  из реального каталога ноутбука, поэтому `shared/notebooks/assets` указывает на
+  `en/book/assets`, а PDF собирается с `keep-tex: true` (файл
+  `en/book/statistical-analysis.tex` в Git не входит);
+- `shared/styles/book.css` и `shared/latex/common-pdf.tex` использует отдельная
+  сборка ноутбуков (`scripts/render_notebook_standalone.sh`); в
+  `common-pdf.tex` также определены макросы `\E`, `\Var`, `\cov`, `\dd`, которые
+  обе книги получают через свой `_metadata.yml`.
 
 В Git сохраняются полная LaTeX-версия `ru/book/statistical-data-analysis.tex`
 и иллюстрации из `ru/book/assets/figures/`, используемые в публикации.

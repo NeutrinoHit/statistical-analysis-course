@@ -1,0 +1,51 @@
+/* Companion notebook cards of the English book.
+   book.css is kept identical to ru/book/assets/styles/book.css; rules needed
+   only by the English chapters live here. */
+
+.notebook-card {
+  margin: 1.75rem 0;
+  padding: 1.3rem 1.4rem;
+  border: 1px solid var(--book-line);
+  border-left: 4px solid var(--book-blue);
+  border-radius: 6px;
+  background: #f1f5fa;
+  box-shadow: var(--book-shadow);
+}
+
+.notebook-card h3 {
+  margin-top: 0;
+  margin-bottom: 0.65rem;
+  color: var(--book-ink);
+}
+
+.notebook-card p:last-child {
+  margin-bottom: 0;
+}
+
+.notebook-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  margin-top: 1rem;
+}
+
+.notebook-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.7rem;
+  padding: 0.6rem 0.9rem;
+  border: 1px solid var(--book-line-strong);
+  border-radius: 4px;
+  background: #fff;
+  color: var(--book-teal-dark);
+  font-family: var(--book-sans);
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.notebook-link-primary {
+  border-color: var(--book-blue);
+  background: var(--book-blue);
+  color: #fff;
+}

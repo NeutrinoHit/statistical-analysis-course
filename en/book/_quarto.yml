@@ -4,8 +4,18 @@ project:
 
 book:
   title: "Statistical Analysis"
+  output-file: statistical-analysis
   subtitle: "Online notes with companion notebooks"
   author: "Dmitry Naumov"
+  site-url: "https://neutrinohit.github.io/statistical-analysis-course/en/book/"
+  repo-url: "https://github.com/NeutrinoHit/statistical-analysis-course"
+  repo-subdir: "en/book"
+  repo-actions: [source, issue]
+  search: true
+  reader-mode: true
+  page-footer:
+    left: "© Dmitry Naumov"
+    right: "NeutrinoHit · Statistical Analysis"
   chapters:
     - index.qmd
     - preface.qmd
@@ -30,21 +40,84 @@ book:
     - notebooks/neutrino_cases_demo.qmd
 
 bibliography: ../../shared/bib/references.bib
+csl: ../../shared/bib/neutrinohit-numeric.csl
+# Each chapter has its own numbered list of sources, as in the Russian book:
+# chapter-bibliographies.lua runs citeproc for each chapter.
+citeproc: false
+link-citations: false
 lang: en
+jupyter: python3
+# The home page has only the book title block; drop the repeated heading
+# of index.qmd in HTML as well.
+hide-book-index: all
+
+filters:
+  - assets/filters/chapter-bibliographies.lua
+  - assets/filters/hide-book-index.lua
+  - assets/filters/neutrinohit-book.lua
 
 format:
   html:
     toc: true
+    toc-depth: 3
     number-sections: true
-    css: ../../shared/styles/book.css
+    grid:
+      sidebar-width: 260px
+      body-width: 1050px
+      margin-width: 230px
+      gutter-width: 1rem
+    css:
+      - assets/styles/neutrinohit-book.css
+      - assets/styles/book.css
+      - assets/styles/notebooks.css
     include-in-header:
       - ../../shared/html/mathjax.html
     include-after-body: analytics/cloudflare-web-analytics.html
+    theme: cosmo
+    code-copy: true
+    anchor-sections: true
+    smooth-scroll: true
+    link-external-newwindow: true
+    fig-responsive: true
   pdf:
     documentclass: scrbook
-    toc: true
+    classoption:
+      - open=any
+    papersize: a4
+    fontsize: 11pt
+    # Printed TOC is inserted by book-pdf-style.tex immediately after the title page.
+    toc: false
+    toc-depth: 2
+    toc-title: "Contents"
     number-sections: true
+    number-depth: 3
+    colorlinks: true
     pdf-engine: lualatex
+    # The companion notebooks are reached through the notebooks symlink. Without
+    # keep-tex Quarto tries to delete their figure-pdf folders after LaTeX and
+    # refuses, because the real folders lie outside this project.
+    keep-tex: true
+    geometry:
+      - top=22mm
+      - bottom=20mm
+      - inner=20mm
+      - outer=40mm
+      - marginparwidth=28mm
+      - marginparsep=5mm
+      - headheight=8.5mm
+      - headsep=5.5mm
+      - footskip=9mm
+    filters:
+      - assets/filters/book-pdf-style.lua
     include-in-header:
-      - ../../shared/latex/common-pdf.tex
+      - ../../shared/latex/neutrinohit-book.tex
       - ../../shared/latex/en-lang.tex
+      - assets/latex/book-pdf-style.tex
+  epub:
+    toc: true
+    toc-depth: 2
+    number-sections: true
+    css:
+      - assets/styles/neutrinohit-book.css
+      - assets/styles/book.css
+      - assets/styles/notebooks.css

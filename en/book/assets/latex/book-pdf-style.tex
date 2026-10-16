@@ -1,0 +1,391 @@
+% PDF visual theme for the English statistical-analysis-course book.
+% It is the English counterpart of ru/book/assets/latex/book-pdf-style.tex and
+% mirrors the palette and visual language from assets/styles/book.css.
+
+\usepackage[most]{tcolorbox}
+\usepackage{scrlayer-scrpage}
+\usepackage{tikz}
+\usepackage{caption}
+\usepackage{colortbl}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{etoolbox}
+\usepackage{ragged2e}
+
+% -----------------------------------------------------------------------------
+% Palette (same core colors as book.css)
+% -----------------------------------------------------------------------------
+\definecolor{BookInk}{HTML}{18262F}
+\definecolor{BookInkSoft}{HTML}{42545F}
+\definecolor{BookMuted}{HTML}{687984}
+\definecolor{BookPaper}{HTML}{FFFFFF}
+\definecolor{BookCanvas}{HTML}{F4F6F7}
+\definecolor{BookLine}{HTML}{D9E0E3}
+\definecolor{BookLineStrong}{HTML}{BCC9CE}
+\definecolor{BookTeal}{HTML}{0F6972}
+\definecolor{BookTealDark}{HTML}{094B52}
+\definecolor{BookTealSoft}{HTML}{E7F1F1}
+\definecolor{BookCoral}{HTML}{C7472F}
+\definecolor{BookCoralSoft}{HTML}{F8ECE9}
+\definecolor{BookGold}{HTML}{B97817}
+\definecolor{BookGoldSoft}{HTML}{FBF3E4}
+\definecolor{BookBlue}{HTML}{2A5EA8}
+\definecolor{BookBiography}{HTML}{465B8C}
+\definecolor{BookBiographySoft}{HTML}{F0F2F8}
+% The HTML page uses a stronger sky blue. The reference PDF intentionally uses
+% a paler fill for long derivations, so that equations remain comfortable to read.
+\definecolor{BookBlueSoftPDF}{HTML}{EEF4FB}
+\definecolor{BookFigureSoft}{HTML}{F9FBFB}
+\definecolor{BookGallerySoft}{HTML}{FBFCFC}
+\definecolor{BookTableStripe}{HTML}{F7F9FA}
+
+% -----------------------------------------------------------------------------
+% Base typography and paragraph rhythm
+% -----------------------------------------------------------------------------
+\AtBeginDocument{%
+  \color{BookInk}%
+  \KOMAoptions{parskip=false}%
+  \setlength{\parindent}{1.2em}%
+  \setlength{\parskip}{0.18\baselineskip}%
+  \setlength{\emergencystretch}{3em}%
+  \setcounter{secnumdepth}{3}%
+  \setcounter{tocdepth}{2}%
+}
+
+\setlist[itemize]{leftmargin=1.55em,itemsep=0.14em,topsep=0.35em,parsep=0pt}
+\setlist[enumerate]{leftmargin=1.7em,itemsep=0.14em,topsep=0.35em,parsep=0pt}
+
+% -----------------------------------------------------------------------------
+% Headings: sans serif, dark ink; chapter number in teal, like the reference PDF
+% -----------------------------------------------------------------------------
+\addtokomafont{disposition}{\sffamily\bfseries\color{BookInk}}
+\setkomafont{chapter}{\sffamily\bfseries\fontsize{30}{33}\selectfont\color{BookInk}}
+\setkomafont{section}{\sffamily\bfseries\fontsize{14.2}{17}\selectfont\color{BookInk}}
+\setkomafont{subsection}{\sffamily\bfseries\fontsize{11.3}{14}\selectfont\color{BookInk}}
+\setkomafont{subsubsection}{\sffamily\bfseries\fontsize{10.3}{13}\selectfont\color{BookInk}}
+
+\renewcommand{\bookchaptercolor}{%
+  \ifcase\value{part}BookTeal%
+  \or BookTeal%
+  \or BookGold%
+  \or BookBlue%
+  \or BookCoral%
+  \else BookTeal\fi
+}
+\renewcommand{\BookChapterLabel}{Chapter}
+\renewcommand{\BookPartLabel}{PART}
+\renewcommand{\BookPartContentsLabel}{Chapters}
+\renewcommand{\BookTocChapterLabel}{Chapter}
+\RedeclareSectionCommand[
+  beforeskip=1.55\baselineskip,
+  afterskip=0.45\baselineskip
+]{section}
+\RedeclareSectionCommand[
+  beforeskip=1.15\baselineskip,
+  afterskip=0.28\baselineskip
+]{subsection}
+\RedeclareSectionCommand[
+  beforeskip=0.95\baselineskip,
+  afterskip=0.2\baselineskip
+]{subsubsection}
+
+% -----------------------------------------------------------------------------
+% Links and captions
+% -----------------------------------------------------------------------------
+\AtBeginDocument{%
+  \renewcommand{\figurename}{Fig.}%
+  \renewcommand{\tablename}{Table}%
+  \renewcommand{\contentsname}{Contents}%
+}
+
+% Pandoc can apply its own hyperlink setup after header includes.  Apply the
+% book palette at the very end of \begin{document}, so external links such as
+% companion notebook links are reliably teal in the PDF.
+\AddToHook{begindocument/end}{%
+  \hypersetup{
+    colorlinks=true,
+    linkcolor=BookInk,
+    citecolor=BookInk,
+    urlcolor=BookTeal,
+    filecolor=BookTeal,
+    linktoc=section
+  }%
+  \renewcommand{\contentsname}{Contents}%
+}
+
+\captionsetup[figure]{
+  font=small,
+  labelfont=bf,
+  textfont=it,
+  labelsep=space,
+  justification=centering,
+  singlelinecheck=false,
+  skip=7pt
+}
+\captionsetup[table]{
+  font=small,
+  labelfont=bf,
+  labelsep=space,
+  justification=raggedright,
+  singlelinecheck=false
+}
+
+% Per-chapter bibliographies should remain with the chapter instead of leaving
+% a nearly empty continuation page for a few long DOI and URL lines.
+\AtBeginEnvironment{CSLReferences}{%
+  \footnotesize
+  \setlength{\emergencystretch}{2em}%
+}
+
+% -----------------------------------------------------------------------------
+% Tables: light rules and alternating rows, matching the HTML and reference PDF
+% -----------------------------------------------------------------------------
+% IMPORTANT: xcolor/colortbl implements \rowcolors through global state. If that
+% state is left active after a table, AMS matrix environments (pmatrix, bmatrix,
+% etc.) can inherit the alternating row backgrounds. On a colored tcolorbox this
+% appears as white/gray rectangles behind matrix entries (for example the n/k in
+% a binomial coefficient). Reset the row-color machinery after every table.
+\makeatletter
+\newcommand{\BookResetRowColors}{%
+  \global\@rowcolorsfalse
+  \global\let\CT@row@color\relax
+  \global\let\@rowcolors\@empty
+}
+\makeatother
+
+\AtBeginEnvironment{longtable}{%
+  \arrayrulecolor{BookLineStrong}%
+  \rowcolors{2}{BookTableStripe}{white}%
+  \setlength{\arrayrulewidth}{0.35pt}%
+  \renewcommand{\arraystretch}{1.18}%
+}
+\AtEndEnvironment{longtable}{\BookResetRowColors}
+
+\AtBeginEnvironment{tabular}{%
+  \arrayrulecolor{BookLineStrong}%
+  \rowcolors{2}{BookTableStripe}{white}%
+  \renewcommand{\arraystretch}{1.18}%
+}
+\AtEndEnvironment{tabular}{\BookResetRowColors}
+
+% -----------------------------------------------------------------------------
+% Book boxes. These are PDF counterparts of the CSS classes.
+% -----------------------------------------------------------------------------
+\tcbset{
+  bookbox/.style={
+    enhanced,
+    breakable,
+    boxrule=0.35pt,
+    arc=1.2mm,
+    outer arc=1.2mm,
+    left=3.7mm,
+    right=3.7mm,
+    top=2.8mm,
+    bottom=2.8mm,
+    before skip=9pt,
+    after skip=9pt,
+    fontupper=\normalfont,
+    coltext=BookInk,
+    shadow={0mm}{-0.7mm}{0.4mm}{black!5}
+  }
+}
+
+\newtcolorbox{bookchapteropening}[1][]{
+  bookbox,
+  colback=BookCoralSoft,
+  colframe=BookCoral!72,
+  borderline west={2.6pt}{0pt}{BookCoral},
+  title={#1},
+  colbacktitle=BookCoralSoft,
+  coltitle=BookCoral,
+  fonttitle=\sffamily\bfseries\small,
+  titlerule=0pt,
+  top=2.0mm,
+  toptitle=1.5mm,
+  bottomtitle=0.4mm
+}
+
+\newtcolorbox{booknote}{
+  bookbox,
+  colback=BookGoldSoft,
+  colframe=BookGold!70,
+  borderline west={2.5pt}{0pt}{BookGold},
+  boxrule=0.25pt,
+  shadow={0mm}{0mm}{0mm}{white}
+}
+
+\newtcolorbox{bookderivation}{
+  bookbox,
+  colback=BookBlueSoftPDF,
+  colframe=BookBlue!62,
+  borderline west={2.6pt}{0pt}{BookBlue},
+  title={Derivation},
+  colbacktitle=BookBlueSoftPDF,
+  coltitle=BookBlue,
+  fonttitle=\sffamily\bfseries\small,
+  titlerule=0pt,
+  shadow={0mm}{0mm}{0mm}{white}
+}
+
+\newtcolorbox{bookchaptersummary}[1][Chapter summary]{
+  bookbox,
+  colback=BookTealSoft,
+  colframe=BookTeal!62,
+  borderline north={2.4pt}{0pt}{BookTeal},
+  title={#1},
+  colbacktitle=BookTealSoft,
+  coltitle=BookTeal,
+  fonttitle=\sffamily\bfseries\large,
+  titlerule=0pt,
+  shadow={0mm}{0mm}{0mm}{white}
+}
+
+\newtcolorbox{bookgalleryitem}{
+  enhanced,
+  breakable,
+  colback=BookGallerySoft,
+  colframe=BookLine,
+  boxrule=0.35pt,
+  arc=0.8mm,
+  left=2.4mm,
+  right=2.4mm,
+  top=2.4mm,
+  bottom=2.4mm,
+  before skip=7pt,
+  after skip=7pt,
+  shadow={0mm}{0mm}{0mm}{white}
+}
+
+\newtcolorbox{bookapplet}[1][]{
+  bookbox,
+  colback=BookGallerySoft,
+  colframe=BookLine,
+  borderline north={2.8pt}{0pt}{BookTeal},
+  title={#1},
+  colbacktitle=BookGallerySoft,
+  coltitle=BookInk,
+  fonttitle=\sffamily\bfseries\large,
+  titlerule=0pt
+}
+
+\newtcolorbox{bookbiography}{
+  bookbox,
+  colback=BookBiographySoft,
+  colframe=BookBiography!60,
+  borderline west={3.2pt}{0pt}{BookBiography},
+  boxrule=0.25pt,
+  breakable=false,
+  shadow={0mm}{0mm}{0mm}{white}
+}
+
+% A reusable caption for figures which the Lua filter deliberately takes out of
+% floating figure environments so that they can safely live inside tcolorboxes.
+\newcommand{\BookInlineFigureCaption}[1]{%
+  \par\vspace{0.45em}%
+  \refstepcounter{figure}%
+  {\centering\sffamily\fontsize{8.5}{10}\selectfont\color{BookMuted}%
+    \figurename~\thefigure\enspace #1\par}%
+}
+
+% -----------------------------------------------------------------------------
+% A reference-style title page. The text remains metadata-driven for title/author;
+% subtitle/site can be changed in the two commands below.
+% -----------------------------------------------------------------------------
+\newcommand{\BookSubtitleText}{Online notes with companion notebooks}
+\newcommand{\BookSiteText}{neutrinohit.github.io}
+\newcommand{\BookBrandText}{NEUTRINOHIT}
+
+\makeatletter
+\newcommand{\BookMakeTitle}{%
+  \begin{titlepage}
+    \thispagestyle{empty}%
+    \begin{tikzpicture}[remember picture,overlay]
+      % teal spine line
+      \fill[BookTeal] ([xshift=28.8mm]current page.north west)
+        rectangle ([xshift=30.1mm]current page.south west);
+      % coral/gold accent bar
+      \fill[BookGold] ([xshift=30.1mm,yshift=-48mm]current page.north west)
+        rectangle ([xshift=34.4mm,yshift=-98mm]current page.north west);
+      % brand
+      \node[anchor=north west,text=BookTeal,font=\sffamily\bfseries\small]
+        at ([xshift=41mm,yshift=-21mm]current page.north west) {\BookBrandText};
+      % hairline
+      \draw[BookLine,line width=.45pt]
+        ([xshift=37mm,yshift=-31.5mm]current page.north west) --
+        ([xshift=-25mm,yshift=-31.5mm]current page.north east);
+      % title
+      \node[anchor=north west,text width=145mm,align=left,text=BookInk,
+            font=\sffamily\bfseries\fontsize{31}{34}\selectfont]
+        at ([xshift=41mm,yshift=-37mm]current page.north west) {\@title};
+      % subtitle
+      \node[anchor=north west,text width=145mm,align=left,text=BookMuted,
+            font=\sffamily\fontsize{15}{18}\selectfont]
+        at ([xshift=41mm,yshift=-70mm]current page.north west) {\BookSubtitleText};
+      % author
+      \node[anchor=north west,text width=145mm,align=left,text=BookInk,
+            font=\rmfamily\fontsize{12}{15}\selectfont]
+        at ([xshift=41mm,yshift=-96mm]current page.north west) {\@author};
+      % site at bottom
+      \node[anchor=south west,text=BookMuted,font=\sffamily\scriptsize]
+        at ([xshift=37mm,yshift=25mm]current page.south west) {\BookSiteText};
+    \end{tikzpicture}%
+    \null
+  \end{titlepage}%
+  % The reference edition places the printed TOC immediately after the cover.
+  % We render it here explicitly and keep Quarto's automatic PDF TOC disabled,
+  % avoiding both a missing TOC and accidental duplication.
+  \clearpage
+  \tableofcontents
+  \clearpage
+}
+\AtBeginDocument{\let\maketitle\BookMakeTitle}
+\makeatother
+
+% -----------------------------------------------------------------------------
+% TOC
+% -----------------------------------------------------------------------------
+% Keep the global contents typography identical to the neutrino book. The only
+% subject-specific adjustment is the number column needed for sections 10--13.
+% The local chapter TOC reaches two-digit chapter and section numbers
+% (for example 13.10). Reserve enough width so the title never touches the
+% number.
+\DeclareTOCStyleEntry[numwidth=3.6em]{tocline}{section}
+
+% -----------------------------------------------------------------------------
+% English labels and a book without parts
+% -----------------------------------------------------------------------------
+% The shared chapter opener prints a fixed Russian heading above the local
+% chapter contents. Redefine it with the English label.
+\renewcommand{\bookchapteropeningcontents}{%
+  \vspace{14mm}%
+  \noindent
+  {\sffamily\bfseries\color{BookInk}\fontsize{18}{22}\selectfont
+   Contents\par}%
+  \vspace{3mm}%
+  {\noindent\color{\bookchaptercolor}\rule{18mm}{0.75mm}\par}%
+  \vspace{5mm}%
+  \begingroup
+    \setlength{\parindent}{0pt}%
+    \etocsettocstyle{}{}%
+    \etocsetnexttocdepth{section}%
+    \localtableofcontents
+  \endgroup
+  \vfill
+  \clearpage
+}
+
+% The shared page navigator, which also prints the folio, starts with the first
+% part. This book has no parts, so the navigator starts with the first chapter.
+\renewcommand{\BookRenderPageNavigator}{%
+  \ifbookpagenavigator
+    \ifnum\value{chapter}>0\relax
+      \begin{tikzpicture}[remember picture,overlay]
+        \ifodd\value{page}
+          \BookPageNavigatorRight
+        \else
+          \BookPageNavigatorLeft
+        \fi
+      \end{tikzpicture}%
+    \fi
+  \fi
+}

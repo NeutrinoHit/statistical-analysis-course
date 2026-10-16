@@ -1,4 +1,4 @@
-# Syllabus
+# Syllabus {.unnumbered}
 
 | Chapter | Scope | Notebook |
 |---|---|---|
