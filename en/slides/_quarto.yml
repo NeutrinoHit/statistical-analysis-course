@@ -1,5 +1,6 @@
 project:
   type: website
+  post-render: ../../scripts/strip_notebook_paths.py
   output-dir: ../../_site/en/slides
   resources:
     - applets.html
