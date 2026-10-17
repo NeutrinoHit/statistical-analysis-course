@@ -421,7 +421,6 @@ format:
 <nav class="bertrand-nav" aria-label="Навигация по курсу">
   <a href="index.html">К лекциям</a>
   <a href="applets.html">К апплетам</a>
-  <a href="../book/">К книге</a>
 </nav>
 
 <div id="bertrand-game-host"></div>

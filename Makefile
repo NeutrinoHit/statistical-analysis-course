@@ -28,12 +28,10 @@ RU_PDF_CHAPTERS := \
 	12_least_squares_systematics \
 	13_goodness_of_fit_and_significance
 
+# The books are not published: the site has the course home, applets and slides.
 SITE_OUTPUTS := \
 	_site/index.html \
-	_site/ru/book/index.html \
-	_site/ru/book/statistical-data-analysis.pdf \
-	$(addprefix _site/ru/book/chapters/,$(addsuffix .pdf,$(RU_PDF_CHAPTERS))) \
-	_site/en/book/index.html \
+	_site/applets.html \
 	_site/ru/slides/index.html \
 	_site/en/slides/index.html
 
@@ -55,30 +53,18 @@ check-env: ## Проверить Quarto и Python
 	  echo "Не найден Python: $(PYTHON)"; exit 1; \
 	fi
 
-ci-setup: check-env ## Установить зависимости для CI
+ci-setup: check-env ## Установить зависимости для CI (сайт без PDF, TeX не нужен)
 	$(PYTHON) -m pip install --upgrade pip
 	$(PYTHON) -m pip install -r requirements.txt
-	@if [ "$(GITHUB_ACTIONS)" = true ]; then \
-	  $(QUARTO) install tinytex --no-prompt && \
-	  sh scripts/setup_book_tex.sh; \
-	elif command -v lualatex >/dev/null 2>&1; then \
-	  echo 'LuaLaTeX уже установлен.'; \
-	else \
-	  $(QUARTO) install tinytex --no-prompt; \
-	fi
 
-site: check-env check-book-sources book-qr ## Собрать полный сайт в _site
+site: check-env ## Собрать сайт в _site: страница курса, апплеты, слайды RU и EN
 	rm -rf _site $(BOOK_RU_DIR)/_book $(BOOK_EN_DIR)/_book $(SLIDES_RU_DIR)/_site $(SLIDES_EN_DIR)/_site
 	$(QUARTO) render
 	$(PYTHON) scripts/build_figures.py
-	$(QUARTO) render $(BOOK_RU_DIR) --to html
-	$(QUARTO) render $(BOOK_RU_DIR) --to pdf
-	$(PYTHON) scripts/finalize_chapter_bibliographies.py
-	$(CHAPTER_PYTHON) scripts/render_book_chapters.py ru $(RU_PDF_CHAPTERS)
-	$(QUARTO) render $(BOOK_EN_DIR) --to html
 	$(QUARTO) render $(SLIDES_RU_DIR)
 	$(QUARTO) render $(SLIDES_EN_DIR)
 	@for f in $(SITE_OUTPUTS); do test -s "$$f" || { echo "Нет или пуст: $$f"; exit 1; }; done
+	@for d in _site/ru/book _site/en/book; do test ! -e "$$d" || { echo "Книга не публикуется: $$d"; exit 1; }; done
 
 home: check-env ## Собрать только страницу курса (_site/index.html, апплеты, shared)
 	$(QUARTO) render

@@ -11,7 +11,7 @@ lang: ru
   </nav>
   <p class="eyebrow">NeutrinoHit</p>
   <h1>Статистический анализ данных</h1>
-  <p class="course-status">Курс и книга · русский язык, книга и слайды также на английском · 13 лекций опубликованы</p>
+  <p class="course-status">Курс лекций · русский язык, слайды также на английском · 13 лекций опубликованы</p>
   <p>
     Тринадцать лекций по теории и практике статистического анализа данных.
     Курс начинается с мотивации и заканчивается статистическими тестами.
@@ -22,13 +22,6 @@ lang: ru
   </p>
 
   <div class="grid">
-    <section class="card">
-      <h2>Русская книга</h2>
-      <div class="actions">
-        <a class="link primary" href="./ru/book/">Открыть RU Book</a>
-      </div>
-    </section>
-
     <section class="card">
       <h2>Русские слайды</h2>
       <p>Слайды лекций с интерактивными OJS-демо.</p>
@@ -55,13 +48,6 @@ lang: ru
     </section>
 
     <section class="card">
-      <h2>English Book</h2>
-      <div class="actions">
-        <a class="link" href="./en/book/">Open EN Book</a>
-      </div>
-    </section>
-
-    <section class="card">
       <h2>English Slides</h2>
       <p>Lecture slides with OJS interactive demos.</p>
       <div class="actions">
@@ -82,8 +68,6 @@ lang: ru
         <div class="actions">
           <a class="link" href="./ru/slides/01_introduction.html">Открыть лекцию</a>
           <a class="link" href="./ru/slides/exercises/01_introduction_exercises.html">Задачи</a>
-          <a class="link" href="./ru/book/chapters/01_why_statistics.pdf">Конспект PDF</a>
-          <a class="link" href="./ru/book/chapters/01_why_statistics.html">Глава в онлайн-книге</a>
         </div>
       </div>
     </details>
@@ -98,8 +82,6 @@ lang: ru
         <div class="actions">
           <a class="link" href="./ru/slides/02_random_distributions.html">Открыть лекцию</a>
           <a class="link" href="./ru/slides/exercises/02_random_distributions_exercises.html">Задачи</a>
-          <a class="link" href="./ru/book/chapters/02_random_distributions.pdf">Конспект PDF</a>
-          <a class="link" href="./ru/book/chapters/02_random_distributions.html">Глава в онлайн-книге</a>
         </div>
       </div>
     </details>
@@ -114,8 +96,6 @@ lang: ru
         <div class="actions">
           <a class="link" href="./ru/slides/03_characteristic_functions.html">Открыть лекцию</a>
           <a class="link" href="./ru/slides/exercises/03_characteristic_functions_exercises.html">Задачи</a>
-          <a class="link" href="./ru/book/chapters/03_characteristic_functions.pdf">Конспект PDF</a>
-          <a class="link" href="./ru/book/chapters/03_characteristic_functions.html">Глава в онлайн-книге</a>
         </div>
       </div>
     </details>
@@ -130,8 +110,6 @@ lang: ru
         <div class="actions">
           <a class="link" href="./ru/slides/04_central_limit_theorem.html">Открыть лекцию</a>
           <a class="link" href="./ru/slides/exercises/04_central_limit_theorem_exercises.html">Задачи</a>
-          <a class="link" href="./ru/book/chapters/04_central_limit_theorem.pdf">Конспект PDF</a>
-          <a class="link" href="./ru/book/chapters/04_central_limit_theorem.html">Глава в онлайн-книге</a>
         </div>
       </div>
     </details>
@@ -146,8 +124,6 @@ lang: ru
         <div class="actions">
           <a class="link" href="./ru/slides/05_non_gaussian_clt_violations.html">Открыть лекцию</a>
           <a class="link" href="./ru/slides/exercises/05_non_gaussian_clt_violations_exercises.html">Задачи</a>
-          <a class="link" href="./ru/book/chapters/05_non_gaussian_clt_violations.pdf">Конспект PDF</a>
-          <a class="link" href="./ru/book/chapters/05_non_gaussian_clt_violations.html">Глава в онлайн-книге</a>
         </div>
       </div>
     </details>
@@ -162,8 +138,6 @@ lang: ru
         <div class="actions">
           <a class="link" href="./ru/slides/06_error_propagation.html">Открыть лекцию</a>
           <a class="link" href="./ru/slides/exercises/06_error_propagation_exercises.html">Задачи</a>
-          <a class="link" href="./ru/book/chapters/06_error_propagation.pdf">Конспект PDF</a>
-          <a class="link" href="./ru/book/chapters/06_error_propagation.html">Глава в онлайн-книге</a>
         </div>
       </div>
     </details>
@@ -178,8 +152,6 @@ lang: ru
         <div class="actions">
           <a class="link" href="./ru/slides/07_two_dimensional_gaussian.html">Открыть лекцию</a>
           <a class="link" href="./ru/slides/exercises/07_two_dimensional_gaussian_exercises.html">Задачи</a>
-          <a class="link" href="./ru/book/chapters/07_two_dimensional_gaussian.pdf">Конспект PDF</a>
-          <a class="link" href="./ru/book/chapters/07_two_dimensional_gaussian.html">Глава в онлайн-книге</a>
         </div>
       </div>
     </details>
@@ -195,8 +167,6 @@ lang: ru
           <a class="link" href="./ru/slides/08_monte_carlo_method.html">Открыть лекцию</a>
           <a class="link" href="./ru/slides/notebooks/mc_vegas_notebook.html">Ноутбук VEGAS</a>
           <a class="link" href="./ru/slides/exercises/08_monte_carlo_method_exercises.html">Задачи</a>
-          <a class="link" href="./ru/book/chapters/08_monte_carlo_method.pdf">Конспект PDF</a>
-          <a class="link" href="./ru/book/chapters/08_monte_carlo_method.html">Глава в онлайн-книге</a>
         </div>
       </div>
     </details>
@@ -211,8 +181,6 @@ lang: ru
         <div class="actions">
           <a class="link" href="./ru/slides/09_maximum_likelihood.html">Открыть лекцию</a>
           <a class="link" href="./ru/slides/exercises/09_maximum_likelihood_exercises.html">Задачи</a>
-          <a class="link" href="./ru/book/chapters/09_maximum_likelihood.pdf">Конспект PDF</a>
-          <a class="link" href="./ru/book/chapters/09_maximum_likelihood.html">Глава в онлайн-книге</a>
         </div>
       </div>
     </details>
@@ -227,8 +195,6 @@ lang: ru
         <div class="actions">
           <a class="link" href="./ru/slides/10_estimator_properties_profile_likelihood.html">Открыть лекцию</a>
           <a class="link" href="./ru/slides/exercises/10_estimator_properties_profile_likelihood_exercises.html">Задачи</a>
-          <a class="link" href="./ru/book/chapters/10_estimator_properties_profile_likelihood.pdf">Конспект PDF</a>
-          <a class="link" href="./ru/book/chapters/10_estimator_properties_profile_likelihood.html">Глава в онлайн-книге</a>
         </div>
       </div>
     </details>
@@ -243,8 +209,6 @@ lang: ru
         <div class="actions">
           <a class="link" href="./ru/slides/11_least_squares_linear_fit.html">Открыть лекцию</a>
           <a class="link" href="./ru/slides/exercises/11_least_squares_linear_fit_exercises.html">Задачи</a>
-          <a class="link" href="./ru/book/chapters/11_least_squares_linear_fit.pdf">Конспект PDF</a>
-          <a class="link" href="./ru/book/chapters/11_least_squares_linear_fit.html">Глава в онлайн-книге</a>
         </div>
       </div>
     </details>
@@ -259,8 +223,6 @@ lang: ru
         <div class="actions">
           <a class="link" href="./ru/slides/12_least_squares_systematics.html">Открыть лекцию</a>
           <a class="link" href="./ru/slides/exercises/12_least_squares_systematics_exercises.html">Задачи</a>
-          <a class="link" href="./ru/book/chapters/12_least_squares_systematics.pdf">Конспект PDF</a>
-          <a class="link" href="./ru/book/chapters/12_least_squares_systematics.html">Глава в онлайн-книге</a>
         </div>
       </div>
     </details>
@@ -275,8 +237,6 @@ lang: ru
         <div class="actions">
           <a class="link" href="./ru/slides/13_goodness_of_fit_and_significance.html">Открыть лекцию</a>
           <a class="link" href="./ru/slides/exercises/13_goodness_of_fit_and_significance_exercises.html">Задачи</a>
-          <a class="link" href="./ru/book/chapters/13_goodness_of_fit_and_significance.pdf">Конспект PDF</a>
-          <a class="link" href="./ru/book/chapters/13_goodness_of_fit_and_significance.html">Глава в онлайн-книге</a>
         </div>
       </div>
     </details>

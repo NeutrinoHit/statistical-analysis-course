@@ -420,7 +420,6 @@ than a side of the triangle?"
 ```{=html}
 <nav class="bertrand-nav" aria-label="Course navigation">
   <a href="index.html">Back to lectures</a>
-  <a href="../book/">Back to book</a>
 </nav>
 
 <div id="bertrand-game-host"></div>

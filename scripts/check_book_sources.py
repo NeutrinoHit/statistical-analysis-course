@@ -208,8 +208,6 @@ def check_course_alignment(errors: list[str]) -> None:
         expected_slide_links = (
             f'{slide_stem}.html',
             f'exercises/{slide_stem}_exercises.html',
-            f'../book/chapters/{chapter_stem}.pdf',
-            f'../book/chapters/{chapter_stem}.html',
         )
         for link in expected_slide_links:
             if link not in slides_index:
@@ -220,8 +218,6 @@ def check_course_alignment(errors: list[str]) -> None:
         expected_course_links = (
             f'./ru/slides/{slide_stem}.html',
             f'./ru/slides/exercises/{slide_stem}_exercises.html',
-            f'./ru/book/chapters/{chapter_stem}.pdf',
-            f'./ru/book/chapters/{chapter_stem}.html',
         )
         for link in expected_course_links:
             if link not in course_index:
