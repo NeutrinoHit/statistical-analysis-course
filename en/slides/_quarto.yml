@@ -87,7 +87,7 @@ format:
     include-after-body: analytics/cloudflare-web-analytics.html
   revealjs:
     width: 1600
-    height: 900
+    height: 1000
     margin: 0.03
     toc: false
     include-after-body:
