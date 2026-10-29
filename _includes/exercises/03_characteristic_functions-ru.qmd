@@ -84,7 +84,7 @@ S_n=X_1+\dots+X_n,
 \langle X\rangle_n=\frac{S_n}{n}.
 $$
 
-Среднее и вариация $X_i$:
+Среднее и дисперсия $X_i$:
 $$
 \mathbb{E}[X_i]=\mu,
 \qquad
