@@ -1,0 +1,16 @@
+{
+ "schema": 1,
+ "generated_by": "neutrinohit-map/scripts/nh_media.py lock",
+ "media": [
+  {
+   "id": "opticks-juno",
+   "variant": "film",
+   "version": 1,
+   "url": "/media-stat-course/opticks-juno/film-v1.mp4",
+   "sha256": "634366bb29e169f793e1f90e723c7b83ab58de8840937ab966ce853685134464",
+   "bytes": 51175479,
+   "status": "published",
+   "fallback": "shared/figures/static/opticks_juno_simon_blyth.mp4"
+  }
+ ]
+}

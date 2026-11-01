@@ -1258,7 +1258,7 @@ html`
 
 ### Моделирование Daya Bay и JUNO
 
-![](shared/figures/static/opticks_juno_simon_blyth.mp4){controls="true" fig-alt="Моделирование оптических фотонов Daya Bay и JUNO с помощью Opticks" width="1100"}
+{{< nh-video opticks-juno variant="film" controls=true preload="metadata" width="1100" aria-label="Моделирование оптических фотонов Daya Bay и JUNO с помощью Opticks" >}}
 
 ::: {.smaller}
 Моделирование Daya Bay и JUNO в Opticks. Автор: Simon Blyth.

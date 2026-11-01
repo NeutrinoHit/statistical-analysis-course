@@ -1,6 +1,10 @@
 project:
   type: website
-  post-render: ../../scripts/strip_notebook_paths.py
+  # Shared films: media.lock.json and _extensions/ link to the repository root
+  # (python3 ../neutrinohit-map/scripts/nh_media.py lock . from the root).
+  post-render:
+    - ../../scripts/strip_notebook_paths.py
+    - _extensions/neutrinohit-media/prune.py
   output-dir: ../../_site/ru/slides
   resources:
     - applets.html
