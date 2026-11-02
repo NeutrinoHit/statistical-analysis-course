@@ -6,7 +6,6 @@ jupyter: python3
 lang: ru-RU
 format:
   revealjs:
-    theme: black
     slide-number: true
     preview-links: auto
     chalkboard:

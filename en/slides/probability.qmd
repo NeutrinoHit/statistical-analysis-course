@@ -4,7 +4,6 @@ subtitle: "A practical course for particle physicists and astrophysicists"
 author: "Dmitry V. Naumov"
 format:
   revealjs:
-    theme: black
     slide-number: true
     preview-links: auto
     chalkboard:

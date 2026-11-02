@@ -4,7 +4,6 @@ subtitle: "Статистический анализ данных"
 author: "Дмитрий В. Наумов (ОИЯИ)"
 format:
   revealjs:
-    theme: black
     slide-number: true
     preview-links: auto
     chalkboard:

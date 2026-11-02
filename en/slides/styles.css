@@ -1,10 +1,5 @@
-:root {
-  --r-background-color: #000000;
-  --r-main-color: #f2f2f2;
-  --r-heading-color: #ffffff;
-  --r-link-color: #8ec5ff;
-  --r-selection-background-color: #1f4e79;
-}
+/* Local layout of the English lecture slides. Colors, fonts, tabs, slide
+   number and centered figures come from shared/styles/neutrinohit-reveal.scss. */
 
 .reveal {
   font-size: 32px;
@@ -15,8 +10,6 @@
 .reveal h3,
 .reveal h4 {
   text-transform: none;
-  letter-spacing: 0.01em;
-  font-weight: 600;
 }
 
 .reveal .subtitle,
@@ -37,25 +30,11 @@
   z-index: 1000 !important;
 }
 
-.reveal .slide-number {
-  color: #d8d8d8 !important;
-  font-size: 0.55em !important;
-}
-
-.reveal ul {
-  display: inline-block;
-  text-align: left;
-}
-
 .reveal .columns {
   align-items: center;
 }
 
-
-А в `styles.css` добавь:
-
-```css id="9u6f8e"
-/* only this slide/widget */
+/* Widget controls */
 .fit-widget input,
 .fit-widget select,
 .fit-widget button {
@@ -80,48 +59,19 @@
   color: #fff !important;
 }
 
-
----
-
-### CSS
-
-Добавь в `styles.css`:
-
-```css
-.fit-widget input,
-.fit-widget select,
-.fit-widget button {
-  color: #111 !important;
-  background: #f2f2f2 !important;
-  border: 1px solid #999 !important;
-}
-
-.fit-widget button {
-  font-weight: 600;
-}
-
-.fit-widget label,
-.fit-widget .observablehq,
-.fit-widget .observablehq--inspect {
-  color: #fff !important;
-}
-
-/* =========================================
-   Elegant blocks for black Reveal.js slides
-   ========================================= */
-
+/* Callouts */
 .reveal .slides section .callout {
   margin-top: 0.8em;
   margin-bottom: 0.8em;
   border-radius: 16px;
   border-left-width: 6px;
-  background: rgba(255,255,255,0.06);
+  background: rgba(255, 255, 255, 0.06);
   box-shadow: none;
 }
 
 .reveal .slides section .callout .callout-header {
   background: transparent !important;
-  border-bottom: 1px solid rgba(255,255,255,0.10);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   padding-bottom: 0.35em;
   margin-bottom: 0.45em;
 }
@@ -141,40 +91,40 @@
 /* Definition */
 .reveal .slides section .defbox {
   border-left-color: #4ea1ff !important;
-  background: rgba(78,161,255,0.10) !important;
+  background: rgba(78, 161, 255, 0.1) !important;
 }
 
 /* Theorem */
 .reveal .slides section .thmbox {
   border-left-color: #b388ff !important;
-  background: rgba(179,136,255,0.10) !important;
+  background: rgba(179, 136, 255, 0.1) !important;
 }
 
-/* Exercise / Task */
+/* Exercise */
 .reveal .slides section .exbox {
   border-left-color: #ffb74d !important;
-  background: rgba(255,183,77,0.10) !important;
+  background: rgba(255, 183, 77, 0.1) !important;
 }
 
 /* Solution */
 .reveal .slides section .solbox {
   border-left-color: #66bb6a !important;
-  background: rgba(102,187,106,0.10) !important;
+  background: rgba(102, 187, 106, 0.1) !important;
 }
 
 /* Remark */
 .reveal .slides section .remarkbox {
   border-left-color: #90a4ae !important;
-  background: rgba(144,164,174,0.12) !important;
+  background: rgba(144, 164, 174, 0.12) !important;
 }
 
 /* Proof */
 .reveal .slides section .proofbox {
   border-left-color: #ef5350 !important;
-  background: rgba(239,83,80,0.10) !important;
+  background: rgba(239, 83, 80, 0.1) !important;
 }
 
-/* Slightly more compact math inside boxes */
+/* Compact math inside boxes */
 .reveal .slides section .callout p,
 .reveal .slides section .callout li {
   margin-top: 0.25em;

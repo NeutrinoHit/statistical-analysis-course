@@ -5,7 +5,6 @@ author: "Дмитрий В. Наумов (ОИЯИ)"
 jupyter: python3
 format:
   revealjs:
-    theme: black
     slide-number: true
     preview-links: auto
     chalkboard:
