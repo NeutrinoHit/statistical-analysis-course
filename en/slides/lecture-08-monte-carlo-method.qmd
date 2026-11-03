@@ -1,0 +1,1442 @@
+---
+title: "Lecture 8. The Monte Carlo method and pseudo-experiments"
+subtitle: "Statistical Data Analysis"
+author: "Dmitry V. Naumov (JINR)"
+jupyter: python3
+format:
+  revealjs:
+    slide-number: true
+    preview-links: auto
+    chalkboard:
+      buttons: false
+    logo: shared/figures/dvnlogo.png
+    css: styles.css
+    transition: fade
+    center: true
+---
+
+# Why We Need Monte Carlo
+
+## When Analytics Is Not Enough
+
+::: incremental
+- The distribution of the result may be unknown in closed form.
+- The transformation of the measured quantities may be strongly nonlinear.
+- The model may include thresholds, selections and physical boundaries.
+- The experimental setup may have a complicated multidimensional response.
+- The integral may have a high dimension.
+:::
+
+::: {.fragment .callout-note .thmbox appearance="simple"}
+The Monte Carlo method replaces a complicated analytical calculation with the statistics of a large number of artificially generated realizations.
+:::
+
+## The Main Idea
+
+Suppose we want to know the properties of a random variable
+$$
+Y=g(X),
+\qquad
+X\sim f_X(x).
+$$
+
+The Monte Carlo algorithm:
+
+::: incremental
+1. Generate independent values
+   $$
+   X_1,\ldots,X_N\sim f_X.
+   $$
+2. For each of them compute
+   $$
+   Y_k=g(X_k).
+   $$
+3. Use the sample $Y_1,\ldots,Y_N$ to estimate the distribution, the mean, the variance or the probability of an event.
+:::
+
+## Three Applications of One Method
+
+::::: {.columns}
+
+::: {.column width="33%"}
+
+**Numerical integration**
+
+$$
+\int h(x)f(x)\,dx
+=
+\mathbb E[h(X)].
+$$
+
+:::
+
+::: {.column width="33%"}
+
+**Error propagation**
+
+$$
+\mathbf X\sim f(\mathbf x)
+\quad\Longrightarrow\quad
+Y=g(\mathbf X).
+$$
+
+:::
+
+::: {.column width="34%"}
+
+**Pseudo-experiments**
+
+Repeat the whole experiment many times and study the distribution of the result.
+
+:::
+
+:::::
+
+## What Monte Carlo Does Not Do
+
+::: incremental
+- It does not fix a wrong physical or statistical model.
+- It does not remove systematic uncertainties automatically.
+- It does not turn a small real sample into a large one.
+- It does not give an exact answer with a finite number of simulations.
+- It does not replace checking analytical limiting cases.
+:::
+
+::: {.fragment .callout-important .remarkbox appearance="simple"}
+Monte Carlo solves exactly the problem that we programmed, not necessarily the problem that we wanted to solve.
+:::
+
+---
+
+# Generating Random Variables
+
+## Pseudorandom Numbers
+
+A computer generator produces a deterministic sequence
+$$
+U_1,U_2,\ldots,
+\qquad
+U_k\in[0,1),
+$$
+that is statistically similar to an independent uniform sample.
+
+::: incremental
+- The initial state of the generator is set by a special seed.
+- The same seed reproduces the same sequence.
+- Different computational threads must use independent sequences.
+- For scientific reproducibility, the seed and the generator algorithm must be saved.
+:::
+
+## The Uniform Distribution as Raw Material
+
+Most generators directly produce
+$$
+U\sim\mathrm U(0,1).
+$$
+
+From uniform numbers one can obtain other distributions:
+
+::: incremental
+- by transformation through the inverse cumulative distribution function;
+- by the acceptance-rejection method;
+- by special algorithms;
+- by sampling from a multivariate distribution;
+- by simulating a sequence of physical processes.
+:::
+
+## The Inverse Transform Method
+
+Let
+$$
+U\sim\mathrm U(0,1),
+$$
+and let $F_X(x)$ be the cumulative distribution function of the required random variable.
+
+Then
+$$
+\boxed{
+X=F_X^{-1}(U)
+}
+$$
+has the distribution $F_X$.
+
+Indeed,
+$$
+P(X\le x)
+=
+P(F_X^{-1}(U)\le x)
+=
+P(U\le F_X(x))
+=
+F_X(x).
+$$
+
+
+## Example: The Exponential Distribution
+::: incremental
+
+- For
+$$
+f_X(x)=\lambda e^{-\lambda x},
+\qquad x\ge0,
+$$
+- The cumulative distribution function:
+$$
+F_X(x)=\int\limits_{0}^{x}\, dx\, \lambda e^{-\lambda x} = 1-e^{-\lambda x}.
+$$
+
+- Therefore,
+$$
+\boxed{
+X
+=
+-\frac{1}{\lambda}\ln(1-U).
+}
+$$
+
+- Since $1-U$ is also uniform, $X=-\ln U/\lambda$ is often used.
+
+:::
+
+## The Acceptance-Rejection Method
+
+Suppose we need to generate samples from a density $f(x)$ for which
+$$
+f(x)\le M g(x),
+$$
+while $g(x)$ is easy to generate from.
+
+::: incremental
+1. Generate a candidate $X\sim g(x)$.
+2. Generate $U\sim\mathrm U(0,1)$.
+3. Accept $X$ if
+   $$
+   U\le\frac{f(X)}{Mg(X)}.
+   $$
+4. Otherwise, try again.
+
+- The average fraction of accepted events equals $1/M$ if $f$ and $g$ are normalized.
+:::
+
+## The Acceptance-Rejection Method. Example
+::: incremental
+
+- We want to generate a two-dimensional distribution bounded by:
+$$
+f(x)=6x(1-x),
+\qquad 0\le x\le1,
+$$
+- We generate points **uniformly** under a rectangle of height $M=1.5$.
+- We use the acceptance-rejection method
+
+:::
+
+## Interactive Example {#applet-rejection-sampling}
+::: {.clt-widget}
+```{ojs}
+//| echo: false
+
+viewof rejectN = Inputs.range([100, 6000], {value: 1200, step: 100, label: "N points"})
+viewof regenerateReject = Inputs.button("New MC")
+
+rejectPoints = {
+  regenerateReject;
+  const values = [];
+  for (let i = 0; i < rejectN; ++i) {
+    const x = Math.random();
+    const y = 1.5 * Math.random();
+    values.push({x, y, accepted: y <= 6 * x * (1 - x)});
+  }
+  return values;
+}
+
+rejectCurve = Array.from({length: 301}, (_, i) => {
+  const x = i / 300;
+  return {x, y: 6 * x * (1 - x)};
+})
+
+acceptedReject = rejectPoints.filter(d => d.accepted)
+rejectRate = acceptedReject.length / rejectPoints.length
+
+rejectPlot = Plot.plot({
+  width: 900,
+  height: 470,
+  marginLeft: 65,
+  x: {label: "x", domain: [0, 1], grid: true},
+  y: {label: "y", domain: [0, 1.55], grid: true},
+  marks: [
+    Plot.dot(rejectPoints.filter(d => !d.accepted), {x: "x", y: "y", r: 2.2, fill: "#777", fillOpacity: 0.35}),
+    Plot.dot(acceptedReject, {x: "x", y: "y", r: 2.5, fill: "#4ea1ff", fillOpacity: 0.65}),
+    Plot.line(rejectCurve, {x: "x", y: "y", stroke: "#ffb347", strokeWidth: 4})
+  ]
+})
+
+html`
+<div class="clt-panel">
+  ${rejectPlot}
+  <div class="clt-summary">
+    <span>accepted: ${acceptedReject.length} of ${rejectPoints.length}</span>
+    <span>efficiency = ${(100 * rejectRate).toFixed(1)}%</span>
+    <span>theoretical efficiency = 66.7%</span>
+  </div>
+</div>
+`
+```
+:::
+
+## Choosing a Generation Method
+
+| Method | Advantage | Limitation |
+|---|---|---|
+| Inverse cumulative distribution function | every number is used | requires a computable $F^{-1}$ |
+| Acceptance-rejection | simple and universal | can be inefficient |
+| Special algorithm | high speed | separate implementation for each family |
+| Markov chains | complicated multidimensional densities | correlated samples and convergence diagnostics |
+
+
+# Monte Carlo Integration
+
+## The Integral as an Expectation Value
+
+Let
+$$
+I=\int_a^b h(x)\,dx.
+$$
+
+For $U\sim\mathrm U(a,b)$:
+$$
+\mathbb E[h(U)]
+=
+\frac{1}{b-a}
+\int_a^b h(x)\,dx.
+$$
+
+Therefore
+$$
+\boxed{
+\widehat{I}_N
+=
+\frac{b-a}{N}
+\sum_{k=1}^{N}h(U_k).
+}
+$$
+
+## Estimating the Error of Monte Carlo Integration
+
+If
+$$
+\operatorname{Var}[h(U)]=\sigma_h^2,
+$$
+then
+$$
+\operatorname{Var}(\widehat I_N)
+=
+\frac{(b-a)^2}{N^2}\operatorname{Var}\left[\sum_{k=1}^N h(U_k)\right] = \frac{(b-a)^2\sigma_h^2}{N}.
+$$
+
+Therefore,
+$$
+\boxed{
+\sigma_{\widehat I_N}
+\propto
+\frac{1}{\sqrt N}.
+}
+$$
+
+::: incremental
+- To reduce the error by a factor of 10, 100 times more points are required.
+- The convergence is slow, but it almost does not depend on the dimension of the integral.
+:::
+
+## Example: The Area of a Quarter Circle
+
+We generate points uniformly in the unit square:
+$$
+(X,Y)\sim\mathrm U([0,1]^2).
+$$
+
+The probability of landing inside the quarter circle:
+$$
+p=P(X^2+Y^2\le1)=\frac{\pi}{4}.
+$$
+
+If $N_{\mathrm{in}}$ points landed inside, then
+$$
+\boxed{
+\widehat\pi
+=
+4\frac{N_{\mathrm{in}}}{N}.
+}
+$$
+
+## Interactive: Estimating the Number $\pi$ {#applet-pi}
+
+::: {.clt-widget}
+```{ojs}
+//| echo: false
+
+viewof piN = Inputs.range([100, 12000], {value: 1200, step: 100, label: "number of points N"})
+viewof regeneratePi = Inputs.button("New sample")
+
+piPoints = {
+  regeneratePi;
+  const values = [];
+  for (let i = 0; i < piN; ++i) {
+    const x = Math.random();
+    const y = Math.random();
+    values.push({x, y, inside: x * x + y * y <= 1});
+  }
+  return values;
+}
+
+piInside = piPoints.filter(d => d.inside)
+piEstimate = 4 * piInside.length / piPoints.length
+piSe = 4 * Math.sqrt((piInside.length / piPoints.length) * (1 - piInside.length / piPoints.length) / piPoints.length)
+quarterCircle = Array.from({length: 301}, (_, i) => {
+  const x = i / 300;
+  return {x, y: Math.sqrt(1 - x * x)};
+})
+
+piPlot = Plot.plot({
+  width: 620,
+  height: 560,
+  marginLeft: 55,
+  x: {label: "x", domain: [0, 1], grid: true},
+  y: {label: "y", domain: [0, 1], grid: true},
+  marks: [
+    Plot.dot(piPoints.filter(d => !d.inside), {x: "x", y: "y", r: 2, fill: "#ff6b6b", fillOpacity: 0.45}),
+    Plot.dot(piInside, {x: "x", y: "y", r: 2, fill: "#4ea1ff", fillOpacity: 0.50}),
+    Plot.line(quarterCircle, {x: "x", y: "y", stroke: "#ffb347", strokeWidth: 4})
+  ]
+})
+
+html`
+<div class="clt-panel">
+  ${piPlot}
+  <div class="clt-summary">
+    <span>Monte Carlo pi = ${piEstimate.toFixed(5)}</span>
+    <span>statistical error ≈ ${piSe.toFixed(5)}</span>
+    <span>deviation from pi = ${(piEstimate - Math.PI).toFixed(5)}</span>
+  </div>
+</div>
+`
+```
+:::
+
+## Why Monte Carlo Is Useful in High Dimensions
+
+For a regular grid with $m$ points along each coordinate, the number of evaluations is
+$$
+N_{\text{grid}}=m^d.
+$$
+
+In Monte Carlo, the statistical error usually behaves as
+$$
+\sigma_{\widehat I}\propto N^{-1/2},
+$$
+almost independently of the dimension $d$.
+
+## Not All Points Are Equally Useful
+
+If the main contribution to the integral comes from a small region, uniform generation wastes most of the points.
+
+Instead of
+$$
+I=\int h(x)f(x)\,dx
+$$
+one can generate $X\sim q(x)$:
+$$
+\boxed{
+I
+=
+\mathbb E_q\!\left[
+h(X)\frac{f(X)}{q(X)}
+\right].
+}
+$$
+
+This is called **importance sampling**.
+
+## Event Weights
+
+In importance sampling, each event receives a weight
+$$
+w_k=\frac{f(X_k)}{q(X_k)}.
+$$
+
+The estimate of the integral:
+$$
+\widehat I
+=
+\frac1N\sum_{k=1}^Nw_kh(X_k).
+$$
+
+::: incremental
+- A good $q(x)$ generates the important regions more often.
+- Strongly differing weights increase the variance.
+:::
+
+## Why the Grid Loses Quickly {#applet-grid-dimension}
+
+::: {.mc-range-controls}
+
+```{ojs}
+function mcRange(label, domain, options) {
+  const [min, max] = domain;
+  const value = options.value;
+  const step = options.step ?? 1;
+  const control = html`<label class="mc-range-control">
+    <span class="mc-range-label">${label}</span>
+    <input class="mc-range-number" type="number" min=${min} max=${max} step=${step} value=${value}>
+    <input class="mc-range-slider" type="range" min=${min} max=${max} step=${step} value=${value}>
+  </label>`;
+  const number = control.querySelector(".mc-range-number");
+  const slider = control.querySelector(".mc-range-slider");
+
+  control.value = Number(value);
+  const sync = event => {
+    const next = Number(event.target.value);
+    control.value = next;
+    number.value = next;
+    slider.value = next;
+    control.dispatchEvent(new CustomEvent("input", {bubbles: true}));
+  };
+  number.addEventListener("input", sync);
+  slider.addEventListener("input", sync);
+  return control;
+}
+```
+
+```{ojs}
+viewof grid_m = mcRange("points per coordinate", [2, 12], {value: 5, step: 1})
+viewof grid_d = mcRange("dimension", [1, 12], {value: 8, step: 1})
+```
+
+```{ojs}
+grid_points_text = {
+  const N = Math.pow(grid_m, grid_d);
+  return html`<div style="font-size:1.4em; line-height:1.5">
+    <b>Regular grid:</b><br>
+    ${grid_m} points per coordinate in ${grid_d}-dimensional space<br>
+    <span style="font-size:1.8em">N = ${N.toLocaleString("ru-RU")}</span>
+  </div>`
+}
+```
+
+:::
+
+::: {.fragment .callout-note .thmbox appearance="simple"}
+In high dimensions, even a coarse grid quickly becomes expensive (the "curse of dimensionality").
+Monte Carlo pays not for the full grid but for the number of points actually thrown.
+:::
+
+## Rare region: uniform sampling wastes points {#applet-rare-region}
+
+::: {.mc-range-controls}
+
+```{ojs}
+viewof rare_N = mcRange("number of points", [200, 6000], {value: 1500, step: 100})
+viewof rare_sigma = mcRange("width of the important region", [0.02, 0.18], {value: 0.06, step: 0.005})
+```
+
+:::
+
+```{ojs}
+function rng32(seed) {
+  return function() {
+    seed |= 0; seed = seed + 0x6D2B79F5 | 0;
+    let t = Math.imul(seed ^ seed >>> 15, 1 | seed);
+    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  }
+}
+```
+
+```{ojs}
+rare_canvas = {
+  const width = 760, height = 430;
+  const canvas = DOM.canvas(width, height);
+  const ctx = canvas.getContext("2d");
+  const rnd = rng32(20260618);
+
+  const L = 330;
+  const x0 = 60, y0 = 55;
+  const cx = x0 + 0.68 * L;
+  const cy = y0 + 0.42 * L;
+  const r = rare_sigma * L;
+
+  ctx.clearRect(0, 0, width, height);
+  ctx.fillStyle = "rgba(255,255,255,0.035)";
+  ctx.fillRect(x0, y0, L, L);
+  ctx.font = "22px system-ui, -apple-system, Segoe UI, sans-serif";
+  ctx.fillStyle = "#f2f2f2";
+  ctx.fillText("Uniform points", x0, 34);
+
+  ctx.strokeStyle = "#d9d9d9";
+  ctx.lineWidth = 2;
+  ctx.strokeRect(x0, y0, L, L);
+
+  ctx.beginPath();
+  ctx.arc(cx, cy, r, 0, 2 * Math.PI);
+  ctx.fillStyle = "rgba(33, 99, 255, 0.16)";
+  ctx.fill();
+  ctx.strokeStyle = "rgba(33, 99, 255, 0.9)";
+  ctx.stroke();
+
+  let hit = 0;
+  for (let i = 0; i < rare_N; ++i) {
+    const x = rnd();
+    const y = rnd();
+    const px = x0 + x * L;
+    const py = y0 + y * L;
+    const inside = (px - cx) ** 2 + (py - cy) ** 2 < r ** 2;
+    if (inside) hit += 1;
+    ctx.beginPath();
+    ctx.arc(px, py, inside ? 2.5 : 1.4, 0, 2 * Math.PI);
+    ctx.fillStyle = inside ? "rgba(33, 99, 255, 0.92)" : "rgba(255,255,255,0.22)";
+    ctx.fill();
+  }
+
+  ctx.fillStyle = "#f2f2f2";
+  ctx.font = "24px system-ui, -apple-system, Segoe UI, sans-serif";
+  ctx.fillText("The integral is sensitive to a small region.", 430, 115);
+  ctx.fillText("Uniform generation", 430, 170);
+  ctx.fillText("misses almost every time.", 430, 205);
+  ctx.font = "22px system-ui, -apple-system, Segoe UI, sans-serif";
+  ctx.fillText(`hit the region: ${hit} of ${rare_N}`, 430, 285);
+  ctx.fillText(`fraction: ${(hit / rare_N).toFixed(3)}`, 430, 320);
+
+  return canvas;
+}
+```
+
+## Importance sampling: throw points where the contribution is {#applet-importance-sampling}
+
+::: {.mc-range-controls}
+
+```{ojs}
+viewof imp_N = mcRange("number of points", [200, 6000], {value: 1500, step: 100})
+viewof imp_sigma = mcRange("width of the important region", [0.02, 0.18], {value: 0.06, step: 0.005})
+```
+
+:::
+
+```{ojs}
+importance_canvas = {
+  const width = 760, height = 430;
+  const canvas = DOM.canvas(width, height);
+  const ctx = canvas.getContext("2d");
+  const rnd = rng32(424242);
+
+  function normal() {
+    const u1 = Math.max(rnd(), 1e-12);
+    const u2 = rnd();
+    return Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
+  }
+
+  const L = 330;
+  const x0 = 60, y0 = 55;
+  const cx = x0 + 0.68 * L;
+  const cy = y0 + 0.42 * L;
+  const r = imp_sigma * L;
+
+  ctx.clearRect(0, 0, width, height);
+  ctx.fillStyle = "rgba(255,255,255,0.035)";
+  ctx.fillRect(x0, y0, L, L);
+  ctx.font = "22px system-ui, -apple-system, Segoe UI, sans-serif";
+  ctx.fillStyle = "#f2f2f2";
+  ctx.fillText("Points from a convenient distribution", x0, 34);
+
+  ctx.strokeStyle = "#d9d9d9";
+  ctx.lineWidth = 2;
+  ctx.strokeRect(x0, y0, L, L);
+
+  ctx.beginPath();
+  ctx.arc(cx, cy, r, 0, 2 * Math.PI);
+  ctx.fillStyle = "rgba(33, 99, 255, 0.16)";
+  ctx.fill();
+  ctx.strokeStyle = "rgba(33, 99, 255, 0.9)";
+  ctx.stroke();
+
+  let hit = 0;
+  for (let i = 0; i < imp_N; ++i) {
+    let x = 0.68 + imp_sigma * normal();
+    let y = 0.42 + imp_sigma * normal();
+    if (x < 0 || x > 1 || y < 0 || y > 1) continue;
+    const px = x0 + x * L;
+    const py = y0 + y * L;
+    const inside = (px - cx) ** 2 + (py - cy) ** 2 < r ** 2;
+    if (inside) hit += 1;
+    ctx.beginPath();
+    ctx.arc(px, py, inside ? 2.5 : 1.5, 0, 2 * Math.PI);
+    ctx.fillStyle = inside ? "rgba(33, 99, 255, 0.92)" : "rgba(255,255,255,0.22)";
+    ctx.fill();
+  }
+
+  ctx.fillStyle = "#f2f2f2";
+  ctx.font = "24px system-ui, -apple-system, Segoe UI, sans-serif";
+  ctx.fillText("Now the points more often", 430, 115);
+  ctx.fillText("land in the important region.", 430, 150);
+  ctx.fillText("The price is event weights.", 430, 215);
+  ctx.font = "22px system-ui, -apple-system, Segoe UI, sans-serif";
+  ctx.fillText(`near the peak: ${hit} points`, 430, 285);
+  ctx.fillText("if the weights differ too much,", 430, 340);
+  ctx.fillText("the variance grows again", 430, 370);
+
+  return canvas;
+}
+```
+
+## Weights: one large event does not replace statistics
+
+::: {.columns}
+
+::: {.column width="50%"}
+
+Good importance sampling keeps the weights moderate.
+Bad importance sampling produces rare huge weights.
+
+:::
+
+::: {.column width="50%"}
+
+```{=html}
+<svg viewBox="0 0 760 340" width="100%" role="img" aria-label="Comparison of moderate and strongly differing weights">
+  <rect x="0" y="0" width="760" height="340" fill="white"/>
+
+  <text x="60" y="42" font-size="30" font-family="system-ui">good weights</text>
+  <line x1="75" y1="145" x2="315" y2="145" stroke="#111" stroke-width="3"/>
+  <rect x="90" y="88" width="28" height="57" fill="#2163ff" opacity="0.75"/>
+  <rect x="130" y="76" width="28" height="69" fill="#2163ff" opacity="0.75"/>
+  <rect x="170" y="100" width="28" height="45" fill="#2163ff" opacity="0.75"/>
+  <rect x="210" y="84" width="28" height="61" fill="#2163ff" opacity="0.75"/>
+  <rect x="250" y="92" width="28" height="53" fill="#2163ff" opacity="0.75"/>
+  <rect x="290" y="86" width="28" height="59" fill="#2163ff" opacity="0.75"/>
+
+  <text x="445" y="42" font-size="30" font-family="system-ui">bad weights</text>
+  <line x1="465" y1="145" x2="705" y2="145" stroke="#111" stroke-width="3"/>
+  <rect x="480" y="132" width="28" height="13" fill="#2163ff" opacity="0.75"/>
+  <rect x="520" y="124" width="28" height="21" fill="#2163ff" opacity="0.75"/>
+  <rect x="560" y="134" width="28" height="11" fill="#2163ff" opacity="0.75"/>
+  <rect x="600" y="56" width="28" height="89" fill="#2163ff" opacity="0.75"/>
+  <rect x="640" y="137" width="28" height="8" fill="#2163ff" opacity="0.75"/>
+  <rect x="680" y="128" width="28" height="17" fill="#2163ff" opacity="0.75"/>
+
+  <text x="85" y="225" font-size="25" font-family="system-ui">many comparable</text>
+  <text x="85" y="255" font-size="25" font-family="system-ui">contributions</text>
+  <text x="85" y="310" font-size="27" font-family="system-ui" fill="#2163ff">variance is small</text>
+
+  <text x="455" y="225" font-size="25" font-family="system-ui">the estimate rests on</text>
+  <text x="455" y="255" font-size="25" font-family="system-ui">rare points</text>
+  <text x="455" y="310" font-size="27" font-family="system-ui" fill="#2163ff">variance is large</text>
+</svg>
+```
+
+:::
+
+:::
+
+## VEGAS: adaptive importance sampling
+
+::: {.columns}
+
+::: {.column width="52%"}
+
+The idea of VEGAS: do not guess a good distribution in advance.
+
+The algorithm probes the integrand, rebuilds the partition of the coordinates and throws points more often where the contribution is larger.
+
+In subsequent iterations the sampling becomes closer to importance sampling.
+
+:::
+
+::: {.column width="48%"}
+
+```{=html}
+<svg viewBox="0 0 760 420" width="100%" role="img" aria-label="Adaptation of the VEGAS grid around a peak">
+  <rect width="760" height="420" fill="white"/>
+  <text x="85" y="48" font-size="31" font-family="system-ui">before adaptation</text>
+  <rect x="70" y="80" width="230" height="230" fill="none" stroke="#111" stroke-width="3"/>
+  <g stroke="#aaa" stroke-width="2">
+    <line x1="116" y1="80" x2="116" y2="310"/><line x1="162" y1="80" x2="162" y2="310"/><line x1="208" y1="80" x2="208" y2="310"/><line x1="254" y1="80" x2="254" y2="310"/>
+    <line x1="70" y1="126" x2="300" y2="126"/><line x1="70" y1="172" x2="300" y2="172"/><line x1="70" y1="218" x2="300" y2="218"/><line x1="70" y1="264" x2="300" y2="264"/>
+  </g>
+  <circle cx="226" cy="175" r="34" fill="#2163ff" opacity="0.22" stroke="#2163ff" stroke-width="3"/>
+
+  <text x="430" y="48" font-size="31" font-family="system-ui">after adaptation</text>
+  <rect x="425" y="80" width="230" height="230" fill="none" stroke="#111" stroke-width="3"/>
+  <g stroke="#aaa" stroke-width="2">
+    <line x1="463" y1="80" x2="463" y2="310"/><line x1="501" y1="80" x2="501" y2="310"/><line x1="539" y1="80" x2="539" y2="310"/><line x1="562" y1="80" x2="562" y2="310"/><line x1="584" y1="80" x2="584" y2="310"/><line x1="607" y1="80" x2="607" y2="310"/>
+    <line x1="425" y1="121" x2="655" y2="121"/><line x1="425" y1="151" x2="655" y2="151"/><line x1="425" y1="174" x2="655" y2="174"/><line x1="425" y1="197" x2="655" y2="197"/><line x1="425" y1="228" x2="655" y2="228"/><line x1="425" y1="270" x2="655" y2="270"/>
+  </g>
+  <circle cx="584" cy="174" r="34" fill="#2163ff" opacity="0.22" stroke="#2163ff" stroke-width="3"/>
+  <text x="105" y="365" font-size="28" font-family="system-ui">equal cells</text>
+  <text x="450" y="365" font-size="28" font-family="system-ui">small cells</text>
+  <text x="450" y="397" font-size="28" font-family="system-ui">near the peak</text>
+</svg>
+```
+
+:::
+
+:::
+
+## Test integral: a narrow peak in high dimension
+
+Let us take a normalized Gaussian peak in the unit hypercube:
+
+$$
+f(\mathbf x)
+=
+\prod_{i=1}^d
+\frac{1}{\sqrt{2\pi}\sigma}
+\exp\left[-\frac{(x_i-\mu_i)^2}{2\sigma^2}\right],
+\qquad
+0\le x_i\le1 .
+$$
+
+The integral is almost equal to one, but the contribution is concentrated in a small region.
+
+```{python}
+#| eval: false
+from math import erf
+import numpy as np
+
+d = 8
+sigma = 0.10
+center = np.array([0.63, 0.37, 0.58, 0.42,
+                   0.69, 0.31, 0.54, 0.46])
+
+norm1d = 1 / (np.sqrt(2*np.pi) * sigma)
+
+def f_batch(x):
+    z2 = np.sum(((x - center) / sigma)**2, axis=1)
+    return np.exp(-0.5 * z2) * norm1d**d
+
+def exact_integral():
+    a = (0.0 - center) / (np.sqrt(2.0) * sigma)
+    b = (1.0 - center) / (np.sqrt(2.0) * sigma)
+    return np.prod([
+        0.5 * (erf(bi) - erf(ai))
+        for ai, bi in zip(a, b)
+    ])
+```
+
+This example is under control: the exact value is obtained as a product of one-dimensional integrals via `erf`.
+
+## Simple Monte Carlo
+
+::::: {.panel-tabset}
+
+### Conclusion
+
+Uniform generation knows nothing about where the peak is located.
+
+For this example the exact value is:
+$$
+I_{\text{exact}}=0.9978196359 .
+$$
+
+A typical run:
+
+| $N$ | simple Monte Carlo |
+|---:|---:|
+| $10^4$ | $0.946\pm0.48$ |
+| $10^5$ | $0.864\pm0.13$ |
+| $10^6$ | $1.001\pm0.061$ |
+
+### Code and plots
+
+:::: {.columns}
+
+::: {.column width="47%"}
+
+::: {.smaller}
+```python
+def plain_mc(N, seed=12345):
+    rng = np.random.default_rng(seed)
+    x = rng.random((N, d))
+    y = f_batch(x)
+    mean = np.mean(y)
+    err = np.std(y, ddof=1) / np.sqrt(N)
+    return mean, err
+
+for N in [10_000, 100_000, 1_000_000]:
+    val, err = plain_mc(N)
+    print(f"plain MC, N={N:>8}: {val:.6g} ± {err:.2g}")
+```
+:::
+
+:::
+
+::: {.column width="53%"}
+
+```{python}
+#| echo: false
+#| warning: false
+#| fig-width: 7.2
+#| fig-height: 3.6
+#| out-width: "100%"
+import numpy as np
+import matplotlib.pyplot as plt
+
+rng = np.random.default_rng(12345)
+xy = rng.random((2500, 2))
+peak = np.array([0.63, 0.37])
+
+Ns = np.array([1e4, 1e5, 1e6])
+vals = np.array([0.945546, 0.863792, 1.000935])
+errs = np.array([0.480515, 0.131991, 0.060680])
+exact = 0.9978196359
+
+plt.rcParams.update({
+    "font.size": 10,
+    "axes.facecolor": "#050505",
+    "figure.facecolor": "#050505",
+    "axes.edgecolor": "#d8d8d8",
+    "axes.labelcolor": "#f2f2f2",
+    "xtick.color": "#f2f2f2",
+    "ytick.color": "#f2f2f2",
+    "text.color": "#f2f2f2",
+})
+
+fig, axes = plt.subplots(1, 2, figsize=(7.2, 3.6), constrained_layout=True)
+
+ax = axes[0]
+ax.scatter(xy[:, 0], xy[:, 1], s=2, color="#8a8a8a", alpha=0.45, linewidths=0)
+circle = plt.Circle(peak, 0.10, color="#2163ff", alpha=0.24)
+ax.add_patch(circle)
+ax.scatter([peak[0]], [peak[1]], s=45, color="#4ea1ff")
+ax.set_xlim(0, 1)
+ax.set_ylim(0, 1)
+ax.set_aspect("equal")
+ax.set_title("uniform points")
+ax.set_xlabel("$x_1$")
+ax.set_ylabel("$x_2$")
+
+ax = axes[1]
+ax.errorbar(Ns, vals, yerr=errs, fmt="o", color="#ffb347", ecolor="#ffb347", capsize=4)
+ax.axhline(exact, color="#4ea1ff", linewidth=2, label="$I_{\\mathrm{exact}}$")
+ax.set_xscale("log")
+ax.set_ylim(0.35, 1.55)
+ax.set_title("integral estimate")
+ax.set_xlabel("$N$")
+ax.set_ylabel("$\\widehat I$")
+ax.grid(True, alpha=0.22)
+ax.legend(frameon=False, loc="lower right")
+
+plt.show()
+```
+
+:::
+
+::::
+
+:::::
+
+
+## Tensor-product Gauss--Legendre quadrature
+
+::::: {.panel-tabset}
+
+### Conclusion
+
+In low dimension quadratures work excellently; in high dimension the difficulty is that the number of nodes grows as $m^d$.
+
+| nodes per coordinate | total nodes | result |
+|---:|---:|---:|
+| 3 | 6 561 | 0.589 |
+| 5 | 390 625 | 0.722 |
+| 7 | 5 764 801 | 0.963 |
+
+Even millions of regular nodes are still sensitive to how the grid happens to fall relative to the narrow peak.
+
+### Code
+
+::: {.smaller}
+```python
+from numpy.polynomial.legendre import leggauss
+import itertools
+
+def tensor_gauss(m):
+    nodes, weights = leggauss(m)
+    nodes = 0.5 * (nodes + 1.0)
+    weights = 0.5 * weights
+
+    total = 0.0
+    for idx in itertools.product(range(m), repeat=d):
+        x = np.array([[nodes[i] for i in idx]])
+        w = np.prod([weights[i] for i in idx])
+        total += w * f_batch(x)[0]
+
+    return total, m**d
+
+for m in [3, 5, 7]:
+    val, neval = tensor_gauss(m)
+    print(f"m={m:>2}, calls={neval:>9}: {val:.6g}")
+```
+:::
+
+:::::
+
+## VEGAS in Python
+
+::::: {.panel-tabset}
+
+### Conclusion
+
+VEGAS does not eliminate $1/\sqrt N$. It reduces the coefficient in front of this error if it has managed to find the important regions.
+
+In this run, after adaptation:
+$$
+\widehat I_{\mathrm{VEGAS}}=0.99787\pm0.00053,
+\qquad
+Q\simeq0.43 .
+$$
+
+This is less than $10^{-3}$ relative statistical error with fewer evaluations than simple Monte Carlo with $10^6$ points.
+
+### Code and run
+
+:::: {.columns}
+
+::: {.column width="54%"}
+
+::: {.smaller}
+```python
+import runpy
+
+demo = runpy.run_path("../../shared/notebooks/mc_vegas_demo.py")
+exact = demo["exact_integral"]()
+mc_val, mc_err = demo["plain_mc"](1_000_000)
+grid_val, grid_calls = demo["tensor_gauss"](5)
+vegas_val = demo["vegas_result"]()
+
+print(f"exact        {exact:.10f}")
+print(f"plain MC     {mc_val:.6f} +- {mc_err:.3f}")
+print(f"Gauss m=5    {grid_val:.6f}  ({grid_calls} calls)")
+print(f"VEGAS      {vegas_val}  Q={vegas_val.Q:.2f}")
+```
+:::
+
+:::
+
+::: {.column width="46%"}
+
+::: {.smaller}
+```{python}
+#| echo: false
+#| warning: false
+#| results: markup
+import runpy
+
+demo = runpy.run_path("../../shared/notebooks/mc_vegas_demo.py")
+exact = demo["exact_integral"]()
+mc_val, mc_err = demo["plain_mc"](1_000_000)
+grid_val, grid_calls = demo["tensor_gauss"](5)
+vegas_val = demo["vegas_result"]()
+
+print(f"exact        {exact:.10f}")
+print(f"simple MC   {mc_val:.6f} +- {mc_err:.3f}")
+print(f"Gauss m=5    {grid_val:.6f}  ({grid_calls} calls)")
+print(f"VEGAS      {vegas_val}  Q={vegas_val.Q:.2f}")
+```
+:::
+
+:::
+
+::::
+
+::: {.smaller}
+Full reproducible example: [notebook mc_vegas_notebook](notebooks/mc_vegas_notebook.html).
+:::
+
+:::::
+
+## What we compare
+
+| method | what it does | strength | weakness |
+|---|---|---|---|
+| grid quadrature | covers the hypercube regularly | accurate in low dimension | number of nodes grows as $m^d$ |
+| simple Monte Carlo | throws uniform points | error $\sim N^{-1/2}$ | many points miss the rare contribution |
+| importance sampling | throws points more often into important regions | lower variance | bad weights spoil the estimate |
+| VEGAS | builds importance sampling adaptively | finds peaks by itself | harder for diagonal and complex structures |
+
+## When VEGAS must be checked especially carefully
+
+::: incremental
+- A very narrow peak may simply go unnoticed in the initial iterations.
+- Several well-separated modes can lead to adaptation around just one of them.
+- Diagonal ridges and strong correlations are poorly described by a product of one-dimensional grids.
+- One should look not only at the central value but also at the iterations, the $Q$ value, and independent runs with different generator seeds.
+:::
+
+::: {.fragment .callout-important .remarkbox appearance="simple"}
+Practical strategy: first simple Monte Carlo or a rough control calculation, then VEGAS, then a check of the stability of the result.
+:::
+
+
+# Pseudo-experiments
+
+## What is a pseudo-experiment
+
+A pseudo-experiment is one artificial realization of the complete measurement:
+
+::: incremental
+1. Generate the true physical events.
+2. Simulate the detector response.
+3. Apply reconstruction and selection.
+4. Perform the same analysis as for the data.
+5. Store the final statistic or parameter estimate.
+:::
+
+Repeating this procedure builds the distribution of possible outcomes of the experiment.
+
+## Why pseudo-experiments are needed
+
+::: incremental
+- Check the bias and variance of a parameter estimator.
+- Check the coverage of a confidence interval.
+- Find the distribution of a test statistic.
+- Estimate the expected sensitivity of the experiment.
+- Check the stability of the fit.
+- Study the impact of systematic uncertainties.
+:::
+
+## Example: a counting experiment
+
+Let the expected value be
+$$
+N\sim\operatorname{Pois}(s+b),
+$$
+where $s$ is the signal and $b$ is the known background.
+
+The simplest signal estimator:
+$$
+\widehat s=N-b.
+$$
+
+It is unbiased:
+$$
+\mathbb E[\widehat s]=s,
+$$
+but an individual experiment can even yield $\widehat s<0$.
+
+## Interactive: an ensemble of counting experiments {#applet-counting-ensemble}
+
+::: {.clt-widget .toy-counting-widget}
+
+::: {.mc-range-controls .toy-counting-controls}
+
+```{ojs}
+//| echo: false
+
+viewof toySignal = mcRange("expected signal s", [0, 20], {value: 5, step: 0.5})
+viewof toyBackground = mcRange("expected background b", [0.5, 30], {value: 10, step: 0.5})
+viewof toyN = mcRange("pseudo-experiments", [500, 20000], {value: 6000, step: 500})
+viewof regenerateToys = Inputs.button("New ensemble")
+```
+
+:::
+
+```{ojs}
+//| echo: false
+
+poissonToy = lambda => {
+  const limit = Math.exp(-lambda);
+  let p = 1;
+  let k = 0;
+  do {
+    k += 1;
+    p *= Math.random();
+  } while (p > limit);
+  return k - 1;
+}
+
+toyEstimates = {
+  regenerateToys;
+  return Array.from({length: toyN}, () => poissonToy(toySignal + toyBackground) - toyBackground);
+}
+
+toyMin = Math.floor(Math.min(...toyEstimates)) - 0.5
+toyMax = Math.ceil(Math.max(...toyEstimates)) + 0.5
+toyBins = {
+  const counts = new Map();
+  for (const value of toyEstimates) counts.set(value, (counts.get(value) || 0) + 1);
+  return Array.from(counts, ([value, count]) => ({
+    value,
+    x1: value - 0.45,
+    x2: value + 0.45,
+    probability: count / toyEstimates.length
+  })).sort((a, b) => a.value - b.value);
+}
+toyMean = toyEstimates.reduce((a, b) => a + b, 0) / toyEstimates.length
+toySigma = Math.sqrt(toyEstimates.reduce((a, x) => a + (x - toyMean) ** 2, 0) / toyEstimates.length)
+toyNegative = toyEstimates.filter(x => x < 0).length / toyEstimates.length
+toyYMax = Math.max(0.12, 1.18 * Math.max(...toyBins.map(d => d.probability)))
+
+toyPlot = Plot.plot({
+  width: 1180,
+  height: 360,
+  marginLeft: 72,
+  marginRight: 24,
+  marginTop: 26,
+  marginBottom: 48,
+  style: {
+    background: "transparent",
+    color: "#f2f2f2",
+    fontSize: 16
+  },
+  x: {
+    label: "signal estimate ŝ = N - b",
+    domain: [toyMin, toyMax],
+    grid: true,
+    tickFormat: d => Number.isInteger(d) ? d : ""
+  },
+  y: {
+    label: "probability",
+    domain: [0, toyYMax],
+    grid: true,
+    tickFormat: d => d.toFixed(2)
+  },
+  marks: [
+    Plot.rectY(toyBins, {x1: "x1", x2: "x2", y: "probability", fill: "#4ea1ff", fillOpacity: 0.9}),
+    Plot.ruleY([0], {stroke: "#f2f2f2", strokeWidth: 1}),
+    Plot.ruleX([toySignal], {stroke: "#ffb347", strokeWidth: 4})
+  ]
+})
+
+toyPlot.querySelectorAll(".grid line").forEach(line => line.setAttribute("stroke", "rgba(255,255,255,0.14)"))
+toyPlot.querySelectorAll(".tick line, .domain").forEach(line => line.setAttribute("stroke", "rgba(255,255,255,0.55)"))
+toyPlot.querySelectorAll("text").forEach(text => text.setAttribute("fill", "#f2f2f2"))
+
+html`
+<div class="clt-panel toy-counting-panel">
+  ${toyPlot}
+  <div class="toy-counting-takeaway">
+    <span>We fix the model: expected signal s = ${toySignal.toFixed(1)} and background b = ${toyBackground.toFixed(1)}.</span>
+    <span>The histogram shows the possible outcomes of repetitions: the real data will give one point from this distribution.</span>
+  </div>
+</div>
+`
+```
+
+:::
+
+## The ensemble and real data
+
+::: incremental
+- A real experiment gives one point from the distribution of possible outcomes.
+- Pseudo-experiments build this distribution for a given model and answer the question: "what would have happened if the experiment were repeated?"
+- But the answer is always conditional on the chosen model and its parameters.
+:::
+
+::: {.fragment .callout-important .remarkbox appearance="simple"}
+One must not choose the pseudo-experiment model after looking at the result so as to obtain the desired conclusion.
+:::
+
+
+# Simulation of the experiment
+
+## The simulation chain {.sim-chain-slide}
+
+::::: {.panel-tabset}
+
+### Scheme
+
+In a physics analysis, Monte Carlo often passes through several levels:
+
+::: incremental
+1. **Process generation:** particles and kinematics.
+2. **Interaction with matter:** showers, energy loss, secondary particles.
+3. **Detector response:** sensor and electronics signals.
+4. **Reconstruction:** reconstructed objects and parameters.
+5. **Selection:** triggers, quality criteria, and analysis.
+:::
+
+At each level the model can introduce a systematic uncertainty.
+
+### Simulation of Daya Bay and JUNO
+
+{{< nh-video opticks-juno variant="film" controls=true preload="metadata" width="1100" aria-label="Simulation of optical photons in Daya Bay and JUNO with Opticks" >}}
+
+::: {.smaller}
+Simulation of Daya Bay and JUNO in Opticks. Author: Simon Blyth.
+:::
+
+:::::
+
+## Selection efficiency
+
+If $N_{\mathrm{sel}}$ out of $N_{\mathrm{gen}}$ generated events pass the selection, then
+$$
+\widehat\varepsilon
+=
+\frac{N_{\mathrm{sel}}}{N_{\mathrm{gen}}}.
+$$
+
+For independent events
+$$
+N_{\mathrm{sel}}\sim\operatorname{Bin}(N_{\mathrm{gen}},\varepsilon),
+$$
+therefore
+$$
+\boxed{
+\sigma_{\widehat\varepsilon}
+\approx
+\sqrt{
+\frac{\widehat\varepsilon(1-\widehat\varepsilon)}
+{N_{\mathrm{gen}}}
+}.
+}
+$$
+
+## When the binomial error breaks down
+
+If all events pass the selection, $N_{\mathrm{sel}}=N_{\mathrm{gen}}$, then
+the naive formula gives
+$$
+\widehat\varepsilon=1,
+\qquad
+\sigma_{\widehat\varepsilon}=0.
+$$
+
+The efficiency is not known exactly in this case: this Monte Carlo sample simply happened to contain no failures.
+
+::: incremental
+- The point estimate $\widehat\varepsilon=N_{\mathrm{sel}}/N_{\mathrm{gen}}$ remains reasonable as a [maximum likelihood estimate](lecture-09-maximum-likelihood.html#/the-method-of-maximum-likelihood).
+- At the boundaries it is especially clear that an **interval** must be used instead of the variance. The symmetric notation $\widehat\varepsilon\pm\sigma$ can go beyond the domain of definition.  
+- Frequentist solution: the Wilson interval or the Clopper--Pearson interval; they can be computed numerically in the [applets](applets.html).
+- Bayesian solution: the beta-binomial posterior distribution and a Bayesian interval. This will be a separate topic.
+:::
+
+## Response matrix
+
+The true value may be reconstructed in a different bin:
+$$
+R_{ji}
+=
+P(\text{reconstructed bin }j\mid\text{true bin }i).
+$$
+
+If the true spectrum is $\mathbf t$, then the expected reconstructed spectrum is:
+$$
+\boxed{
+\mathbf r=R\mathbf t.
+}
+$$
+
+::: incremental
+- The diagonal elements describe correct reconstruction.
+- The off-diagonal elements describe migrations.
+- Efficiency losses reduce the sum of the column elements.
+- The response matrix is estimated from Monte Carlo.
+:::
+
+## Limited simulation statistics
+
+Monte Carlo has its own statistical fluctuations.
+
+For a weighted sample the effective size is:
+$$
+\boxed{
+N_{\mathrm{eff}}
+=
+\frac{\left(\sum_k w_k\right)^2}
+{\sum_k w_k^2}.
+}
+$$
+
+::: incremental
+- If all weights are equal, $N_{\mathrm{eff}}=N$.
+- A few large weights can make $N_{\mathrm{eff}}\ll N$.
+- A large number of generated events does not guarantee a small error after selection and reweighting.
+:::
+
+# How to work with Monte Carlo
+
+## Checking the generator and the implementation
+
+::: incremental
+- Compare simple distributions with analytical results.
+- Check means, variances, correlations and normalization.
+- Check limiting cases of the parameters.
+- Compare several independent implementations.
+- Fix the initial state of the generator to reproduce an error.
+- Check each stage of the simulation chain separately.
+:::
+
+## Convergence check
+
+The result must be studied as a function of the number of simulations $N$.
+
+::: incremental
+- The statistical error should decrease roughly as $1/\sqrt N$.
+- Independent runs should be compatible within the expected error.
+- Rare regions of the distribution require substantially higher statistics.
+- For weighted events, $N_{\mathrm{eff}}$ should be monitored.
+:::
+
+## Bias and variance of an estimator
+
+For an estimator $\widehat\theta$, pseudo-experiments make it possible to compute
+$$
+\operatorname{bias}(\widehat\theta)
+=
+\mathbb E[\widehat\theta]-\theta,
+$$
+$$
+\operatorname{Var}(\widehat\theta)
+=
+\mathbb E\!\left[
+(\widehat\theta-\mathbb E[\widehat\theta])^2
+\right].
+$$
+
+::: {.fragment .callout-note .thmbox appearance="simple"}
+A good analysis should show that the parameter reconstruction procedure works on pseudo-experiments with a known truth.
+:::
+
+## Separate the two sources of error
+
+::: incremental
+- **Physical statistical uncertainty:** the spread of possible results of the real experiment.
+- **Numerical Monte Carlo error:** the inaccuracy in the estimate of this spread due to the finite number of simulations.
+:::
+
+For example, increasing the number of pseudo-experiments determines the distribution of $\widehat\theta$ more precisely, but does not reduce the expected error of a single real measurement.
+
+## Reproducible workflow
+
+::: incremental
+1. Write down the probabilistic model explicitly.
+2. Save the configuration and software versions.
+3. Save the initial state of the generator or the rule for forming independent initial states.
+4. Check the implementation on problems with a known answer.
+5. Estimate the numerical Monte Carlo error.
+6. Check robustness against increasing statistics.
+7. Compare the simulation with control data.
+8. Document weights, selections and systematic variations.
+:::
+
+## When another tool is needed
+
+::: incremental
+- For a simple analytical result, Monte Carlo can obscure understanding.
+- For extremely rare events, naive generation is inefficient.
+- For a complex posterior distribution, Markov chain Monte Carlo or nested sampling may be required.
+- Inverse problems require regularization and unfolding methods.
+- Expensive simulations may call for surrogate models.
+:::
+
+---
+
+# What is important to remember
+
+## Summary
+
+::: incremental
+- Monte Carlo builds an ensemble of realizations of the model: this is how integrals are computed, errors are propagated, and the entire analysis procedure is checked on pseudo-experiments.
+- The error of plain Monte Carlo decreases as $1/\sqrt N$; importance sampling and VEGAS reduce the variance.
+- The simulation has its own finite statistics and systematic uncertainties.
+- The result can be trusted after convergence and reproducibility checks.
+:::

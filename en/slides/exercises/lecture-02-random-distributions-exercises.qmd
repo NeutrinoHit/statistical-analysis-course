@@ -1,0 +1,14 @@
+---
+title: "Exercises: random variables and distributions"
+subtitle: "Statistical Data Analysis"
+author: "Dmitry V. Naumov"
+format:
+  html:
+    toc: false
+---
+
+[← Back to the course](../index.html){.exercise-back-link}
+
+# Exercises
+
+{{< include ../../../_includes/exercises/02_random_distributions-en.qmd >}}

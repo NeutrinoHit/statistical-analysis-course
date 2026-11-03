@@ -1,0 +1,39 @@
+## Problem 1. Quantiles and deviations in sigmas
+
+Let
+$$
+X\sim\mathrm{N}(12.0,0.8^2).
+$$
+
+Find:
+
+1. the $68\%$ central interval;
+2. the $95\%$ central interval;
+3. the one-sided quantile of level $0.95$;
+4. by how many sigmas the value $x=13.4$ deviates from the mean.
+
+## Problem 2. Compatibility of independent measurements
+
+Three independent measurements gave:
+$$
+x_1=125.12\pm0.30,\quad
+x_2=124.86\pm0.18,\quad
+x_3=125.05\pm0.24.
+$$
+
+For each of the three pairs, compute $z_{ij}$ and the two-sided $p$-value. Which
+pairs are compatible at the significance level $\alpha=0.05$? Compare the ordering of the pairs by
+the absolute difference $|x_i-x_j|$ and by $|z_{ij}|$.
+
+## Problem 3. Photoelectron statistics
+
+The charge of a single photoelectron pulse has mean
+$q_0=1.0\,\text{pC}$ and standard deviation $s_q=0.4\,\text{pC}$.
+The pulses are independent.
+
+1. Find the mean total charge, its standard deviation and the relative
+   width for $N=25$ and $N=100$ photoelectrons.
+2. By what factor must $N$ be increased for the relative width to be reduced
+   by half?
+3. What distribution of the total charge is expected for a large fixed
+   $N$? Write down the normalized quantity to which the CLT applies.

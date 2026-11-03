@@ -1,0 +1,95 @@
+## Problem 1. Two statistics for Poisson bins
+
+In twenty independent bins $N_i\sim\operatorname{Pois}(\mu_i)$.
+The first ten expectations are
+$(0.158,0.295,0.513,0.833,1.263,1.785,2.355,2.899,3.330,3.568)$,
+the rest are given by the symmetry $\mu_{21-i}=\mu_i$. All expectations are known;
+no parameters are fitted to the data.
+
+1. Write down the Pearson statistic and derive the likelihood ratio
+   statistic relative to the saturated model, in which each bin is allowed its own mean.
+2. Expand the logarithm for $n_i=\mu_i+\delta_i$, $|\delta_i|\ll\mu_i$.
+   Compare the leading quadratic terms.
+3. Find the contributions of an empty bin to both statistics. Why does a small number of events
+   not by itself prevent these contributions from being computed?
+4. Derive the mean and the variance of the Pearson statistic using
+   $\mathbb E[(N_i-\mu_i)^4]=\mu_i+3\mu_i^2$.
+5. Generate 50 000 trials. Compare the distributions of both statistics
+   with $\chi^2_{20}$. Repeat with all $\mu_i$ increased by a factor of 100.
+
+## Problem 2. Degrees of freedom before and after the fit
+
+There are $N=12$ independent measurements $Y_i\sim\mathcal N(\mu,\sigma^2)$
+with $\mu=10$ channels and a known $\sigma=2$ channels. Carry out
+20 000 pseudo-experiments.
+
+1. In each trial compute the mean $\overline Y$, the sum of squares
+   relative to the true $\mu$ and the minimum sum of squares
+   relative to $\overline Y$; the errors in the denominators are $\sigma$.
+2. Check the exact decomposition of the sum of squares into two terms:
+   the minimum and $N(\overline Y-\mu)^2/\sigma^2$.
+3. Compare the three distributions with $\chi^2_{12}$, $\chi^2_{11}$ and $\chi^2_1$.
+   Check their means and variances.
+4. Explain why the residuals after the fit are not twelve
+   independent standard Gaussian variables.
+5. Find the p-value for $\chi^2_{\min}=12$. What happens if one mistakenly
+   keeps twelve degrees of freedom?
+
+## Problem 3. The same χ² and different shapes of residuals
+
+Construct two training sets of calibration data. Energies
+$E_i=i$ MeV, $i=0,\ldots,11$, amplitude errors of 5 channels each.
+The matrix $X$ contains the columns $1$ and $E_i$.
+
+For the first set, generate twelve independent numbers
+$w_i\sim\mathcal N(0,1)$ and remove their projection onto the straight line:
+$\mathbf v=\mathbf w-X(X^{\mathsf T}X)^{-1}X^{\mathsf T}\mathbf w$.
+For the second, let
+$v_i=(E_i-5.5)^2-\tfrac1{12}\sum_j(E_j-5.5)^2$, using
+the numerical values of the energies in MeV. In each case normalize the residual:
+$\mathbf u=\sqrt{12}\,\mathbf v/\|\mathbf v\|$,
+and set the amplitudes $y_i=2+100E_i+5u_i$ in channels.
+
+1. Fit both sets with a straight line with two free parameters.
+2. Check that in both cases $\chi^2_{\min}=12$ and the p-values coincide.
+3. Plot the normalized residuals versus energy. What feature of the second
+   set is hidden by the single number χ²?
+4. Explain why these specially constructed sets cannot be
+   used as a random sample to test the distribution
+   $\chi^2_{\min}$.
+
+## Problem 4. When p-values are uniform
+
+Generate 20 000 independent values $T\sim\chi^2_{10}$.
+
+1. Compute $p=P(\chi^2_{10}\ge T)$ for each, plot a histogram
+   and find the fraction $p\le0.05$.
+2. Repeat the calculation, replacing each $T$ by $T/0.8^2$ but keeping
+   the calibration distribution $\chi^2_{10}$. What error in specifying the
+   standard deviations does such a replacement correspond to?
+3. Generate a separate calibration sample of 20 000 values
+   $\chi^2_{10}$. For the original $T$ compute the rank
+   p-values $(k+1)/(B+1)$, where $k$ is the number of calibration values
+   not less than $T$, $B=20000$.
+4. Repeat the experiment for $N\sim\operatorname{Pois}(2)$ using the exact
+   $p(n)=P(N\ge n)$. Find the smallest integer $n$ for which
+   $p(n)\le0.05$, and the exact probability of rejecting a true hypothesis.
+5. Why, in the Poisson experiment, is the rejection fraction not required to be
+   exactly 5% even with an unlimited number of pseudo-experiments?
+
+## Problem 5. One tail, two tails and discovery
+
+1. Compute $1-\Phi(Z)$ and $2[1-\Phi(Z)]$ for $Z=1,\ldots,5$.
+   Check the tables of the chapter.
+2. Find both conversions to $Z$ for $p=0.05$, $2.7\cdot10^{-3}$ and
+   $2.87\cdot10^{-7}$.
+3. For $T=1200$ at $T\sim\chi^2_{1000}$ compare the exact one-sided
+   conversion of the p-value with $(T-1000)/\sqrt{2000}$.
+4. In the model $Y\sim\mathcal N(s,\sigma^2)$ with known $\sigma$,
+   $s\ge0$, derive $q_0=\max(0,Y/\sigma)^2$ for testing $s=0$.
+   Find the probability $q_0\ge25$ under background. Compare with
+   $P(\chi^2_1\ge25)$.
+5. A researcher decides to treat the deviation as one-sided but chooses the side
+   by the sign of the result. If he uses a 5% threshold on each chosen side,
+   what is the total probability of falsely rejecting a
+   true Gaussian hypothesis?

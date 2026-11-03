@@ -1,0 +1,14 @@
+---
+title: "Exercises: motivation and course overview"
+subtitle: "Statistical Data Analysis"
+author: "Dmitry V. Naumov"
+format:
+  html:
+    toc: false
+---
+
+[← Back to the course](../index.html){.exercise-back-link}
+
+# Exercises
+
+{{< include ../../../_includes/exercises/01_why_statistics-en.qmd >}}

@@ -1,0 +1,81 @@
+## Problem 1. Probability inside an ellipse
+
+For a two-dimensional Gaussian distribution
+
+$$
+D^2=(\mathbf X-\boldsymbol\mu)^{\mathsf T}
+V^{-1}(\mathbf X-\boldsymbol\mu)
+\sim\chi_2^2.
+$$
+
+1. Derive the density $D^2$ and show that
+   $$
+   P(D^2\leq c)=1-e^{-c/2}.
+   $$
+2. Find $c$ for the regions with probabilities $68.3\%$, $90\%$ and $95\%$.
+3. Compute the probability inside the contour $D^2=1$.
+4. Compare this result with the one-dimensional probability
+   $P(|Z|\leq1)$ and explain the difference.
+
+## Problem 2. Geometry of the covariance matrix
+
+The mean vector and the covariance matrix of two measured energies are given:
+
+$$
+\boldsymbol\mu=
+\begin{pmatrix}60\\40\end{pmatrix}\ \text{GeV},
+\qquad
+V=
+\begin{pmatrix}
+1.44&0.36\\
+0.36&1.00
+\end{pmatrix}\ \text{GeV}^2.
+$$
+
+1. Find the standard deviations and the correlation coefficient.
+2. Compute the eigenvalues and eigenvectors of $V$.
+3. Find the lengths and directions of the semi-axes of the ellipse $D^2=2.30$.
+4. For the point $\mathbf x=(61.2,41.0)^{\mathsf T}$ GeV compute $D^2$ and
+   determine whether it lies inside the region with probability $68.3\%$.
+
+## Problem 3. Combining two measurements
+
+A single quantity has been measured in two ways:
+
+$$
+x_1=10.2\pm0.8,
+\qquad
+x_2=11.1\pm0.4.
+$$
+
+1. Find the weighted average and its standard deviation, treating the measurements
+   as independent.
+2. Repeat the calculation for the correlation coefficient $\rho=0.6$.
+3. Write out both weights in the second case and explain the sign of each of them.
+4. Check that the covariance matrix is positive definite.
+
+## Problem 4. Invariant mass
+
+For two massless particles
+
+$$
+m^2=2E_1E_2(1-\cos\theta).
+$$
+
+Let $E_1=60$ GeV, $E_2=40$ GeV, $\theta=0.200$ rad, and let the covariance
+matrix of the quantities $(E_1,E_2,\theta)$ be
+
+$$
+V=
+\begin{pmatrix}
+1.44&0.36&0\\
+0.36&1.00&0\\
+0&0&2.5\cdot10^{-5}
+\end{pmatrix}.
+$$
+
+1. Find the gradient $m^2$ and compute $\sigma_{m^2}$.
+2. Obtain $\sigma_m$ by linear error propagation.
+3. Repeat the calculation for $\operatorname{cov}(E_1,E_2)=0$ and compare the answers.
+4. Consider the limit $\theta\ll1$: obtain approximate expressions for $m$
+   and its derivatives.

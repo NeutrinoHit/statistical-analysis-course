@@ -1,0 +1,84 @@
+## Problem 1. Radius and area of a circle
+
+The measured radius of the circle is
+$$
+R=(10.0\pm0.3)\ \text{cm}.
+$$
+
+1. Find the area $S=\pi R^2$ and its error in the linear approximation.
+2. Compare the relative errors $S$ and $R$.
+3. Estimate the correction to the expectation value of the area that arises from the quadratic nature of the function.
+
+## Problem 2. Sum and difference of correlated quantities
+
+Let
+$$
+\sigma_X=2,
+\qquad
+\sigma_Y=3,
+\qquad
+\rho_{XY}=0.8.
+$$
+
+Compute the errors:
+$$
+S=X+Y,
+\qquad
+D=X-Y.
+$$
+
+Repeat the calculation for $\rho_{XY}=-0.8$ and explain the change in the result.
+
+## Problem 3. Error of a ratio
+
+The efficiency is defined by the ratio
+$$
+\varepsilon=\frac{N_{\mathrm{selected}}}{N_{\mathrm{total}}}.
+$$
+
+1. Derive the linear formula for $\sigma_\varepsilon$, assuming known $\sigma_{\mathrm{selected}}$, $\sigma_{\mathrm{total}}$ and the correlation $\rho$.
+2. Explain why the assumption that the numerator and denominator are independent is usually incorrect.
+3. Compare the answers for $\rho=0$ and $\rho>0$.
+
+## Problem 4. Transformation of the covariance matrix
+
+Let
+$$
+\mathbf X=
+\begin{pmatrix}X\\Y\end{pmatrix},
+\qquad
+V_X=
+\begin{pmatrix}
+4&1.2\\
+1.2&1
+\end{pmatrix}.
+$$
+
+For the new quantities
+$$
+S=X+Y,
+\qquad
+D=X-Y
+$$
+find:
+
+1. the Jacobian matrix;
+2. the covariance matrix $V_{SD}$;
+3. the correlation coefficient between $S$ and $D$.
+
+## Problem 5. Testing the linear approximation
+
+Let
+$$
+X\sim\mathrm N(1,\sigma_X^2),
+\qquad
+Y=X+aX^2.
+$$
+
+1. Obtain the linear estimate $\sigma_Y$.
+2. Derive the exact $\mathbb E[Y]$ and $\operatorname{Var}(Y)$.
+3. Generate at least $10^5$ values of $X$ and compare the sample moments $Y$
+   with the exact and linear results.
+4. On the grid $0\le a\le1$ and $0.05\le\sigma_X\le1$, find the region in which
+   the linear estimate of the standard deviation differs from the exact one by less than
+   $5\%$.

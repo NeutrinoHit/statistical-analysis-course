@@ -1,0 +1,98 @@
+## Problem 1. Mean of the Cauchy distribution
+
+For independent $X_i\sim\mathrm{Cauchy}(0,1)$ show that the variance does not exist, while
+$$
+\overline X_n=\frac{1}{n}\sum_iX_i
+$$
+has the same Cauchy distribution. Why does this not contradict the CLT?
+
+## Problem 2. Heavy tail with finite variance
+
+Let
+$$
+p(x)\sim\frac{C}{|x|^{1+\alpha}}.
+$$
+
+1. For which $\alpha$ do the mean and the variance exist?
+2. Why can the convergence to a Gaussian be slow when $\alpha$ is slightly greater than 2?
+
+## Problem 3. One dominant contribution
+
+Let
+$$
+S=X_0+\epsilon_1+\dots+\epsilon_n,
+$$
+where $\epsilon_i\sim\mathrm{N}(0,\sigma^2)$, and $X_0$ is non-Gaussian and
+$$
+\mathrm{Var}(X_0)\gg n\sigma^2.
+$$
+Explain the shape of the distribution of $S$.
+
+## Problem 4. Common systematic error
+
+Let
+$$
+X_i=\mu+C+\epsilon_i,
+$$
+where $C\sim\mathrm{N}(0,\sigma_C^2)$ and $\epsilon_i\sim\mathrm{N}(0,\sigma_\epsilon^2)$.
+Find $\mathbb{E}[\overline X_n]$, $\mathrm{Var}(\overline X_n)$ and the limit of the variance as $n\to\infty$.
+
+## Problem 5. Averaging correlated measurements
+
+Let $n$ quantities have the same variance $\sigma^2$ and the same
+correlation coefficient $\rho$ for any pair.
+
+1. Derive the variance of their mean.
+2. Give the allowed range of $\rho$ for fixed $n$.
+3. Consider the cases $\rho=0$ and $\rho>0$ as $n$ increases.
+
+## Problem 6. Mixture of two Gaussians
+
+Let
+$$
+X|A\sim\mathrm{N}(\mu_A,\sigma_A^2),\qquad
+X|B\sim\mathrm{N}(\mu_B,\sigma_B^2),
+$$
+and let the probability of class $A$ be $w$. Find the total mean and variance. When does the mixture look poorly like a single Gaussian?
+
+## Problem 7. Hidden topology in a liquid scintillator
+
+A monoenergetic $\gamma$-ray with energy
+$$
+E_\gamma=1\ \text{MeV}
+$$
+can transfer its energy to secondary electrons in two ways:
+$$
+\theta=A:\quad T_1=1\ \text{MeV},
+$$
+$$
+\theta=B:\quad T_1=T_2=0.5\ \text{MeV}.
+$$
+
+Because of the nonlinearity of the light yield, the mean signals differ:
+$$
+Q|\theta=A\sim\mathrm{Pois}(1000),
+\qquad
+Q|\theta=B\sim\mathrm{Pois}(980).
+$$
+Take the classes to be equally probable.
+
+1. Find the total mean $\mathbb E[Q]$.
+2. Compute the mean within-class variance
+   $$
+   \mathbb E_\theta[\mathrm{Var}(Q|\theta)].
+   $$
+3. Compute the topological contribution
+   $$
+   \mathrm{Var}_\theta(\mathbb E[Q|\theta]).
+   $$
+4. Find the total variance and the standard deviation $Q$.
+5. Compare the result with the Poisson model
+   $$
+   Q\sim\mathrm{Pois}(\mathbb E[Q]).
+   $$
+   Which contribution is not described by this model?
+
+## Problem 8. Ratio of Gaussian variables
+
+For independent $X,Y\sim\mathrm{N}(0,1)$ derive the probability density of the ratio $R=X/Y$ and show that it is a Cauchy distribution.

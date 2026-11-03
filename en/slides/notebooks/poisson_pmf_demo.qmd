@@ -1,0 +1,28 @@
+---
+format:
+  html:
+    toc: true
+    number-sections: true
+  pdf:
+    pdf-engine: lualatex
+execute:
+  enabled: false
+---
+
+We count the number of events $N$ in a fixed time.
+If the mean number of events is $\lambda$, then
+$N\sim \mathrm{Pois}(\lambda)$.
+Three cases: $\lambda=1,4,10$.
+
+```{python}
+#| echo: true
+#| eval: false
+from math import factorial
+import numpy as np
+
+for lam in [1, 4, 10]:
+    k = np.arange(26)
+    pmf = np.exp(-lam) * lam**k / np.array([factorial(i) for i in k])
+```
+
+![](../shared/figures/generated/poisson_pmf_profiles.png){width=58% .nostretch}

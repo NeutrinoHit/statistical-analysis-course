@@ -1,0 +1,14 @@
+---
+title: "Exercises: properties of estimators and profile likelihood"
+subtitle: "Statistical Data Analysis"
+author: "Dmitry V. Naumov"
+format:
+  html:
+    toc: false
+---
+
+[← Back to the course](../index.html){.exercise-back-link}
+
+# Exercises
+
+{{< include ../../../_includes/exercises/10_estimator_properties_profile_likelihood-en.qmd >}}

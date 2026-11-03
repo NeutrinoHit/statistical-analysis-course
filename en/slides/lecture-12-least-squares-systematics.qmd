@@ -1,0 +1,971 @@
+---
+title: "Lecture 12. χ² intervals, systematic uncertainties and a practical least-squares recipe"
+subtitle: "Statistical Data Analysis"
+author: "Dmitry V. Naumov (JINR)"
+format:
+  revealjs:
+    slide-number: true
+    preview-links: auto
+    chalkboard:
+      buttons: false
+    logo: shared/figures/dvnlogo.png
+    css: styles.css
+    transition: fade
+    center: true
+---
+
+# General case
+
+## $\chi^2$ with the covariance matrix
+
+::: incremental
+- **In the Gaussian approximation**, in the general case, one has to use the covariance matrix: 
+$$
+V_y=\operatorname{Cov}(\mathbf y).
+$$
+
+- Then
+$$
+\boxed{
+\chi^2(\boldsymbol\theta)
+=
+(\mathbf y-\boldsymbol\lambda(\boldsymbol\theta))^\mathsf T
+V_y^{-1}
+(\mathbf y-\boldsymbol\lambda(\boldsymbol\theta)).
+}
+$$
+- $\mathbf y= (y_1,\dots y_N)$ are the observables, 
+- $\boldsymbol\lambda= (\lambda_1,\dots \lambda_N)$. $\lambda_i=\mathbb{E}[Y_i]$ is the expectation value
+- $\boldsymbol\theta = (\theta_1,\dots \theta_p)$ are the model parameters.  
+- Task: the estimate $\widehat{\boldsymbol\theta}$ and the covariance matrix of the parameters $V_\theta$
+:::
+
+## Estimates
+
+::: incremental
+- The estimate $\widehat{\boldsymbol\theta}$ is the solution of the equations:
+$$
+\frac{\partial \chi^2(\boldsymbol\theta)}{\partial\boldsymbol\theta} = 0.
+$$
+- Near the minimum
+$$
+\chi^2(\boldsymbol\theta)\approx\chi^2_{\min}+ (\boldsymbol\theta-\widehat{\boldsymbol\theta})^\mathsf T V_\theta^{-1} (\boldsymbol\theta-\widehat{\boldsymbol\theta}).
+$$
+- Hence the matrix of this quadratic form is $V_\theta^{-1}$.
+- Its elements are found as follows:
+$$
+\left(V_\theta^{-1}\right)_{ij} \simeq \frac12\left.
+\frac{\partial^2\chi^2}{\partial\theta_i\partial\theta_j}
+\right|_{\widehat{\boldsymbol\theta}}.
+$$
+- To find the covariance matrix $V_\theta$, one has to invert $V_\theta^{-1}$.
+:::
+
+## Linear model
+::: incremental
+
+- For a linear model 
+$$
+\boldsymbol\lambda=H\boldsymbol\theta,
+$$
+where $H$ is an $N\times p$ matrix.
+- The problem is solved exactly:
+$$
+\boxed{
+\widehat{\boldsymbol\theta} =(H^\mathsf T V_y^{-1}H)^{-1} H^\mathsf T V_y^{-1}\mathbf y}
+$$
+and 
+$$
+\boxed{
+V_\theta=(H^\mathsf T V_y^{-1}H)^{-1}.
+}
+$$
+:::
+
+# Intervals from the shape of $\chi^2$
+
+## One parameter
+
+::: {.panel-tabset}
+
+### Formula
+
+For one parameter near the minimum
+$$
+\chi^2(\theta)
+\approx
+\chi^2_{\min}
++
+\frac{(\theta-\widehat{\theta})^2}{\sigma_\theta^2}.
+$$
+
+Therefore the bounds of one standard error are given by the condition
+$$
+\boxed{
+\chi^2(\widehat{\theta}\pm\sigma_\theta)
+-
+\chi^2_{\min}=1.
+}
+$$
+
+::: {.fragment .callout-note .thmbox appearance="simple"}
+Here $\Delta\chi^2=1$ is a local Gaussian rule for one parameter. We will discuss the formal connection with confidence intervals and the $\chi^2$ distribution later.
+:::
+
+### Plot
+
+::: {.clt-widget}
+```{ojs}
+//| echo: false
+
+chiOneSigma = 1
+chiOneMin = 1
+chiOneCut = chiOneMin + 1
+chiOneData = Array.from({length: 241}, (_, i) => {
+  const delta = -1.5 + 3.0 * i / 240;
+  return {
+    delta,
+    chi2: chiOneMin + (delta / chiOneSigma) ** 2
+  };
+})
+chiOneMarks = [
+  {delta: -chiOneSigma, chi2: chiOneCut},
+  {delta: 0, chi2: chiOneMin},
+  {delta: chiOneSigma, chi2: chiOneCut}
+]
+chiOneCutLine = [
+  {delta: -chiOneSigma, chi2: chiOneCut},
+  {delta: chiOneSigma, chi2: chiOneCut}
+]
+
+chiOnePlot = Plot.plot({
+  width: 980,
+  height: 460,
+  marginLeft: 70,
+  marginBottom: 54,
+  marginTop: 36,
+  x: {label: "δθ", domain: [-1.5, 1.5], grid: true},
+  y: {label: "χ²(θ)", domain: [0.9, 3.5], grid: true},
+  marks: [
+    Plot.line(chiOneData, {x: "delta", y: "chi2", stroke: "#4ea1ff", strokeWidth: 4}),
+    Plot.line(chiOneCutLine, {x: "delta", y: "chi2", stroke: "#ff5a5f", strokeWidth: 3}),
+    Plot.ruleY([chiOneMin], {stroke: "#777", strokeDasharray: "5,5"}),
+    Plot.ruleX([-chiOneSigma, chiOneSigma], {
+      y1: chiOneMin,
+      y2: chiOneCut,
+      stroke: "#ff5a5f",
+      strokeWidth: 3,
+      strokeDasharray: "7,5"
+    }),
+    Plot.dot(chiOneMarks, {x: "delta", y: "chi2", r: 6, fill: d => d.delta === 0 ? "#f2f2f2" : "#ff5a5f", stroke: "#111"})
+  ]
+})
+
+html`
+<div class="clt-panel">
+  <div style="text-align:center; font-size:1.35rem; font-weight:700; margin-bottom:0.35rem;">
+    χ²(δθ = ±σ<sub>θ</sub>) − χ²<sub>min</sub> = 1
+  </div>
+  ${chiOnePlot}
+  <div class="clt-summary">
+    <span>minimum: δθ = 0</span>
+    <span>red cutoff: χ²<sub>min</sub> + 1</span>
+    <span>intersections give ±σ<sub>θ</sub></span>
+  </div>
+</div>
+`
+```
+:::
+
+:::
+
+## Several parameters
+
+::: {.panel-tabset}
+
+### Formula
+
+If $\chi^2(\boldsymbol\theta)$ is well approximated by a quadratic function of the parameters, then
+$$
+\chi^2(\boldsymbol\theta)
+\approx
+\chi^2_{\min}
++
+(\boldsymbol\theta-\widehat{\boldsymbol\theta})^\mathsf T
+V_\theta^{-1}
+(\boldsymbol\theta-\widehat{\boldsymbol\theta}).
+$$
+
+The equation
+$$
+\Delta\chi^2
+=
+\chi^2-\chi^2_{\min}
+=c
+$$
+defines ellipsoids in the parameter space.
+
+::: incremental
+- The matrix $V_\theta$ sets the sizes and the tilt of these ellipsoids.
+- The number $c$ depends on which region we construct. This will be a separate topic in the lecture [Goodness of fit and statistical significance](lecture-13-goodness-of-fit-and-significance.qmd).
+- All this is a local Gaussian picture near the minimum.
+:::
+
+### Gaussian example
+
+::: {.clt-widget}
+![](shared/figures/static/lsq_quadratic_chi2_surface_en.png){width=88% .nostretch fig-alt="Quadratic form of chi2: 3D paraboloid, cutting plane and elliptical projection"}
+
+<div class="clt-summary">
+  <span>minimum at the center</span>
+  <span>a section of the paraboloid gives an ellipse</span>
+  <span>the tilt of the ellipse sets the correlation of the parameters</span>
+</div>
+:::
+
+### Non-Gaussian example
+
+::: {.clt-widget}
+![](shared/figures/static/lsq_oscillatory_chi2_surface_en.png){width=78% .nostretch fig-alt="Oscillation example of chi2: 3D surface and projection with several islands"}
+
+:::
+
+:::
+
+
+# Systematic uncertainties
+
+## Glossary
+
+::: incremental
+
+| Term | Meaning | Example |
+|---|---|---|
+| Parameter of interest | What we want to measure | mass, cross section, $\theta_{13}$, number of signal events |
+| Nuisance parameter | A parameter that affects the prediction but is not itself the goal of the measurement | background, efficiency, energy scale |
+| Systematic effect | A physical, instrumental or model source of uncertainty | energy calibration, selection efficiency, background shape, flux normalization |
+| Systematic uncertainty | The contribution of such a systematic effect to the uncertainty of the parameter of interest | contribution of the energy scale uncertainty to the mass error |
+
+:::
+
+## Constrained and free parameters
+
+| Parameter type | What it means | How it appears in the likelihood |
+|---|---|---|
+| Constrained parameter | There is external information about it | there is a factor $L_\mathrm{aux}(\eta)$ |
+| Free parameter | There is no external constraint | determined only by the main data |
+| Constrained nuisance parameter | Typical implementation of a systematic effect | calibration, efficiency, background normalization |
+| Free nuisance parameter | A model parameter fitted to the data | free background normalization, unknown spectral slope $L(\mu,\eta)=L_\mathrm{main}(x|\mu,\eta)\,L_\mathrm{aux}(a|\eta)$|
+
+
+Here $\mu$ is the parameter of interest, $\eta$ are the nuisance parameters.
+
+## Model with nuisance parameters
+
+Let the model depend on the parameters of interest $\boldsymbol\theta$ and the nuisance parameters $\boldsymbol\eta$:
+$$
+\boldsymbol\lambda
+=
+\boldsymbol\lambda(\boldsymbol\theta,\boldsymbol\eta).
+$$
+
+Usually something is already known about $\boldsymbol\eta$:
+$$
+\boldsymbol\eta\approx\boldsymbol\eta_0,
+\qquad
+\operatorname{Cov}(\boldsymbol\eta)=V_\eta.
+$$
+
+Then the natural function to minimize is:
+$$
+\boxed{
+\chi^2(\boldsymbol\theta,\boldsymbol\eta)
+=
+(\mathbf y-\boldsymbol\lambda(\boldsymbol\theta,\boldsymbol\eta))^\mathsf T
+V_y^{-1}
+(\mathbf y-\boldsymbol\lambda(\boldsymbol\theta,\boldsymbol\eta))
++
+(\boldsymbol\eta-\boldsymbol\eta_0)^\mathsf T
+V_\eta^{-1}
+(\boldsymbol\eta-\boldsymbol\eta_0).
+}
+$$
+
+## Penalty
+::: incremental
+
+- The second term is called the penalty:
+$$
+(\boldsymbol\eta-\boldsymbol\eta_0)^\mathsf T
+V_\eta^{-1}
+(\boldsymbol\eta-\boldsymbol\eta_0).
+$$
+- The data may prefer to shift the systematic parameter.
+- But a large shift must be paid for by the penalty.
+- If $V_\eta$ is small, the parameter is tightly tied to $\eta_0$.
+- If $V_\eta$ is large, the parameter is almost free.
+
+- The best values are found from the joint minimization:
+$$
+\frac{\partial\chi^2}{\partial\boldsymbol\theta}=0,
+\qquad
+\frac{\partial\chi^2}{\partial\boldsymbol\eta}=0.
+$$
+:::
+
+## Profiling
+::: incremental
+
+- Often we are interested only in $\boldsymbol\theta$, while $\boldsymbol\eta$ is of little interest.
+
+- In the frequentist approach we profile:
+$$
+\boxed{
+\chi^2_{\mathrm p}(\boldsymbol\theta)
+=
+\min_{\boldsymbol\eta}
+\chi^2(\boldsymbol\theta,\boldsymbol\eta)
+=
+\chi^2(\boldsymbol\theta,\widehat{\widehat{\boldsymbol\eta}}(\boldsymbol\theta)).
+}
+$$
+
+- The double hat means: $\boldsymbol\eta$ is minimized at fixed $\boldsymbol\theta$.
+
+- Profiling shows how well the data can be described at a given $\boldsymbol\theta$ if all the other parameters are chosen in the best way.
+:::
+
+## Linear systematic effect
+
+If the dependence on $\boldsymbol\eta$ is linear near $\boldsymbol\eta_0$, then
+$$
+\boldsymbol\lambda(\boldsymbol\theta,\boldsymbol\eta)
+\approx
+\boldsymbol\lambda_0(\boldsymbol\theta)
++
+H(\boldsymbol\theta)(\boldsymbol\eta-\boldsymbol\eta_0),
+$$
+where
+$$
+H_{ij}
+=
+\left.
+\frac{\partial\lambda_i}{\partial\eta_j}
+\right|_{\boldsymbol\eta=\boldsymbol\eta_0}.
+$$
+
+Let us denote the residual at nominal systematics:
+$$
+\mathbf r(\boldsymbol\theta)
+=
+\mathbf y-\boldsymbol\lambda_0(\boldsymbol\theta).
+$$
+
+## Analytic profiling
+
+For fixed $\boldsymbol\theta$ the minimum over
+$$
+\boldsymbol\delta=\boldsymbol\eta-\boldsymbol\eta_0
+$$
+is found analytically:
+$$
+\boxed{
+\widehat{\widehat{\boldsymbol\delta}}(\boldsymbol\theta)
+=
+\left(V_\eta^{-1}+H^\mathsf T V_y^{-1}H\right)^{-1}
+H^\mathsf T V_y^{-1}\mathbf r(\boldsymbol\theta).
+}
+$$
+
+This is practically useful: some of the parameters can be eliminated without a numerical search over them.
+
+## Equivalent covariance matrix
+
+After substituting the profiled $\boldsymbol\eta$, one obtains an equivalent expression:
+$$
+\boxed{
+\chi^2_{\mathrm p}(\boldsymbol\theta)
+=
+\mathbf r(\boldsymbol\theta)^\mathsf T
+V^{-1}
+\mathbf r(\boldsymbol\theta),
+\qquad
+V=V_y+HV_\eta H^\mathsf T.
+}
+$$
+
+The systematic effect adds to the statistical covariance the matrix
+$$
+\boxed{
+V_{\mathrm{sys}}=HV_\eta H^\mathsf T.}
+$$
+
+## Example: normalization with uncertainty
+
+Let several points measure the same quantity $\mu$.
+
+The individual errors of the points are absolute, $x_i \pm s_i$.
+
+The overall scale of the experiment is known with a relative error $f_N = 0.10$.
+
+Model:
+$$
+\lambda_i(\mu,\alpha)=(1+\alpha)\mu,
+\qquad
+\alpha = 0 \pm f_N .
+$$
+
+Here $\alpha$ is a single common normalization nuisance parameter.
+
+::: incremental
+
+- If $\alpha$ shifts, all predictions $\lambda_i$ shift coherently.
+
+- Derivative with respect to the normalization:
+$$
+H_{i1}
+=
+\left.
+\frac{\partial \lambda_i}{\partial \alpha}
+\right|_{\alpha=0}
+=
+\mu .
+$$
+
+- Covariance of the nuisance parameter:
+$$
+V_\alpha=f_N^2.
+$$
+:::
+
+## Covariance from the normalization
+
+
+Therefore the normalization part of the covariance is:
+$$
+\boxed{
+(V_{\mathrm{norm}})_{ij}
+=
+(HV_\alpha H^{\mathsf T})_{ij}
+=
+f_N^2\mu^2 .
+}
+$$
+
+For two points:
+$$
+V_{\mathrm{norm}}(\mu)
+=
+f_N^2\mu^2
+\begin{pmatrix}
+1&1\\
+1&1
+\end{pmatrix}.
+$$
+
+
+
+## D'Agostini bias
+::: incremental
+
+- Consider two estimates of the same quantity:
+$$
+x_1=8.0,\qquad x_2=8.5.
+$$
+- For each point an individual relative error of $2\%$ is given, and in addition there is a common normalization uncertainty of $10\%$.
+- Individual errors: $s_1=0.16,\ s_2=0.17$.
+:::
+
+::: {.fragment .callout-note .thmbox appearance="simple"}
+This is the [D'Agostini example](https://www.roma1.infn.it/~dagos/desy93-175.pdf), related to [Peelle's Pertinent Puzzle](https://www.roma1.infn.it/~dagos/cern/node99.html):
+a multiplicative systematic effect is not ordinary additive noise of each point.
+:::
+
+## Data and statistical covariance
+::: incremental
+- Let
+$$
+x_1=8.0,\qquad x_2=8.5,
+$$
+- and let the individual errors be $2\%$:
+$$
+s_1=0.02\,x_1=0.16,
+\qquad
+s_2=0.02\,x_2=0.17.
+$$
+
+- Statistical part of the covariance:
+$$
+V_\mathrm{stat}
+=
+\begin{pmatrix}
+s_1^2&0\\
+0&s_2^2
+\end{pmatrix}
+=
+\begin{pmatrix}
+0.0256&0\\
+0&0.0289
+\end{pmatrix}.
+$$
+:::
+
+## Naive normalization covariance
+::: incremental
+
+- Naive normalization part:
+$$
+V_\mathrm{norm}^\mathrm{bad}
+=
+f_N^2
+\begin{pmatrix}
+x_1x_1&x_1x_2\\
+x_2x_1&x_2x_2
+\end{pmatrix}.
+$$
+
+- For $f_N=0.10$:
+$$
+V_\mathrm{norm}^\mathrm{bad}
+=
+0.10^2
+\begin{pmatrix}
+8.0^2&8.0\cdot 8.5\\
+8.5\cdot 8.0&8.5^2
+\end{pmatrix}
+=
+\begin{pmatrix}
+0.6400&0.6800\\
+0.6800&0.7225
+\end{pmatrix}.
+$$
+
+- Therefore
+$$
+\boxed{
+V_{\mathrm{bad}}
+=
+V_{\mathrm{stat}}+V_{\mathrm{norm}}^{\mathrm{bad}}
+=
+\begin{pmatrix}
+0.6656&0.6800\\
+0.6800&0.7514
+\end{pmatrix}.
+}
+$$
+:::
+
+## Fit with this matrix
+$$
+V_{\mathrm{bad}}
+=
+\begin{pmatrix}
+0.6656&0.6800\\
+0.6800&0.7514
+\end{pmatrix}.
+$$
+
+We look for the minimum
+$$
+\chi^2(\mu)
+=
+(\mathbf x-\mu\mathbf 1)^\mathsf T
+V_{\mathrm{bad}}^{-1}
+(\mathbf x-\mu\mathbf 1).
+$$
+
+Let us denote
+$$
+W_{\mathrm{bad}}
+=
+V_{\mathrm{bad}}^{-1}
+=
+\begin{pmatrix}
+19.9142&-18.0219\\
+-18.0219&17.6403
+\end{pmatrix}.
+$$
+
+## A paradoxical result
+
+For a constant model $\lambda_i=\mu$:
+$$
+\chi^2(\mu)
+=
+\mathbf x^\mathsf T W\mathbf x
+-2\mu\,\mathbf 1^\mathsf T W\mathbf x
++\mu^2\,\mathbf 1^\mathsf T W\mathbf 1.
+$$
+
+The minimum condition gives
+$$
+\frac{\partial\chi^2}{\partial\mu}
+=
+-2\mathbf 1^\mathsf T W\mathbf x
++2\widehat\mu\,\mathbf 1^\mathsf T W\mathbf 1
+=0,
+$$
+whence
+$$
+\boxed{
+\widehat\mu
+=
+\frac{\mathbf 1^\mathsf T W\mathbf x}{\mathbf 1^\mathsf T W\mathbf 1}
+=
+\mathbf w^\mathsf T\mathbf x,
+\qquad
+\mathbf w
+=
+\frac{W\mathbf 1}{\mathbf 1^\mathsf T W\mathbf 1}.
+}
+$$
+
+For $W=W_{\mathrm{bad}}$:
+$$
+\mathbf w_{\mathrm{bad}}
+\approx
+\begin{pmatrix}
+1.253\\
+-0.253
+\end{pmatrix},
+\qquad
+\boxed{
+\widehat\mu_{\mathrm{bad}}\approx 7.87\pm0.81.
+}
+$$
+
+::: {.fragment .callout-warning .thmbox appearance="simple"}
+An estimate below both measured points is not an arithmetic mistake but a signal that the covariance model describes the normalization incorrectly.
+:::
+
+## Comparison of results
+
+::: {.clt-widget}
+```{ojs}
+//| echo: false
+
+pppPoints = [
+  {x: 7.8737, y: 0, label: "naive covariance", kind: "bad"},
+  {x: 8.0, y: 1, label: "x₁ = 8.0", kind: "data"},
+  {x: 8.2349, y: 2, label: "correct model", kind: "good"},
+  {x: 8.5, y: 1, label: "x₂ = 8.5", kind: "data"}
+]
+
+pppPlot = Plot.plot({
+  width: 920,
+  height: 190,
+  marginLeft: 80,
+  marginRight: 70,
+  marginBottom: 45,
+  marginTop: 18,
+  x: {label: "value of μ", domain: [7.75, 8.62], grid: true},
+  y: {axis: null, domain: [-0.7, 2.55]},
+  marks: [
+    Plot.ruleY([1], {stroke: "#777", strokeDasharray: "6,5"}),
+    Plot.dot(pppPoints, {
+      x: "x",
+      y: "y",
+      r: 8,
+      fill: d => d.kind === "bad" ? "#ff5a5f" : d.kind === "good" ? "#2dd881" : "#4ea1ff",
+      stroke: "#111",
+      strokeWidth: 1.2
+    }),
+    Plot.text(pppPoints, {
+      x: "x",
+      y: "y",
+      text: "label",
+      fill: "#f2f2f2",
+      dy: d => d.kind === "data" ? -18 : 18,
+      fontSize: 16
+    })
+  ]
+})
+
+html`${pppPlot}`
+```
+:::
+
+## What went wrong
+
+The overall normalization is an uncertain scale of the prediction, not additional noise of each already measured point.
+
+::: incremental
+- In the expression $f_N^2 x_i x_j$ a large fluctuation automatically receives a large absolute systematic error.
+- With strong correlation this can give a negative weight to the larger point.
+- The minimization is formally correct for the matrix as written, but the matrix itself is built from the wrong probabilistic model.
+- The right question: how does the normalization systematic effect change the **model prediction**?
+:::
+
+## The correct covariance matrix
+
+From the normalization model it follows that
+$$
+\boxed{
+V_{ij}(\mu)
+=
+s_i^2\delta_{ij}
++
+f_N^2\mu^2.
+}
+$$
+
+If we take the self-consistent value
+$$
+\widehat\mu
+=
+\frac{\sum_i x_i/s_i^2}{\sum_i1/s_i^2}
+\approx
+8.235,
+$$
+then
+$$
+V_{\mathrm{corr}}
+=
+\begin{pmatrix}
+0.7037&0.6781\\
+0.6781&0.7070
+\end{pmatrix}.
+$$
+
+## Solution with the correct covariance
+
+We use the same derivation, but now $W=V_{\mathrm{corr}}^{-1}$:
+$$
+\widehat\mu
+=
+\frac{\mathbf 1^\mathsf T W\mathbf x}{\mathbf 1^\mathsf T W\mathbf 1},
+\qquad
+\sigma_\mu^2
+=
+\frac{1}{\mathbf 1^\mathsf T W\mathbf 1}.
+$$
+
+Numerically:
+$$
+\mathbf w_{\mathrm{corr}}
+\approx
+\begin{pmatrix}
+0.530\\
+0.470
+\end{pmatrix},
+\qquad
+\boxed{
+\widehat\mu_{\mathrm{corr}}
+\approx
+8.235\pm0.832.
+}
+$$
+
+::: {.fragment .callout-note .thmbox appearance="simple"}
+The overall normalization increased the error but did not shift the central value below both points.
+There are no more negative weights.
+:::
+
+## The same via a penalty term
+
+Let us write the normalization as a constrained nuisance parameter:
+$$
+x_i=(1+\alpha)\mu+\varepsilon_i,
+\qquad
+\varepsilon_i\sim\mathrm N(0,s_i^2),
+\qquad
+\alpha=0\pm f_N.
+$$
+
+Then we minimize
+$$
+\boxed{
+\chi^2(\mu,\alpha)
+=
+\sum_i
+\frac{\left[x_i-(1+\alpha)\mu\right]^2}{s_i^2}
++
+\frac{\alpha^2}{f_N^2}.
+}
+$$
+
+Let us denote
+$$
+R(\mu,\alpha)
+=
+\sum_i
+\frac{x_i-(1+\alpha)\mu}{s_i^2}.
+$$
+
+Minimum conditions:
+$$
+\frac{\partial\chi^2}{\partial\mu}
+=
+-2(1+\alpha)R=0,
+\qquad
+\frac{\partial\chi^2}{\partial\alpha}
+=
+-2\mu R+\frac{2\alpha}{f_N^2}=0.
+$$
+
+## The same via a penalty term
+
+Hence
+$$
+\widehat\alpha=0,
+\qquad
+\widehat\mu
+=
+\frac{\sum_i x_i/s_i^2}{\sum_i1/s_i^2}
+\approx
+8.235.
+$$
+
+## Error from the penalty term
+
+The matrix of the quadratic form $\Delta\chi^2$ in $(\mu,\alpha)$ gives the covariance matrix
+$$
+\operatorname{Cov}(\widehat\mu,\widehat\alpha)
+\approx
+\begin{pmatrix}
+0.6917&-0.0823\\
+-0.0823&0.0100
+\end{pmatrix}.
+$$
+
+Therefore
+$$
+\boxed{
+\widehat\mu_{\text{penalty}}
+\approx
+8.235\pm\sqrt{0.6917}
+=
+8.235\pm0.832.
+}
+$$
+
+The same can be written as a sum of contributions:
+$$
+\begin{aligned}
+\sigma_\mu^2
+&\approx
+\left(\sum_i\frac1{s_i^2}\right)^{-1}
++
+(f_N\widehat\mu)^2\\
+&\approx
+0.0136+0.6781
+=0.6917.
+\end{aligned}
+$$
+
+The first term is the statistics of the points, the second is the overall normalization.
+
+::: {.fragment .callout-note .thmbox appearance="simple"}
+The covariance matrix and the penalty term give the same answer if the covariance is built from the model.
+:::
+
+
+# Error propagation
+
+## A function of fitted parameters
+
+Suppose we have found
+$$
+\widehat{\boldsymbol\theta},
+\qquad
+V_\theta=\operatorname{Cov}(\widehat{\boldsymbol\theta}),
+$$
+and now we want to obtain the quantity
+$$
+\boldsymbol\alpha=\boldsymbol\alpha(\boldsymbol\theta).
+$$
+
+The estimate is obtained by substitution:
+$$
+\widehat{\boldsymbol\alpha}
+=
+\boldsymbol\alpha(\widehat{\boldsymbol\theta}).
+$$
+
+Covariance in the linear approximation:
+$$
+\boxed{
+V_\alpha
+=
+A V_\theta A^\mathsf T,
+\qquad
+A_{ij}
+=
+\left.
+\frac{\partial\alpha_i}{\partial\theta_j}
+\right|_{\widehat{\boldsymbol\theta}}.
+}
+$$
+
+## How to read the formula
+
+::: incremental
+- The derivatives show how sensitive the new quantity is to each parameter.
+- The off-diagonal elements $V_\theta$ matter: parameter correlations propagate too.
+- The formula is local; it is based on a linear expansion around the minimum. With strong nonlinearity or boundaries, the result is better checked with pseudo-experiments or a scan.
+:::
+
+---
+
+# What we do not do in this lecture
+
+## Formal goodness-of-fit test
+
+The minimum of $\chi^2$ is often used not only for fitting but also for testing the goodness of fit of the model to the data.
+
+For this one needs to know the distribution of the statistic $\chi^2_{\min}$ and the number of degrees of freedom. This is a separate topic.
+
+::: {.fragment .callout-note .thmbox appearance="simple"}
+In this lecture $\chi^2$ is primarily a function for estimating parameters and their uncertainties. Formal $p$-values, significances and goodness-of-fit tests will come later.
+:::
+
+## When least squares should not be used
+
+::: incremental
+- Small Poisson counts, empty bins; unbinned event-by-event analysis.
+- Errors depend on the parameters; significant errors exist not only along the vertical axis.
+- Distributions are asymmetric or bounded.
+- The local quadratic approximation is clearly poor.
+:::
+
+In these cases it is better to start from a probabilistic model and write the likelihood.
+
+
+# Practical recipe
+
+## Analysis algorithm
+
+::: incremental
+1. Write down the model $\boldsymbol\lambda(\boldsymbol\theta,\boldsymbol\eta)$.
+2. Determine the data covariance $V_y$.
+3. For systematic effects, specify the nominal values $\boldsymbol\eta_0$ and the covariance $V_\eta$.
+4. Build $\chi^2(\boldsymbol\theta,\boldsymbol\eta)$ with penalties.
+5. Minimize or profile the nuisance parameters.
+6. Obtain the parameter covariance from the local quadratic form.
+7. Check the residuals, correlations and stability of the result.
+:::
+
+## What to report along with the result
+
+::: incremental
+- the fitted parameters and their units;
+- the covariance or correlation matrix of the parameters;
+- the form of $\chi^2$ used;
+- which systematic effects are included and how they are constrained;
+- whether parameters were profiled;
+- plots of the data, the model and the residuals;
+- stability checks.
+:::
+
+---
+
+# What to remember
+
+## Summary
+
+::: incremental
+- The local form of $\Delta\chi^2$ determines the covariance matrix of the parameters.
+- Systematic effects are described by nuisance parameters with a penalty; linear ones can be profiled or added to the data covariance: $V=V_y+HV_\eta H^\mathsf T$.
+- For a multiplicative normalization, the covariance must not be built from the observed values themselves.
+- Errors of derived quantities are propagated with the formula $V_\alpha=AV_\theta A^\mathsf T$.
+:::

@@ -1,0 +1,81 @@
+## Problem 1. The mean as a least-squares result
+
+We have independent measurements of a single quantity:
+$$
+Y_i\sim\mathrm N(\mu,\sigma_i^2).
+$$
+
+All $\sigma_i>0$ are known and do not depend on $\mu$.
+
+1. Write down the function $\chi^2(\mu)$.
+2. Find its minimum.
+3. Show that the resulting estimator is a weighted average.
+4. Find the variance of this estimator.
+5. Consider the special case of equal $\sigma_i$.
+
+## Problem 2. Analytic fit of a straight line
+
+For the data $(x_i,y_i,\sigma_i)$ the model
+$$
+y=a+bx.
+$$
+
+is considered. The coordinates $x_i$ are known exactly, the errors in $y$ are independent and Gaussian,
+and their standard deviations $\sigma_i>0$ are known. Among the $x_i$ there are at least
+two distinct values.
+
+1. Derive the normal equations.
+2. Obtain analytic formulas for $\widehat a$ and $\widehat b$.
+3. Derive the covariance matrix of the parameters.
+4. Show that centering $x_i$ about the weighted average removes the covariance of the parameters.
+5. Check the formulas numerically on an artificial sample.
+
+## Problem 3. Error of the fitted curve
+
+Three independent Gaussian measurements at exactly known energies
+$x=(1,2,3)$ MeV gave peak positions $y=(103,200,303)$ channels.
+The error of each position is $2$ channels. For the model $f(x)=a+bx$ find:
+
+1. the variance of the estimator of the mean $\widehat y(x)=\widehat a+\widehat bx$;
+2. the point at which this variance is minimal;
+3. the variance of the difference $Y_*-\widehat y(x_*)$ for a new independent
+   measurement at fixed $x_*$ with known error $\sigma_*$;
+4. the difference between the band for the mean signal and the band for a new measurement.
+
+Plot both bands for these data at $\sigma_*=2$ channels.
+Explain why pointwise coverage does not mean coverage of the whole curve at once.
+
+## Problem 4. Residuals and diagonal elements of the hat matrix
+
+Let $N>2$, $y_i=a+bx_i+\varepsilon_i$, and let $\varepsilon_i$ be independent,
+with zero means and a common known variance $\sigma^2$.
+The coordinates $x_i$ are fixed and not all equal. In this case
+$\widehat{\mathbf y}=H\mathbf y$, where $H=X(X^{\mathsf T}X)^{-1}X^{\mathsf T}$,
+$X_{i1}=1$, $X_{i2}=x_i$.
+Denote the residuals by $\mathbf r=\mathbf y-\widehat{\mathbf y}$,
+and the identity matrix by $I$.
+
+1. Show that $H^2=H$.
+2. Show that $\operatorname{tr}H=2$.
+3. Derive the covariance of the residuals
+   $$
+   \operatorname{Cov}(\mathbf r)=\sigma^2(I-H).
+   $$
+4. Find the diagonal elements $h_{ii}$, which characterize the influence (leverage) of the points in a straight-line fit.
+5. Add one point far away in $x$ and estimate its influence.
+
+## Problem 5. Influence of a single point
+
+Generate $16$ independent Gaussian measurements around the line $y=1+0.8x$
+at $x_i=-4.5+9(i-1)/15$, $i=1,\ldots,16$, with known equal errors
+$\sigma_i=0.55$. Fix the seed of the generator.
+
+1. Perform the fit with the ordinary method of least squares.
+2. Add a shift $d$ to one point, keeping its stated error.
+   Derive the changes of $\widehat a$ and $\widehat b$ from the normal equations.
+3. Vary $d$ from $-4$ to $6$ and compare the formulas with a repeated fit.
+4. Repeat the experiment for a point near the center and for an end point.
+   Compare the influence on the slope and on the residuals.
+5. Check whether the computed covariance of the parameters changes under these shifts.
+   Explain why an unchanged parameter error does not guarantee the absence
+   of a bias due to a corrupted measurement.

@@ -1,0 +1,480 @@
+---
+title: "Lecture 2. Random variables, distributions and moments"
+subtitle: "Statistical Data Analysis"
+author: "Dmitry V. Naumov (JINR)"
+format:
+  revealjs:
+    slide-number: true
+    preview-links: auto
+    chalkboard:
+      buttons: false
+    logo: shared/figures/dvnlogo.png
+    css: styles.css
+    transition: fade
+    center: true
+---
+
+# Randomness and random variables
+
+## Why "random"?
+
+::: incremental
+- In classical physics, fluctuations arise from incomplete knowledge of the initial conditions and the large number of degrees of freedom.
+- In quantum physics, the probabilistic nature is built into the theory itself.
+- An experiment observes not the "ideal expectation" but a specific realization with statistical fluctuations.
+- Therefore, the comparison of a model with data is always formulated in the language of probability.
+:::
+
+
+## A random variable and its distribution
+
+::: incremental
+- A random variable $X$ is an experimentally measured quantity that cannot be predicted before the experiment is performed.
+- For a discrete $X$: the probability mass function (PMF)
+$$
+p_k=P(X=x_k),\qquad \sum_k p_k=1.
+$$
+- For a continuous $X$: the probability density function (PDF)
+$$
+P(x\le X<x+dx)=f(x)\,dx,\qquad \int_{-\infty}^{+\infty}f(x)\,dx=1.
+$$
+:::
+
+## Cumulative distribution function (CDF) {#cdf}
+::: incremental
+- For a continuous $X$:
+$$
+F(a) = P(X < a) = \int_{-\infty}^a f(x)\, dx
+$$
+- $F(a)$ increases monotonically from 0 to 1.
+
+- $F'(a) = f(a)$ for continuous distributions.
+
+- The probability of falling into the interval $[a,b)$: 
+$$
+P(a \le X < b) = F(b) - F(a).
+$$
+:::
+
+# Means, variances and moments
+
+## Moments of a distribution
+- The moments of the function $f(x)$ are useful:
+$$
+\langle x^n\rangle = \mathbb{E}[X^n]=\int_{-\infty}^{+\infty} x^n f(x)\, dx.
+$$
+- If all the moments $\langle x^n\rangle$ are known, then $f(x)$ can be reconstructed (not for every function!).
+
+## Practically important moments
+
+::: incremental
+
+- Mean:
+$$
+\mu = \langle x\rangle=\mathbb{E}[X] =\int_{-\infty}^{+\infty} x f(x)\, dx.
+$$
+- Mean square:
+$$
+\langle x^2\rangle = \mathbb{E}[X^2]=\int_{-\infty}^{+\infty} x^2 f(x)\, dx.
+$$
+- Variance:
+$$
+\sigma^2=\mathrm{Var}(X)=\mathbb{E}[(X-\mu)^2]=\mathbb{E}[X^2-2\mu X+\mu^2]=\langle x^2\rangle - \langle x \rangle^2.
+$$
+:::
+
+## Moments of the distribution of an arbitrary function $g(X)$ of a random variable
+
+::: incremental
+- Mean value of the function $g(X)$:
+$$
+\langle g(x) \rangle = \mathbb{E}[g(X)] =  \int g(x)f(x)\,dx.
+$$
+- Variance of the function $g(X)$:
+$$
+\mathrm{Var}(g(X)) = \mathbb{E}[(g(X) - \langle g(X) \rangle)^2] = \int \left(g(x) - \langle g(x) \rangle\right)^2 f(x)\,dx.
+$$
+:::
+
+# Basic distributions
+
+## Three important examples
+- Binomial distribution
+- Poisson distribution
+- Normal (Gaussian) distribution
+
+# Counting successes: the binomial model
+
+## Binomial distribution
+
+If in $n$ independent trials the probability of success is $p$, then
+$$
+P(K=k)=\binom{n}{k}p^k(1-p)^{n-k},\qquad k=0,\dots,n.
+$$
+
+where
+$$
+\binom{n}{k}=\frac{n!}{k!(n-k)!}
+$$
+is the number of ways to choose $k$ successes among $n$ trials.
+
+## Example of a binomial distribution
+
+{{< embed notebooks/binomial_pmf_demo.qmd >}}
+
+## Moments of the binomial distribution
+
+::: incremental
+- Expectation value: $\mathbb{E}[K]=np$
+- Variance: $\mathrm{Var}(K)=np(1-p)$
+- Example: the number of decays into the channel of interest for a fixed number of parent particles.
+:::
+
+
+## Step-by-step derivation
+
+## Derivation of $\mathbb{E}[K]$
+::: incremental 
+- By definition:
+$$
+\mathbb{E}[K]
+=\sum_{k=0}^n k\,P(K=k)
+=\sum_{k=0}^n k\binom{n}{k}p^k(1-p)^{n-k}.
+$$
+
+- We use the identity
+$$
+k\binom{n}{k}=k \frac{n!}{k!(n-k)!} = n\frac{(n-1)!}{(k-1)!(n-k)!} = n\binom{n-1}{k-1},
+$$
+- and obtain
+$$
+\mathbb{E}[K]
+=np\sum_{k=1}^{n}\binom{n-1}{k-1}p^{k-1}(1-p)^{n-k}.
+$$
+:::
+
+## Derivation of $\mathbb{E}[K]$ 
+::: incremental
+- Let $j=k-1$:
+$$
+\mathbb{E}[K]
+=np\sum_{j=0}^{n-1}\binom{n-1}{j}p^j(1-p)^{(n-1)-j}.
+$$
+
+- By the binomial theorem
+$$
+\sum_{j=0}^{n-1}\binom{n-1}{j}p^j(1-p)^{(n-1)-j}
+=(p+(1-p))^{n-1}=1.
+$$
+
+- Result:
+$$
+\boxed{
+\mathbb{E}[K]=np.}
+$$
+:::
+
+## Derivation of $\mathrm{Var}(K)$
+
+::: incremental
+- Let us start with the second factorial moment:
+$$
+\mathbb{E}[K(K-1)]
+=\sum_{k=0}^{n}k(k-1)\binom{n}{k}p^k(1-p)^{n-k}.
+$$
+
+- We use the identity
+
+::: {.fragment}
+$$
+k(k-1)\binom{n}{k}=k(k-1)\frac{n!}{k!(n-k)!}
+$$
+:::
+
+::: {.fragment}
+$$
+= n(n-1)\frac{(n-2)!}{(k-2)!(n-k)!}
+$$
+:::
+
+::: {.fragment}
+$$
+= n(n-1)\binom{n-2}{k-2}.
+$$
+:::
+:::
+
+## Derivation of $\mathrm{Var}(K)$
+::: incremental
+- We obtain the identity:
+$$
+k(k-1)\binom{n}{k}=n(n-1)\binom{n-2}{k-2}.
+$$
+- Now, using it in the formula for $\mathbb{E}[K(K-1)]$, we find
+
+::: {.fragment}
+$$
+\mathbb{E}[K(K-1)]
+=\sum_{k=0}^{n}k(k-1)\binom{n}{k}p^k(1-p)^{n-k}.
+$$
+:::
+::: {.fragment}
+
+$$
+=n(n-1)p^2\sum_{k=2}^{n}\binom{n-2}{k-2}p^{k-2}(1-p)^{n-k}
+=n(n-1)p^2.
+$$
+:::
+::: {.fragment}
+$$
+\boxed{\mathbb{E}[K(K-1)]=n(n-1)p^2.}
+$$
+:::
+:::
+
+## Derivation of $\mathrm{Var}(K)$ 
+::: incremental
+- We use the identity for $K^2$:
+$$
+K^2=K(K-1)+K,
+$$
+- therefore
+$$
+\mathbb{E}[K^2]=\mathbb{E}[K(K-1)]+\mathbb{E}[K]
+=n(n-1)p^2+np.
+$$
+
+- Now
+$$
+\mathrm{Var}(K)=\mathbb{E}[K^2]-\mathbb{E}[K]^2
+=\big(n(n-1)p^2+np\big)-(np)^2
+=np(1-p).
+$$
+:::
+
+
+
+# Counting rare events: the Poisson model
+
+## Poisson distribution
+
+::: incremental
+- The Poisson distribution models the number of events in a fixed interval of time or space with a constant mean intensity $\lambda$ and independent events.
+- Example: the number of decays of a radioactive source in 1 minute.
+- The probability of observing $N=k$ events with a mean number of events $\lambda$:
+$$
+P(N=k)=\frac{\lambda^k e^{-\lambda}}{k!},\qquad k=0,1,2,\dots
+$$
+:::
+
+
+## Example of a Poisson distribution
+
+{{< embed notebooks/poisson_pmf_demo.qmd >}}
+
+## Moments of the Poisson distribution
+
+::: incremental
+- $\mathbb{E}[N]=\lambda$
+- $\mathrm{Var}(N)=\lambda$
+:::
+
+## Step-by-step derivation
+
+## Derivation of $\mathbb{E}[N]$
+
+::: {.fragment}
+By definition:
+$$
+\mathbb{E}[N]=\sum_{k=0}^{\infty} k\,\frac{\lambda^k e^{-\lambda}}{k!}.
+$$
+:::
+
+::: {.fragment}
+We take the factors out of the sum:
+$$
+\mathbb{E}[N]=\lambda e^{-\lambda}\sum_{k=1}^{\infty}\frac{\lambda^{k-1}}{(k-1)!}.
+$$
+:::
+
+::: {.fragment}
+Index shift $j=k-1$:
+$$
+\mathbb{E}[N]=\lambda e^{-\lambda}\sum_{j=0}^{\infty}\frac{\lambda^j}{j!}
+=\lambda e^{-\lambda}e^{\lambda}
+=\lambda.
+$$
+:::
+
+::: {.fragment}
+$$
+\boxed{\mathbb{E}[N]=\lambda.}
+$$
+:::
+
+
+## Derivation of $\mathrm{Var}(N)$
+
+::: {.fragment}
+First, the second factorial moment:
+$$
+\mathbb{E}[N(N-1)]
+=\sum_{k=0}^{\infty}k(k-1)\frac{\lambda^k e^{-\lambda}}{k!}.
+$$
+:::
+
+::: {.fragment}
+Since $\dfrac{k(k-1)}{k!}=\dfrac{1}{(k-2)!}$:
+$$
+\mathbb{E}[N(N-1)]
+=\lambda^2 e^{-\lambda}\sum_{k=2}^{\infty}\frac{\lambda^{k-2}}{(k-2)!}
+=\lambda^2 e^{-\lambda}\sum_{j=0}^{\infty}\frac{\lambda^j}{j!}
+=\lambda^2.
+$$
+:::
+
+::: {.fragment}
+$$
+\boxed{\mathbb{E}[N(N-1)]=\lambda^2.}
+$$
+:::
+
+
+## Derivation of $\mathrm{Var}(N)$
+
+::: incremental
+- We use the relation:
+$$
+N^2=N(N-1)+N.
+$$
+- Then
+$$
+\mathbb{E}[N^2]=\mathbb{E}[N(N-1)]+\mathbb{E}[N]=\lambda^2+\lambda.
+$$
+- And
+$$
+\mathrm{Var}(N)=\mathbb{E}[N^2]-\mathbb{E}[N]^2
+=(\lambda^2+\lambda)-\lambda^2
+=\lambda.
+$$
+:::
+
+# Continuous errors: the normal model
+
+## Normal (Gaussian) distribution
+
+$$
+f(x;\mu,\sigma)=\frac{1}{\sigma(2\pi)^{1/2}}
+\exp\!\left[-\frac{(x-\mu)^2}{2\sigma^2}\right].
+$$
+
+- A continuous model with center $\mu$ and spread scale $\sigma$.
+- It often arises as the sum of many small independent contributions.
+
+> Many years ago I called the Laplace–Gaussian curve the normal curve, which name, while it avoids an international question of priority, has the disadvantage of leading people to believe that all other distributions of frequency are in one sense or another "abnormal".
+>
+> K. Pearson (1920)
+
+
+## Example of a normal distribution
+
+{{< embed notebooks/normal_density_demo.qmd >}}
+
+## Moments of the Gaussian distribution
+
+- $\mathbb{E}[X]=\mu$
+- $\mathrm{Var}(X)=\sigma^2$
+
+## Step-by-step derivation
+
+## Derivation of $\mathbb{E}[X]$
+
+::: {.fragment}
+By definition:
+$$
+\mathbb{E}[X]
+=\int_{-\infty}^{+\infty}x\,
+\frac{1}{\sigma(2\pi)^{1/2}}
+\exp\!\left[-\frac{(x-\mu)^2}{2\sigma^2}\right]dx.
+$$
+:::
+
+::: {.fragment}
+Transition to the standard normal: $z=\dfrac{x-\mu}{\sigma}$, $x=\mu+\sigma z$, $dx=\sigma dz$.
+$$
+\mathbb{E}[X]
+=\int_{-\infty}^{+\infty}(\mu+\sigma z)\,\varphi(z)\,dz,\qquad
+\varphi(z)=\frac{1}{\sqrt{2\pi}}e^{-z^2/2}.
+$$
+:::
+
+::: {.fragment}
+$$
+\mathbb{E}[X]
+=\mu\int_{-\infty}^{+\infty}\varphi(z)\,dz
++\sigma\int_{-\infty}^{+\infty}z\varphi(z)\,dz
+=\mu\cdot1+\sigma\cdot0=\mu,
+$$
+since $z\varphi(z)$ is an odd function.
+:::
+
+::: {.fragment}
+$$
+\boxed{\mathbb{E}[X]=\mu.}
+$$
+:::
+
+
+## Derivation of $\mathrm{Var}(X)$
+
+::: {.fragment}
+By definition:
+$$
+\mathrm{Var}(X)=\mathbb{E}[(X-\mu)^2]
+=\int_{-\infty}^{+\infty}(x-\mu)^2 f(x)\,dx.
+$$
+:::
+
+::: {.fragment}
+For $z=\dfrac{x-\mu}{\sigma}$:
+$$
+\mathrm{Var}(X)=\sigma^2\int_{-\infty}^{+\infty}z^2\varphi(z)\,dz
+=\sigma^2\,\mathbb{E}[Z^2],\qquad Z\sim\mathrm{N}(0,1).
+$$
+:::
+
+::: {.fragment}
+$$
+\mathbb{E}[Z^2]
+=\int_{-\infty}^{+\infty}z^2\varphi(z)\,dz
+=\left[-z\varphi(z)\right]_{-\infty}^{+\infty}
++\int_{-\infty}^{+\infty}\varphi(z)\,dz
+=1.
+$$
+:::
+
+::: {.fragment}
+$$
+\boxed{\mathrm{Var}(X)=\sigma^2.}
+$$
+:::
+
+
+
+# Summary
+
+## Summary of distributions
+
+| Name | Mean | Variance | Conditions of applicability |
+|---|---:|---:|---|
+| Binomial $K\sim\mathrm{Bin}(n,p)$ | $np$ | $np(1-p)$ | <small>Fixed $n$; independent trials; constant $p$. </small>|
+| Poisson $N\sim\mathrm{Pois}(\lambda)$ | $\lambda$ | $\lambda$ | <small>Events in a fixed interval; constant intensity; independence. </small>|
+| Normal $X\sim\mathrm{N}(\mu,\sigma)$ | $\mu$ | $\sigma^2$ | <small>Continuous errors; sum of many small independent contributions. </small>|
+
+## What is important to remember
+
+::: incremental
+- Data fluctuations are described probabilistically.
+- The distribution is chosen according to the conditions of the problem (see the table).
+- The mean and the variance are the first characteristics of a distribution.
+:::

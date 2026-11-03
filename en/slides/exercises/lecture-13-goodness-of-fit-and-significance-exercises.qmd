@@ -1,0 +1,14 @@
+---
+title: "Exercises: goodness of fit and statistical significance"
+subtitle: "Statistical Data Analysis"
+author: "Dmitry V. Naumov"
+format:
+  html:
+    toc: false
+---
+
+[← Back to the course](../index.html){.exercise-back-link}
+
+# Exercises
+
+{{< include ../../../_includes/exercises/13_goodness_of_fit_and_significance-en.qmd >}}

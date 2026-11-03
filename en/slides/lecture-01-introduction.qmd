@@ -4,6 +4,8 @@ subtitle: "Statistical Data Analysis"
 author: "Dmitry V. Naumov (JINR)"
 format:
   revealjs:
+    width: 1600
+    height: 1000
     slide-number: true
     preview-links: auto
     chalkboard:
@@ -11,49 +13,64 @@ format:
     logo: shared/figures/dvnlogo.png
     css: styles.css
     transition: fade
-    center: true
+    center: false
 ---
-
-## Disclaimer
+# What this course is about
+## What this course is about
 
 ::: incremental
-- I am not a statistician. I am a physicist who uses statistical analysis in practice.
-- I will introduce the main concepts, tricks, and the language physicists use when talking to each other:
-    - I discovered a signal with 5 $\sigma$ significance!
-    - We observe an excess in the data.
-    - No significant excess is seen.
-    - We exclude this region of parameter space at 95\% C.L.
+- In this course we will go through the concepts, techniques and language that physicists use to discuss results:
+    - I have discovered a signal with a significance of 5 $\sigma$!
+    - We observe an excess of events in the data.
+    - No significant excess of events is observed.
+    - We exclude this parameter region at 95\% C.L.
     - We set an upper limit on the cross section.
-    - The fit converged nicely.
+    - The fit converged well.
     - The dominant uncertainty is systematic.
     - Correlations between bins are important.
     - These nuisance parameters were profiled in the fit.
-    - We must use the full covariance matrix.
+    - The full covariance matrix must be used.
 :::
 
 ---
 
-## Notations
-::: incremental
+# Why do we need statistics in physics?
 
-- Scalars will be denoted by italic letters: $x$, $y$, $\theta$
-- Vectors will be denoted in boldface: $\mathbf{x}=(x_1,x_2,\dots,x_n)$
-- Matrices will be denoted in boldface capitals: $\mathbf{V}$, $\mathbf{M}$
-
-- Random variables will be denoted by capital letters: $X$, $Y$
-- Their observed values will be denoted by lowercase letters: $x$, $y$
-
-- Probability of an event $A$ will be denoted by $P(A)$
-- Probability density function will be denoted by $f(x)$ or $p(x)$
-
-- Model parameters will be denoted by $\theta$
-- Estimated values of parameters will be denoted by $\widehat{\theta}$
-
-:::
 ---
 
-## Notations (continued)
+## Four main steps
 ::: incremental
+- Theory:
+  - The effect is encoded in $\mathbf{t}$. 
+  - Example: the number of Higgs bosons produced at the LHC.
+- Experiment:
+  - Search for the effect. Observed value: $\mathbf{d}$.
+- Statistical analysis:
+  - We compare the model expectation $\mathbf{t}$ with the observation $\mathbf{d}$.
+  - We draw a conclusion:
+    - the theory is confirmed, this is an experimental discovery.
+    - the theory is refuted, the parameter region is excluded.  
+- We write a paper.
+:::
+
+
+
+## Notation
+::: incremental
+
+- Scalar quantities are denoted in italics: $x$, $y$, $\theta$
+- Vectors are denoted in bold: $\mathbf{x}=(x_1,x_2,\dots,x_n)$
+- Matrices are denoted by bold capital letters: $\mathbf{V}$, $\mathbf{M}$
+
+- Random variables are denoted by capital letters: $X$, $Y$
+- Their observed values are denoted by lowercase letters: $x$, $y$
+
+- The probability of an event $A$ is denoted as $P(A)$
+- The probability density function is denoted as $f(x)$ or $p(x)$
+
+- Model parameters are denoted by $\theta$
+- Parameter estimates are denoted by $\widehat{\theta}$
+
 - Expectation value: $\mathbb{E}[X]$
 - Variance: $\mathrm{Var}(X)$
 - Standard deviation: $\sigma_X=\sqrt{\mathrm{Var}(X)}$
@@ -62,74 +79,57 @@ format:
 - Correlation coefficient: $\rho(X,Y)$
 :::
 
----
 
-## Frequentist vs Bayes
+## Frequentist and Bayesian approaches
 
-There are two schools that treat probability differently.
+There are two main approaches to the interpretation of probability.
 
-- **Relative frequency (Frequentist)**  
-  $A$, $B$, … are outcomes of a repeatable experiment.
+::: incremental
 
-  $$
-  P(A)=\lim\limits_{n\to\infty}\frac{\text{number of times outcome is }A}{n}
-  $$
-
-- **Subjective probability (Bayes)**
+- Relative frequency  
+  $A$, $B$, ... are outcomes of a repeatable experiment.
 
   $$
-  P(A)=\text{degree of belief that }A\text{ is true}
+  P(A)=\lim\limits_{n\to\infty}\frac{\text{number of observations of outcome }A}{n}
   $$
+
+- Bayesian probability  
+  $A$ is a statement or hypothesis, $B$ are the observed data.
 
   $$
   P(A\mid B)=\frac{P(B\mid A)\,P(A)}{P(B)}
   $$
 
-- In this course I will talk mainly about **Frequentist statistics**.
+- In this course the main emphasis is on **frequentist statistics**.
 
----
+:::
+
+## Visual proof of Bayes' theorem
+
+::: {.centered-figure style="--figure-width: 100%; --figure-max-height: 860px;"}
+![](shared/figures/bayes-theorem.svg){fig-alt="Illustration of Bayes' theorem"}
+:::
 
 ## Literature
 
-- Particle Data Group: [Review of statistics (2015)](http://pdg.lbl.gov/2015/reviews/rpp2015-rev-statistics.pdf)
+- Particle Data Group: [Review of statistics (2026)](http://pdg.lbl.gov/2026/reviews/rpp2026-rev-statistics.pdf)
 
 - G. Cowan, *Statistical Data Analysis*, Clarendon, Oxford, 1998  
-  see also: [www.pp.rhul.ac.uk/~cowan/sda](http://www.pp.rhul.ac.uk/~cowan/sda)
+  also: [www.pp.rhul.ac.uk/~cowan/sda](http://www.pp.rhul.ac.uk/~cowan/sda)
 
 - R. J. Barlow, *Statistics: A Guide to the Use of Statistical Methods in the Physical Sciences*, Wiley, 1989  
-  see also: [hepwww.ph.man.ac.uk/~roger/book.html](http://hepwww.ph.man.ac.uk/~roger/book.html)
+  also: [hepwww.ph.man.ac.uk/~roger/book.html](http://hepwww.ph.man.ac.uk/~roger/book.html)
 
 - L. Lyons, *Statistics for Nuclear and Particle Physics*, CUP, 1986
 
 - F. James, *Statistical and Computational Methods in Experimental Physics*, 2nd ed., World Scientific, 2006
 
-- G. Cowan lectures with lots of material:  
+- Lectures by G. Cowan with a large amount of material:  
   [www.pp.rhul.ac.uk/~cowan/stat_course.html](http://www.pp.rhul.ac.uk/~cowan/stat_course.html)
 
 ---
 
-## Why do we need statistics in physics?
-
----
-
-## Four major steps
-::: incremental
-- Theory:
-  - Effect encoded in $\mathbf{t}$. 
-  - Example: number of Higgs bosons produced at LHC.
-- Experiment:
-  - Search for the effect. Measured value $\mathbf{d}$.
-- Statistical Analysis:
-  - Compare model expectation $\mathbf{t}$ to observation $\mathbf{d}$.
-  - Draw a conclusion: 
-    - theory is confirmed = experimental discovery.
-    - theory is ruled out = excluded.  
-- Write a paper.
-:::
-
----
-
-# Can you read these typical plots in modern physics?
+# Statistics in real physics results
 
 ---
 
@@ -142,7 +142,7 @@ There are two schools that treat probability differently.
 ![](shared/figures/Atlas_pvalue.png){width=95%}
 
 ::: incremental
-- What are
+- What is
   - $p$-value?
   - $\sigma$?
 :::
@@ -159,32 +159,50 @@ There are two schools that treat probability differently.
 
 ---
 
-## Daya Bay  discovery of non zero $\theta_{13}$
+## Daya Bay: discovery of nonzero $\theta_{13}$
+::: columns
 
-![](shared/figures/DayaBayTheta13.png){width=50%}
+::: {.column width="60%"}
+
+![](shared/figures/DayaBayTheta13.png){width=100%}
 
 Published in: Phys.Rev.Lett. 108 (2012) 171803 
+:::
 
-- What is the oscillation fit?  
+::: {.column width="40%"}
+
+- What is an oscillation fit?  
 - What is a best fit value?  
-- What is a statistical significance of the fit?  
+- What is the statistical significance of a fit?  
+:::
+
+:::
 
 ---
 
-## Daya Bay exclusion of parameter space for sterile neutrino
+## Daya Bay: exclusion of sterile neutrinos
 
-![](shared/figures/DBSterile.png){width=50%}
+::: columns
+
+::: {.column width="60%"}
+
+![](shared/figures/DBSterile.png){width=75%}
 
 Published in: Phys.Rev.Lett. 133 (2024) 5, 051801
+:::
+
+::: {.column width="40%"}
 
 - What is excluded here?  
-- Why excluded?
+- Why is this exclusion justified?
 - What is "FC sensitivity"?  
 - What is CL$_s$?  
+:::
 
+:::
 ---
 
-## These figures contain many concepts
+## What is hidden in these plots
 
 ::: incremental
 
@@ -193,7 +211,7 @@ Published in: Phys.Rev.Lett. 133 (2024) 5, 051801
 - likelihood and $\chi^2$
 - best fit
 - confidence intervals and contours
-- significance and $p$-values
+- significance and $p$-value
 - systematic uncertainties
 - nuisance parameters
 - profiling
@@ -201,70 +219,59 @@ Published in: Phys.Rev.Lett. 133 (2024) 5, 051801
 
 :::
 
-## If you do not understand all of this — this course is for you
 
----
+## If not all of this is clear yet, this course is for you
 
-## What will we learn?
+# Course program
+
+
+## What will we study?
 
 ::: incremental
 
-- Probability, Bayes’ theorem
+- Probability, Bayes' theorem
 - Random variables and probability densities
-- Expectation values, error propagation
-- Various pdfs (probability density functions)
-- The Monte Carlo method
+- Expectation value, error propagation
+- Various probability distributions
+- Monte Carlo method
 - Statistical tests: general concepts
 - Test statistics, multivariate methods
-- Goodness-of-fit tests: p-values, significance, discovery and exclusion
-
-:::
-
----
-
-## What will we learn?
-
-::: incremental
-
-- Feldman–Cousins, CL$_s$, and other methods
-- Parameter estimation, maximum likelihood
+- Goodness-of-fit tests: p-value, significance, discovery and exclusion
+- Feldman–Cousins, CL$_s$ and other methods
+- Parameter estimation, method of maximum likelihood
 - Method of least squares
 - Interval estimation, setting limits
 - Nuisance parameters, systematic uncertainties
-- Examples of Bayesian approach
+- Examples of the Bayesian approach
 
 :::
 
 ---
 
-## Let us begin
+# First example: fitting a Gaussian
 
 ---
 
-## A toy example: determine the width of a Gaussian
+## Toy example: determining the width of a Gaussian
 
 ::: incremental
-- Assume that the data follow a Gaussian shape
+- Suppose the data have a Gaussian shape
   $$
   y(x)=\exp\!\left(-\frac{x^2}{2\sigma^2}\right),
   $$
-  with known center $x_0=0$ and normalization $N=1$.
+  with known center $x_0=0$ and normalization $N=1$ and unknown width $\sigma$.
 
-- The only unknown parameter is the width $\sigma$.
+- Your task: find $\sigma$ by comparing the model with the data.
 
-- We generate pseudo-data with statistical fluctuations.
-
-- Your task is to find $\sigma$ by comparing the model to the data.
-
-- For each chosen value of $\sigma$, we calculate
+- For each chosen value of $\sigma$ one computes
   $$  
   \chi^2(\sigma)=\sum_i \frac{[y_i-y(x_i;\sigma)]^2}{\delta y_i^2}.
   $$
 
-- The best-fit value of $\sigma$ minimizes $\chi^2$.
+- The value of $\sigma$ corresponding to the best fit minimizes $\chi^2$.
 :::
 
-## Pseudo-data and fit {#applet-gaussian-fit}
+## Pseudo-data and Fit {#applet-gaussian-fit}
 
 ::: {.fit-widget}
 ```{ojs}
@@ -273,31 +280,42 @@ Published in: Phys.Rev.Lett. 133 (2024) 5, 051801
 // Controls
 viewof sigma = Inputs.range([0.3, 2.0], {
   value: 1.0,
-  step: 0.05,
+  step: 0.02,
   label: "trial σ"
 })
 
-viewof noise = Inputs.range([0.01, 0.15], {
-  value: 0.05,
-  step: 0.01,
-  label: "noise δy"
+viewof nEvents = Inputs.range([200, 5000], {
+  value: 1000,
+  step: 100,
+  label: "N"
 })
 
-viewof regenerate = Inputs.button("Generate new pseudo-data")
+viewof regenerate = Inputs.button("New pseudo-data")
 
 viewof overlays = {
-  const control = Inputs.checkbox(
-    ["show best fit", "show true σ"],
-    {label: "show", value: ["show best fit"]}
-  );
-  control.classList.add("fit-overlays-inline");
-  return control;
+  const panel = html`<div class="fit-overlays-inline">
+    <label>show best fit <input name="showFit" type="checkbox"></label>
+    <label>true σ <input name="showTruth" type="checkbox"></label>
+  </div>`;
+  const fitInput = panel.querySelector('input[name="showFit"]');
+  const truthInput = panel.querySelector('input[name="showTruth"]');
+  const sync = () => {
+    panel.value = {
+      showFit: fitInput.checked,
+      showTruth: truthInput.checked
+    };
+  };
+  const notify = () => {
+    sync();
+    panel.dispatchEvent(new Event("input", {bubbles: true}));
+  };
+  fitInput.addEventListener("change", notify);
+  truthInput.addEventListener("change", notify);
+  sync();
+  return panel;
 }
 
-showFit = overlays.includes("show best fit")
-showTruth = overlays.includes("show true σ")
-
-// Gaussian random number
+// Gaussian random number (Box-Muller)
 function randn() {
   const u = 1 - Math.random();
   const v = Math.random();
@@ -306,6 +324,11 @@ function randn() {
 
 // Fixed x values
 x = Array.from({length: 21}, (_, i) => -2.5 + 0.25 * i)
+dx = 0.25
+xMin = x[0] - dx / 2
+xMax = x[x.length - 1] + dx / 2
+binEdges = Array.from({length: x.length + 1}, (_, i) => xMin + i * dx)
+curveX = Array.from({length: 401}, (_, i) => xMin + (xMax - xMin) * i / 400)
 
 // True sigma (hidden by default)
 sigmaTrue = {
@@ -313,25 +336,88 @@ sigmaTrue = {
   return 0.5 + Math.random();
 }
 
-gauss = (x, s) => Math.exp(-(x * x) / (2 * s * s))
-
-data = {
-  regenerate;
-  return x.map((xi) => ({
-    x: xi,
-    y: gauss(xi, sigmaTrue) + noise * randn(),
-    err: noise
-  }));
+// Generate events x~N(0, sigmaTrue) and fill histogram bins
+function generateCountsGaussian(s, nTot) {
+  const counts = Array(x.length).fill(0);
+  let accepted = 0;
+  while (accepted < nTot) {
+    const xi = s * randn();
+    if (xi < xMin || xi >= xMax) continue;
+    const ibin = Math.floor((xi - xMin) / dx);
+    counts[Math.max(0, Math.min(x.length - 1, ibin))] += 1;
+    accepted += 1;
+  }
+  return counts;
 }
 
-chi2of = (s) => data.reduce(
-  (sum, d) => sum + ((d.y - gauss(d.x, s)) / d.err) ** 2,
-  0
-)
+counts = {
+  regenerate;
+  nEvents;
+  return generateCountsGaussian(sigmaTrue, nEvents);
+}
+
+nTotal = counts.reduce((sum, n) => sum + n, 0)
+countMax = Math.max(1, ...counts)
+
+data = x.map((xi, i) => {
+  const n = counts[i];
+  return {
+    x: xi,
+    n,
+    y: n / countMax,
+    err: Math.sqrt(Math.max(n, 1)) / countMax
+  };
+})
+
+gaussShape = (xx, s) => Math.exp(-(xx * xx) / (2 * s * s))
+
+normCurve = (s) => {
+  const w = curveX.map((xi) => gaussShape(xi, s));
+  const wMax = Math.max(...w, 1e-12);
+  return curveX.map((xi, i) => ({x: xi, y: w[i] / wMax}));
+}
+
+function erfApprox(xx) {
+  const sign = xx < 0 ? -1 : 1;
+  const xAbs = Math.abs(xx);
+  const p = 0.3275911;
+  const a1 = 0.254829592;
+  const a2 = -0.284496736;
+  const a3 = 1.421413741;
+  const a4 = -1.453152027;
+  const a5 = 1.061405429;
+  const t = 1 / (1 + p * xAbs);
+  const poly = (((((a5 * t + a4) * t + a3) * t + a2) * t + a1) * t);
+  const y = 1 - poly * Math.exp(-(xAbs * xAbs));
+  return sign * y;
+}
+
+normalCdf = (z) => 0.5 * (1 + erfApprox(z / Math.SQRT2))
+
+binProbabilities = (s) => {
+  const sSafe = Math.max(s, 1e-6);
+  const cdf = (xx) => normalCdf(xx / sSafe);
+  const norm = Math.max(cdf(xMax) - cdf(xMin), 1e-12);
+  return x.map((_, i) => (cdf(binEdges[i + 1]) - cdf(binEdges[i])) / norm);
+}
+
+modelCounts = (s) => {
+  const probs = binProbabilities(s);
+  return probs.map((p) => nTotal * p);
+}
+
+chi2of = (s) => {
+  const mu = modelCounts(s);
+  return counts.reduce((sum, n, i) => {
+    const m = Math.max(mu[i], 1e-12);
+    if (n > 0) return sum + 2 * (m - n + n * Math.log(n / m));
+    return sum + 2 * m;
+  }, 0);
+}
 
 chi2 = chi2of(sigma)
 
-sigmaGrid = Array.from({length: 341}, (_, i) => 0.30 + 0.005 * i)
+sigmaGrid = Array.from({length: 681}, (_, i) => 0.30 + 0.0025 * i)
 chi2Grid = sigmaGrid.map((s) => ({sigma: s, chi2: chi2of(s)}))
 best = chi2Grid.reduce((a, b) => (a.chi2 < b.chi2 ? a : b))
 sigmaFit = best.sigma
@@ -339,13 +425,13 @@ chi2min = best.chi2
 ndf = Math.max(data.length - 1, 1)
 dchi2 = chi2 - chi2min
 
-trialCurve = x.map((xi) => ({x: xi, y: gauss(xi, sigma)}))
-fitCurve = x.map((xi) => ({x: xi, y: gauss(xi, sigmaFit)}))
-trueCurve = x.map((xi) => ({x: xi, y: gauss(xi, sigmaTrue)}))
+trialCurve = normCurve(sigma)
+fitCurve = normCurve(sigmaFit)
+trueCurve = normCurve(sigmaTrue)
 
 mutable history = []
 historyReset = {
-  regenerate;
+  counts;
   mutable history = [];
   return null;
 }
@@ -362,10 +448,10 @@ historyUpdate = {
 }
 
 mainPlot = Plot.plot({
-  width: 700,
-  height: 380,
+  width: 820,
+  height: 500,
   x: {label: "x"},
-  y: {label: "y", domain: [-0.2, 1.2]},
+  y: {label: "y", domain: [-0.1, 1.2]},
   grid: true,
   marks: [
     Plot.ruleX(data, {
@@ -377,7 +463,7 @@ mainPlot = Plot.plot({
     }),
     Plot.dot(data, {x: "x", y: "y", r: 3.5, fill: "white", stroke: "white"}),
     Plot.line(trialCurve, {x: "x", y: "y", stroke: "#ff6b6b", strokeWidth: 2}),
-    ...(showTruth ? [
+    ...(overlays.showTruth ? [
       Plot.line(trueCurve, {
         x: "x",
         y: "y",
@@ -386,7 +472,7 @@ mainPlot = Plot.plot({
         strokeOpacity: 0.85
       })
     ] : []),
-    ...(showFit ? [
+    ...(overlays.showFit ? [
       Plot.line(fitCurve, {
         x: "x",
         y: "y",
@@ -399,26 +485,12 @@ mainPlot = Plot.plot({
 })
 
 profilePlot = Plot.plot({
-  width: 320,
-  height: 230,
+  width: 620,
+  height: 500,
   x: {label: "σ", domain: [0.3, 2.0]},
-  y: {label: "χ²"},
+  y: {label: "χ²", domain: [0, 50]},
   grid: true,
   marks: [
-    Plot.line(chi2Grid, {
-      x: "sigma",
-      y: "chi2",
-      stroke: "#8ec5ff",
-      strokeOpacity: 0.75
-    }),
-    ...(history.length > 1 ? [
-      Plot.line(history, {
-        x: "sigma",
-        y: "chi2",
-        stroke: "gray",
-        strokeOpacity: 0.45
-      })
-    ] : []),
     Plot.dot(history.slice(0, -1), {
       x: "sigma",
       y: "chi2",
@@ -431,16 +503,18 @@ profilePlot = Plot.plot({
       fill: "#ff6b6b",
       r: 5
     }),
-    ...(showFit ? [
+    ...(overlays.showFit ? [
+      Plot.line(chi2Grid, {
+        x: "sigma",
+        y: "chi2",
+        stroke: "#8ec5ff",
+        strokeOpacity: 0.75
+      }),
       Plot.dot([{sigma: sigmaFit, chi2: chi2min}], {
         x: "sigma",
         y: "chi2",
         fill: "#7CFC00",
         r: 5
-      }),
-      Plot.ruleY([chi2min], {
-        stroke: "#7CFC00",
-        strokeDasharray: "4,4"
       })
     ] : [])
   ]
@@ -448,11 +522,78 @@ profilePlot = Plot.plot({
 
 fitStyle = html`
 <style>
+.fit-widget {
+  --fit-main-width: 820px;
+  --fit-profile-width: 620px;
+  --fit-profile-shift: 2.1rem;
+}
+
+.fit-widget .observablehq--inspect {
+  display: none !important;
+}
+
+.fit-widget .observablehq {
+  margin: 0.12rem 0;
+}
+
+.fit-widget label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 1.03em;
+}
+
+.fit-widget label > span:first-child {
+  min-width: 11.2rem;
+}
+
+.fit-widget input[type="number"] {
+  width: 6.0rem !important;
+}
+
+.fit-widget input[type="range"] {
+  width: 210px !important;
+  accent-color: #ffb347;
+  background: transparent !important;
+}
+
+.fit-widget input[type="range"]::-webkit-slider-runnable-track {
+  height: 6px;
+  border-radius: 999px;
+  background: #46637b;
+}
+
+.fit-widget input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 1px solid #1f2e3a;
+  background: #ffb347;
+  margin-top: -4px;
+}
+
+.fit-widget input[type="range"]::-moz-range-track {
+  height: 6px;
+  border: none;
+  border-radius: 999px;
+  background: #46637b;
+}
+
+.fit-widget input[type="range"]::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 1px solid #1f2e3a;
+  background: #ffb347;
+}
+
 .fit-widget .fit-overlays-inline {
   display: flex;
   align-items: center;
   gap: 1rem;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+  margin: 0.1rem 0 0.45rem;
 }
 
 .fit-widget .fit-overlays-inline label {
@@ -460,22 +601,60 @@ fitStyle = html`
   align-items: center;
   gap: 0.35rem;
   margin: 0;
+  white-space: nowrap;
+}
+
+.fit-widget .fit-overlays-inline input[type="checkbox"] {
+  margin: 0;
 }
 
 .fit-widget .fit-layout {
   display: grid;
-  grid-template-columns: minmax(520px, 1fr) 320px;
-  gap: 1rem;
+  grid-template-columns: var(--fit-main-width) var(--fit-profile-width);
+  gap: 0.35rem;
+  width: max-content;
+  max-width: 100%;
   align-items: start;
 }
 
+.fit-widget .fit-side {
+  transform: translateX(var(--fit-profile-shift));
+}
+
+.fit-widget .fit-main figure,
 .fit-widget .fit-side figure {
   margin: 0;
+}
+
+.fit-widget .fit-summary {
+  margin-top: 0.45rem;
+  font-size: 0.78em;
+  line-height: 1.35;
+}
+
+.fit-widget .fit-summary-label {
+  font-weight: 700;
+}
+
+.fit-widget .fit-summary-choice {
+  color: #ff6b6b;
+}
+
+.fit-widget .fit-summary-fit {
+  color: #7CFC00;
+}
+
+.fit-widget .fit-summary-truth {
+  color: #8ec5ff;
 }
 
 @media (max-width: 980px) {
   .fit-widget .fit-layout {
     grid-template-columns: 1fr;
+  }
+
+  .fit-widget .fit-side {
+    transform: none;
   }
 }
 </style>
@@ -492,40 +671,26 @@ html`
       ${profilePlot}
     </div>
   </div>
-  <div style="margin-top:0.8em; font-size:0.9em; line-height:1.6;">
+  <div class="fit-summary">
     <div>
-      <span style="color:#ff6b6b;"><b>Your choice:</b></span>
+      <span class="fit-summary-label fit-summary-choice">Your choice:</span>
+      N = ${nEvents},
       σ = ${sigma.toFixed(2)},
-      χ² = ${chi2.toFixed(2)},
       χ²/ndf = ${(chi2 / ndf).toFixed(2)}
     </div>
-    ${showFit ? `
+    ${overlays.showFit ? `
     <div>
-      <span style="color:#7CFC00;"><b>Best fit:</b></span>
+      <span class="fit-summary-label fit-summary-fit">Best fit:</span>
       σ_fit = ${sigmaFit.toFixed(3)},
-      χ²_min = ${chi2min.toFixed(2)},
-      Δχ² = ${dchi2.toFixed(2)}
+      χ²_min/ndf = ${(chi2min / ndf).toFixed(2)}
     </div>` : ``}
-    ${showTruth ? `
+    ${overlays.showTruth ? `
     <div>
-      <span style="color:#8ec5ff;"><b>Truth:</b></span>
+      <span class="fit-summary-label fit-summary-truth">True σ:</span>
       σ_true = ${sigmaTrue.toFixed(3)}
     </div>` : ``}
   </div>
 </div>
 `
 ```
-:::
-
----
-
-## Exercises
-
-::: {.callout-warning .exbox appearance="simple"}
-## Exercise
-
-Show that the likelihood for a Poisson count $n$ with expectation $\mu$ is
-$$
-L(\mu)=\frac{\mu^n e^{-\mu}}{n!}.
-$$
 :::

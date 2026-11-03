@@ -1,0 +1,14 @@
+---
+title: "Exercises: when the Gaussian distribution does not arise"
+subtitle: "Statistical Data Analysis"
+author: "Dmitry V. Naumov"
+format:
+  html:
+    toc: false
+---
+
+[← Back to the course](../index.html){.exercise-back-link}
+
+# Exercises
+
+{{< include ../../../_includes/exercises/05_non_gaussian_clt_violations-en.qmd >}}

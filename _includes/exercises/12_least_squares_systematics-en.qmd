@@ -1,0 +1,72 @@
+## Problem 1. Correlated measurements
+
+Three Gaussian measurements $Y_i$ have a common mean $\mu$ and known covariance
+$$
+V=\sigma^2
+\begin{pmatrix}
+1&\rho&\rho\\
+\rho&1&\rho\\
+\rho&\rho&1
+\end{pmatrix},
+\qquad \sigma>0,\quad -\tfrac12<\rho<1.
+$$
+
+1. Write down $\chi^2(\mu)$, find the estimate $\widehat\mu$ and its variance.
+2. Explain why $\rho$ changes the error but does not change the central value.
+3. Consider the limits $\rho\to0$, $\rho\to1$ and $\rho\to-1/2$ from inside the allowed interval. What happens to the eigenvalues of $V$ at the boundaries?
+4. Compare the true variance of the estimator with the error you would report if the correlations were ignored.
+
+## Problem 2. One calibration for many measurements
+
+The results are described by the model $Y_i=\mu+\eta+\varepsilon_i$,
+$i=1,\ldots,N$, where $\varepsilon_i$ are independent and have the distribution
+$\mathcal N(0,s^2)$. An independent calibration gives
+$Z\sim\mathcal N(\eta,\tau^2)$. The parameters $\mu,\eta$ are fixed,
+the variances $s^2,\tau^2>0$ are known.
+
+1. Write down the joint $\chi^2(\mu,\eta)$ for the obtained $y_i$ and $z$.
+2. Find the global minimum, the profile in $\mu$ and the variance of the estimator $\widehat\mu$.
+3. Check the equivalent form with residuals $y_i-z-\mu$ and the matrix $V=s^2I+\tau^2\mathbf1\mathbf1^{\mathsf T}$, where $I$ is the identity matrix and $\mathbf1$ is the vector of ones.
+4. What happens to the error of $\widehat\mu$ as $N\to\infty$? What would you get if you mistakenly added $\tau^2$ only to the diagonal?
+5. For $\mu=10$, $\eta=0.5$, $s=1$, $\tau=0.3$, $N=20$, check the answer with pseudo-experiments. In each trial, regenerate both the main data and the calibration.
+
+## Problem 3. Curvature and nonlinear fit
+
+The mean signal has the form $f(t)=A e^{-\lambda t}$.
+Generate five independent Gaussian measurements at
+$t_i=0,1,2,3,4$ s, $A=10$ mV, $\lambda=0.5$ s$^{-1}$
+with a known common error $s=1$ mV. Fix the seed of the generator.
+
+1. Fit $A>0$ and $\lambda\ge0$ using several starting points.
+2. In the case of an interior minimum, compute the matrix of second derivatives $\chi^2$ and the local covariance. Check the factor $1/2$.
+3. Draw the contour $\Delta\chi^2=2.30$ and compare it with the local ellipse. Does the threshold value by itself guarantee $68.3\%$ coverage in this problem?
+4. Construct the profile in $\lambda$ and the slice at fixed $\widehat A$.
+5. Repeat the calculation for $s=3$ mV, keeping the same standard Gaussian random numbers. Estimate the asymmetry of the profile and the effect of the boundary $\lambda=0$.
+
+## Problem 4. Common normalization
+
+Given $y_1=8.00$ pb, $y_2=8.50$ pb and known independent Gaussian
+errors $s_1=0.16$ pb, $s_2=0.17$ pb. The model has the form
+$Y_i=(1+\alpha)\mu+\varepsilon_i$. An independent calibration
+$Z\sim\mathcal N(\alpha,f_N^2)$ gave $z=0$ with $f_N=0.10$.
+
+1. Write down the joint $\chi^2$, find the minimum and the analytic profile in $\mu$.
+2. Compute the local covariance $(\widehat\mu,\widehat\alpha)$ and the bounds $\Delta\chi^2_{\mathrm p}=1$. Compare them with $\widehat\mu\pm\sigma_\mu$.
+3. Construct the matrix $V_{ij}(\mu)=s_i^2\delta_{ij}+f_N^2\mu^2$ and numerically check the equivalence of the profile form for several values of $\mu$.
+4. Repeat the fit with the fixed matrix $V_{ij}=s_i^2\delta_{ij}+f_N^2y_i y_j$. Find the weights and explain the shift of the estimate.
+5. Why does adding $\ln\det V(\mu)$ change the original profile problem?
+
+## Problem 5. Energy from calibration
+
+The calibration is described by the straight line $y=a+bE$. The results are
+$\widehat a=2$ channels, $\widehat b=100$ channels/MeV,
+$\operatorname{Var}(\widehat a)=28/3$ channel$^2$,
+$\operatorname{Var}(\widehat b)=2$ channel$^2$/MeV$^2$ and
+$\operatorname{cov}(\widehat a,\widehat b)=-4$ channel$^2$/MeV.
+A new independent measurement gave $y_*=202$ channels with an error of $s_*=2$ channels.
+
+1. Find $\widehat E=(y_*-\widehat a)/\widehat b$.
+2. Derive its variance in the linear approximation and compute the error in MeV.
+3. Repeat the calculation dropping the covariance. How much did the answer change?
+4. The calibration covariance already includes the common systematic uncertainty. Should its contribution be added to the energy error once more?
+5. For which values of $\widehat b$ and its error does the linear approximation for the ratio need to be checked?

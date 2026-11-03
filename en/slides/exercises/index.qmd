@@ -1,0 +1,26 @@
+---
+title: "Exercises"
+subtitle: "Statistical Data Analysis"
+author: "Dmitry V. Naumov"
+format:
+  html:
+    toc: false
+---
+
+[← Back to the course](../index.html){.exercise-back-link}
+
+Exercises for the finished lectures:
+
+01. [Motivation and course overview](lecture-01-introduction-exercises.html)
+02. [Random variables, distributions and moments](lecture-02-random-distributions-exercises.html)
+03. [Characteristic functions and sums of random variables](lecture-03-characteristic-functions-exercises.html)
+04. [The central limit theorem and the normal distribution](lecture-04-central-limit-theorem-exercises.html)
+05. [When the Gaussian distribution does not arise](lecture-05-non-gaussian-clt-violations-exercises.html)
+06. [Error propagation](lecture-06-error-propagation-exercises.html)
+07. [The two-dimensional Gaussian](lecture-07-two-dimensional-gaussian-exercises.html)
+08. [The Monte Carlo method and pseudo-experiments](lecture-08-monte-carlo-method-exercises.html)
+09. [Likelihood and maximum likelihood estimators](lecture-09-maximum-likelihood-exercises.html)
+10. [Properties of estimators, profile likelihood and data-analysis examples](lecture-10-estimator-properties-profile-likelihood-exercises.html)
+11. [The method of least squares and linear fit](lecture-11-least-squares-linear-fit-exercises.html)
+12. [χ² intervals, systematic uncertainties and a practical least-squares recipe](lecture-12-least-squares-systematics-exercises.html)
+13. [Goodness of fit and statistical significance](lecture-13-goodness-of-fit-and-significance-exercises.html)

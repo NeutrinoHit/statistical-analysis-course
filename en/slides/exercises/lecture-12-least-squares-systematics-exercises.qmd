@@ -1,0 +1,14 @@
+---
+title: "Exercises: χ² intervals and systematic uncertainties"
+subtitle: "Statistical Data Analysis"
+author: "Dmitry V. Naumov"
+format:
+  html:
+    toc: false
+---
+
+[← Back to the course](../index.html){.exercise-back-link}
+
+# Exercises
+
+{{< include ../../../_includes/exercises/12_least_squares_systematics-en.qmd >}}

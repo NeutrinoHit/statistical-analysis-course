@@ -1,0 +1,29 @@
+---
+format:
+  html:
+    toc: true
+    number-sections: true
+  pdf:
+    pdf-engine: lualatex
+execute:
+  enabled: false
+---
+
+We observe $n$ decays $W^{\pm}$.
+The number of decays $W\to\mu\nu$:
+$k\sim \mathrm{Bin}(n,p)$, where $p$ is the probability of such a decay.
+Three cases: $n=5,20,100$ for $p=0.3$.
+
+```{python}
+#| echo: true
+#| eval: false
+from math import comb
+import numpy as np
+
+p = 0.3
+for n in [5, 20, 100]:
+    k = np.arange(n + 1)
+    pmf = np.array([comb(n, i) * p**i * (1-p)**(n-i) for i in k])
+```
+
+![](../shared/figures/generated/binomial_pmf_profiles.png){width=58% .nostretch}

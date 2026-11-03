@@ -1,0 +1,791 @@
+---
+title: "Lecture 11. The method of least squares and linear fit"
+subtitle: "Statistical Data Analysis"
+author: "Dmitry V. Naumov (JINR)"
+format:
+  revealjs:
+    slide-number: true
+    preview-links: auto
+    chalkboard:
+      buttons: false
+    logo: shared/figures/dvnlogo.png
+    css: styles.css
+    transition: fade
+    center: true
+---
+
+# From Measurements to a Curve
+
+## The Fitting Problem
+
+We have measurements
+$$
+(x_i,y_i\pm \sigma_i),
+\qquad i=1,\ldots,N,
+$$
+and a model
+$$
+y=f(x;\boldsymbol\theta).
+$$
+
+We need to:
+
+::: incremental
+- estimate the parameters $\boldsymbol\theta$;
+- determine their uncertainties and correlations;
+- check whether the model agrees with the data;
+- examine the residuals and the stability of the result.
+:::
+
+## Why One Cannot Simply Draw a Nice Curve
+
+::: incremental
+- The points have different uncertainties.
+- The errors of different points may be correlated.
+- The model parameters also turn out to be correlated.
+- An outlier or a wrong model can strongly bias the result.
+- A good-looking picture does not replace a quantitative goodness-of-fit test.
+:::
+
+::: {.fragment .callout-note .thmbox appearance="simple"}
+A fit is a statistical procedure, not a graphical way of drawing a line between points.
+:::
+
+
+# Connection with the Likelihood Method
+
+## Gaussian Model of Measurements
+
+Let $x_i$ be known exactly, and let the measurements $y_i$ be independent and **Gaussian distributed**:
+$$
+Y_i
+\sim
+\mathrm N\!\left(
+f(x_i;\boldsymbol\theta),
+\sigma_i^2
+\right).
+$$
+
+Then the likelihood function is
+$$
+L(\boldsymbol\theta)
+=
+\prod_{i=1}^{N}
+\frac{1}{\sqrt{2\pi}\sigma_i}
+\exp\!\left[
+-\frac{
+[y_i-f(x_i;\boldsymbol\theta)]^2
+}{2\sigma_i^2}
+\right].
+$$
+
+## Weighted Sum of Squares
+
+For known $\sigma_i$ that do not depend on the parameters:
+$$
+-2\ln L(\boldsymbol\theta)
+=
+\sum_{i=1}^{N}
+\frac{
+[y_i-f(x_i;\boldsymbol\theta)]^2
+}{\sigma_i^2}
++\mathrm{const}.
+$$
+
+Therefore maximizing the likelihood is equivalent to minimizing
+$$
+\boxed{
+\chi^2(\boldsymbol\theta)
+=
+\sum_{i=1}^{N}
+\frac{[y_i-f(x_i;\boldsymbol\theta)]^2}{\sigma_i^2}.
+}
+$$
+
+
+## What the Weights Mean
+
+Contribution of a single point:
+$$
+\chi_i^2
+=\frac{[y_i-f(x_i;\boldsymbol\theta)]^2}{\sigma_i^2}\equiv
+\frac{r_i^2}{\sigma_i^2}.
+$$
+
+::: incremental
+- A point with small $\sigma_i$ has a stronger influence on the fit.
+- A point with large $\sigma_i$ allows a larger absolute residual.
+- The weight of a point equals the inverse variance:
+  $$
+  w_i=\frac{1}{\sigma_i^2}.
+  $$
+- The weight must follow from the probabilistic model, not be chosen to obtain a desired result.
+:::
+
+
+## Least Squares Is Not Universal
+
+Least squares arises naturally in the Gaussian approximation. It may be wrong if:
+
+::: incremental
+- small Poisson counts are observed;
+- the distribution has heavy tails;
+- the errors are asymmetric;
+- there are physical boundaries;
+- the variance depends on the parameters, but this is ignored;
+- the uncertainties along the $x$ axis are significant.
+:::
+
+
+# A Straight Line Through Points
+
+## Linear Model
+
+Consider
+$$
+y_i=a+b x_i+\varepsilon_i,
+\qquad
+\varepsilon_i\sim\mathrm N(0,\sigma_i^2).
+$$
+
+We minimize
+$$
+\chi^2(a,b)
+=
+\sum_i w_i(y_i-a-bx_i)^2,
+\qquad
+w_i=\frac1{\sigma_i^2}.
+$$
+
+Conditions for the minimum:
+$$
+\frac{\partial\chi^2}{\partial a}=0,
+\qquad
+\frac{\partial\chi^2}{\partial b}=0.
+$$
+
+## Derivation of the Normal Equations
+
+We differentiate
+$$
+\chi^2(a,b)=\sum_i w_i(y_i-a-bx_i)^2.
+$$
+
+We obtain two conditions:
+$$
+\frac{\partial\chi^2}{\partial a}
+=
+-2\sum_i w_i(y_i-a-bx_i)=0,
+$$
+$$
+\frac{\partial\chi^2}{\partial b}
+=
+-2\sum_i w_i x_i(y_i-a-bx_i)=0.
+$$
+
+We expand the brackets and move the known quantities to the right-hand side:
+$$
+\begin{pmatrix}
+\sum_iw_i&\sum_iw_ix_i\\
+\sum_iw_ix_i&\sum_iw_ix_i^2
+\end{pmatrix}
+\begin{pmatrix}a\\b\end{pmatrix}
+=
+\begin{pmatrix}
+\sum_iw_iy_i\\
+\sum_iw_ix_iy_i
+\end{pmatrix}.
+$$
+
+## Normal Equations
+
+Let us introduce the sums
+$$
+\begin{aligned}
+S&=\sum_iw_i,
+&
+S_x&=\sum_iw_ix_i,
+&
+S_y&=\sum_iw_iy_i,\\
+S_{xx}&=\sum_iw_ix_i^2,
+&
+S_{xy}&=\sum_iw_ix_iy_i.
+\end{aligned}
+$$
+
+Then
+$$
+\begin{pmatrix}
+S&S_x\\
+S_x&S_{xx}
+\end{pmatrix}
+\begin{pmatrix}a\\b\end{pmatrix}
+=
+\begin{pmatrix}S_y\\S_{xy}\end{pmatrix}.
+$$
+
+## Formal Solution
+
+Let us write the system more compactly:
+$$
+A\boldsymbol\beta=\mathbf c,
+\qquad
+A=
+\begin{pmatrix}
+S&S_x\\
+S_x&S_{xx}
+\end{pmatrix},
+\quad
+\boldsymbol\beta=
+\begin{pmatrix}a\\b\end{pmatrix},
+\quad
+\mathbf c=
+\begin{pmatrix}S_y\\S_{xy}\end{pmatrix}.
+$$
+
+If the matrix $A$ is invertible, then
+$$
+\boxed{
+\widehat{\boldsymbol\beta}
+=
+A^{-1}\mathbf c.
+}
+$$
+
+::: {.fragment .callout-note .thmbox appearance="simple"}
+Invertibility means that the data really distinguish $a$ and $b$.
+For example, if all points have the same $x$, the slope cannot be determined.
+:::
+
+## Covariance of the Parameters
+
+From the lecture [on the two-dimensional Gaussian](lecture-07-two-dimensional-gaussian.qmd) we know the form of the multivariate Gaussian:
+$$
+p(\boldsymbol\beta)
+\propto
+\exp\!\left[
+-\frac12
+(\boldsymbol\beta-\widehat{\boldsymbol\beta})^\mathsf T
+V_\beta^{-1}
+(\boldsymbol\beta-\widehat{\boldsymbol\beta})
+\right].
+$$
+
+And for Gaussian measurement errors
+$$
+L(\boldsymbol\beta)
+\propto
+\exp\!\left[-\frac12\chi^2(\boldsymbol\beta)\right].
+$$
+
+So near the minimum we need to recognize in $\chi^2$ the quadratic form
+$$
+\boxed{
+\chi^2(\boldsymbol\beta)
+\approx
+\chi^2_{\min}
++
+(\boldsymbol\beta-\widehat{\boldsymbol\beta})^\mathsf T
+V_\beta^{-1}
+(\boldsymbol\beta-\widehat{\boldsymbol\beta}).
+}
+$$
+
+## Covariance of the Parameters for a Straight Line
+
+For a straight line, $\chi^2$ is a quadratic function of the parameters, so this is not an approximation but an exact equality:
+$$
+\chi^2(\boldsymbol\beta)
+=
+\chi^2_{\min}
++
+(\boldsymbol\beta-\widehat{\boldsymbol\beta})^\mathsf T
+\begin{pmatrix}
+S&S_x\\
+S_x&S_{xx}
+\end{pmatrix}
+(\boldsymbol\beta-\widehat{\boldsymbol\beta}).
+$$
+
+Comparing with the form of the multivariate Gaussian, we obtain
+$$
+\boxed{
+V_\beta^{-1}
+=
+\begin{pmatrix}
+S&S_x\\
+S_x&S_{xx}
+\end{pmatrix},
+\qquad
+V_\beta
+=
+\begin{pmatrix}
+S&S_x\\
+S_x&S_{xx}
+\end{pmatrix}^{-1}.
+}
+$$
+
+## Explicit Formulas for the Estimates
+
+Let us denote
+$$
+\Delta=SS_{xx}-S_x^2.
+$$
+
+Then from $\widehat{\boldsymbol\beta}=V_\beta\mathbf c$ we obtain
+$$
+\boxed{
+\begin{pmatrix}
+\widehat a\\
+\widehat b
+\end{pmatrix}
+=
+V_\beta
+\begin{pmatrix}
+S_y\\S_{xy}
+\end{pmatrix}
+=
+\frac1\Delta
+\begin{pmatrix}
+S_{xx}S_y-S_xS_{xy}\\
+SS_{xy}-S_xS_y
+\end{pmatrix}.
+}
+$$
+
+## Explicit Formulas for the Covariances
+
+Recall:
+$$
+S=\sum_iw_i,\qquad
+S_x=\sum_iw_ix_i,\qquad
+S_{xx}=\sum_iw_ix_i^2,
+\qquad
+\Delta=SS_{xx}-S_x^2.
+$$
+
+The matrix $V_\beta$ is the covariance matrix of the parameter vector:
+$$
+\boxed{
+\operatorname{Cov}\!\left(
+\begin{pmatrix}
+\widehat a\\
+\widehat b
+\end{pmatrix}
+\right)
+=
+V_\beta.
+}
+$$
+
+Explicitly
+$$
+\boxed{
+V_\beta
+=
+\frac1\Delta
+\begin{pmatrix}
+S_{xx}&-S_x\\
+-S_x&S
+\end{pmatrix}.
+}
+$$
+
+Its elements:
+$$
+\operatorname{Var}(\widehat a)=\frac{S_{xx}}{\Delta},
+\qquad
+\operatorname{Var}(\widehat b)=\frac{S}{\Delta},
+\qquad
+\operatorname{Cov}(\widehat a,\widehat b)=-\frac{S_x}{\Delta}.
+$$
+
+## What the Errors Depend On
+
+Let us introduce the weighted center and the weighted spread in $x$:
+$$
+\bar x_w=\frac{S_x}{S},
+\qquad
+Q_x=\sum_iw_i(x_i-\bar x_w)^2=\frac{\Delta}{S}.
+$$
+
+Then the same formulas can be rewritten as:
+$$
+\boxed{
+\sigma_b^2=\frac{1}{Q_x},
+\qquad
+\sigma_a^2=\frac{1}{S}+\frac{\bar x_w^2}{Q_x},
+\qquad
+\operatorname{Cov}(\widehat a,\widehat b)=-\frac{\bar x_w}{Q_x}.
+}
+$$
+
+::: incremental
+- Smaller errors of the points give larger weights $w_i=1/\sigma_i^2$ and reduce the errors of the parameters.
+- The slope is determined by the lever arm $Q_x$: the more widely the points are spread in $x$, the smaller $\sigma_b$.
+- The intercept $a$ refers to the point $x=0$. If the data are far from zero, the error of the slope propagates into the error of $a$.
+- The covariance appears because a change in the slope is compensated by a shift of the intercept.
+:::
+
+## Center of Gravity of the Points
+::: incremental
+- At fixed slope $b$, minimizing $\chi^2$ with respect to $a$:
+$$
+0=\frac{\partial\chi^2}{\partial a}
+=
+-2\sum_iw_i(y_i-a-bx_i).
+$$
+
+- Hence
+$$
+\boxed{
+a(b)=\bar y_w-b\bar x_w,
+\qquad
+\bar y_w=\frac{\sum_iw_iy_i}{\sum_iw_i}.
+}
+$$
+
+- The best line for any $b$ passes through the "center of gravity"
+$$
+(\bar x_w,\bar y_w).
+$$
+
+- The next step is to find the $b$ that minimizes $\chi^2$.
+:::
+
+## Error geometry: profiling over $a$ {#applet-fit-geometry}
+
+::: {.clt-widget}
+```{ojs}
+//| echo: false
+
+viewof geomXbar = Inputs.range([-3, 3], {value: 1.8, step: 0.1, label: "center x̄_w"})
+viewof geomSpread = Inputs.range([0.45, 2.5], {value: 1.0, step: 0.05, label: "spread in x"})
+
+geomS = 18
+geomQx = geomS * geomSpread * geomSpread
+geomSigmaB = 1 / Math.sqrt(geomQx)
+geomSigmaA = Math.sqrt(1 / geomS + geomXbar * geomXbar / geomQx)
+geomCovAB = -geomXbar / geomQx
+geomCorrAB = geomCovAB / (geomSigmaA * geomSigmaB)
+
+geomA0 = 1.0
+geomB0 = 0.55
+geomYbar = geomA0 + geomB0 * geomXbar
+geomSlopeSteps = [-1, 0, 1]
+geomLineData = geomSlopeSteps.flatMap(k => {
+  const b = geomB0 + k * geomSigmaB;
+  const a = geomYbar - b * geomXbar;
+  return Array.from({length: 121}, (_, i) => {
+    const x = -4.5 + 9 * i / 120;
+    return {x, y: a + b * x, k};
+  });
+})
+geomFanLineData = geomLineData.filter(d => d.k !== 0)
+geomBestLineData = geomLineData.filter(d => d.k === 0)
+
+geomOffsets = [-1.55, -1.05, -0.55, -0.12, 0.35, 0.82, 1.28, 1.62]
+geomPointSigma = Math.sqrt(geomOffsets.length / geomS)
+geomResidualPattern = [0.09, -0.04, 0.06, -0.08, 0.02, 0.07, -0.05, -0.07]
+geomPoints = geomOffsets.map((u, i) => {
+  const x = geomXbar + geomSpread * u;
+  return {x, y: geomA0 + geomB0 * x + geomResidualPattern[i]};
+})
+
+geomCenterPoint = [{x: geomXbar, y: geomYbar}]
+geomLabels = [
+  {x: 0, y: 3.25, text: "x = 0"},
+  {x: geomXbar, y: 3.0, text: "data center"}
+]
+
+geomDataPlot = Plot.plot({
+  width: 650,
+  height: 420,
+  marginLeft: 58,
+  marginBottom: 46,
+  x: {label: "x", domain: [-4.5, 4.5], grid: true},
+  y: {label: "y", domain: [-2.0, 3.5], grid: true},
+  marks: [
+    Plot.ruleX([0], {stroke: "#aaa", strokeDasharray: "6,5"}),
+    Plot.ruleX([geomXbar], {stroke: "#ffb347", strokeWidth: 3}),
+    Plot.line(geomFanLineData, {x: "x", y: "y", z: "k", stroke: "#70b7ff", strokeWidth: 2.4, strokeOpacity: 0.58}),
+    Plot.line(geomBestLineData, {x: "x", y: "y", stroke: "#ffb347", strokeWidth: 4}),
+    Plot.ruleX(geomPoints, {x: "x", y1: d => d.y - geomPointSigma, y2: d => d.y + geomPointSigma, stroke: "#aaa", strokeOpacity: 0.65}),
+    Plot.dot(geomPoints, {x: "x", y: "y", r: 6, fill: "#4ea1ff", fillOpacity: 0.82}),
+    Plot.dot(geomCenterPoint, {x: "x", y: "y", r: 8, fill: "#ffb347", stroke: "#111", strokeWidth: 1}),
+    Plot.text(geomLabels, {x: "x", y: "y", text: "text", fill: "#f2f2f2", fontSize: 16, dy: -8})
+  ]
+})
+
+geomSa2 = geomSigmaA * geomSigmaA
+geomSb2 = geomSigmaB * geomSigmaB
+geomL11 = geomSigmaA
+geomL21 = geomCovAB / geomL11
+geomL22 = Math.sqrt(Math.max(geomSb2 - geomL21 * geomL21, 0))
+geomLevel = Math.sqrt(2.30)
+geomEllipse = Array.from({length: 241}, (_, i) => {
+  const t = 2 * Math.PI * i / 240;
+  const z1 = geomLevel * Math.cos(t);
+  const z2 = geomLevel * Math.sin(t);
+  return {
+    da: geomL11 * z1,
+    db: geomL21 * z1 + geomL22 * z2
+  };
+})
+geomDaMax = Math.max(0.55, 1.18 * Math.max(...geomEllipse.map(d => Math.abs(d.da))))
+geomDbMax = Math.max(0.42, 1.18 * Math.max(...geomEllipse.map(d => Math.abs(d.db))))
+geomCompLine = [
+  {db: -geomDbMax, da: geomXbar * geomDbMax},
+  {db: geomDbMax, da: -geomXbar * geomDbMax}
+]
+
+geomParamPlot = Plot.plot({
+  width: 560,
+  height: 420,
+  marginLeft: 66,
+  marginBottom: 46,
+  x: {label: "δa", domain: [-geomDaMax, geomDaMax], grid: true},
+  y: {label: "δb", domain: [-geomDbMax, geomDbMax], grid: true},
+  marks: [
+    Plot.ruleX([0], {stroke: "#888"}),
+    Plot.ruleY([0], {stroke: "#888"}),
+    Plot.line(geomEllipse, {x: "da", y: "db", stroke: "#ffb347", strokeWidth: 4}),
+    Plot.line(geomCompLine, {x: "da", y: "db", stroke: "#70b7ff", strokeWidth: 3, strokeDasharray: "7,5"}),
+    Plot.dot([{da: 0, db: 0}], {x: "da", y: "db", r: 6, fill: "#f2f2f2"})
+  ]
+})
+
+html`
+<div class="clt-panel">
+  <div style="display:flex; gap:0.9rem; align-items:center; justify-content:center;">
+    ${geomDataPlot}
+    ${geomParamPlot}
+  </div>
+  <div class="clt-summary">
+    <span>Q_x = ${geomQx.toFixed(1)}</span>
+    <span>σ_y fixed: ${geomPointSigma.toFixed(2)}</span>
+    <span>σ_b = ${geomSigmaB.toFixed(3)}</span>
+    <span>σ_a = ${geomSigmaA.toFixed(3)}</span>
+    <span>corr(a,b) = ${geomCorrAB.toFixed(2)}</span>
+  </div>
+</div>
+`
+```
+:::
+
+::: {.fragment .callout-note .thmbox appearance="simple"}
+The blue lines are the best lines at slopes $\widehat b\pm\sigma_b$: for each slope the intercept $a$ re-minimizes $\chi^2$. Therefore they pass through the center of the data but describe the points worse than the orange line.
+:::
+
+## Centered parametrization
+
+The correlation is visible directly from the formula
+$$
+\operatorname{Cov}(\widehat a,\widehat b)=-\frac{\bar x_w}{Q_x}.
+$$
+
+If we move the origin to the weighted center of the data,
+$$
+x_i'=x_i-\bar x_w,
+\qquad
+\bar x_w=\frac{\sum_iw_ix_i}{\sum_iw_i},
+$$
+and write the same line as
+$$
+y=a'+b'x',
+\qquad
+a'=a+b\bar x_w,
+\qquad
+b'=b,
+$$
+then for the new parameters
+$$
+S_x'=\sum_iw_ix_i'=0,
+\qquad
+\operatorname{Cov}(\widehat a',\widehat b')=0,
+\qquad
+\operatorname{Var}(\widehat a')=\frac1S,
+\qquad
+\operatorname{Var}(\widehat b')=\frac1{Q_x}.
+$$
+
+::: {.fragment .callout-note .thmbox appearance="simple"}
+$a'$ is the value of the line at the center of the data, not the old intercept at $x=0$.
+The parametrization affects the correlation but does not change the physical line.
+:::
+
+## Connection to normal coordinates
+
+In centered parameters the quadratic form near the minimum is diagonal:
+$$
+\Delta\chi^2
+=
+\chi^2(a',b')-\chi^2_{\min}
+=
+S\,(\delta a')^2
++
+Q_x\,(\delta b')^2.
+$$
+
+There is no cross term $\delta a'\delta b'$, which means the parameters are uncorrelated.
+
+If we also go over to dimensionless coordinates
+$$
+z_a=\sqrt{S}\,\delta a'
+=
+\frac{\delta a'}{\sigma_{a'}},
+\qquad
+z_b=\sqrt{Q_x}\,\delta b'
+=
+\frac{\delta b'}{\sigma_{b'}},
+$$
+then
+$$
+\boxed{
+\Delta\chi^2=z_a^2+z_b^2.
+}
+$$
+
+::: {.fragment .callout-note .thmbox appearance="simple"}
+These are precisely the normal coordinates for the local Gaussian of the parameters: first we diagonalize the form, then we measure the axes in units of their standard errors.
+:::
+
+## An outlier spoils the fit. Interactive
+
+The applet generates points around the line
+$$
+y=1+0.8x
+$$
+and performs a weighted fit.
+
+::: incremental
+1. We change the statistical error of the points.
+2. We add a controllable outlier.
+3. We compare the fitted line with the true one.
+4. We look at the residuals and the contribution of the outlier to $\chi^2$.
+:::
+
+## Interactive: line, errors and outlier {#applet-line-outlier}
+
+::: {.clt-widget}
+```{ojs}
+//| echo: false
+
+viewof lsSigma = Inputs.range([0.15, 1.5], {value: 0.55, step: 0.05, label: "typical error sigma"})
+viewof lsOutlier = Inputs.range([-4, 6], {value: 0, step: 0.25, label: "shift of one point"})
+viewof regenerateLs = Inputs.button("New data")
+
+randnLs = () => {
+  const u1 = Math.max(Math.random(), 1e-12);
+  const u2 = Math.random();
+  return Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
+}
+
+lsData = {
+  regenerateLs;
+  const data = [];
+  for (let i = 0; i < 16; ++i) {
+    const x = -4.5 + 9 * i / 15;
+    const sigma = lsSigma * (0.72 + 0.56 * (i % 4) / 3);
+    const y = 1 + 0.8 * x + sigma * randnLs() + (i === 12 ? lsOutlier : 0);
+    data.push({x, y, sigma, outlier: i === 12});
+  }
+  return data;
+}
+
+weightedLineFit = data => {
+  let S = 0, Sx = 0, Sy = 0, Sxx = 0, Sxy = 0;
+  for (const d of data) {
+    const w = 1 / (d.sigma * d.sigma);
+    S += w;
+    Sx += w * d.x;
+    Sy += w * d.y;
+    Sxx += w * d.x * d.x;
+    Sxy += w * d.x * d.y;
+  }
+  const delta = S * Sxx - Sx * Sx;
+  const a = (Sxx * Sy - Sx * Sxy) / delta;
+  const b = (S * Sxy - Sx * Sy) / delta;
+  const chi2 = data.reduce((sum, d) => sum + ((d.y - a - b * d.x) / d.sigma) ** 2, 0);
+  return {a, b, chi2, sigmaA: Math.sqrt(Sxx / delta), sigmaB: Math.sqrt(S / delta), covAB: -Sx / delta};
+}
+
+lsFit = weightedLineFit(lsData)
+lsFitLine = Array.from({length: 201}, (_, i) => {
+  const x = -5 + 10 * i / 200;
+  return {x, y: lsFit.a + lsFit.b * x};
+})
+lsTrueLine = Array.from({length: 201}, (_, i) => {
+  const x = -5 + 10 * i / 200;
+  return {x, y: 1 + 0.8 * x};
+})
+lsResiduals = lsData.map(d => ({
+  x: d.x,
+  pull: (d.y - lsFit.a - lsFit.b * d.x) / d.sigma,
+  outlier: d.outlier
+}))
+
+lsMainPlot = Plot.plot({
+  width: 720,
+  height: 460,
+  marginLeft: 65,
+  x: {label: "x", domain: [-5, 5], grid: true},
+  y: {label: "y", grid: true},
+  marks: [
+    Plot.ruleX(lsData, {x: "x", y1: d => d.y - d.sigma, y2: d => d.y + d.sigma, stroke: "#aaa"}),
+    Plot.dot(lsData, {x: "x", y: "y", r: 6, fill: d => d.outlier ? "#ff6b6b" : "#4ea1ff"}),
+    Plot.line(lsTrueLine, {x: "x", y: "y", stroke: "#999", strokeDasharray: "7,5", strokeWidth: 3}),
+    Plot.line(lsFitLine, {x: "x", y: "y", stroke: "#ffb347", strokeWidth: 4})
+  ]
+})
+
+lsResidualPlot = Plot.plot({
+  width: 520,
+  height: 460,
+  marginLeft: 65,
+  x: {label: "x", domain: [-5, 5], grid: true},
+  y: {label: "residual / sigma", domain: [-6, 6], grid: true},
+  marks: [
+    Plot.ruleY([0], {stroke: "#f2f2f2"}),
+    Plot.ruleY([-2, 2], {stroke: "#999", strokeDasharray: "6,5"}),
+    Plot.dot(lsResiduals, {x: "x", y: "pull", r: 6, fill: d => d.outlier ? "#ff6b6b" : "#4ea1ff"})
+  ]
+})
+
+html`
+<div class="clt-panel">
+  <div style="display:flex; gap:0.7rem; justify-content:center; align-items:center;">
+    ${lsMainPlot}
+    ${lsResidualPlot}
+  </div>
+  <div class="clt-summary">
+    <span>a_hat = ${lsFit.a.toFixed(3)} ± ${lsFit.sigmaA.toFixed(3)}</span>
+    <span>b_hat = ${lsFit.b.toFixed(3)} ± ${lsFit.sigmaB.toFixed(3)}</span>
+    <span>χ²_min = ${lsFit.chi2.toFixed(1)}</span>
+  </div>
+</div>
+`
+```
+:::
+
+## What the applet shows
+
+::: incremental
+- Without an outlier the fitted line fluctuates around the true one.
+- Increasing the errors weakens the constraints on the parameters.
+- A single distant outlier noticeably shifts the line and increases $\chi^2$.
+- The residuals reveal structure that is easy to miss on the main plot.
+- Ordinary least squares is not a method that is robust to outliers.
+:::
+
+# What is important to remember
+
+## Summary
+
+::: incremental
+- Least squares arises from a Gaussian likelihood.
+- In a linear model the parameter estimates are found from the normal equations.
+- The covariance of the parameters is determined by the geometry of the points and the measurement errors.
+- Residuals are essential for diagnosing the fit.
+:::

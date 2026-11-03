@@ -1,0 +1,58 @@
+## Problem 1. Limit of the binomial distribution
+
+Show that for
+$$
+n\to\infty,\qquad p\to 0,\qquad np=\lambda=\text{const}
+$$
+the binomial distribution turns into the Poisson distribution:
+$$
+\binom{n}{k}p^k(1-p)^{n-k}
+\longrightarrow
+\frac{\lambda^k e^{-\lambda}}{k!}.
+$$
+
+**Hint.** Set $p=\lambda/n$ and consider the limit at fixed $k$.
+
+## Problem 2. Poisson limit to the Gaussian distribution
+
+Using Stirling's formula, show that for large $\lambda$
+$$
+P(N=n)\approx
+\frac{1}{\sqrt{2\pi\lambda}}
+\exp\!\left[-\frac{(n-\lambda)^2}{2\lambda}\right].
+$$
+
+## Problem 3. Moments of the uniform distribution
+
+Let $X\sim U(-1,1)$. Find:
+
+1. $\mathbb{E}[X]$;
+2. $\mathbb{E}[X^2]$;
+3. $\mathrm{Var}(X)$.
+
+## Problem 4. When moments uniquely determine a distribution
+
+Let
+$$
+\mathbb{E}[X^{2n}]=1,\qquad
+\mathbb{E}[X^{2n+1}]=0.
+$$
+Show that $X=\pm1$ with equal probabilities.
+
+**Hint.** Use $\mathbb{E}[(X^2-1)^2]=0$.
+
+## Problem 5. Reconstructing a distribution on a finite support
+
+Let $X$ take the values $-1$, $0$, $1$, with
+$$
+\mathbb{E}[X]=0,\qquad
+\mathbb{E}[X^2]=\frac{1}{2}.
+$$
+Find the probabilities of the three values.
+
+## Problem 6. Factorial moments of the Poisson distribution
+
+For $N\sim\mathrm{Pois}(\lambda)$ show that
+$$
+\mathbb{E}[N(N-1)\cdots(N-r+1)]=\lambda^r.
+$$

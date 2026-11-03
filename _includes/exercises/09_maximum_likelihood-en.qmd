@@ -1,0 +1,63 @@
+## Problem 1. Probability and likelihood
+
+A single observation $x$ is drawn from the exponential distribution
+$$
+f(x\mid\lambda)=\lambda e^{-\lambda x},
+\qquad x\ge0.
+$$
+
+1. Plot $f(x\mid\lambda)$ as a function of $x$ for several fixed values of $\lambda$.
+2. After observing $x=x_{\mathrm{obs}}$, write down $L(\lambda;x_{\mathrm{obs}})$.
+3. Compute $\int_0^\infty L(\lambda;x_{\mathrm{obs}})\,d\lambda$. Why
+   is this integral not a normalization condition for the probability of the parameter?
+4. Find $\widehat\lambda_{\mathrm{ml}}$.
+5. Explain in words the difference between a probability density function and a likelihood function.
+
+## Problem 2. Binomial estimator
+
+In $N$ independent trials, $k$ successes were observed.
+
+1. Write down the binomial likelihood $L(p)$.
+2. Find $\widehat p_{\mathrm{ml}}$.
+3. Compute $\mathbb E[\widehat p]$ and $\operatorname{Var}(\widehat p)$.
+4. Show that the estimator is unbiased and consistent.
+5. Plot $L(p)$ for the cases $k=0$, $k=N/2$ and $k=N$ and compare its shape.
+
+## Problem 3. Poisson counting with known background
+
+Let
+$$
+N\sim\operatorname{Pois}(s+b),
+$$
+where $s\ge0$ is the unknown signal and the background $b$ is known exactly.
+
+1. Write down $L(s)$ and $\ell(s)$.
+2. Find the unconstrained maximum likelihood estimator of the signal.
+3. Find the maximum likelihood estimator under the physical constraint $s\ge0$.
+4. Explain what happens when $n<b$.
+
+## Problem 4. Gaussian mean
+
+Let
+$$
+X_i\sim\mathrm N(\mu,\sigma^2),
+$$
+where $\sigma$ is known.
+
+1. Write down the likelihood function of an independent sample.
+2. Show that $\widehat\mu_{\mathrm{ml}}=\langle X\rangle$.
+3. Find $\operatorname{Var}(\widehat\mu_{\mathrm{ml}})$.
+
+## Problem 5. Weighted average
+
+There are independent measurements
+$$
+X_i\sim\mathrm N(\mu,\sigma_i^2),
+$$
+where $\sigma_i$ are known and differ from one another.
+
+1. Write down the joint log-likelihood.
+2. Find the maximum likelihood estimator of the parameter $\mu$.
+3. Show that the result is a weighted average with weights $w_i=1/\sigma_i^2$.
+4. Find the variance of the estimator.
+5. Explain why measurements with a smaller error receive a larger weight.

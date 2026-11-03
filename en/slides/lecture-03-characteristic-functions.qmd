@@ -1,0 +1,818 @@
+---
+title: "Lecture 3. Characteristic functions and sums of random variables"
+subtitle: "Statistical Data Analysis"
+author: "Dmitry V. Naumov (JINR)"
+format:
+  revealjs:
+    slide-number: true
+    preview-links: auto
+    chalkboard:
+      buttons: false
+    logo: shared/figures/dvnlogo.png
+    css: styles.css
+    transition: fade
+    center: true
+---
+
+# Motivation
+
+## Distribution of the sum of two independent variables $X$ and $Y$
+
+::: incremental
+- Let the densities of the independent variables $X$ and $Y$ be known. We need to find the density of the sum $S=X+Y$.
+- The value $S=s$ arises for all pairs $(x,s-x)$. Independence allows us to multiply their densities, after which the contributions must be summed: 
+$$\boxed{
+  f_S(s)
+  =
+  \int_{-\infty}^{+\infty}f_X(x)f_Y(s-x)\,dx.
+  }$$
+- This integral is called a **convolution**: $f_S\equiv f_X*f_Y$.
+- For a sum of many variables one has to compute ever more convolutions in succession.
+- For example, for $S_n=X_1+\dots+X_n$ one needs to compute $f_{S_n}=f_{X_1}*f_{X_2}*\cdots *f_{X_n}$:
+$$
+f_{S_n}(s)  = f_{X_1}*f_{X_2}*\cdots *f_{X_n} = \int_{-\infty}^{+\infty}\cdots\int_{-\infty}^{+\infty}f_{X_1}(x_1)f_{X_2}(x_2)\cdots f_{X_n}(s-x_1-\cdots -x_{n-1})\,dx_1\cdots dx_{n-1}.
+$$
+:::
+
+## Example: the Cauchy distribution
+
+::: incremental
+- The Cauchy distribution ($\mathrm{Cauchy}(x_0,\gamma)$): $$f_X(x;x_0,\gamma)=\frac{1}{\pi\gamma\left[1+\left(\frac{x-x_0}{\gamma}\right)^2\right]}.$$
+- In physics the Cauchy distribution is known as the Lorentz and Breit–Wigner distribution. It describes resonances and emission spectra.
+- The standard Cauchy distribution: $x_0=0$, $\gamma=1$ ($\mathrm{Cauchy}(0,1)$): $$f_X(x)=\frac{1}{\pi(1+x^2)}.$$
+:::
+
+## Example: the sum of two Cauchy variables
+
+:::::: columns
+::: {.column .incremental width="58%"}
+- Let $X,Y\sim\mathrm{Cauchy}(0,1)$ be independent: $$f_X(x)=f_Y(x)=\frac{1}{\pi(1+x^2)}.$$
+
+- For the sum $S=X+Y$ the direct convolution has the form
+$$\boxed{
+  f_S(s)
+  =
+  \frac{1}{\pi^2}
+  \int_{-\infty}^{+\infty}
+  \frac{dx}
+  {(1+x^2)\left[1+(s-x)^2\right]}.
+  }$$
+:::
+
+:::: {.column .incremental width="42%"}
+- The denominator is a fourth-degree polynomial in $x$.
+- To evaluate the integral directly, one would have to use partial fraction decomposition or complex residues.
+- After integration the result would still need substantial simplification.
+
+::: {.fragment .callout-note .thmbox appearance="simple"}
+A simple formulation of the problem has led to a cumbersome integral.
+:::
+::::
+::::::
+
+## Characteristic function
+
+::::: columns
+::: {.column width="52%"}
+The characteristic function is the Fourier transform of the distribution:
+
+$$\boxed{
+\varphi_X(t)
+=
+\mathbb E\!\left[e^{itX}\right].
+}$$
+
+For a continuous variable:
+
+$$\varphi_X(t)
+=
+\int_{-\infty}^{+\infty}
+e^{itx}f_X(x)\,dx.$$
+:::
+
+::: {.column .incremental width="48%"}
+- If the density exists, it can be recovered:
+$$f_X(x)
+  =
+  \frac{1}{2\pi}
+  \int_{-\infty}^{+\infty}
+  e^{-itx}\varphi_X(t)\,dt.$$
+- For a sum of independent variables, convolution turns into an ordinary product.
+:::
+:::::
+
+## The same example: via Fourier
+
+:::::: columns
+::: {.column .incremental width="58%"}
+- For the standard Cauchy distribution the Fourier transform has the form: $$\varphi_X(t)=e^{-|t|}.$$ This is easy to check by evaluating the integral with the residue theorem.
+
+- Independence turns the sum into a product:
+$$\begin{aligned}
+  \varphi_S(t)
+  &=
+  \mathbb E\!\left[e^{it(X+Y)}\right]
+  =
+  \mathbb E\!\left[e^{itX}e^{itY}\right]
+  \\
+  &=
+  \mathbb E\!\left[e^{itX}\right]
+  \mathbb E\!\left[e^{itY}\right]
+  =
+  \varphi_X(t)\varphi_Y(t)
+  \\
+  &=
+  e^{-|t|}e^{-|t|}
+  =
+  e^{-2|t|}.
+  \end{aligned}$$
+
+- The function $e^{-2|t|}$ is the characteristic function of the distribution $\mathrm{Cauchy}(0,2)$.
+:::
+
+:::: {.column .incremental width="42%"}
+- We obtain the answer without computing the convolution:
+$$\boxed{
+  \begin{aligned}
+  S & =X+Y\sim\mathrm{Cauchy}(0,2),\\
+  f_S(s)&=\frac{2}{\pi(s^2+4)}.
+  \end{aligned}
+  }$$
+
+::: {.fragment .ojs-plot-center}
+```{ojs}
+//| echo: false
+
+cauchyData = Array.from({length: 501}, (_, i) => {
+  const x = -8 + 16 * i / 500;
+  return {
+    x,
+    original: 1 / (Math.PI * (1 + x * x)),
+    sum: 2 / (Math.PI * (4 + x * x))
+  };
+})
+
+cauchySumPlot = Plot.plot({
+  width: 410,
+  height: 300,
+  marginLeft: 85,
+  marginBottom: 68,
+  x: {
+    label: "x",
+    domain: [-8, 8],
+    grid: true
+  },
+  y: {
+    label: "density",
+    domain: [0, 0.35],
+    grid: true
+  },
+  marks: [
+    Plot.ruleY([0], {stroke: "#888"}),
+    Plot.line(cauchyData, {x: "x", y: "original", stroke: "#ffb347", strokeWidth: 3}),
+    Plot.line(cauchyData, {x: "x", y: "sum", stroke: "#4ea1ff", strokeWidth: 3}),
+    Plot.text(
+      [
+        {x: 2.5, y: 0.12, label: "X"},
+        {x: 4.5, y: 0.07, label: "X + Y"}
+      ],
+      {x: "x", y: "y", text: "label", fill: d => d.label === "X" ? "#ffb347" : "#4ea1ff"}
+    )
+  ]
+})
+```
+:::
+::::
+::::::
+
+## Algorithm: the sum of two variables via Fourier
+
+Let the independent variables $X$ and $Y$ have densities $f_X(x)$ and $f_Y(y)$, and $$S=X+Y.$$
+
+::: incremental
+1.  **Transform both densities:**
+$$\varphi_X(t)
+    =
+    \int_{-\infty}^{+\infty}e^{itx}f_X(x)\,dx,
+    \qquad
+    \varphi_Y(t)
+    =
+    \int_{-\infty}^{+\infty}e^{ity}f_Y(y)\,dy.$$
+2.  **Replace the sum by a product:**
+$$\varphi_S(t)
+    =
+    \varphi_X(t)\varphi_Y(t).$$
+3.  **Return to the density:** and evaluate the last integral
+$$f_S(s)
+    =
+    \frac{1}{2\pi}
+    \int_{-\infty}^{+\infty}e^{-its}\varphi_S(t)\,dt.$$
+:::
+
+# Properties of the characteristic function
+
+## Discrete case
+
+If a random variable takes values $x_k$ with probabilities $p_k$, then
+$$P(X=x_k)=p_k,
+\qquad
+\sum_k p_k=1,$$
+ and
+$$\boxed{
+\varphi_X(t)
+=
+\sum_k p_k e^{itx_k}.
+}$$
+
+::: incremental
+- The integral is replaced by a sum.
+- There is no new probabilistic construction here: we still encode the distribution, but in a form convenient for addition.
+:::
+
+## Why the characteristic function always exists
+
+Since $$\left|e^{itX}\right|=1,$$ then
+$$\left|\varphi_X(t)\right|
+=
+\left|\mathbb{E}\!\left[e^{itX}\right]\right|
+\le
+\mathbb{E}\!\left[\left|e^{itX}\right|\right]
+=1.$$
+
+::: {.callout-important .thmbox appearance="simple"}
+## Advantage
+
+The characteristic function exists for any distribution, even if the mean or variance does not exist.
+:::
+
+## Basic properties
+
+For any random variable $X$:
+$$\varphi_X(0)=1,
+\qquad
+\left|\varphi_X(t)\right|\le 1,
+\qquad
+\varphi_X(-t)=\varphi^*_X(t).$$
+
+::: incremental
+- The value at $t=0$ expresses the normalization of probability: $$\varphi_X(0) = \mathbb{E}[1] = 1.$$
+- For a distribution symmetric about zero, $\varphi_X(t)$ is real and even.
+- The characteristic function uniquely determines the distribution.
+:::
+
+## Shift and scale
+
+Let $$Y=aX+b.$$
+
+Then
+$$\begin{aligned}
+\varphi_Y(t)
+&=
+\mathbb{E}\!\left[e^{it(aX+b)}\right]
+\\
+&=
+e^{itb}\,
+\mathbb{E}\!\left[e^{i(at)X}\right].
+\end{aligned}$$
+
+Consequently,
+$$\boxed{
+\varphi_{aX+b}(t)
+=
+e^{itb}\varphi_X(at).
+}$$
+
+------------------------------------------------------------------------
+
+# Independent sums
+
+## Sum of many independent variables
+
+In the Cauchy distribution example we proved that for two independent variables $$\varphi_{X+Y}(t)=\varphi_X(t)\varphi_Y(t).$$
+
+Applying this equality successively to $$S_n=X_1+\dots+X_n,$$ we obtain
+$$\boxed{
+\varphi_{S_n}(t)
+=
+\prod_{k=1}^n\varphi_{X_k}(t).
+}$$
+
+For identically distributed variables:
+$$\boxed{
+\varphi_{S_n}(t)
+=
+\left[\varphi_X(t)\right]^n.
+}$$
+
+------------------------------------------------------------------------
+
+# Examples of characteristic functions
+
+## Bernoulli distribution
+
+::: incremental
+- The Bernoulli distribution: $$P(X=x)=p^x(1-p)^{1-x}, \quad x = 0,1.$$
+
+- Let
+$$P(X=0)=1-p,
+  \qquad
+  P(X=1)=p.$$
+
+- Then
+$$\boxed{
+  \varphi_X(t)
+  =
+  (1-p)e^{0}+pe^{it\cdot 1}
+  =
+  (1-p)+pe^{it}.
+  }$$
+
+- For the sum of $n$ independent Bernoulli variables:
+$$\varphi_{S_n}(t)
+  =
+  \left[(1-p)+pe^{it}\right]^n.$$
+
+- This is the characteristic function of the binomial distribution.
+:::
+
+## Bernoulli distribution and binomial distribution
+
+::: incremental
+- Expand the brackets using the binomial theorem:
+$$\left[(1-p)+pe^{it}\right]^n
+  =
+  \sum_{k=0}^{n}
+  \binom{n}{k}
+  (1-p)^{n-k}
+  p^k
+  e^{itk}.$$
+
+- Hence
+$$\varphi_{S_n}(t)
+  =
+  \sum_{k=0}^{n}
+  e^{itk}
+  \binom{n}{k}
+  p^k(1-p)^{n-k}.$$
+
+- Therefore
+$$P(S_n=k)
+  =
+  \binom{n}{k}
+  p^k(1-p)^{n-k},
+  \qquad k=0,\ldots,n.$$
+
+- That is, $$S_n\sim \mathrm{Bin}(n,p).$$
+:::
+
+## Poisson distribution
+
+::: incremental
+- For $N\sim\mathrm{Pois}(\lambda)$:
+$$P(N=k)
+  =
+  e^{-\lambda}\frac{\lambda^k}{k!}.$$
+
+- Then
+$$\begin{aligned}
+  \varphi_N(t)
+  &=
+  \sum_{k=0}^{\infty}
+  e^{itk}e^{-\lambda}\frac{\lambda^k}{k!}
+  \\
+  &=
+  e^{-\lambda}
+  \sum_{k=0}^{\infty}
+  \frac{\left(\lambda e^{it}\right)^k}{k!}=
+  e^{-\lambda}e^{\lambda e^{it}}\\
+  &=
+  \boxed{e^{\lambda\left(e^{it}-1\right)}.}
+  \end{aligned}$$
+:::
+
+## Sum of Poisson variables
+
+::: incremental
+- The characteristic function of the sum of $$S_n=\sum_{k=1}^n N_k$$ Poisson variables:
+$$\varphi_{S_n}(t)
+  =
+  \prod_{k=1}^n\varphi_{N_k}(t) = \prod_{k=1}^n e^{\lambda_k\left(e^{it}-1\right)}=e^{\lambda\left(e^{it}-1\right)},$$
+where $$\lambda=\sum_k\lambda_k.$$
+- The sum of independent Poisson variables again has a Poisson distribution.
+- Their parameters $\lambda_k$ add up.
+:::
+
+## Gaussian distribution
+
+::: incremental
+- For $$X\sim \mathrm{N}(\mu,\sigma^2)$$
+- The characteristic function equals
+$$\boxed{
+  \varphi_X(t)
+  =
+  \exp\!\left(
+  i\mu t-\frac{\sigma^2t^2}{2}
+  \right).
+  }$$
+- Derivation:
+$$\begin{aligned}
+  \varphi_X(t)
+  &=
+  \int_{-\infty}^{+\infty}
+  e^{itx}\frac{1}{\sqrt{2\pi\sigma^2}}e^{-\frac{(x-\mu)^2}{2\sigma^2}}\,dx
+  \\
+  &=
+  e^{i\mu t}\int_{-\infty}^{+\infty}
+  \frac{1}{\sqrt{2\pi\sigma^2}}e^{-\frac{(x-\mu)^2}{2\sigma^2}+it(x-\mu)}\,dx
+  \\
+  &=
+  e^{i\mu t-\frac{\sigma^2t^2}{2}}\int_{-\infty}^{+\infty}  \frac{1}{\sqrt{2\pi\sigma^2}}e^{-\frac{(x-\mu-it\sigma)^2}{2\sigma^2}}\,dx = e^{i\mu t-\frac{\sigma^2t^2}{2}}.
+  \end{aligned}$$
+:::
+
+## Sums of Gaussian variables
+
+::: incremental
+- Let the independent variables be distributed as $$X_k\sim \mathrm{N}(\mu_k,\sigma_k^2).$$
+
+- Then the characteristic function of the sum $S_n=\sum_{k=1}^n X_k$ equals
+$$\begin{aligned}
+  \varphi_{S_n}(t)
+  &=
+  \prod_{k=1}^n
+  \exp\!\left(
+  i\mu_k t-\frac{\sigma_k^2t^2}{2}
+  \right)
+  \\
+  &=
+  \exp\!\left[
+  i t\sum_k\mu_k
+  -\frac{t^2}{2}\sum_k\sigma_k^2
+  \right].
+  \end{aligned}$$
+
+- The sum of independent Gaussian variables is Gaussian-distributed:
+$$\boxed{
+  S_n
+  \sim
+  \mathrm{N}\!\left(
+  \sum_k\mu_k,
+  \sum_k\sigma_k^2
+  \right).
+  }$$
+:::
+
+## Cauchy distribution
+
+::: incremental
+- For independent $X_k\sim\mathrm{Cauchy}(0,1)$:
+$$\varphi_{S_n}(t)
+  =
+  \left(e^{-|t|}\right)^n
+  =
+  e^{-n|t|}.$$
+
+- Therefore
+$$S_n\sim\mathrm{Cauchy}(0,n),
+  \qquad
+  \frac{S_n}{n}\sim\mathrm{Cauchy}(0,1).$$
+
+- This formula will be needed in the lecture [on violations of the CLT conditions](lecture-05-non-gaussian-clt-violations.qmd).
+:::
+
+# Moments and cumulants
+
+## Moments as derivatives
+
+If the corresponding moments exist, then
+$$\varphi_X(t)
+=
+\mathbb{E}\!\left[e^{itX}\right]
+=
+\mathbb{E}\!\left[
+\sum_{n=0}^{\infty}
+\frac{(itX)^n}{n!}
+\right].$$
+
+Formally:
+$$\varphi_X(t)
+=
+\sum_{n=0}^{\infty}
+\frac{(it)^n}{n!}
+\mathbb{E}[X^n].$$
+
+## Derivatives at zero
+
+Consequently,
+$$\boxed{
+\varphi_X^{(n)}(0)
+=
+i^n\mathbb{E}[X^n].
+}$$
+
+In particular:
+$$\mathbb{E}[X]
+=
+\frac{\varphi_X'(0)}{i},
+\qquad
+\mathbb{E}[X^2]
+=
+-\varphi_X''(0).$$
+
+::: incremental
+- The function always exists, but derivatives of the required order may not exist.
+- For the Cauchy distribution the function $e^{-|t|}$ is not differentiable at zero.
+:::
+
+## Cumulants
+
+Define
+$$\boxed{
+K_X(t)
+=
+\ln\varphi_X(t).
+}$$
+
+Expansion around zero:
+$$K_X(t)
+=
+\sum_{n=1}^{\infty}
+\kappa_n\frac{(it)^n}{n!}.$$
+
+The coefficients $\kappa_n$ are called cumulants.
+
+They can be extracted from the series coefficients by differentiation:
+$$\boxed{
+\kappa_n
+=
+\frac{1}{i^n}
+\left.
+\frac{d^n}{dt^n}\ln\varphi_X(t)
+\right|_{t=0}.
+}$$
+
+## Derivation of the first two cumulants
+
+Since $\varphi_X(0)=1$, then
+$$\begin{aligned}
+K_X'(0)
+&=
+\frac{\varphi_X'(0)}{\varphi_X(0)}
+=i\mathbb E[X],
+\\[2mm]
+K_X''(0)
+&=
+\frac{\varphi_X''(0)}{\varphi_X(0)}
+-
+\left(\frac{\varphi_X'(0)}{\varphi_X(0)}\right)^2
+\\
+&=
+-\mathbb E[X^2]+\mathbb E[X]^2
+=-\operatorname{Var}(X).
+\end{aligned}$$
+
+Dividing by the corresponding powers of $i$:
+$$\boxed{
+\kappa_1=\mathbb E[X]=\mu,
+\qquad
+\kappa_2=\operatorname{Var}(X)=\sigma^2.
+}$$
+
+## Derivation of the higher cumulants
+
+For the centered variable $Y=X-\mu$ we denote
+$$m_r=\mathbb E[Y^r],
+\qquad
+m_2=\sigma^2.$$
+Since $K_Y(t)=K_X(t)-i\mu t$, centering changes only the first cumulant.
+
+Its characteristic function near zero:
+$$\varphi_Y(t)
+=
+1-\frac{m_2t^2}{2}
+-i\frac{m_3t^3}{6}
++\frac{m_4t^4}{24}
++O(t^5).$$
+
+Using $\ln(1+u)=u-u^2/2+\cdots$, we obtain
+$$K_Y(t)
+=
+-\frac{m_2t^2}{2}
+-i\frac{m_3t^3}{6}
++\frac{(m_4-3m_2^2)t^4}{24}
++O(t^5).$$
+
+## The first four cumulants
+
+Comparing the coefficients of the powers of $it$, we find
+$$\boxed{
+\begin{aligned}
+\kappa_1&=\mu,\\
+\kappa_2&=\sigma^2,\\
+\kappa_3&=\mathbb E[(X-\mu)^3],\\
+\kappa_4&=\mathbb E[(X-\mu)^4]-3\sigma^4.
+\end{aligned}
+}$$
+
+## Why cumulants are convenient
+
+For independent $X$ and $Y$:
+$$\varphi_{X+Y}(t)
+=
+\varphi_X(t)\varphi_Y(t).$$
+
+Therefore
+$$\begin{aligned}
+K_{X+Y}(t)
+&=
+\ln\varphi_{X+Y}(t)
+\\
+&=
+\ln\varphi_X(t)
++
+\ln\varphi_Y(t).
+\end{aligned}$$
+
+Consequently,
+$$\boxed{
+\kappa_n(X+Y)
+=
+\kappa_n(X)+\kappa_n(Y).
+}$$
+
+::: incremental
+- The moments of a sum contain many cross terms; the cumulants of an independent sum add up.
+- For a scaling $a$, $\kappa_n(aX)=a^n\kappa_n(X)$ holds.
+:::
+
+------------------------------------------------------------------------
+
+# Bridge to the central limit theorem
+
+## The normalized sum
+
+::: incremental
+- Let identically distributed independent variables have
+$$\mathbb{E}[X_i]=\mu,
+  \qquad
+  \mathrm{Var}(X_i)=\sigma^2<\infty.$$
+
+- Consider
+$$Z_n
+  =
+  \frac{1}{\sigma\sqrt n}
+  \sum_{k=1}^n(X_k-\mu).$$
+:::
+
+## Characteristic function of the normalized sum
+
+::: incremental
+- Denote $$Y_k=\frac{X_k-\mu}{\sigma}.$$
+
+- Then
+$$\mathbb{E}[Y_k]=0,
+  \qquad
+  \mathrm{Var}(Y_k)=1,$$
+
+- and
+$$Z_n
+  =
+  \frac{Y_1+\dots+Y_n}{\sqrt n}.$$
+
+- Therefore
+$$\boxed{
+  \varphi_{Z_n}(t)
+  =
+  \left[
+  \varphi_Y\!\left(\frac{t}{\sqrt n}\right)
+  \right]^n.
+  }$$
+:::
+
+## Expansion near zero
+
+If the mean is zero and the variance is one, then for small $u$
+$$\varphi_Y(u)
+=
+1-\frac{u^2}{2}+o(u^2).$$
+
+Substitute $$u=\frac{t}{\sqrt n}.$$
+
+Then
+$$\varphi_Y\!\left(\frac{t}{\sqrt n}\right)
+=
+1-\frac{t^2}{2n}
++o\!\left(\frac{1}{n}\right).$$
+
+## The limit
+
+::: incremental
+- Consequently,
+$$\varphi_{Z_n}(t)
+  =\left[
+  1-\frac{t^2}{2n}
+  +o\!\left(\frac{1}{n}\right)
+  \right]^n.$$
+- In the limit $n\to\infty$ we have $$\lim\limits_{n\to\infty} \varphi_{Z_n}(t) = e^{-t^2/2}.$$
+- This is the characteristic function of the standard Gaussian distribution.
+- We obtain: the sum of an infinitely large number of independent and identically distributed variables with finite variance tends to a Gaussian distribution.
+- This is the **Central Limit Theorem**.
+:::
+
+## Why a Gaussian?
+
+::: incremental
+- After centering and normalization, the higher details of the distribution of the individual contributions gradually disappear.
+
+- In the limit, the universal quadratic dependence remains: $$\ln\varphi(t)\simeq-\frac{t^2}{2}.$$
+:::
+
+## Cumulants of the normalized sum
+
+For
+$$Z_n
+=
+\frac{1}{\sigma\sqrt n}
+\sum_{k=1}^n(X_k-\mu)$$
+ the normalized cumulants behave as
+$$\kappa_r(Z_n)
+\propto
+n^{1-r/2}.$$
+
+::: incremental
+- For $r=2$ the variance remains equal to one.
+- For $r=3$ the skewness decreases as $1/\sqrt n$.
+- For $r=4$ the kurtosis decreases as $1/n$.
+- For $r>2$ all higher cumulants vanish as $n\to\infty$.
+:::
+
+## Interactive: approach to the Gaussian in Fourier space
+
+Let $$X_k\sim U(-\sqrt3,\sqrt3),$$ so that
+$$\mathbb{E}[X_k]=0,
+\qquad
+\mathrm{Var}(X_k)=1.$$
+
+## Interactive: approach to the Gaussian in Fourier space {#applet-fourier-clt}
+
+::: clt-widget
+```{ojs}
+//| echo: false
+
+viewof nFourier = Inputs.range([1, 100], {
+  value: 1,
+  step: 1,
+  label: "n"
+})
+
+sincFourier = (x) => Math.abs(x) < 1e-12 ? 1 : Math.sin(x) / x
+
+fourierData = Array.from({length: 601}, (_, i) => {
+  const t = -8 + 16 * i / 600;
+  const u = Math.sqrt(3) * t / Math.sqrt(nFourier);
+  return {
+    t,
+    sum: Math.pow(sincFourier(u), nFourier),
+    gauss: Math.exp(-0.5 * t * t)
+  };
+})
+
+fourierPlot = Plot.plot({
+  width: 920,
+  height: 490,
+  marginLeft: 55,
+  x: {label: "t", domain: [-8, 8]},
+  y: {label: "Re φ(t)", domain: [-0.25, 1.05]},
+  grid: true,
+  marks: [
+    Plot.ruleY([0], {stroke: "#888"}),
+    Plot.line(fourierData, {x: "t", y: "sum", stroke: "#4ea1ff", strokeWidth: 3}),
+    Plot.line(fourierData, {x: "t", y: "gauss", stroke: "#ffb347", strokeWidth: 2.6})
+  ]
+})
+
+html`
+<div class="clt-panel">
+  ${fourierPlot}
+  <div class="clt-summary">
+    <span>blue: normalized sum of uniform variables</span>
+    <span>orange: exp(-t²/2)</span>
+    <span>n = ${nFourier}</span>
+  </div>
+</div>
+`
+```
+:::
+
+------------------------------------------------------------------------
+
+# What is important to remember
+
+## Summary
+
+::: incremental
+- For independent variables, characteristic functions multiply and cumulants add up.
+- Moments are derivatives of $\varphi_X$ at zero, cumulants are the expansion coefficients of $\ln\varphi_X$.
+- The CLT follows from the quadratic term of the expansion of $\ln\varphi(t)$.
+- For the Cauchy distribution, $S_n/n$ remains Cauchy-distributed: the condition of finite variance cannot be dropped.
+:::

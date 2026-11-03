@@ -1,0 +1,151 @@
+## Problem 1. Model and data
+
+In a certain experiment, the theory predicts the number of events
+
+$$
+\mathbf{t}=(10,\ 20,\ 10).
+$$
+
+The experiment gave the result
+
+$$
+\mathbf{d}=(12,\ 18,\ 11).
+$$
+
+Answer:
+
+1. What is the model prediction here?
+2. What are the experimental data?
+3. In which bins are the data greater than the prediction?
+4. In which bins are the data less than the prediction?
+5. Can one immediately say from these numbers that the theory is wrong?
+
+## Problem 2. Random variable and measured value
+
+Before the measurement, the result of the experiment is unknown. Let us denote it by the random variable $X$.
+
+After the measurement, the value obtained is
+
+$$
+x=7.3.
+$$
+
+Answer:
+
+1. What does $X$ denote?
+2. What does $x$ denote?
+3. Why do we speak of $X$ before the measurement, and of $x$ after the measurement?
+4. Give your own example of a random variable and its measured value.
+
+## Problem 3. Frequency as an estimate of probability
+
+The detector recorded 100 events. Of these, 23 events passed the selection.
+
+Answer:
+
+1. What fraction of events did the algorithm select?
+2. How can one estimate from these data the probability that the next event will pass the selection?
+3. Will this estimate be exactly equal to the true probability?
+4. What would change if 10 000 events had been recorded instead of 100?
+
+## Problem 4. Conditional probability without formulas
+
+The sample contains 1000 events:
+
+- 100 signal events;
+- 900 background events.
+
+The algorithm tags an event as "interesting". It tagged:
+
+- 80 signal events;
+- 90 background events.
+
+Answer:
+
+1. How many events in total are tagged as "interesting"?
+2. What fraction of signal events was tagged?
+3. What fraction of tagged events is actually signal?
+4. Why are these different numbers?
+5. What is more important for the statement "we have found a signal": the fraction of tagged signal events or the fraction of signal among tagged events?
+
+## Problem 5. Best-fit point
+
+The same curve shape is compared with the data for different values of the parameter $\sigma$.
+
+The following values of the discrepancy measure were obtained:
+
+| $\sigma$ | discrepancy |
+|---:|---:|
+| 0.6 | 18.4 |
+| 0.8 | 7.2 |
+| 1.0 | 2.1 |
+| 1.2 | 3.5 |
+| 1.4 | 9.8 |
+
+Answer:
+
+1. For which value of $\sigma$ does the model agree best with the data?
+2. Why is this value called the best-fit point?
+3. Does this mean that the true value of $\sigma$ is exactly equal to the one found?
+4. What else do you need to know in order to speak about the error of the value found?
+
+## Problem 6. Fluctuation or systematic shift?
+
+The expected number of events in each run is approximately 100.
+
+In the first case, the following results were obtained:
+
+$$
+98,\quad 103,\quad 99,\quad 101,\quad 100.
+$$
+
+In the second case, the following results were obtained:
+
+$$
+113,\quad 111,\quad 115,\quad 112,\quad 114.
+$$
+
+Answer:
+
+1. In which case do the data look like random fluctuations around 100?
+2. In which case is a possible systematic shift visible?
+3. Why does the single value 103 not look suspicious?
+4. Why does a sequence of values around 113 already look suspicious?
+5. What should be checked in the experiment in the second case?
+
+## Problem 7. Traces of the prior distribution
+
+Let the measurements $x_i$ be independent and have the Gaussian distribution
+
+$$
+x_i\mid\theta\sim\mathcal N(\theta,1).
+$$
+
+Consider a sample with mean $\bar x=1$ first for $n=1$, and then for
+$n=100$. Compare three prior distributions:
+
+$$
+\pi_1(\theta)\propto 1,
+\qquad
+\pi_2(\theta)\propto \exp\!\left(-\frac{\theta^2}{2}\right),
+\qquad
+\pi_3(\theta)\propto \frac{1}{1+\theta^2}.
+$$
+
+For each case, plot the function
+
+$$
+p(\theta\mid x_1,\ldots,x_n)
+\propto
+\pi_k(\theta)
+\exp\!\left[-\frac{n(\theta-\bar x)^2}{2}\right].
+$$
+
+Answer:
+
+1. How much do the three results differ after a single measurement?
+2. What changes after a hundred measurements?
+3. Under what condition does the influence of the prior distribution become small?
+4. What happens if it is equal to zero in the neighborhood of $\bar x$?
+5. Does the accumulation of data eliminate the question of choosing the very first prior
+   distribution?

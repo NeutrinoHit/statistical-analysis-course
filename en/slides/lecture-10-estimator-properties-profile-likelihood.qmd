@@ -1,0 +1,1368 @@
+---
+title: "Lecture 10. Properties of estimators, profile likelihood and data-analysis examples"
+subtitle: "Statistical Data Analysis"
+author: "Dmitry V. Naumov (JINR)"
+format:
+  revealjs:
+    slide-number: true
+    preview-links: auto
+    chalkboard:
+      buttons: false
+    logo: shared/figures/dvnlogo.png
+    css: styles.css
+    transition: fade
+    center: true
+---
+
+# Properties of estimators
+
+## Bias, variance and mean squared error
+
+Bias:
+$$
+\operatorname{bias}(\widehat\theta)
+=
+\mathbb E[\widehat\theta]-\theta.
+$$
+
+Mean squared error:
+$$
+\mathbb E[(\widehat\theta-\theta)^2].
+$$
+
+It decomposes as
+$$
+\boxed{
+\mathbb E[(\widehat\theta-\theta)^2]
+=
+\operatorname{Var}(\widehat\theta)
++
+\operatorname{bias}^2(\widehat\theta).
+}
+$$
+
+## Unbiasedness does not guarantee optimality
+
+::::: {.columns}
+
+::: {.column width="50%"}
+
+An estimator can be unbiased but have a large variance:
+$$
+\mathbb E[\widehat\theta]=\theta,
+\qquad
+\operatorname{Var}(\widehat\theta)\ \text{is large}.
+$$
+
+:::
+
+::: {.column width="50%"}
+
+A small bias sometimes reduces the overall mean squared error:
+$$
+\mathbb E[(\widehat\theta-\theta)^2]
+=
+\operatorname{Var}
++
+\operatorname{bias}^2.
+$$
+
+:::
+
+:::::
+
+::: {.fragment .callout-note .thmbox appearance="simple"}
+The properties of a procedure must be assessed together, rather than choosing an estimator by a single criterion.
+:::
+
+## Interactive: divisor $N$ or $N-1$? {#applet-variance-divisor}
+
+We generate Gaussian samples with true variance $\sigma^2=1$ and compare two estimators:
+$$
+\widehat{\sigma^2}_{\mathrm{ml}}
+=
+\frac1N\sum_i(X_i-\langle X\rangle)^2,
+\qquad
+s^2
+=
+\frac1{N-1}\sum_i(X_i-\langle X\rangle)^2.
+$$
+
+::: {.clt-widget}
+```{ojs}
+//| echo: false
+
+viewof varianceN = Inputs.range([2, 50], {value: 6, step: 1, label: "N"})
+viewof regenerateVariance = Inputs.button("New ensemble")
+
+randnVariance = () => {
+  const u1 = Math.max(Math.random(), 1e-12);
+  const u2 = Math.random();
+  return Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
+}
+
+varianceToys = {
+  regenerateVariance;
+  const toys = [];
+  for (let t = 0; t < 6000; ++t) {
+    const sample = Array.from({length: varianceN}, randnVariance);
+    const mean = sample.reduce((a, b) => a + b, 0) / varianceN;
+    const sumsq = sample.reduce((s, x) => s + (x - mean) ** 2, 0);
+    toys.push({ml: sumsq / varianceN, unbiased: sumsq / (varianceN - 1)});
+  }
+  return toys;
+}
+
+varianceMeanMl = varianceToys.reduce((s, d) => s + d.ml, 0) / varianceToys.length
+varianceMeanUnb = varianceToys.reduce((s, d) => s + d.unbiased, 0) / varianceToys.length
+varianceMseMl = varianceToys.reduce((s, d) => s + (d.ml - 1) ** 2, 0) / varianceToys.length
+varianceMseUnb = varianceToys.reduce((s, d) => s + (d.unbiased - 1) ** 2, 0) / varianceToys.length
+varianceLong = varianceToys.flatMap(d => [
+  {value: d.ml, estimator: "ML: divisor N"},
+  {value: d.unbiased, estimator: "unbiased: N - 1"}
+])
+varianceHistogram = (rows, estimator) => {
+  const xMin = 0, xMax = 3, bins = 55;
+  const width = (xMax - xMin) / bins;
+  const values = rows.filter(d => d.estimator === estimator).map(d => d.value);
+  const counts = Array.from({length: bins}, () => 0);
+  for (const x of values) {
+    if (xMin <= x && x < xMax) {
+      counts[Math.min(bins - 1, Math.floor((x - xMin) / width))] += 1;
+    }
+  }
+  return counts.map((count, i) => ({
+    x0: xMin + i * width,
+    x1: xMin + (i + 1) * width,
+    density: count / (values.length * width),
+    estimator
+  }));
+}
+varianceHist = [
+  ...varianceHistogram(varianceLong, "ML: divisor N"),
+  ...varianceHistogram(varianceLong, "unbiased: N - 1")
+]
+varianceHistMl = varianceHist.filter(d => d.estimator === "ML: divisor N")
+varianceHistUnb = varianceHist.filter(d => d.estimator === "unbiased: N - 1")
+
+variancePlot = Plot.plot({
+  width: 940,
+  height: 360,
+  marginLeft: 90,
+  x: {label: "variance estimate", domain: [0, 3], grid: true},
+  y: {label: "probability density of the estimator", grid: true},
+  color: {domain: ["ML: divisor N", "unbiased: N - 1"], range: ["#4ea1ff", "#ffb347"], legend: true},
+  marks: [
+    Plot.rectY(varianceHistMl, {x1: "x0", x2: "x1", y1: 0, y2: "density", fill: "#4ea1ff", fillOpacity: 0.48}),
+    Plot.rectY(varianceHistUnb, {x1: "x0", x2: "x1", y1: 0, y2: "density", fill: "#ffb347", fillOpacity: 0.38}),
+    Plot.ruleX([1], {stroke: "#f2f2f2", strokeWidth: 3})
+  ]
+})
+
+html`
+<div class="clt-panel">
+  ${variancePlot}
+  <div class="clt-summary" style="margin-top:0.35rem;">
+    <span>N is the sample size</span>
+    <span>y axis is density: the area of each histogram equals 1</span>
+    <span>mean of the ML estimator ≈ ${varianceMeanMl.toFixed(3)}</span>
+    <span>mean of the unbiased estimator ≈ ${varianceMeanUnb.toFixed(3)}</span>
+    <span>mean squared error: ML ≈ ${varianceMseMl.toFixed(3)}, N−1 ≈ ${varianceMseUnb.toFixed(3)}</span>
+    <span>for large N the estimators almost coincide</span>
+  </div>
+</div>
+`
+```
+:::
+
+## Consistency
+
+An estimator is called consistent if, as the sample grows, it converges to the true parameter:
+$$
+\boxed{
+\widehat\theta_N
+\xrightarrow[N\to\infty]{P}
+\theta.
+}
+$$
+
+::: incremental
+- The bias must vanish or become negligibly small.
+- The variance must tend to zero.
+- Consistency is an asymptotic property.
+- For a finite sample the estimator may still be biased and have a large error.
+:::
+
+## Why a lower bound on precision is needed
+
+For $X_i\sim\mathrm N(\mu,\sigma^2)$ with known $\sigma$ one can devise several estimators $\mu$:
+$$
+\widehat\mu_1=\langle X\rangle,
+\qquad
+\widehat\mu_2=\operatorname{median}(X_1,\ldots,X_N),
+\qquad
+\widehat\mu_3=\frac{X_1+X_N}{2}.
+$$
+
+All look reasonable, but they use the information differently:
+$$
+\operatorname{Var}(\widehat\mu_1)=\frac{\sigma^2}{N},
+\qquad
+\operatorname{Var}(\widehat\mu_2)\approx\frac{\pi}{2}\frac{\sigma^2}{N},
+\qquad
+\operatorname{Var}(\widehat\mu_3)=\frac{\sigma^2}{2}.
+$$
+
+::: incremental
+- The mean uses all observations most efficiently for the Gaussian model.
+- The median is more robust to outliers, but in a pure Gaussian model it pays in variance.
+- The two-point estimator almost throws away the rest of the data.
+:::
+
+## Cramér–Rao bound
+
+The score function shows how the log-likelihood responds to the parameter:
+$$
+U(\theta)
+=
+\frac{\partial\ell(\theta)}{\partial\theta}.
+$$
+
+Fisher information:
+$$
+\boxed{
+I(\theta)
+=
+\mathbb E\!\left[U^2(\theta)\right]
+=
+-\mathbb E\!\left[
+\frac{\partial^2\ell}{\partial\theta^2}
+\right].
+}
+$$
+
+If the regularity conditions hold, for an unbiased estimator:
+$$
+\boxed{
+\operatorname{Var}(\widehat\theta)
+\ge
+\frac{1}{I(\theta)}.
+}
+$$
+
+This is a lower bound: an unbiased estimator in the given model cannot do better than it.
+It does not claim that the MLE is always unbiased or always attains the bound; these properties must be checked separately.
+
+## Expanding the second derivative
+::: incremental
+
+- Let $s_\theta(x)=\partial_\theta\ln f(x\mid\theta)$ for a single observation.
+
+- From the normalization of the density: $\int f(x\mid\theta)\,dx=1$.
+
+- Differentiate once:
+$$
+\mathbb E[s_\theta(X)]
+=
+\int \partial_\theta f(x\mid\theta)\,dx
+=0.
+$$
+
+- Differentiate a second time:
+$$
+\partial_\theta f
+=
+f\,\partial_\theta\ln f
+=
+f\,s_\theta,
+$$
+$$
+\partial_\theta^2 f
+=
+\partial_\theta(f s_\theta)
+=
+(\partial_\theta f)s_\theta
++f\,\partial_\theta s_\theta
+=
+f\left[
+s_\theta^2+\partial_\theta^2\ln f
+\right].
+$$
+:::
+
+
+## Integrating the result
+::: incremental
+
+- Integrate:
+$$
+0
+=
+\int \partial_\theta^2 f\,dx
+=
+\int f\left[
+s_\theta^2+\partial_\theta^2\ln f
+\right]dx
+=
+\mathbb E\!\left[
+s_\theta^2(X)+\partial_\theta^2\ln f(X\mid\theta)
+\right].
+$$
+
+- Therefore
+$$
+\boxed{
+\mathbb E[s_\theta^2(X)]
+=
+-\mathbb E[\partial_\theta^2\ln f(X\mid\theta)].
+}
+$$
+:::
+
+## Example: Gaussian mean
+
+For a single observation:
+$$
+\ln f(x\mid\mu)
+=
+-\frac{(x-\mu)^2}{2\sigma^2}
++\mathrm{const},
+\qquad
+s_\mu(x)
+=
+\frac{x-\mu}{\sigma^2}.
+$$
+
+Then
+$$
+I_1(\mu)
+=
+\mathbb E[s_\mu^2(X)]
+=
+\frac{1}{\sigma^4}\mathbb E[(X-\mu)^2]
+=
+\frac{1}{\sigma^2}.
+$$
+
+For $N$ independent observations:
+$$
+I_N(\mu)=\frac{N}{\sigma^2},
+\qquad
+\operatorname{Var}(\widehat\mu)\ge\frac{\sigma^2}{N}.
+$$
+
+The mean $\langle X\rangle$ has exactly this variance, so in this model it attains the Cramér–Rao bound.
+
+## How to read the Fisher information
+
+::: incremental
+- The Fisher information measures the sensitivity of the distribution to the parameter.
+- The sharper the maximum of the log-likelihood, the more precisely the parameter is determined.
+- For independent observations the information adds up: $I_N=N I_1$.
+- Therefore the typical error of a regular efficient estimator decreases as $1/\sqrt N$.
+- If an estimator attains the Cramér–Rao bound, it is called efficient.
+:::
+
+
+# Shape of the likelihood
+
+## Curvature near the maximum
+
+Let us expand the log-likelihood near the maximum:
+$$
+\ell(\theta)
+\approx
+\ell(\widehat\theta)
+-
+\frac12
+(\theta-\widehat\theta)^2
+\left[
+-\ell''(\widehat\theta)
+\right].
+$$
+
+Hence the local variance estimate:
+$$
+\boxed{
+\sigma_{\widehat\theta}^2
+\approx
+\left[
+-\frac{\partial^2\ell}{\partial\theta^2}
+\bigg|_{\widehat\theta}
+\right]^{-1}.
+}
+$$
+
+This is the Gaussian approximation: it can break down for small samples, boundaries and asymmetric likelihood functions.
+
+## Relative likelihood
+
+The absolute normalization of $L$ does not matter. It is convenient to compare with the maximum:
+$$
+\lambda(\theta)
+=
+\frac{L(\theta)}{L(\widehat\theta)}.
+$$
+
+One often uses
+$$
+\boxed{
+q(\theta)
+=
+-2\ln\lambda(\theta)
+=
+-2\left[\ell(\theta)-\ell(\widehat\theta)\right].
+}
+$$
+
+::: incremental
+- At the maximum $q(\widehat\theta)=0$.
+- The worse the parameter describes the data, the larger $q(\theta)$.
+- For a locally Gaussian likelihood:
+  $$
+  q(\theta)\approx\frac{(\theta-\widehat\theta)^2}{\sigma_{\widehat\theta}^2}.
+  $$
+:::
+
+## Quadratic profile of the Gaussian mean
+
+For $N$ observations with known $\sigma$:
+$$
+\widehat\mu=\langle x\rangle,
+\qquad
+\sigma_{\widehat\mu}=\frac{\sigma}{\sqrt N}.
+$$
+
+The relative likelihood profile is exactly quadratic:
+$$
+\boxed{
+q(\mu)
+=
+\frac{(\mu-\langle x\rangle)^2}
+{\sigma^2/N}.
+}
+$$
+
+The points $q=1$ lie one standard error away from the maximum. Interpreting such thresholds outside the Gaussian case requires separate justification.
+
+## Example: particle lifetime
+
+Let the decay times be described by an exponential distribution:
+$$
+T_i\sim\operatorname{Exp}(\tau),
+\qquad
+f(t\mid\tau)=\frac1\tau e^{-t/\tau},
+\qquad
+t\ge0.
+$$
+
+Likelihood function:
+$$
+L(\tau)
+=
+\prod_{i=1}^{N}
+\frac1\tau e^{-t_i/\tau}
+=
+\tau^{-N}
+\exp\!\left(
+-\frac1\tau\sum_{i=1}^{N}t_i
+\right).
+$$
+
+Log-likelihood:
+$$
+\ell(\tau)
+=
+-N\ln\tau
+-\frac1\tau\sum_{i=1}^{N}t_i
++\mathrm{const}.
+$$
+
+Condition for the maximum:
+$$
+\frac{\partial\ell}{\partial\tau}
+=
+-\frac{N}{\tau}
++\frac{1}{\tau^2}\sum_{i=1}^{N}t_i
+=0
+\quad\Longrightarrow\quad
+\boxed{\widehat\tau_{\mathrm{ml}}=\langle t\rangle.}
+$$
+
+## Interactive: lifetime likelihood {#applet-lifetime-likelihood}
+
+::: {.clt-widget}
+```{ojs}
+//| echo: false
+
+viewof lifeN = Inputs.range([3, 200], {value: 20, step: 1, label: "N"})
+viewof lifeTauTrue = Inputs.range([0.5, 5], {value: 2, step: 0.1, label: "τ0"})
+viewof lifeTauTry = Inputs.range([0.1, 20], {value: 2, step: 0.05, label: "τ"})
+viewof regenerateLife = Inputs.button("New sample", {value: 0, reduce: () => Date.now()})
+viewof revealLifeInterval = Inputs.button("Find interval", {value: 0, reduce: () => Date.now()})
+
+lifeSample = {
+  regenerateLife;
+  const values = [];
+  for (let i = 0; i < lifeN; ++i) {
+    values.push(-lifeTauTrue * Math.log(Math.max(1e-12, 1 - Math.random())));
+  }
+  return values;
+}
+
+lifeNobs = lifeSample.length
+lifeSumT = lifeSample.reduce((s, t) => s + t, 0)
+lifeTauHat = lifeSumT / lifeNobs
+lifeLogLik = tau => -lifeNobs * Math.log(tau) - lifeSumT / tau
+lifeLogLikMax = lifeLogLik(lifeTauHat)
+lifeDeltaLog = tau => lifeLogLik(tau) - lifeLogLikMax
+lifeQ = tau => -2 * lifeDeltaLog(tau)
+lifeBisect = (lo, hi) => {
+  let flo = lifeQ(lo) - 1;
+  for (let i = 0; i < 70; ++i) {
+    const mid = 0.5 * (lo + hi);
+    const fmid = lifeQ(mid) - 1;
+    if (flo * fmid <= 0) {
+      hi = mid;
+    } else {
+      lo = mid;
+      flo = fmid;
+    }
+  }
+  return 0.5 * (lo + hi);
+}
+lifeRightHi = {
+  let hi = Math.max(1.2 * lifeTauHat, lifeTauHat + 0.1);
+  for (let i = 0; i < 40 && lifeQ(hi) < 1; ++i) hi *= 1.5;
+  return hi;
+}
+lifeLow = lifeBisect(Math.max(1e-6, lifeTauHat * 1e-6), lifeTauHat)
+lifeHigh = lifeBisect(lifeTauHat, lifeRightHi)
+lifeShowInterval = revealLifeInterval > regenerateLife
+lifeXmax = Math.max(
+  4 * lifeTauTrue,
+  3 * lifeTauHat,
+  1.15 * lifeTauTry,
+  lifeShowInterval ? 1.15 * lifeHigh : 0,
+  5
+)
+lifeGrid = Array.from({length: 600}, (_, i) => 1e-4 + (lifeXmax - 1e-4) * i / 599)
+lifeCurve = lifeGrid.map(tau => ({tau, dlog: lifeDeltaLog(tau), q: lifeQ(tau)}))
+lifeTryPoint = [{tau: lifeTauTry, dlog: lifeDeltaLog(lifeTauTry)}]
+lifeYmin = Math.floor(Math.max(
+  -20,
+  Math.min(-5, lifeDeltaLog(lifeTauTry)) - 0.5
+))
+lifeDataRows = lifeSample.map((t, i) => ({i: i + 1, t}))
+lifeDataXmax = Math.max(lifeXmax, Math.max(...lifeSample) * 1.05)
+lifeIntervalMarks = lifeShowInterval
+  ? [
+      Plot.ruleY([-0.5], {stroke: "#999", strokeDasharray: "7,5", strokeWidth: 3}),
+      Plot.ruleX([lifeLow, lifeHigh], {stroke: "#ff5f57", strokeDasharray: "8,6", strokeWidth: 3})
+    ]
+  : []
+
+lifePlot = Plot.plot({
+  width: 760,
+  height: 360,
+  marginLeft: 80,
+  x: {label: "lifetime τ", domain: [0, lifeXmax], grid: true},
+  y: {label: "ℓ(τ) − ℓmax", domain: [lifeYmin, 0.12], grid: true},
+  marks: [
+    Plot.line(lifeCurve, {x: "tau", y: "dlog", stroke: "#4ea1ff", strokeWidth: 4}),
+    Plot.ruleY([0], {stroke: "#777", strokeWidth: 2}),
+    Plot.ruleX([lifeTauTrue], {stroke: "#f2f2f2", strokeDasharray: "5,5", strokeWidth: 3}),
+    Plot.ruleX([lifeTauTry], {stroke: "#ffb347", strokeWidth: 4}),
+    Plot.dot(lifeTryPoint, {x: "tau", y: "dlog", fill: "#ffb347", r: 7}),
+    ...lifeIntervalMarks
+  ]
+})
+lifeDataPlot = Plot.plot({
+  width: 290,
+  height: 360,
+  marginLeft: 55,
+  x: {label: "measured times tᵢ", domain: [0, lifeDataXmax], grid: true},
+  y: {label: "index i", domain: [0, lifeN + 1]},
+  marks: [
+    Plot.dot(lifeDataRows, {x: "t", y: "i", fill: "#f2f2f2", fillOpacity: 0.72, r: 3}),
+    Plot.ruleX([lifeTauTrue], {stroke: "#f2f2f2", strokeDasharray: "5,5", strokeWidth: 2})
+  ]
+})
+
+html`
+<div class="clt-panel">
+  <div style="display:flex; gap:0.8rem; justify-content:center; align-items:flex-start;">
+    ${lifePlot}
+    ${lifeDataPlot}
+  </div>
+  <div class="clt-summary">
+    <span>τ0 sets the generation; points on the right are the generated decay times</span>
+    <span>chosen τ = ${lifeTauTry.toFixed(2)}: ℓ−ℓmax = ${lifeDeltaLog(lifeTauTry).toFixed(2)}, q = ${lifeQ(lifeTauTry).toFixed(2)}</span>
+    <span>${lifeShowInterval ? `q=1: [${lifeLow.toFixed(2)}, ${lifeHigh.toFixed(2)}]` : "first find the maximum, then press Find interval"}</span>
+    <span>the interval is found by going down 1/2 from the maximum: ℓ−ℓmax = −1/2</span>
+  </div>
+</div>
+`
+```
+:::
+
+## Boundaries and small samples
+
+For a Poisson observation $n$:
+$$
+q(\mu)
+=
+2\left[
+\mu-n+n\ln\frac n\mu
+\right],
+$$
+where for $n=0$ the last term is taken to be zero.
+
+::: incremental
+- The shape is not symmetric about $\widehat\mu=n$.
+- For $n=0$ the maximum lies on the boundary $\widehat\mu=0$.
+- The curvature near the maximum may poorly describe distant regions.
+- A symmetric notation $\widehat\mu\pm\sigma$ may be physically meaningless.
+:::
+
+
+# Several parameters
+
+## Parameters of interest and nuisance parameters
+
+Let the model depend on
+$$
+L(\theta,\boldsymbol\eta),
+$$
+where:
+
+::: incremental
+- $\theta$ is the parameter of interest that we want to measure;
+- $\boldsymbol\eta$ are nuisance parameters: background, efficiency, calibration, resolution;
+- all parameters affect the shape of the likelihood.
+:::
+
+## Joint maximum
+
+The full fit finds
+$$
+(\widehat\theta,\widehat{\boldsymbol\eta})
+=
+\underset{\theta,\boldsymbol\eta}
+{\operatorname{arg\,max}}\,
+L(\theta,\boldsymbol\eta).
+$$
+
+::: incremental
+- Correlations between parameters form elongated likelihood regions.
+- A change in $\theta$ can be partially compensated by a change in $\boldsymbol\eta$.
+- Therefore the uncertainty of $\theta$ is not determined solely by a slice of the likelihood at fixed nuisance parameters.
+:::
+
+## Profile likelihood
+
+For each fixed $\theta$ we re-optimize the nuisance parameters:
+$$
+\widehat{\widehat{\boldsymbol\eta}}(\theta)
+=
+\underset{\boldsymbol\eta}{\operatorname{arg\,max}}\,
+L(\theta,\boldsymbol\eta).
+$$
+
+Profile likelihood:
+$$
+\boxed{
+L_{\mathrm{p}}(\theta)
+=
+L\!\left(
+\theta,
+\widehat{\widehat{\boldsymbol\eta}}(\theta)
+\right).
+}
+$$
+
+The double hat emphasizes that the nuisance parameters are optimized at fixed $\theta$.
+
+## Model for the applet
+
+The applet uses a two-dimensional Gaussian likelihood shape near the maximum $(0,0)$:
+$$
+q(\theta,\eta)
+=
+-2\ln\frac{L(\theta,\eta)}{L_{\max}}
+=
+\frac{\theta^2-2\rho\theta\eta+\eta^2}{1-\rho^2},
+\qquad
+\frac{L(\theta,\eta)}{L_{\max}}
+=
+\exp\!\left[-\frac12 q(\theta,\eta)\right].
+$$
+
+Here $\theta$ is the parameter of interest, $\eta$ is the nuisance parameter, and $\rho$ sets their correlation:
+$$
+\Sigma=
+\begin{pmatrix}
+1 & \rho\\
+\rho & 1
+\end{pmatrix},
+\qquad
+q=
+\begin{pmatrix}\theta & \eta\end{pmatrix}
+\Sigma^{-1}
+\begin{pmatrix}\theta\\ \eta\end{pmatrix}.
+$$
+
+Profiling chooses the best value of $\eta$ at each fixed $\theta$:
+$$
+\frac{\partial q}{\partial\eta}=0
+\quad\Rightarrow\quad
+\widehat{\widehat\eta}(\theta)=\rho\theta,
+\qquad
+q_{\mathrm{prof}}(\theta)=q(\theta,\widehat{\widehat\eta}(\theta))=\theta^2.
+$$
+
+If instead of profiling we fix $\eta=0$, we get a steeper curve:
+$$
+q_{\eta=0}(\theta)=q(\theta,0)=\frac{\theta^2}{1-\rho^2}.
+$$
+
+## Interactive: what profiling does {#applet-profile-likelihood}
+
+The color shows the joint relative likelihood $L(\theta,\eta)/L_{\max}$. The white line passes through the best value of $\eta$ for each fixed $\theta$.
+
+::: {.clt-widget}
+```{ojs}
+//| echo: false
+
+viewof profileRho = Inputs.range([-0.9, 0.9], {value: 0.75, step: 0.05, label: "ρ"})
+viewof profileTheta = Inputs.range([-2.5, 2.5], {value: 1.2, step: 0.1, label: "θ"})
+
+profileGrid = {
+  const values = [];
+  for (let i = 0; i <= 60; ++i) {
+    const theta = -3 + 6 * i / 60;
+    for (let j = 0; j <= 60; ++j) {
+      const eta = -3 + 6 * j / 60;
+      const q = (theta * theta - 2 * profileRho * theta * eta + eta * eta) / (1 - profileRho * profileRho);
+      values.push({theta, eta, relative: Math.exp(-0.5 * q)});
+    }
+  }
+  return values;
+}
+
+profilePath = Array.from({length: 121}, (_, i) => {
+  const theta = -3 + 6 * i / 120;
+  return {theta, eta: profileRho * theta};
+})
+profileEta = profileRho * profileTheta
+
+profileJointPlot = Plot.plot({
+  width: 590,
+  height: 480,
+  marginLeft: 65,
+  x: {label: "θ", domain: [-3, 3], grid: true},
+  y: {label: "η", domain: [-3, 3], grid: true},
+  color: {scheme: "magma", domain: [0, 1]},
+  marks: [
+    Plot.dot(profileGrid, {x: "theta", y: "eta", fill: "relative", r: 3.8}),
+    Plot.line(profilePath, {x: "theta", y: "eta", stroke: "#f2f2f2", strokeWidth: 3}),
+    Plot.ruleX([profileTheta], {stroke: "#4ea1ff", strokeWidth: 3}),
+    Plot.dot([{theta: profileTheta, eta: profileEta}], {x: "theta", y: "eta", r: 8, fill: "#ffb347"})
+  ]
+})
+
+profileCurve = Array.from({length: 201}, (_, i) => {
+  const theta = -3 + 6 * i / 200;
+  return {theta, qProfile: theta * theta, qFixed: theta * theta / (1 - profileRho * profileRho)};
+})
+
+profileCurvePlot = Plot.plot({
+  width: 590,
+  height: 480,
+  marginLeft: 65,
+  x: {label: "θ", domain: [-3, 3], grid: true},
+  y: {label: "q(θ)", domain: [0, 9], grid: true},
+  color: {domain: ["profile", "η = 0"], range: ["#ffb347", "#4ea1ff"], legend: true},
+  marks: [
+    Plot.line(profileCurve, {x: "theta", y: "qProfile", stroke: "#ffb347", strokeWidth: 4}),
+    Plot.line(profileCurve, {x: "theta", y: "qFixed", stroke: "#4ea1ff", strokeWidth: 3}),
+    Plot.ruleY([1], {stroke: "#999", strokeDasharray: "6,5"})
+  ]
+})
+
+html`
+<div class="clt-panel">
+  <div style="display:flex; gap:0.6rem; align-items:center; justify-content:center;">
+    ${profileJointPlot}
+    ${profileCurvePlot}
+  </div>
+  <div class="clt-summary">
+    <span>ρ is the correlation of the parameters</span>
+    <span>at θ = ${profileTheta.toFixed(1)} the profile chooses η = ${profileEta.toFixed(2)}</span>
+    <span>profiling accounts for compensation between parameters</span>
+  </div>
+</div>
+`
+```
+:::
+
+## What the applet shows
+
+::: incremental
+1. At fixed $\theta$ the blue vertical line defines the allowed values of the nuisance parameter $\eta$.
+2. The orange point picks the likelihood maximum on this line.
+3. Repeating this for all $\theta$ forms the white profile trajectory.
+4. The profile curve is wider than the slice at fixed $\eta=0$; the stronger the correlation, the more fixing the nuisance parameter underestimates the uncertainty.
+:::
+
+## Example: reactor neutrinos
+
+::::: {.panel-tabset}
+
+### Model
+
+::: {.smaller}
+
+Toy model: two flavors, vacuum, reactor $\bar\nu_e$:
+$$
+P_{ee}(E; A, \Delta m^2)
+=
+1
+- A\,
+\sin^2\!\left(
+1.267\,\Delta m^2\,\frac{L}{E_{\mathrm{gev}}}
+\right),
+\qquad
+A=\sin^2 2\theta.
+$$
+
+Expectation in an energy bin:
+$$
+\lambda_i(A,\Delta m^2)
+=
+C\,\phi(E_i)\sigma(E_i)P_{ee}(E_i;A,\Delta m^2)\Delta E_i,
+\qquad
+n_i\sim\operatorname{Pois}(\lambda_i).
+$$
+
+Likelihood:
+$$
+\ell(A,\Delta m^2)
+=
+\sum_i\left[n_i\ln\lambda_i(A,\Delta m^2)-\lambda_i(A,\Delta m^2)\right]
+\quad
+\text{up to a constant.}
+$$
+
+:::
+
+### Flux
+
+::: {.smaller}
+
+The Huber--Mueller parametrization approximates the logarithm of the spectrum by a polynomial in $E$:
+$$
+\phi(E)
+=
+\sum_k f_k
+\exp\!\left[
+\sum_{p=0}^{5} a_{kp} E^p
+\right],
+\qquad
+k\in\{^{235}\mathrm U,\,^{238}\mathrm U,\,^{239}\mathrm{Pu},\,^{241}\mathrm{Pu}\}.
+$$
+
+ $E$ in MeV;  $a_{kp}$ are dimensional, the exponent is dimensionless.
+
+| isotope | $f_k$ | $a_0$ | $a_1$ | $a_2$ | $a_3$ | $a_4$ | $a_5$ |
+|---:|---:|---:|---:|---:|---:|---:|---:|
+| $^{235}$U | 0.58 | 4.367 | -4.577 | 2.100 | -0.5294 | 0.06186 | -0.002777 |
+| $^{238}$U | 0.07 | 0.4833 | 0.1927 | -0.1283 | -0.006762 | 0.002233 | -0.0001536 |
+| $^{239}$Pu | 0.30 | 4.757 | -5.392 | 2.563 | -0.6596 | 0.07820 | -0.003536 |
+| $^{241}$Pu | 0.05 | 2.990 | -2.882 | 1.278 | -0.3343 | 0.03905 | -0.001754 |
+
+:::
+
+### Parameters
+
+::: {.smaller}
+
+Fixed in the applet:
+
+| quantity | value |
+|---|---:|
+| distance $L$ | $1.6\,\text{km}$ |
+| energy range | $1.8\ldots 8.0\,\text{MeV}$ |
+| grid in $A=\sin^2 2\theta$ | $0\ldots 0.20$, 61 points |
+| grid in $\Delta m^2$ | $(1.6\ldots 3.4)\cdot 10^{-3}\,\text{eV}^2$, 61 points |
+
+The user varies $N_0$, $A_0$, $\Delta m^2_0$ and the number of energy bins $N_{\mathrm{bins}}$.
+
+For the inverse beta decay cross section a simple form is used:
+$$
+\sigma(E)\propto E_e p_e,
+\qquad
+E_e=E-1.293\,\text{MeV}.
+$$
+
+The normalization $C$ is chosen so that for $A=0$ one expects $N_0$ events over the whole energy range.
+
+:::
+
+### Algorithm
+
+::: {.smaller}
+
+The map shows
+$$
+q(A,\Delta m^2)
+=
+-2\left[
+\ell(A,\Delta m^2)-\ell_{\max}
+\right].
+$$
+
+1. For the given $(A_0,\Delta m^2_0)$ we compute $\lambda_i^0$ in all energy bins.
+2. We generate pseudo-data: $n_i\sim\operatorname{Pois}(\lambda_i^0)$.
+3. On the $(A,\Delta m^2)$ grid we compute $\ell(A,\Delta m^2)$ and find the maximum $\ell_{\max}$.
+4. We build the 2D map $q(A,\Delta m^2)$. The white region $q\le 2.30$ is a guide to the joint region $1\sigma$ for two parameters.
+5. We build the profiles:
+$$
+q_{\mathrm p}(A)=\min_{\Delta m^2}q(A,\Delta m^2),
+\qquad
+q_{\mathrm p}(\Delta m^2)=\min_A q(A,\Delta m^2).
+$$
+6. One-dimensional guide $1\sigma$: the intersection of the profile curve with $q_{\mathrm p}=1$.
+
+:::
+
+:::::
+
+## Interactive: oscillation parameters {#applet-oscillation-fit}
+
+::: {.clt-widget .osc-widget}
+```{ojs}
+//| echo: false
+
+oscExposureInput = Inputs.range([300, 100000], {value: 2500, step: 100, label: "N₀"})
+oscATrueInput = Inputs.range([0.00, 0.20], {value: 0.085, step: 0.005, label: "A₀"})
+oscDmTrueInput = Inputs.range([1.6, 3.4], {value: 2.50, step: 0.05, label: "Δm²₀"})
+oscNBinsInput = Inputs.range([8, 80], {value: 18, step: 1, label: "Nbins"})
+oscRegenerateInput = Inputs.button("New stat", {value: 0, reduce: () => Date.now()})
+
+oscExposure = Generators.input(oscExposureInput)
+oscATrue = Generators.input(oscATrueInput)
+oscDmTrue = Generators.input(oscDmTrueInput)
+oscNBins = Generators.input(oscNBinsInput)
+oscRegenerate = Generators.input(oscRegenerateInput)
+
+oscBaselineKm = 1.6
+
+oscBins = Array.from({length: oscNBins}, (_, i) => {
+  const e1 = 1.8 + i * (6.2 / oscNBins);
+  const e2 = 1.8 + (i + 1) * (6.2 / oscNBins);
+  return {i, e1, e2, e: 0.5 * (e1 + e2), width: e2 - e1};
+})
+
+oscFluxComponents = [
+  {fraction: 0.58, coeffs: [4.367, -4.577, 2.100, -0.5294, 0.06186, -0.002777]},     // 235U, Huber
+  {fraction: 0.07, coeffs: [0.4833, 0.1927, -0.1283, -0.006762, 0.002233, -0.0001536]}, // 238U, Mueller
+  {fraction: 0.30, coeffs: [4.757, -5.392, 2.563, -0.6596, 0.07820, -0.003536]},     // 239Pu, Huber
+  {fraction: 0.05, coeffs: [2.990, -2.882, 1.278, -0.3343, 0.03905, -0.001754]}      // 241Pu, Huber
+]
+
+oscIsotopeFlux = (E, coeffs) => {
+  let poly = 0;
+  let power = 1;
+  for (const a of coeffs) {
+    poly += a * power;
+    power *= E;
+  }
+  return Math.exp(poly);
+}
+
+oscFlux = E => oscFluxComponents.reduce(
+  (sum, c) => sum + c.fraction * oscIsotopeFlux(E, c.coeffs),
+  0
+)
+
+oscCrossSection = E => {
+  const ee = E - 1.293;
+  const pe = Math.sqrt(Math.max(0, ee * ee - 0.511 * 0.511));
+  return Math.max(0, ee * pe);
+}
+
+oscSurvival = (Emev, A, dmMilli) => {
+  const dm2 = dmMilli * 1e-3;
+  const phase = 1.267 * dm2 * oscBaselineKm / (Emev / 1000);
+  const s = Math.sin(phase);
+  return Math.max(1e-4, 1 - A * s * s);
+}
+
+oscBaseTotal = oscBins.reduce((sum, b) => sum + oscFlux(b.e) * oscCrossSection(b.e) * b.width, 0)
+
+oscExpected = (A, dmMilli) => {
+  const scale = oscExposure / oscBaseTotal;
+  return oscBins.map(b => scale * oscFlux(b.e) * oscCrossSection(b.e) * oscSurvival(b.e, A, dmMilli) * b.width);
+}
+
+oscRandn = () => {
+  const u1 = Math.max(Math.random(), 1e-12);
+  const u2 = Math.random();
+  return Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
+}
+
+oscPoisson = lambda => {
+  if (lambda <= 0) return 0;
+  if (lambda > 80) return Math.max(0, Math.round(lambda + Math.sqrt(lambda) * oscRandn()));
+  const limit = Math.exp(-lambda);
+  let k = 0;
+  let product = 1;
+  do {
+    ++k;
+    product *= Math.random();
+  } while (product > limit);
+  return k - 1;
+}
+
+oscData = {
+  oscRegenerate;
+  const mu = oscExpected(oscATrue, oscDmTrue);
+  return oscBins.map((b, i) => ({...b, n: oscPoisson(mu[i]), muTrue: mu[i]}));
+}
+
+oscLogLike = (A, dmMilli) => {
+  const mu = oscExpected(A, dmMilli);
+  let ll = 0;
+  for (let i = 0; i < oscData.length; ++i) {
+    const lambda = Math.max(mu[i], 1e-9);
+    ll += oscData[i].n * Math.log(lambda) - lambda;
+  }
+  return ll;
+}
+
+oscAGrid = Array.from({length: 61}, (_, i) => i * 0.20 / 60)
+oscDmGrid = Array.from({length: 61}, (_, i) => 1.6 + i * (3.4 - 1.6) / 60)
+
+oscFit = {
+  const rows = [];
+  let best = {A: 0, dm: 0, ll: -Infinity};
+  for (const A of oscAGrid) {
+    for (const dm of oscDmGrid) {
+      const ll = oscLogLike(A, dm);
+      rows.push({A, dm, ll});
+      if (ll > best.ll) best = {A, dm, ll};
+    }
+  }
+  for (const row of rows) {
+    row.q = -2 * (row.ll - best.ll);
+    row.relative = Math.exp(-0.5 * Math.min(row.q, 20));
+  }
+  const profileA = oscAGrid.map(A => ({
+    A,
+    q: Math.min(...rows.filter(row => Math.abs(row.A - A) < 1e-12).map(row => row.q))
+  }));
+  const profileDm = oscDmGrid.map(dm => ({
+    dm,
+    q: Math.min(...rows.filter(row => Math.abs(row.dm - dm) < 1e-12).map(row => row.q))
+  }));
+  return {rows, best, profileA, profileDm};
+}
+
+oscRegion68 = oscFit.rows.filter(row => row.q <= 2.30)
+oscRegion95 = oscFit.rows.filter(row => row.q <= 6.18)
+oscObservedTotal = oscData.reduce((sum, row) => sum + row.n, 0)
+oscMuNoOsc = oscExpected(0, oscDmTrue)
+oscMuBest = oscExpected(oscFit.best.A, oscFit.best.dm)
+oscSpectrumRows = oscData.map((row, i) => ({...row, muNoOsc: oscMuNoOsc[i], muBest: oscMuBest[i]}))
+
+oscMapPlot = Plot.plot({
+  width: 700,
+  height: 430,
+  marginLeft: 64,
+  marginBottom: 50,
+  x: {label: "Δm² × 10³, eV²", domain: [1.6, 3.4], grid: true},
+  y: {label: "A = sin² 2θ", domain: [0, 0.20], grid: true},
+  color: {scheme: "magma", domain: [0, 1]},
+  marks: [
+    Plot.dot(oscFit.rows, {x: "dm", y: "A", fill: "relative", r: 3.4}),
+    Plot.dot(oscRegion95, {x: "dm", y: "A", fill: "#ffffff", fillOpacity: 0.14, r: 3.6}),
+    Plot.dot(oscRegion68, {x: "dm", y: "A", fill: "#ffffff", fillOpacity: 0.55, r: 3.9}),
+    Plot.dot([{dm: oscDmTrue, A: oscATrue}], {x: "dm", y: "A", r: 8, fill: "#00d084", stroke: "#111", strokeWidth: 1.5}),
+    Plot.dot([{dm: oscFit.best.dm, A: oscFit.best.A}], {x: "dm", y: "A", r: 8, fill: "#ffb347", stroke: "#111", strokeWidth: 1.5})
+  ]
+})
+
+oscSpectrumPlot = Plot.plot({
+  width: 700,
+  height: 205,
+  marginLeft: 66,
+  marginBottom: 30,
+  x: {label: "energy, MeV", domain: [1.8, 8.0], grid: true},
+  y: {label: "events per bin", grid: true},
+  marks: [
+    Plot.rectY(oscSpectrumRows, {x1: "e1", x2: "e2", y: "n", fill: "#d9d9d9", fillOpacity: 0.75}),
+    Plot.line(oscSpectrumRows, {x: "e", y: "muNoOsc", stroke: "#8fd3ff", strokeWidth: 2.4, strokeDasharray: "6,4"}),
+    Plot.line(oscSpectrumRows, {x: "e", y: "muTrue", stroke: "#00d084", strokeWidth: 2.5, strokeDasharray: "5,4"}),
+    Plot.line(oscSpectrumRows, {x: "e", y: "muBest", stroke: "#ffb347", strokeWidth: 3})
+  ]
+})
+
+oscProfileAPlot = Plot.plot({
+  width: 700,
+  height: 205,
+  marginLeft: 66,
+  marginBottom: 30,
+  x: {label: "A = sin² 2θ", domain: [0, 0.20], grid: true},
+  y: {label: "q_p(A)", domain: [0, 9], grid: true},
+  marks: [
+    Plot.line(oscFit.profileA, {x: "A", y: "q", stroke: "#ffb347", strokeWidth: 3}),
+    Plot.ruleY([1], {stroke: "#999", strokeDasharray: "5,5"}),
+    Plot.ruleX([oscATrue], {stroke: "#00d084", strokeDasharray: "5,4"}),
+    Plot.ruleX([oscFit.best.A], {stroke: "#ffb347"})
+  ]
+})
+
+oscProfileDmPlot = Plot.plot({
+  width: 700,
+  height: 205,
+  marginLeft: 66,
+  marginBottom: 30,
+  x: {label: "Δm² × 10³, eV²", domain: [1.6, 3.4], grid: true},
+  y: {label: "q_p(Δm²)", domain: [0, 9], grid: true},
+  marks: [
+    Plot.line(oscFit.profileDm, {x: "dm", y: "q", stroke: "#4ea1ff", strokeWidth: 3}),
+    Plot.ruleY([1], {stroke: "#999", strokeDasharray: "5,5"}),
+    Plot.ruleX([oscDmTrue], {stroke: "#00d084", strokeDasharray: "5,4"}),
+    Plot.ruleX([oscFit.best.dm], {stroke: "#ffb347"})
+  ]
+})
+
+html`
+<style>
+.osc-widget input[type="number"] {
+  min-width: 6.8rem !important;
+  width: 6.8rem !important;
+}
+.osc-widget input[type="range"] {
+  min-width: 17rem;
+}
+.osc-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 0.75rem;
+  align-items: start;
+  justify-items: center;
+}
+.osc-controls {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.12rem;
+  width: 520px;
+  margin-bottom: 0.35rem;
+}
+.osc-controls form,
+.osc-controls label {
+  margin: 0 !important;
+}
+.osc-controls button {
+  font-size: 0.82em;
+  padding: 0.15rem 0.45rem;
+}
+.osc-right {
+  display: flex;
+  flex-direction: column;
+  gap: 0.03rem;
+}
+</style>
+<div class="clt-panel" style="margin-top:0.3rem;">
+  <div class="osc-layout">
+    <div>
+      <div class="osc-controls">
+        ${oscExposureInput}
+        ${oscATrueInput}
+        ${oscDmTrueInput}
+        ${oscNBinsInput}
+        ${oscRegenerateInput}
+      </div>
+      ${oscMapPlot}
+    </div>
+    <div class="osc-right">
+      ${oscSpectrumPlot}
+      ${oscProfileAPlot}
+      ${oscProfileDmPlot}
+    </div>
+  </div>
+  <div class="clt-summary" style="font-size:0.66em; line-height:1.08; margin-top:0.02rem;">
+    <span>green is generation</span>
+    <span>orange is maximum</span>
+    <span>N = ${oscObservedTotal}</span>
+    <span>Nbins = ${oscNBins}</span>
+    <span>Â = ${oscFit.best.A.toFixed(3)}, Δm̂² = ${oscFit.best.dm.toFixed(2)}·10⁻³ eV²</span>
+  </div>
+</div>
+`
+```
+:::
+
+## What the oscillation example shows
+
+::: incremental
+1. Even in a simple model the parameters are not measured independently: similar spectra can arise for different $(A,\Delta m^2)$.
+2. The joint region shows this connection directly.
+3. The one-dimensional error for $A$ is obtained from the profile curve $q_{\mathrm p}(A)$, where for each $A$ the best $\Delta m^2$ is chosen anew.
+4. Similarly, the error for $\Delta m^2$ is obtained from $q_{\mathrm p}(\Delta m^2)$.
+5. This is the same principle as in the abstract applet, but now the profile arises from a physical model of the spectrum.
+:::
+
+
+# Likelihood for data analysis examples
+
+## Constraining information
+
+A nuisance parameter often has an external measurement:
+$$
+\eta_{\mathrm{aux}}\sim\mathrm N(\eta,\sigma_\eta^2).
+$$
+
+Then the full likelihood contains two factors:
+$$
+\boxed{
+L_{\mathrm{full}}(\theta,\eta)
+=
+L_{\mathrm{data}}(\theta,\eta)
+\,
+L_{\mathrm{aux}}(\eta).
+}
+$$
+
+::: incremental
+- The main data measure $\theta$ and at the same time constrain $\eta$.
+- The auxiliary measurement adds independent information about $\eta$.
+- The word "constraint" does not mean an arbitrary penalty: it is part of the probabilistic model of the data.
+:::
+
+## Extended likelihood
+
+If the model predicts both the number of events $\nu(\theta)$ and the distribution of their features $f(x\mid\theta)$, one uses
+$$
+\boxed{
+L_{\mathrm{ext}}(\theta)
+=
+\operatorname{Pois}(N\mid\nu(\theta))
+\prod_{i=1}^{N} f(x_i\mid\theta).
+}
+$$
+
+::: incremental
+- The Poisson factor uses the information on the total number of events.
+- The product of densities uses the shape of the distribution.
+- For a mixture of signal and background, both components enter $f(x\mid\theta)$.
+:::
+
+## Binned Poisson likelihood
+
+If the data are given as event counts $n_j$ in independent bins, and the model predicts $\nu_j(\boldsymbol\theta)$:
+$$
+\boxed{
+L(\boldsymbol\theta)
+=
+\prod_j
+\operatorname{Pois}
+\!\left(
+n_j\mid\nu_j(\boldsymbol\theta)
+\right).
+}
+$$
+
+The corresponding log-likelihood:
+$$
+\ell(\boldsymbol\theta)
+=
+\sum_j
+\left[
+n_j\ln\nu_j(\boldsymbol\theta)
+-
+\nu_j(\boldsymbol\theta)
+-
+\ln n_j!
+\right].
+$$
+
+## Invariance of the maximum likelihood estimator
+
+If
+$$
+\widehat\theta_{\mathrm{ml}}
+=
+\underset{\theta}{\operatorname{arg\,max}}\,L(\theta),
+$$
+and $\phi=g(\theta)$ is a one-to-one transformation, then
+$$
+\boxed{
+\widehat\phi_{\mathrm{ml}}
+=
+g(\widehat\theta_{\mathrm{ml}}).
+}
+$$
+
+::: incremental
+- One can fit a convenient parametrization.
+- The result is then converted into the physically interesting quantity.
+- But under a nonlinear transformation the error usually becomes asymmetric.
+:::
+
+## A practical fitting algorithm
+
+::: incremental
+1. Write down explicitly the probabilistic model of all observations.
+2. Define the parameters of interest, the nuisance parameters and the physical boundaries.
+3. Implement a numerically stable log-likelihood.
+4. Find the joint maximum using several starting points.
+5. Check gradients and convergence: a maximum has been found, not a saddle point; the parameters do not hit the boundaries.
+6. Build one-dimensional and two-dimensional likelihood scans; the profile must be smooth.
+7. Test the procedure on pseudo-experiments.
+8. Compare the fitted model with the data.
+:::
+
+## What to check with pseudo-experiments
+
+For known true parameters $\boldsymbol\theta_0$:
+
+::: incremental
+- the distribution of $\widehat{\boldsymbol\theta}$;
+- the bias and variance of the estimator;
+- how often the fit ends up at the boundaries;
+- the stability of the optimizer;
+- the coverage of the intervals;
+- the distribution of the likelihood ratio statistics;
+- the effect of a wrong model.
+:::
+
+::: {.fragment .callout-note .thmbox appearance="simple"}
+The likelihood formula defines the statistical model. Pseudo-experiments check how the whole analysis procedure behaves.
+:::
+
+## Typical problems
+
+| Problem | Symptom |
+|---|---|
+| local maximum | the result depends on the starting point |
+| parameter at a boundary | asymmetric likelihood, wrong error from the curvature |
+| weak identifiability | a long flat valley of the likelihood |
+| strong correlation | unstable fit, large profile error |
+| wrong model | bias and poor agreement with the data |
+| numerical instability | `NaN`, infinities, false convergence |
+
+---
+
+# What to remember
+
+## Summary
+
+::: incremental
+- A good estimator is characterized by bias, variance, mean squared error, consistency and efficiency.
+- The curvature of the log-likelihood gives a local estimate of the precision only in the regular, nearly Gaussian case.
+- Profiling accounts for the compensation between the parameter of interest and the nuisance parameters.
+- A fit must be checked with scans, optimizer diagnostics and pseudo-experiments.
+:::

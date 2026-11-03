@@ -1,0 +1,1416 @@
+---
+title: "Lecture 13. Goodness of fit and statistical significance"
+subtitle: "Statistical Data Analysis"
+author: "Dmitry V. Naumov (JINR)"
+format:
+  revealjs:
+    slide-number: true
+    preview-links: auto
+    chalkboard:
+      buttons: false
+    logo: shared/figures/dvnlogo.png
+    css: styles.css
+    transition: fade
+    center: true
+---
+
+# After the Fit
+
+## What We Already Know
+
+::: incremental
+
+- By this lecture we know how to formulate a probabilistic model of the data and a fitting rule.
+
+- For Gaussian errors we minimize
+$$
+\chi^2(\boldsymbol\theta)
+=
+\sum_{i=1}^{N}
+\frac{
+\left[y_i-f(x_i;\boldsymbol\theta)\right]^2
+}{\sigma_i^2}.
+$$
+
+- The minimum gives the parameter estimate:
+$$
+\widehat{\boldsymbol\theta}
+=
+\operatorname{arg} \underset{\boldsymbol\theta}{\operatorname{min}}\,
+\chi^2(\boldsymbol\theta).
+$$
+
+- In the vicinity of the minimum, the shape of $\chi^2$ gives the covariance matrix of the parameters.
+
+:::
+
+## What Next?
+
+::: incremental
+
+- Even a bad model usually has best parameters:
+$$
+\chi^2_{\min}
+=
+\chi^2(\widehat{\boldsymbol\theta}).
+$$
+
+- The question of the goodness of fit of the model to the data remains:
+  - how well does the model describe the observations?
+
+:::
+
+## Example: A Calibration Line
+
+::: incremental
+
+- Let the detector response be measured at several energy points:
+$$
+y_i=a+b x_i+\varepsilon_i,
+\qquad
+\varepsilon_i\sim \mathrm N(0,\sigma_i^2).
+$$
+
+- A straight-line fit will always find the numbers $\widehat a$ and $\widehat b$.
+
+- But this does not yet mean that the data really look like a straight line.
+
+- Residuals after the fit:
+$$
+r_i
+=
+y_i-\widehat a-\widehat b x_i.
+$$
+
+- It is the residuals that answer the question of agreement.
+
+:::
+
+## Normalized Residuals
+
+::: incremental
+
+- If the model is correct and the errors are estimated correctly, then the quantities
+$$
+z_i
+=
+\frac{
+y_i-f(x_i;\widehat{\boldsymbol\theta})
+}{\sigma_i}
+$$
+should be typical Gaussian deviations.
+
+- The sum of squares of the normalized residuals equals
+$$
+\chi^2_{\min}
+=
+\sum_i z_i^2.
+$$
+
+- A large contribution from a single point means a large residual in units of its error.
+
+- A large total contribution means that the model describes the data poorly as a whole.
+
+:::
+
+## Statistic
+
+::: incremental
+
+- Now we are interested not only in
+$$
+\widehat{\boldsymbol\theta},
+$$
+but also in
+$$
+\chi^2_{\min}.
+$$
+
+- $\chi^2_{\min}$ is a function of random variables, so it is itself a random variable.
+
+- $\chi^2_{\min}$ is an example of a **statistic**
+
+- A statistic is a measurable numerical function of a sample that does not depend on the unknown parameters of the distribution of the sample elements.
+
+- The question of the lecture:
+  - If the model is correct, which values of $\chi^2_{\min}$ are ordinary and which are already rare?
+
+- To answer it, we need to know the **distribution** of $\chi^2_{\min}$.
+
+:::
+
+
+# Physicists' Folklore
+
+## From Physics Folklore
+
+::: incremental
+
+- Physicists often say:
+$$
+\frac{\chi^2_{\min}}{\nu}\approx 1
+\quad\Longrightarrow\quad
+\text{good agreement},
+$$
+where
+$$
+\nu=N-m
+$$
+is the number of degrees of freedom, $N$ is the number of points, $m$ is the number of fitted parameters.
+
+- This is wrong. Completely wrong. 
+
+- The probability of the same ratio depends on the number of degrees of freedom $\nu$ (more on this below).
+
+:::
+
+## Question of the Day
+
+::: incremental
+- Consider two cases:
+  1. $\chi^2_{\min}=12$ and $\nu=10$ and 
+  2. $\chi^2_{\min}=1200$ and $\nu=1000$.
+- In both cases
+$$
+\chi^2_{\min}/\nu = 1.2
+$$
+- In the first case the model agrees well with the data.
+- In the second case agreement between the model and the data is unlikely.
+- Let us figure out why.
+:::
+
+
+# Distribution of $\chi^2$
+
+## A Single Normalized Residual
+
+::: incremental
+
+- Let
+$$
+Z\sim \mathrm N(0,1).
+$$
+
+- The density of $Z$ is
+$$
+f_Z(z)
+=
+\frac{1}{\sqrt{2\pi}}e^{-z^2/2}.
+$$
+
+- The squared deviation
+$$
+T=Z^2\ge 0
+$$
+
+- A large value of $T$ means that the observation turned out to be far from the expectation in units of its error.
+
+:::
+
+## Derivation: Branches and the Jacobian
+
+::: incremental
+
+- For $t>0$ the equation
+$$
+z^2=t
+$$
+has two roots:
+$$
+z=\sqrt t,
+\qquad
+z=-\sqrt t.
+$$
+
+- For each root the Jacobian equals
+$$
+\left|
+\frac{dz}{dt}
+\right|
+=
+\frac{1}{2\sqrt t}.
+$$
+
+- Therefore the probability density function of $T$ is obtained as the sum of the contributions of the two branches:
+
+:::
+
+## Probability Density Function of $f_T(t)$
+
+::: incremental
+$$
+\begin{aligned}
+f_T(t)  &= f_Z(\sqrt t)\left|\frac{dz}{dt}\right|_{z=\sqrt t}
++ f_Z(-\sqrt t)\left|\frac{dz}{dt}\right|_{z=-\sqrt t}\\
+&= \frac{f_Z(\sqrt t)+f_Z(-\sqrt t)}{2\sqrt t}.
+\end{aligned}
+$$
+
+- Since $f_Z(\sqrt t)=f_Z(-\sqrt t)$,
+$$
+\boxed{
+f_T(t)
+=
+\frac{1}{\sqrt{2\pi t}}e^{-t/2},
+\qquad
+t>0.
+}
+$$
+
+- This is the $\chi^2$ distribution with one degree of freedom.
+
+:::
+
+## Several Independent Residuals
+
+::: incremental
+
+- Let there now be $\nu$ independent standard Gaussian variables:
+$$
+Z_1,\ldots,Z_\nu
+\sim
+\mathrm N(0,1).
+$$
+
+- Their joint probability density is proportional to
+$$
+\exp\!\left[
+-\frac12\sum_{i=1}^{\nu} z_i^2
+\right].
+$$
+
+- Denote
+$$
+t
+=
+\sum_{i=1}^{\nu}z_i^2.
+$$
+
+- This is the squared distance from the center in the $\nu$-dimensional space of normalized deviations.
+
+:::
+
+## Geometry of the Derivation
+
+::: incremental
+
+- The joint density depends only on the radius:
+$$
+r^2=t.
+$$
+
+- The probability of falling into a thin spherical shell of radius $r$ is proportional to two factors:
+$$
+\underbrace{e^{-r^2/2}}_{\text{Gaussian density}}
+\times
+\underbrace{r^{\nu-1}\,dr}_{\text{shell volume}}.
+$$
+
+- We pass from $r$ to $t=r^2$:
+$$
+r^{\nu-1}dr
+=
+\frac12 t^{\nu/2-1}dt.
+$$
+
+- Therefore the density in $t$ has the form
+$$
+f(t;\nu)\propto
+t^{\nu/2-1}e^{-t/2}.
+$$
+
+:::
+
+## The Distribution Formula
+
+::: incremental
+
+- After normalization we obtain
+$$
+\boxed{
+f(t;\nu) = \frac{1}{2^{\nu/2}\Gamma(\nu/2)} t^{\nu/2-1}e^{-t/2}, \qquad t\ge 0.
+}
+$$
+
+- This is the $\chi^2$ distribution with $\nu$ degrees of freedom.
+
+- Here
+$$
+\Gamma(a)
+=
+\int_0^\infty u^{a-1}e^{-u}\,du
+$$
+is the gamma function.
+
+- It generalizes the factorial:
+$$
+\Gamma(n)=(n-1)!
+\quad\text{for integer } n\ge 1,
+\qquad
+\Gamma(1/2)=\sqrt\pi.
+$$
+
+:::
+
+## Expectation Value
+
+::: incremental
+
+- We use the density $\chi^2_\nu$:
+$$
+f(t;\nu)
+=
+\frac{1}{2^{\nu/2}\Gamma(\nu/2)}
+t^{\nu/2-1}e^{-t/2}.
+$$
+
+- Then
+$$
+\begin{aligned}
+\mathbb E[T]
+&=
+\int_0^\infty t f(t;\nu)\,dt\\
+&=
+\frac{1}{2^{\nu/2}\Gamma(\nu/2)}
+\int_0^\infty t^{\nu/2}e^{-t/2}\,dt.
+\end{aligned}
+$$
+
+- The substitution $t=2u$ gives
+$$
+\mathbb E[T]
+=
+2\frac{\Gamma(\nu/2+1)}{\Gamma(\nu/2)}
+=
+\nu.
+$$
+
+:::
+
+## Variance
+
+::: incremental
+
+- Similarly
+$$
+\begin{aligned}
+\mathbb E[T^2]
+&=
+\frac{1}{2^{\nu/2}\Gamma(\nu/2)}
+\int_0^\infty t^{\nu/2+1}e^{-t/2}\,dt\\
+&=
+4\frac{\Gamma(\nu/2+2)}{\Gamma(\nu/2)}
+=
+\nu(\nu+2).
+\end{aligned}
+$$
+
+- Therefore
+$$
+\operatorname{Var}(T) = \mathbb E[T^2]-\mathbb E[T]^2 = \nu(\nu+2)-\nu^2 = 2\nu.
+$$
+
+- We obtain:
+$$
+\boxed{
+\mathbb E[\chi^2_\nu]=\nu,
+\qquad
+\operatorname{Var}(\chi^2_\nu)=2\nu.
+}
+$$
+
+- The number of degrees of freedom sets not only the mean but also the width of the distribution.
+
+:::
+
+## Interactive: The $\chi^2$ Distribution {#applet-chi-square}
+
+::: {.clt-widget}
+```{ojs}
+//| echo: false
+
+viewof chiDistNu = Inputs.range([1, 80], {value: 10, step: 1, label: "ν"})
+
+chiDistGamma = (z) => {
+  const p = [
+    676.5203681218851,
+    -1259.1392167224028,
+    771.32342877765313,
+    -176.61502916214059,
+    12.507343278686905,
+    -0.13857109526572012,
+    9.9843695780195716e-6,
+    1.5056327351493116e-7
+  ];
+  z -= 1;
+  let x = 0.99999999999980993;
+  for (let i = 0; i < p.length; i++) x += p[i] / (z + i + 1);
+  const t = z + p.length - 0.5;
+  return Math.sqrt(2 * Math.PI) * t ** (z + 0.5) * Math.exp(-t) * x;
+}
+
+chiDistPdf = (x, nu) => {
+  if (x <= 0) return nu === 1 ? Infinity : 0;
+  return x ** (nu / 2 - 1) * Math.exp(-x / 2) /
+    (2 ** (nu / 2) * chiDistGamma(nu / 2));
+}
+
+chiDistXmax = Math.max(8, chiDistNu + 5 * Math.sqrt(2 * chiDistNu));
+chiDistData = Array.from({length: 700}, (_, i) => {
+  const x = 1e-4 + chiDistXmax * i / 699;
+  return {x, y: chiDistPdf(x, chiDistNu)};
+})
+chiDistMean = chiDistNu;
+chiDistSigma = Math.sqrt(2 * chiDistNu);
+chiDistScaleY = Math.max(...chiDistData.filter(d => Number.isFinite(d.y)).map(d => d.y));
+
+chiDistPlot = Plot.plot({
+  width: 1050,
+  height: 500,
+  marginLeft: 70,
+  marginBottom: 50,
+  x: {label: "t", domain: [0, chiDistXmax], grid: true},
+  y: {label: "f(t; ν)", domain: [0, 1.08 * chiDistScaleY], grid: true},
+  marks: [
+    Plot.areaY(chiDistData, {x: "x", y: "y", fill: "#4ea1ff", fillOpacity: 0.22}),
+    Plot.line(chiDistData, {x: "x", y: "y", stroke: "#4ea1ff", strokeWidth: 4}),
+    Plot.ruleX([chiDistMean], {stroke: "#ffb347", strokeWidth: 4}),
+    Plot.ruleX(
+      [chiDistMean - chiDistSigma, chiDistMean + chiDistSigma].filter(x => x > 0),
+      {stroke: "#f2f2f2", strokeDasharray: "6,5", strokeWidth: 2}
+    )
+  ]
+})
+
+html`
+<div class="clt-panel">
+  <div style="display:flex; justify-content:center;">${chiDistPlot}</div>
+  <div class="clt-summary">
+    <span>ν = ${chiDistNu}</span>
+    <span>E[χ²] = ${chiDistMean.toFixed(1)}</span>
+    <span>standard deviation of χ² = √(2ν) = ${chiDistSigma.toFixed(2)}</span>
+    <span>standard deviation of χ²/ν = √(2/ν) = ${Math.sqrt(2 / chiDistNu).toFixed(3)}</span>
+  </div>
+</div>`
+```
+:::
+
+## If the Errors Are Correlated
+
+::: incremental
+
+- If the errors are correlated, the sum of squares is written in terms of the covariance matrix:
+$$
+\chi^2
+=
+(\mathbf y-\boldsymbol\lambda)^{\mathsf T}
+V^{-1}
+(\mathbf y-\boldsymbol\lambda).
+$$
+
+- Question:
+  - If there are correlations between the measurements, doesn't the number of independent variables become smaller?
+
+- Answer: no, if the covariance matrix is nondegenerate.
+
+:::
+
+## Diagonalization of the Bilinear Form
+
+::: incremental
+
+- The covariance matrix can be diagonalized:
+$$
+V
+=
+Q\Lambda Q^{\mathsf T},
+\qquad
+\Lambda=\operatorname{diag}(\lambda_1,\ldots,\lambda_N).
+$$
+
+- If all $\lambda_i>0$, we introduce new variables
+$$
+\mathbf z
+=
+\Lambda^{-1/2}Q^{\mathsf T}
+(\mathbf y-\boldsymbol\lambda).
+$$
+
+- Then
+$$
+\chi^2 =\mathbf z^{\mathsf T}\mathbf z =\sum_{i=1}^{N}z_i^2.
+$$
+
+- The dimension has remained equal to $N$.
+
+- An exact reduction in the number of directions arises only with a genuine constraint, when one of the eigenvalue variances equals zero and $V$ becomes degenerate.
+
+:::
+
+## Why There Are Fewer Degrees of Freedom After the Fit
+
+::: incremental
+
+- After passing to independent normalized variables, the data live in an $N$-dimensional space.
+
+- If the parameters are not fitted, then $\chi^2$ is the squared length of the data vector relative to the given model.
+
+- If the model is linear in $m$ fitted parameters, then these parameters define a $m$-dimensional surface of possible predictions.
+
+- The fit selects the nearest point of this surface.
+
+- The residual is the part of the vector orthogonal to the model surface.
+
+- In the linear Gaussian problem, the dimension of the residual space equals $N-m$.
+
+- Therefore
+$$
+\boxed{
+\nu=N-m,
+}
+$$
+where $m$ is the number of fitted parameters.
+
+- Correlations have nothing to do with it: the data themselves were used to choose $m$ model parameters.
+
+:::
+
+## Example: Fitting a Constant
+
+::: incremental
+
+- Let one and the same quantity be measured:
+$$
+y_i=\mu+\varepsilon_i,
+\qquad
+\varepsilon_i\sim \mathrm N(0,\sigma^2).
+$$
+
+- If $\mu$ is specified in advance, then
+$$
+\chi^2(\mu)
+=
+\sum_{i=1}^{N}
+\frac{(y_i-\mu)^2}{\sigma^2}
+\sim
+\chi^2_N.
+$$
+
+- If $\mu$ is estimated from the same data,
+$$
+\widehat\mu
+=
+\frac1N\sum_i y_i,
+$$
+then the sum of the residuals must equal zero:
+$$
+\sum_i (y_i-\widehat\mu) =0.
+$$
+
+- This is one linear condition on the residuals.
+
+:::
+
+## Where Did One Degree of Freedom Go
+
+::: incremental
+
+- Denote the residual vector
+$$
+\mathbf r
+=
+(y_1-\widehat\mu,\ldots,y_N-\widehat\mu).
+$$
+
+- The condition
+$$
+\sum_i r_i=0
+$$
+means that $\mathbf r$ lies not in the whole $N$-dimensional space but in a hyperplane of dimension $N-1$.
+
+- Geometrically, fitting a constant subtracts from the data the projection onto the direction
+$$
+(1,1,\ldots,1).
+$$
+
+- One direction has disappeared, therefore
+$$
+\chi^2_{\min}\sim \chi^2_{N-1}.
+$$
+
+:::
+
+## Is the Distribution of $\chi^2_{\mathrm{min}}$ Always $\chi^2_\nu$?
+
+::: incremental
+
+- No. If
+  - the model is substantially nonlinear;
+  - the parameters are at a physical boundary;
+  - the errors depend on the parameters;
+  - there are small Poisson counts;
+  - there are exact constraints or a degenerate covariance matrix.
+
+- In such cases the statistic may have a distribution different from $\chi^2_\nu$.
+
+- In these and similar cases the distribution of the statistic $\chi^2_{\mathrm{min}}$ is obtained with pseudo-experiments (below).
+
+:::
+
+
+# $p$-value
+
+## $p$-value
+
+::: incremental
+
+- Let the fit yield
+$$
+\chi^2_{\mathrm{obs}}.
+$$
+
+- If the $\chi^2_\nu$ distribution applies, then the $p$-value equals
+$$
+\boxed{
+p
+=
+\int_{\chi^2_{\mathrm{obs}}}^{\infty}
+f(t;\nu)\,dt.
+}
+$$
+
+- This is the probability of obtaining the same or a greater disagreement with the model, given that the model is correct.
+
+- The smaller $p$, the less typical the observed value $\chi^2_{\mathrm{obs}}$.
+
+:::
+
+## $p$-value on a plot {#applet-p-value}
+
+::: {.panel-tabset}
+
+### Plot
+
+::: {.clt-widget}
+```{ojs}
+//| echo: false
+
+viewof pLevelNu = Inputs.range([1, 120], {value: 50, step: 1, label: "ν"})
+viewof pLevelObs = Inputs.range([0, 180], {value: 70, step: 0.5, label: "χ²_obs"})
+
+pLevelXmax = Math.max(12, pLevelObs + 8 * Math.sqrt(2 * pLevelNu), pLevelNu + 8 * Math.sqrt(2 * pLevelNu));
+pLevelData = Array.from({length: 1400}, (_, i) => {
+  const x = 1e-4 + pLevelXmax * i / 1399;
+  return {x, y: chiDistPdf(x, pLevelNu)};
+});
+pLevelTailData = pLevelData.filter(d => d.x >= pLevelObs);
+pLevelTailArea = pLevelTailData.slice(1).reduce((s, d, i) => {
+  const p = pLevelTailData[i];
+  return s + 0.5 * (d.y + p.y) * (d.x - p.x);
+}, 0);
+pLevelYmax = 1.08 * Math.max(...pLevelData.filter(d => Number.isFinite(d.y)).map(d => d.y));
+
+pLevelPlot = Plot.plot({
+  width: 1050,
+  height: 430,
+  marginLeft: 70,
+  marginBottom: 50,
+  x: {label: "χ²", domain: [0, pLevelXmax], grid: true},
+  y: {label: "f(χ²; ν)", domain: [0, pLevelYmax], grid: true},
+  marks: [
+    Plot.line(pLevelData, {x: "x", y: "y", stroke: "#6ea8ff", strokeWidth: 5}),
+    Plot.areaY(pLevelTailData, {x: "x", y: "y", fill: "#ff4d4d", fillOpacity: 0.62}),
+    Plot.ruleX([pLevelObs], {stroke: "#ff4d4d", strokeWidth: 3}),
+    Plot.text([{x: Math.min(pLevelObs + 0.12 * pLevelXmax, 0.88 * pLevelXmax), y: 0.35 * pLevelYmax, label: "p"}],
+      {x: "x", y: "y", text: "label", fill: "#ffffff", fontSize: 26, fontWeight: 700})
+  ]
+});
+
+html`
+<div class="clt-panel">
+  <div style="display:flex; justify-content:center;">${pLevelPlot}</div>
+  <div class="clt-summary">
+    <span>ν = ${pLevelNu}</span>
+    <span>χ²_obs = ${pLevelObs.toFixed(1)}</span>
+    <span>p ≈ ${pLevelTailArea < 1e-3 ? pLevelTailArea.toExponential(2) : pLevelTailArea.toFixed(3)}</span>
+  </div>
+</div>`
+```
+:::
+
+### Pseudo-experiments
+
+::: columns
+::: {.column width="42%"}
+
+Algorithm:
+
+1. Generate the "theory" $T$ and pseudo-observations $t_{obs}$.
+
+2. Compute $p$.
+
+3. If the pseudo-data and the theory are described by the same model, the values $p$ are uniformly distributed.
+
+:::
+
+::: {.column width="58%"}
+
+```python
+import numpy as np
+
+rng = np.random.default_rng(12345)
+
+nu = 10
+B_cal = 100_000
+B_obs = 5_000
+
+# Calibration of the distribution of the statistic.
+T_cal = rng.chisquare(df=nu, size=B_cal)
+T_cal.sort()
+
+# Independent pseudo-observations.
+T_obs = rng.chisquare(df=nu, size=B_obs)
+
+# For each observed t we compute the p-value.
+n_right = B_cal - np.searchsorted(T_cal, T_obs, side="left")
+p = n_right / B_cal
+
+hist, edges = np.histogram(p, bins=np.linspace(0, 1, 21), density=True)
+```
+
+:::
+:::
+
+### Distribution of $p$
+
+::: {.clt-widget}
+```{ojs}
+//| echo: false
+
+pUniformRandomFactory = () => {
+  let state = 246813579;
+  return () => {
+    state = (1664525 * state + 1013904223) >>> 0;
+    return state / 4294967296;
+  };
+}
+
+pUniformNormal = (rand) => {
+  const u1 = Math.max(rand(), 1e-12);
+  const u2 = rand();
+  return Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
+}
+
+pUniformChi2Sample = (count, nu, rand) => {
+  const out = [];
+  for (let b = 0; b < count; b++) {
+    let t = 0;
+    for (let i = 0; i < nu; i++) {
+      const z = pUniformNormal(rand);
+      t += z * z;
+    }
+    out.push(t);
+  }
+  return out;
+}
+
+pUniformSamples = {
+  const rand = pUniformRandomFactory();
+  const nu = 10;
+  const calibration = pUniformChi2Sample(20000, nu, rand).sort((a, b) => a - b);
+  const observed = pUniformChi2Sample(5000, nu, rand);
+  return {nu, calibration, observed};
+}
+
+pUniformLowerBound = (arr, x) => {
+  let lo = 0;
+  let hi = arr.length;
+  while (lo < hi) {
+    const mid = Math.floor((lo + hi) / 2);
+    if (arr[mid] < x) {
+      lo = mid + 1;
+    } else {
+      hi = mid;
+    }
+  }
+  return lo;
+}
+
+pUniformValues = {
+  const calibration = pUniformSamples.calibration;
+  const nCal = calibration.length;
+  return pUniformSamples.observed.map(t => {
+    const left = pUniformLowerBound(calibration, t);
+    const nRight = nCal - left;
+    return nRight / nCal;
+  });
+}
+
+pUniformHistogram = {
+  const nBins = 20;
+  const bins = Array.from({length: nBins}, () => 0);
+  for (const p of pUniformValues) {
+    const i = Math.min(nBins - 1, Math.floor(p * nBins));
+    bins[i] += 1;
+  }
+  return bins.map((n, i) => ({
+    x1: i / nBins,
+    x2: (i + 1) / nBins,
+    y: n / pUniformValues.length * nBins
+  }));
+}
+
+pUniformPlot = Plot.plot({
+  width: 1050,
+  height: 430,
+  marginLeft: 70,
+  marginBottom: 55,
+  x: {label: "p", domain: [0, 1], grid: true},
+  y: {label: "density", domain: [0, 1.45], grid: true},
+  marks: [
+    Plot.rectY(pUniformHistogram, {
+      x1: "x1",
+      x2: "x2",
+      y: "y",
+      fill: "#6ea8ff",
+      fillOpacity: 0.70
+    }),
+    Plot.ruleY([1], {stroke: "#ffb347", strokeWidth: 4, strokeDasharray: "8,7"})
+  ]
+})
+
+html`
+<div class="clt-panel">
+  <div style="display:flex; justify-content:center;">${pUniformPlot}</div>
+  <div class="clt-summary">
+    <span>${pUniformSamples.calibration.length} values for calibration</span>
+    <span>${pUniformSamples.observed.length} pseudo-observations</span>
+    <span>expected density equals 1</span>
+  </div>
+</div>`
+```
+:::
+
+:::
+
+## One-sided conversion of $p\to Z$
+
+::: {.panel-tabset}
+
+### Formula
+
+- It is convenient to convert $p$ into a number of sigmas.
+
+-  **One-sided** conversion:
+$$
+p
+=
+P(Z_{\mathrm G}\ge Z)
+=
+1-\Phi(Z).
+$$
+
+- Hence,
+$$
+\boxed{
+Z=\Phi^{-1}(1-p).
+}
+$$
+
+- Here $\Phi$ is the cumulative distribution function of a standard normal variable.
+
+
+### Figure
+
+::: {.clt-widget}
+```{ojs}
+//| echo: false
+
+oneSideGaussZ = 2
+oneSideGaussPdf = z => Math.exp(-0.5 * z * z) / Math.sqrt(2 * Math.PI)
+oneSideGaussData = Array.from({length: 900}, (_, i) => {
+  const z = -4.5 + 9 * i / 899;
+  return {z, y: oneSideGaussPdf(z), tail: z >= oneSideGaussZ};
+})
+oneSideGaussTail = oneSideGaussData.filter(d => d.tail)
+
+oneSideGaussPlot = Plot.plot({
+  width: 1050,
+  height: 420,
+  marginLeft: 70,
+  marginBottom: 55,
+  x: {label: "Z", domain: [-4.5, 4.5], grid: true},
+  y: {label: "f_Z(z)", domain: [0, 0.43], grid: true},
+  marks: [
+    Plot.areaY(oneSideGaussTail, {x: "z", y: "y", fill: "#ff4f5e", fillOpacity: 0.65}),
+    Plot.line(oneSideGaussData, {x: "z", y: "y", stroke: "#6ea8ff", strokeWidth: 4}),
+    Plot.ruleX([oneSideGaussZ], {stroke: "#ffb347", strokeWidth: 4}),
+    Plot.text([{z: oneSideGaussZ, y: 0.37, text: "Z"}], {
+      x: "z",
+      y: "y",
+      text: "text",
+      fill: "#ffffff",
+      fontSize: 24,
+      dy: -4
+    }),
+    Plot.text([{z: 2.95, y: 0.055, text: "p"}], {
+      x: "z",
+      y: "y",
+      text: "text",
+      fill: "#ffffff",
+      fontSize: 28
+    })
+  ]
+})
+
+html`
+<div class="clt-panel">
+  <div style="display:flex; justify-content:center;">${oneSideGaussPlot}</div>
+  <div class="clt-summary">
+    <span>one-sided conversion: p = P(Z_G ≥ Z)</span>
+    <span>area of the right tail equals the p-value</span>
+  </div>
+</div>`
+```
+:::
+
+### Table
+
+- Reference values for the one-sided conversion:
+
+| $Z$ | $p=1-\Phi(Z)$ | $q:\ P(\chi^2_1\ge q)=p$ |
+|---:|---:|---:|
+| $1\sigma$ | $1.59\cdot 10^{-1}$ | $1.99$ |
+| $2\sigma$ | $2.28\cdot 10^{-2}$ | $5.19$ |
+| $3\sigma$ | $1.35\cdot 10^{-3}$ | $10.27$ |
+| $4\sigma$ | $3.17\cdot 10^{-5}$ | $17.31$ |
+| $5\sigma$ | $2.87\cdot 10^{-7}$ | $26.34$ |
+
+- The discovery threshold in particle physics is usually associated with a one-sided $5\sigma$.
+
+
+:::
+
+## Two-sided conversion
+
+::: {.panel-tabset}
+
+### Formula
+
+- For an interval on a single parameter, we are usually interested in deviations in both directions:
+$$
+p
+=
+P(|Z_{\mathrm G}|\ge Z)
+=
+2[1-\Phi(Z)].
+$$
+
+- If
+$$
+\Delta\chi^2
+=
+\chi^2(\theta)-\chi^2(\widehat\theta)
+\simeq
+\frac{(\theta-\widehat\theta)^2}{\sigma_\theta^2},
+$$
+then
+$$
+\Delta\chi^2 = Z^2.
+$$
+
+- Therefore, for a single parameter:
+$$
+1\sigma,\ 2\sigma,\ 3\sigma
+\quad\Longleftrightarrow\quad
+\Delta\chi^2=1,\ 4,\ 9.
+$$
+
+
+### Figure
+
+::: {.clt-widget}
+```{ojs}
+//| echo: false
+
+twoSideGaussZ = 2
+twoSideGaussPdf = z => Math.exp(-0.5 * z * z) / Math.sqrt(2 * Math.PI)
+twoSideGaussData = Array.from({length: 900}, (_, i) => {
+  const z = -4.5 + 9 * i / 899;
+  return {
+    z,
+    y: twoSideGaussPdf(z),
+    leftTail: z <= -twoSideGaussZ,
+    rightTail: z >= twoSideGaussZ
+  };
+})
+twoSideGaussLeftTail = twoSideGaussData.filter(d => d.leftTail)
+twoSideGaussRightTail = twoSideGaussData.filter(d => d.rightTail)
+
+twoSideGaussPlot = Plot.plot({
+  width: 1050,
+  height: 420,
+  marginLeft: 70,
+  marginBottom: 55,
+  x: {label: "Z", domain: [-4.5, 4.5], grid: true},
+  y: {label: "f_Z(z)", domain: [0, 0.43], grid: true},
+  marks: [
+    Plot.areaY(twoSideGaussLeftTail, {x: "z", y: "y", fill: "#ff4f5e", fillOpacity: 0.65}),
+    Plot.areaY(twoSideGaussRightTail, {x: "z", y: "y", fill: "#ff4f5e", fillOpacity: 0.65}),
+    Plot.line(twoSideGaussData, {x: "z", y: "y", stroke: "#6ea8ff", strokeWidth: 4}),
+    Plot.ruleX([-twoSideGaussZ, twoSideGaussZ], {stroke: "#ffb347", strokeWidth: 4}),
+    Plot.text([
+      {z: -2.85, y: 0.055, text: "p/2"},
+      {z: 2.85, y: 0.055, text: "p/2"}
+    ], {
+      x: "z",
+      y: "y",
+      text: "text",
+      fill: "#ffffff",
+      fontSize: 26
+    })
+  ]
+})
+
+html`
+<div class="clt-panel">
+  <div style="display:flex; justify-content:center;">${twoSideGaussPlot}</div>
+  <div class="clt-summary">
+    <span>two-sided conversion: p = P(|Z_G| ≥ Z)</span>
+    <span>for one parameter this then gives Δχ² = Z²</span>
+  </div>
+</div>`
+```
+:::
+
+### Table
+
+- Reference values for the two-sided conversion:
+
+| interval | two-sided $p$ | $\Delta\chi^2$ |
+|---:|---:|---:|
+| $1\sigma$ | $3.17\cdot 10^{-1}$ | $1$ |
+| $2\sigma$ | $4.55\cdot 10^{-2}$ | $4$ |
+| $3\sigma$ | $2.70\cdot 10^{-3}$ | $9$ |
+| $4\sigma$ | $6.33\cdot 10^{-5}$ | $16$ |
+| $5\sigma$ | $5.73\cdot 10^{-7}$ | $25$ |
+
+- Do not mix up these two conventions:
+  a discovery is usually one-sided, an interval for a single parameter is usually two-sided.
+
+
+:::
+
+## Answer of the day. Why must one not write $\chi^2/\mathrm{ndf} = 1.2$?
+
+- Here is why
+
+| $\chi^2_{\mathrm{obs}}$ | $\nu$ | $\chi^2_{\mathrm{obs}}/\nu$ | $z_{\chi^2}$ | $p$ |
+|---:|---:|---:|---:|---:|
+| $12$ | $10$ | $1.20$ | $0.45$ | $0.285$ |
+| $1200$ | $1000$ | $1.20$ | $4.47$ | $1.2\cdot 10^{-5}$ |
+
+- where 
+$$
+z_{\chi^2}
+=
+\frac{\chi^2_{\mathrm{obs}}-\nu}{\sqrt{2\nu}}.
+$$
+is the deviation from the mean in units of the "error"
+- In the second case the value $\chi^2$ is much less probable.
+- The correct way to report it:
+
+> $\chi^2_{min}/ndf = 1200/1000$.
+
+## How to interpret $p$?
+
+
+- Wrong: 
+
+> The model is wrong with probability $1-p$.
+
+- Correct:
+
+> The probability of obtaining data this or more inconsistent, given that the model is valid, equals p.
+
+
+## Example: the Higgs boson {.higgs-slide}
+
+::: {.panel-tabset}
+
+### Explanation
+
+- The horizontal axis scans the mass of the hypothetical boson.
+
+- At each point, the local $p$-value of the background hypothesis is computed.
+
+- This is a hypothesis test, not a goodness-of-fit $p$-value. More on this in another lecture.
+
+- The horizontal lines $1\sigma,\ldots,5\sigma$ are the conversion of $p\leftrightarrow Z$.
+
+- The deep minimum near $125\,\mathrm{GeV}$ means: background alone rarely produces such data.
+
+
+### ATLAS
+
+::: {.centered-figure style="--figure-height: 64vh; margin-top: 2.4em;"}
+![](shared/figures/Atlas_pvalue.png)
+:::
+
+### CMS
+
+::: {.centered-figure style="--figure-height: 64vh; margin-top: 2.4em;"}
+![](shared/figures/CMS_pvalue.png)
+:::
+
+:::
+
+
+# How to obtain the distribution of a statistic
+
+## When the formula is not enough
+
+If it is known that
+$$
+\chi^2_{\min}\sim\chi^2_{N-m},
+$$
+then $p$ is found analytically.
+
+If this is not guaranteed, there is no need to guess a new number of degrees of freedom.
+
+One has to build the distribution of the same statistic in the same analysis procedure.
+
+The idea:
+
+> How often does the true model itself produce a value of the statistic no smaller than the observed one?
+
+
+## Example: small Poisson bins
+
+::: {.panel-tabset}
+
+### Formulas
+
+- Let the model predict expectations $\nu_i$ in $N=20$ bins.
+
+- The data in each bin are Poisson:
+$$
+n_i \sim \operatorname{Pois}(\nu_i).
+$$
+
+- Pearson statistic:
+$$
+\chi^2_{\mathrm P}
+=
+\sum_{i=1}^{N}
+\frac{(n_i-\nu_i)^2}{\nu_i}.
+$$
+
+- For large $\nu_i$ we expect the approximation
+$$
+\chi^2_{\mathrm P}\sim \chi^2_N.
+$$
+
+- But if the expectations in some of the bins are small, the tail of the distribution may differ.
+
+### Code
+
+One must simulate exactly the statistic that is applied to the data:
+
+```python
+import numpy as np
+
+nu = np.array([
+    0.158, 0.295, 0.513, 0.833, 1.263,
+    1.785, 2.355, 2.899, 3.330, 3.568,
+    3.568, 3.330, 2.899, 2.355, 1.785,
+    1.263, 0.833, 0.513, 0.295, 0.158,
+])
+
+rng = np.random.default_rng(12345)
+B = 1_000_000
+
+n = rng.poisson(nu, size=(B, len(nu)))
+T = ((n - nu)**2 / nu).sum(axis=1)
+
+T_obs = 29.8
+p_model = np.mean(T >= T_obs)
+
+print(p_model)
+
+# For T_obs = 29.8:
+# p_model ≈ 0.11.
+# For comparison: the χ²_20 approximation gives p ≈ 0.073.
+```
+
+### Expectations
+
+- $\nu_i$ are not random numbers but the model expectations in the bins.
+
+- Only the observed counts are random:
+$$
+n_i\sim\operatorname{Pois}(\nu_i).
+$$
+
+- In this example there are deliberately bins with small expectations.
+
+
+| bin | $\nu_i$ | bin | $\nu_i$ | bin | $\nu_i$ | bin | $\nu_i$ | bin | $\nu_i$ |
+|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| 1 | 0.158 | 5 | 1.263 | 9 | 3.330 | 13 | 2.899 | 17 | 0.833 |
+| 2 | 0.295 | 6 | 1.785 | 10 | 3.568 | 14 | 2.355 | 18 | 0.513 |
+| 3 | 0.513 | 7 | 2.355 | 11 | 3.568 | 15 | 1.785 | 19 | 0.295 |
+| 4 | 0.833 | 8 | 2.899 | 12 | 3.330 | 16 | 1.263 | 20 | 0.158 |
+
+:::
+
+## Interactive: distribution of the statistic {#applet-test-statistic}
+
+::: {.clt-widget}
+```{ojs}
+//| echo: false
+
+viewof cowanObs = Inputs.range([0, 60], {value: 29.8, step: 0.1, label: "χ²_obs"})
+
+cowanNuModel = [
+  0.158, 0.295, 0.513, 0.833, 1.263,
+  1.785, 2.355, 2.899, 3.330, 3.568,
+  3.568, 3.330, 2.899, 2.355, 1.785,
+  1.263, 0.833, 0.513, 0.295, 0.158
+]
+
+cowanRandomFactory = () => {
+  let state = 123456789;
+  return () => {
+    state = (1664525 * state + 1013904223) >>> 0;
+    return state / 4294967296;
+  };
+}
+
+cowanPoisson = (lambda, rand) => {
+  const l = Math.exp(-lambda);
+  let k = 0;
+  let p = 1;
+  do {
+    k += 1;
+    p *= rand();
+  } while (p > l);
+  return k - 1;
+}
+
+cowanToyStats = {
+  const rand = cowanRandomFactory();
+  const out = [];
+  const bCount = 80000;
+  for (let b = 0; b < bCount; b++) {
+    let t = 0;
+    for (const mu of cowanNuModel) {
+      const n = cowanPoisson(mu, rand);
+      const d = n - mu;
+      t += d * d / mu;
+    }
+    out.push(t);
+  }
+  return out;
+}
+
+cowanHistogram = {
+  const binWidth = 1;
+  const bins = Array.from({length: 60}, () => 0);
+  for (const t of cowanToyStats) {
+    if (t >= 0 && t < 60) bins[Math.floor(t / binWidth)] += 1;
+  }
+  return bins.map((n, i) => ({
+    x1: i * binWidth,
+    x2: (i + 1) * binWidth,
+    y: n / (cowanToyStats.length * binWidth)
+  }));
+}
+
+cowanChi2Data = Array.from({length: 1200}, (_, i) => {
+  const x = 1e-4 + 60 * i / 1199;
+  return {x, y: chiDistPdf(x, 20)};
+})
+
+cowanChi2Tail = {
+  const xmax = 90;
+  const nStep = 1800;
+  let s = 0;
+  let x0 = cowanObs;
+  let y0 = chiDistPdf(x0, 20);
+  for (let i = 1; i <= nStep; i++) {
+    const x1 = cowanObs + (xmax - cowanObs) * i / nStep;
+    const y1 = chiDistPdf(x1, 20);
+    s += 0.5 * (y0 + y1) * (x1 - x0);
+    x0 = x1;
+    y0 = y1;
+  }
+  return s;
+}
+
+cowanModelP = cowanToyStats.filter(t => t >= cowanObs).length / cowanToyStats.length;
+cowanFmtP = (p) => p < 1e-3 ? p.toExponential(2) : p.toFixed(3);
+
+cowanPlot = Plot.plot({
+  width: 1050,
+  height: 455,
+  marginLeft: 70,
+  marginBottom: 50,
+  x: {label: "T", domain: [0, 60], grid: true},
+  y: {label: "density", domain: [0, 0.10], grid: true},
+  color: {legend: true},
+  marks: [
+    Plot.rectY(cowanHistogram, {
+      x1: "x1",
+      x2: "x2",
+      y: "y",
+      fill: "#b8b8b8",
+      fillOpacity: 0.62
+    }),
+    Plot.line(cowanChi2Data, {
+      x: "x",
+      y: "y",
+      stroke: "#6ea8ff",
+      strokeWidth: 4
+    }),
+    Plot.ruleX([cowanObs], {stroke: "#ff4d4d", strokeWidth: 4}),
+    Plot.text([{x: Math.min(cowanObs + 5, 52), y: 0.075, label: "χ²_obs"}],
+      {x: "x", y: "y", text: "label", fill: "#ffffff", fontSize: 22})
+  ]
+})
+
+html`
+<div class="clt-panel">
+  <div style="display:flex; justify-content:center;">${cowanPlot}</div>
+  <div class="clt-summary">
+    <span>20 Poisson bins</span>
+    <span>χ²_obs = ${cowanObs.toFixed(1)}</span>
+    <span>p from simulation ≈ ${cowanFmtP(cowanModelP)}</span>
+    <span>p from χ²₂₀ ≈ ${cowanFmtP(cowanChi2Tail)}</span>
+  </div>
+</div>`
+```
+:::
+
+
+## What should be remembered?
+
+::: incremental
+
+- In a linear Gaussian problem with a fixed covariance:
+$$
+\chi^2_{\min}\sim\chi^2_{N-m}.
+$$
+
+
+- Fitted parameters reduce the dimension of the space of residuals.
+
+- If the conditions of the formula are doubtful, the distribution is obtained with pseudo-experiments.
+
+- In the end one must always report:
+$$
+\chi^2_{\min},
+\qquad \nu\ \text{or calibration method}, \qquad p.
+$$
+
+:::

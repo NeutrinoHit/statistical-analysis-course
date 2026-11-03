@@ -1,0 +1,25 @@
+---
+format:
+  html:
+    toc: true
+    number-sections: true
+  pdf:
+    pdf-engine: lualatex
+execute:
+  enabled: false
+---
+
+The parameter $\mu$ sets the mean, and $\sigma$ the width.
+Three cases: $(\mu,\sigma)=(0,1),(0,2),(2,1)$.
+
+```{python}
+#| echo: true
+#| eval: false
+import numpy as np
+
+x = np.linspace(-6, 6, 400)
+for mu, sigma in [(0, 1), (0, 2), (2, 1)]:
+    pdf = np.exp(-0.5*((x-mu)/sigma)**2)/(sigma*np.sqrt(2*np.pi))
+```
+
+![](../shared/figures/generated/normal_density_profiles.png){width=58% .nostretch}

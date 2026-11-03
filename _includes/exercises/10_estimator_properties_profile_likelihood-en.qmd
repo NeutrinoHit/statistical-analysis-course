@@ -1,0 +1,68 @@
+## Problem 1. Fisher information for the Gaussian mean
+
+Let
+$$
+X_i\sim\mathrm N(\mu,\sigma^2),
+$$
+where the measurements are independent and $\sigma$ is known.
+
+1. Compute the Fisher information for a single observation and for the whole sample.
+2. Derive the Cramér–Rao bound for the variance of an unbiased estimator of $\mu$.
+3. Compare the bound with the variance of the sample mean.
+
+
+## Problem 2. A biased estimator of the variance
+
+For an independent Gaussian sample of size $N\geq2$ with unknown $\mu$ and $\sigma^2$:
+
+1. Find the maximum likelihood estimators of both parameters.
+2. Show that
+   $$
+   \mathbb E[\widehat{\sigma^2}_{\mathrm{ml}}]
+   =
+   \frac{N-1}{N}\sigma^2.
+   $$
+3. Construct an unbiased estimator of the variance.
+4. Compare the mean squared errors of the two estimators analytically or with the Monte Carlo method.
+5. Why does the maximum likelihood estimator not have to be unbiased at finite $N$?
+
+## Problem 3. Profiling a nuisance parameter
+
+Consider the quadratic log-likelihood
+$$
+-2\ell(\theta,\eta)
+=
+\frac{\theta^2-2\rho\theta\eta+\eta^2}{1-\rho^2}
++\mathrm{const},
+\qquad |\rho|<1.
+$$
+
+1. Find the joint maximum.
+2. For fixed $\theta$ find
+   $$
+   \widehat{\widehat\eta}(\theta).
+   $$
+3. Construct the profile function $q_{\mathrm{p}}(\theta)$.
+4. Compare it with the slice $q(\theta,\eta=0)$.
+5. Explain why fixing $\eta$ at its estimate underestimates the uncertainty when $\rho\ne0$. How does the formulation of the problem change if $\eta$ is known exactly?
+
+## Problem 4. Extended likelihood function for signal and background
+
+Events with the feature $x$ are observed. The expected numbers of signal and background events are $s$ and $b$, and the normalized densities are $f_s(x)$ and $f_b(x)$.
+
+1. Write down the extended likelihood function for the sample $x_1,\ldots,x_N$.
+2. Show how it uses both the number of events and the shape of the distribution.
+3. Write down the likelihood function for binned data.
+4. What information is lost with coarse binning?
+5. An independent auxiliary measurement of the background gave $a$ and is described by the model $a\sim\mathcal N(b,\sigma_a^2)$ with known $\sigma_a$. Add it to the full likelihood and state which parameter has to be profiled when estimating $s$.
+
+## Problem 5. Testing the fit with pseudo-experiments
+
+Choose one of the models from the previous problems.
+
+1. Generate at least $5000$ pseudo-experiments with a known true parameter.
+2. In each pseudo-experiment find the maximum likelihood estimate.
+3. Estimate the bias, the variance and the mean squared error.
+4. Repeat for several sample sizes and compare the results.
+5. If the chosen model has a physical boundary for the parameter, check how often the estimate falls on it.
+6. Compare the actual spread of the maximum likelihood estimate with the error predicted by the curvature of the log-likelihood.

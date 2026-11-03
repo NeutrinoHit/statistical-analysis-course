@@ -1,0 +1,123 @@
+## Problem 1. Inverse cumulative distribution function
+
+Let
+$$
+U\sim\mathrm U(0,1).
+$$
+
+1. Show that
+   $$
+   X=-\frac{1}{\lambda}\ln(1-U)
+   $$
+   has an exponential distribution with parameter $\lambda$.
+2. Generate a sample $X$ and compare the histogram with the analytic density.
+3. Check the sample mean and variance.
+
+## Problem 2. Acceptance-rejection method
+
+It is required to generate the density
+$$
+f(x)=6x(1-x),
+\qquad 0\le x\le1.
+$$
+
+1. Find the maximum $f(x)$.
+2. Construct an acceptance-rejection algorithm from the uniform distribution.
+3. Compute the theoretical efficiency of the algorithm.
+4. Check it numerically.
+
+## Problem 3. Monte Carlo integration
+
+Compute
+$$
+I=\int_0^1\frac{4}{1+x^2}\,dx=\pi
+$$
+by the Monte Carlo method.
+
+1. Write down the estimator $\widehat I_N$.
+2. Estimate its statistical error from the sample.
+3. Plot the dependence of the error on $N$.
+4. Show numerically that the error decreases approximately as $N^{-1/2}$.
+
+## Problem 4. A rare event and importance sampling
+
+It is required to estimate the probability
+$$
+p=P(Z>4),
+\qquad
+Z\sim\mathrm N(0,1).
+$$
+
+1. Estimate $p$ by naive generation from the standard Gaussian.
+2. Explain why a stable estimate requires a very large sample.
+3. Propose a distribution $q(z)$ that generates the region $z>4$ more often.
+4. Write down the corresponding weight $w(z)=f(z)/q(z)$.
+5. Compare the variances of the two estimators.
+
+## Problem 5. Pseudo-experiments for a counting experiment
+
+Let
+$$
+N\sim\operatorname{Pois}(s+b),
+\qquad
+\widehat s=N-b,
+$$
+where the background $b$ is known exactly.
+
+1. Find the analytic $\mathbb E[\widehat s]$ and $\operatorname{Var}(\widehat s)$.
+2. Construct an ensemble of pseudo-experiments.
+3. Compare the sample mean and variance with the analytic values.
+4. Estimate the probability of obtaining $\widehat s<0$.
+
+## Problem 6. Nonlinear error propagation
+
+Let the correlated quantities have the distribution
+$$
+\begin{pmatrix}X\\Y\end{pmatrix}
+\sim
+\mathrm N\!\left[
+\begin{pmatrix}10\\5\end{pmatrix},
+\begin{pmatrix}
+\sigma_X^2 & \rho\sigma_X\sigma_Y\\
+\rho\sigma_X\sigma_Y & \sigma_Y^2
+\end{pmatrix}
+\right].
+$$
+
+For the ratio
+$$
+R=\frac{X}{Y}
+$$
+compare:
+
+1. the linear error estimate;
+2. the standard deviation of the Monte Carlo sample;
+3. the central quantile interval $[q_{0.16},q_{0.84}]$.
+
+Repeat the comparison for different $\sigma_Y$ and $\rho$.
+
+## Problem 7. Selection efficiency
+
+Out of $N_{\mathrm{gen}}=10\,000$ generated events, $N_{\mathrm{sel}}=730$ passed the selection.
+
+1. Estimate the selection efficiency.
+2. Estimate its binomial statistical error.
+3. How many events must be generated for the relative error of the efficiency to be less than $1\%$?
+4. How does the problem change when the events have weights?
+
+## Problem 8. Effective sample size
+
+For a weighted sample, one defines
+$$
+N_{\mathrm{eff}}
+=
+\frac{(\sum_k w_k)^2}{\sum_k w_k^2}.
+$$
+
+1. Show that for equal weights $N_{\mathrm{eff}}=N$.
+2. Find $N_{\mathrm{eff}}$ for the weights
+   $$
+   (1,1,1,1,6).
+   $$
+3. Compare the result with the actual number of events.
+4. Explain why a large variation of the weights degrades the statistical precision.

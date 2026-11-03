@@ -1,0 +1,136 @@
+## Problem 1. Sum of two uniform variables
+
+Let the independent random variables be uniformly distributed:
+$$
+X,Y\sim\mathrm{U}(0,1),
+\qquad
+f_X(x)=f_Y(x)=\theta(x)\theta(1-x).
+$$
+
+For the sum $S=X+Y$:
+
+1. Compute the density $f_S(s)$ directly as a convolution.
+2. Show that the product of $\theta$-functions restricts the integration domain by the condition
+   $$
+   \max(0,s-1)\le x\le\min(1,s).
+   $$
+3. Obtain the piecewise-defined triangular density and check its normalization.
+4. Find the characteristic function $\varphi_X(t)$.
+5. Using $\varphi_S(t)=\varphi_X(t)^2$, obtain the same answer via the inverse Fourier transform.
+6. Plot the densities $f_X(x)$ and $f_S(s)$ and explain the shape of the distribution of the sum.
+
+## Problem 2. Bernoulli distribution
+
+Let
+$$
+P(X=1)=p,\qquad P(X=0)=1-p.
+$$
+
+1. Find $\varphi_X(t)$.
+2. Find the characteristic function of the sum of $n$ independent Bernoulli variables.
+3. Explain why the sum has a binomial distribution.
+
+## Problem 3. Sum of Poisson variables
+
+For independent
+$$
+N_1\sim\mathrm{Pois}(\lambda_1),\qquad
+N_2\sim\mathrm{Pois}(\lambda_2)
+$$
+show using characteristic functions that
+$$
+N_1+N_2\sim\mathrm{Pois}(\lambda_1+\lambda_2).
+$$
+
+## Problem 4. Sum of Gaussian variables
+
+Let the independent variables be distributed as
+$$
+X_k\sim\mathrm{N}(\mu_k,\sigma_k^2).
+$$
+Show that
+$$
+\sum_kX_k
+\sim
+\mathrm{N}\!\left(\sum_k\mu_k,\sum_k\sigma_k^2\right).
+$$
+
+## Problem 5. Moments and derivatives
+
+For
+$$
+\varphi_N(t)=\exp\!\left[\lambda(e^{it}-1)\right]
+$$
+find $\mathbb{E}[N]$, $\mathbb{E}[N^2]$ and $\mathrm{Var}(N)$ via the derivatives at zero.
+
+## Problem 6. Cauchy distribution
+
+For
+$$
+\varphi_X(t)=e^{-|t|}
+$$
+explain why $\varphi_X'(0)$ does not exist, and show that
+$$
+\frac{X_1+\dots+X_n}{n}
+$$
+has the same Cauchy distribution.
+
+## Problem 7. Distribution of $S_n=X_1+\dots+X_n$ in the limit $n\to\infty$
+
+Let $X_1,\dots,X_n$ be independent identically distributed random variables,
+$$
+S_n=X_1+\dots+X_n,
+\qquad
+\langle X\rangle_n=\frac{S_n}{n}.
+$$
+
+The mean and variance of $X_i$:
+$$
+\mathbb{E}[X_i]=\mu,
+\qquad
+\mathrm{Var}(X_i)=\sigma^2<\infty.
+$$
+Consider the normalized sum
+$$
+Z_n=
+\frac{S_n-n\mu}{\sigma\sqrt n}.
+$$
+
+- Show that the characteristic function $Z_n$ has the form
+   $$
+   \varphi_{Z_n}(t) =
+   \left[
+   e^{-it\mu/(\sigma\sqrt n)}
+   \varphi_X\left(\frac{t}{\sigma\sqrt n}\right)
+   \right]^n.
+   $$
+
+- For each of the following distributions, find the characteristic function and the limit
+   $$
+   \lim_{n\to\infty}\varphi_{Z_n}(t).
+   $$
+
+   **Symmetric Bernoulli distribution:**
+   $$
+   P(X=1)=P(X=-1)=\frac12.
+   $$
+
+   **Uniform distribution:**
+   $$
+   X\sim U(-\sqrt3,\sqrt3).
+   $$
+
+   **Exponential distribution:**
+   $$
+   X\sim \mathrm{Exp}(1).
+   $$
+
+   **Poisson distribution:**
+   $$
+   X\sim \mathrm{Pois}(\lambda).
+   $$
+
+- Verify that in all four cases one obtains the same limit:
+   $$
+   \varphi_{Z_n}(t)\to e^{-t^2/2}.
+   $$

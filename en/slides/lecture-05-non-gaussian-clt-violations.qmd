@@ -1,0 +1,990 @@
+---
+title: "Lecture 5. When the Gaussian distribution does not arise"
+subtitle: "When the CLT Fails"
+author: "Dmitry V. Naumov (JINR)"
+jupyter: python3
+lang: en-US
+format:
+  revealjs:
+    slide-number: true
+    preview-links: auto
+    chalkboard:
+      buttons: false
+    logo: shared/figures/dvnlogo.png
+    css: styles.css
+    transition: fade
+    center: true
+---
+
+# Motivation
+
+## Why we need this lecture
+
+::: incremental
+- In the lecture [on the CLT](lecture-04-central-limit-theorem.qmd) we saw how a sum of an infinite number of independent contributions is described by a Gaussian distribution.
+- But in real life a Gaussian distribution does not always arise: let us work out when and why.
+:::
+
+
+## Reminder: the CLT and its conditions
+::: incremental
+
+- Let
+$$
+S_n=X_1+\dots+X_n.
+$$
+
+- If the variables are independent and have finite means and variances,
+$$
+\mathbb{E}[X_i]=\mu_i,
+\qquad
+\mathrm{Var}(X_i)=\sigma_i^2<\infty,
+$$
+- then under fairly mild additional conditions the normalized sum
+$$
+Z_n=\frac{S_n-\mathbb{E}[S_n]}{\sqrt{\mathrm{Var}(S_n)}}
+$$
+- tends to the standard Gaussian:
+$$
+Z_n\Rightarrow \mathrm{N}(0,1).
+$$
+
+:::
+
+## The CLT for identical distributions
+::: incremental
+- For identically distributed variables the formula above can be conveniently rewritten:
+$$
+Z_n=\frac{S_n/n-\mu}{\sigma/\sqrt{n}},
+$$
+where $\mu = \mathbb{E}[X_i]$ and $\sigma^2 = \mathrm{Var}(X_i)$.
+- Then $Z_n$ tends to the standard Gaussian as $n\to\infty$:
+$$
+\lim\limits_{n\to\infty} Z_n\Rightarrow \mathrm{N}(0,1).
+$$
+- for finite $n$ the mean $S_n$ tends to $\mu$, but its typical deviation from $\mu$ is of order $\sigma/\sqrt{n}$.
+:::
+
+## Where the conditions are hidden
+
+::: incremental
+- The sum must consist of an infinite number of small contributions.
+- No single contribution may dominate all the others.
+- The terms must not have infinitely heavy tails.
+- There must be no correlations.
+- We must look specifically at the sum, not at an arbitrary nonlinear function of the sum.
+- If the covariances are large, the number of terms by itself guarantees nothing.
+- If the variances of individual contributions do not exist, the variance of the sum loses its meaning.
+:::
+
+# The Cauchy distribution and the CLT
+
+
+## Recall:
+
+The standard Cauchy distribution:
+$$
+f(x)=\frac{1}{\pi}\frac{1}{1+x^2}.
+$$
+
+::: incremental
+- The CDF of the Cauchy distribution:
+$$
+F(x)=\frac{1}{2}+\frac{1}{\pi}\arctan(x).
+$$
+- The inverse function allows one to generate random values:
+$$
+F^{-1}(u) = \tan\!\left[\pi\left(u-\frac{1}{2}\right)\right].
+$$
+- The first moment and the variance diverge:
+$$
+\mathbb{E}[|X|]=\infty,
+\qquad
+\mathbb{E}[X^2]=\infty.
+$$
+:::
+
+## The Cauchy mean does not narrow as $n$ grows
+
+::: incremental
+
+- Let
+$$
+X_1,\dots,X_n\sim \mathrm{Cauchy}(0,1)
+$$
+be independent.
+
+- Then, as we saw in the [lecture on characteristic functions](lecture-03-characteristic-functions.qmd), the sum
+$$
+S_n=\sum_{i=1}^n X_i
+$$
+has the distribution:
+$$
+S_n\sim \mathrm{Cauchy}(0,n).
+$$
+- And averaging independent Cauchy variables does not narrow the distribution of the mean:
+$$
+S_n/n\sim \mathrm{Cauchy}(0,1).
+$$
+
+
+:::
+
+## Interactive: the Cauchy mean does not become Gaussian {#applet-cauchy-mean}
+
+::: {.clt-widget}
+```{ojs}
+//| echo: false
+
+viewof nCauchy = Inputs.range([1, 200], {
+  value: 1,
+  step: 1,
+  label: "n"
+})
+
+viewof sampleCauchy = Inputs.range([1000, 50000], {
+  value: 15000,
+  step: 1000,
+  label: "N"
+})
+
+viewof regenerateCauchy = Inputs.button("New sample")
+
+randnCauchy = () => {
+  let u = 0;
+  let v = 0;
+  while (u === 0) u = Math.random();
+  while (v === 0) v = Math.random();
+  return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
+}
+
+cauchyRandom = () => Math.tan(Math.PI * (Math.random() - 0.5))
+
+cauchyMeans = {
+  regenerateCauchy;
+  const values = new Array(sampleCauchy);
+  for (let i = 0; i < sampleCauchy; ++i) {
+    let sum = 0;
+    for (let j = 0; j < nCauchy; ++j) sum += cauchyRandom();
+    values[i] = sum / nCauchy;
+  }
+  return values;
+}
+
+gaussMeans = {
+  regenerateCauchy;
+  const values = new Array(sampleCauchy);
+  for (let i = 0; i < sampleCauchy; ++i) {
+    let sum = 0;
+    for (let j = 0; j < nCauchy; ++j) sum += randnCauchy();
+    values[i] = sum / Math.sqrt(nCauchy);
+  }
+  return values;
+}
+
+histogramCauchy = (values, bins, min, max) => {
+  const width = (max - min) / bins;
+  const counts = Array(bins).fill(0);
+  for (const value of values) {
+    if (value < min || value >= max) continue;
+    counts[Math.floor((value - min) / width)] += 1;
+  }
+  return counts.map((count, i) => ({
+    x0: min + i * width,
+    x1: min + (i + 1) * width,
+    density: count / (values.length * width)
+  }));
+}
+
+histCauchy = histogramCauchy(cauchyMeans, 100, -10, 10)
+histGaussMean = histogramCauchy(gaussMeans, 100, -10, 10)
+
+cauchyTheory = Array.from({length: 501}, (_, i) => {
+  const x = -10 + 20 * i / 500;
+  return {x, y: 1 / (Math.PI * (1 + x * x))};
+})
+
+cauchyPlot = Plot.plot({
+  width: 760,
+  height: 390,
+  marginLeft: 55,
+  x: {label: "x", domain: [-10, 10]},
+  y: {label: "density", domain: [0, 0.38]},
+  grid: true,
+  marks: [
+    Plot.rectY(histGaussMean, {
+      x1: "x0", x2: "x1", y: "density",
+      fill: "#9be564", fillOpacity: 0.40
+    }),
+    Plot.rectY(histCauchy, {
+      x1: "x0", x2: "x1", y: "density",
+      fill: "#4ea1ff", fillOpacity: 0.68
+    }),
+    Plot.line(cauchyTheory, {x: "x", y: "y", stroke: "#ffb347", strokeWidth: 2.7})
+  ]
+})
+
+html`
+<div class="clt-panel">
+  ${cauchyPlot}
+  <div class="clt-summary">
+    <span>blue: Cauchy mean</span>
+    <span>green: normalized sum of Gaussians</span>
+    <span>n = ${nCauchy}</span>
+  </div>
+</div>
+`
+```
+:::
+
+## The Cauchy distribution and statistics
+
+::: incremental
+- In HEP the Cauchy distribution is known as the **Breit–Wigner** curve. It describes resonances.
+- This does not mean that accumulating data is pointless. We will understand why in the lecture on parameter estimation.
+:::
+
+# Energy loss in a thin layer of matter
+
+## Why does a Gaussian distribution not arise here?
+
+::: incremental
+- A charged particle loses energy in matter through many acts of ionization and excitation.
+- The total energy loss in a thin layer:
+$$
+\Delta=\omega_1+\omega_2+\dots+\omega_N.
+$$
+- But the individual energy transfers $\omega_a$ are not "equally small corrections".
+- A rare large energy transfer to a $\delta$-electron can noticeably change the entire sum.
+:::
+
+## The tail from rare large transfers
+
+For a fast charged particle, the cross section for energy transfer to an electron has the approximate form
+$$
+\frac{d\sigma}{d\omega}\propto \frac{1}{\omega^2}.
+$$
+
+Therefore the probability of a large energy transfer behaves as
+$$
+P(\omega>W)
+\propto
+\int_W^{W_{\max}}\frac{d\omega}{\omega^2}
+\simeq \frac{1}{W}.
+$$
+
+::: incremental
+- The tail falls off slowly.
+- The sum can be determined by a single rare large contribution.
+:::
+
+## The Landau distribution
+
+In a thin layer the energy loss is described by a Landau-like distribution:
+$$
+p(\Delta)=\frac{1}{\xi}
+L\!\left(\frac{\Delta-\Delta_p}{\xi}\right).
+$$
+
+Here $\xi$ sets the characteristic scale of the losses, and $\Delta_p$ is the most probable energy loss.
+
+For a particle with charge $z$ in a layer of thickness $x$:
+$$
+\xi=\frac{K}{2}\frac{Z}{A}\frac{z^2}{\beta^2}\rho x.
+$$
+
+## Shape of the distribution
+
+The Landau function can be defined by an integral:
+$$
+L(\lambda)
+=
+\frac{1}{\pi}
+\int_0^{+\infty}
+\exp[-u\ln u-\lambda u]\sin(\pi u)\,du.
+$$
+
+Its main physical feature is a long right tail:
+$$
+L(\lambda)\sim \frac{1}{\lambda^2},
+\qquad
+\lambda\to +\infty.
+$$
+
+::: incremental
+- The most probable value is finite.
+- The mean and variance are undefined.
+:::
+
+## Where the CLT condition is violated here
+
+The ordinary CLT requires the variance of a single contribution to be finite:
+$$
+\mathrm{Var}(\omega)<\infty.
+$$
+
+But a tail of the form
+$$
+p(\omega)\propto \frac{1}{\omega^2}
+$$
+
+gives a logarithmically divergent mean in the idealized limit and a divergent variance:
+$$
+\int^\infty \omega^2\frac{d\omega}{\omega^2}=\infty.
+$$
+
+::: incremental
+- Therefore the sum need not tend to a Gaussian with normalization $\sqrt n$.
+- The limiting distribution can be a stable non-Gaussian distribution.
+:::
+
+
+
+## Interactive: the Landau distribution {#applet-landau}
+
+::: {.clt-widget}
+```{ojs}
+//| echo: false
+
+viewof sampleLandau = Inputs.range([1000, 50000], {
+  value: 15000,
+  step: 1000,
+  label: "N"
+})
+
+viewof landauScale = Inputs.range([0.3, 2.5], {
+  value: 1.0,
+  step: 0.05,
+  label: "scale"
+})
+
+viewof landauShift = Inputs.range([-3.0, 3.0], {
+  value: 0.0,
+  step: 0.1,
+  label: "shift"
+})
+
+viewof regenerateLandau = Inputs.button("New sample")
+
+randnLandau = () => {
+  let u = 0;
+  let v = 0;
+  while (u === 0) u = Math.random();
+  while (v === 0) v = Math.random();
+  return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
+}
+
+histogramLandau = (values, bins, min, max) => {
+  const width = (max - min) / bins;
+  const counts = Array(bins).fill(0);
+  for (const value of values) {
+    if (value < min || value >= max) continue;
+    counts[Math.floor((value - min) / width)] += 1;
+  }
+  return counts.map((count, i) => ({
+    x0: min + i * width,
+    x1: min + (i + 1) * width,
+    density: count / (values.length * width)
+  }));
+}
+
+// Landau-like random variable.
+// This is an alpha-stable distribution with alpha = 1 and maximal right skewness.
+// It has the same physical meaning: a long right tail and no ordinary variance.
+landauStableRandom = () => {
+  const beta = 1.0;
+  const V = Math.PI * (Math.random() - 0.5);
+  let W = 0;
+  while (W === 0) W = -Math.log(Math.random());
+
+  return (2 / Math.PI) * (
+    (Math.PI / 2 + beta * V) * Math.tan(V)
+    - beta * Math.log(
+      (Math.PI / 2 * W * Math.cos(V)) /
+      (Math.PI / 2 + beta * V)
+    )
+  );
+}
+
+landauValues = {
+  regenerateLandau;
+  const values = new Array(sampleLandau);
+  for (let i = 0; i < sampleLandau; ++i) {
+    values[i] = landauShift + landauScale * landauStableRandom();
+  }
+  return values;
+}
+
+landauSorted = [...landauValues].sort((a, b) => a - b)
+
+quantileLandau = (arr, q) => {
+  const pos = q * (arr.length - 1);
+  const lo = Math.floor(pos);
+  const hi = Math.ceil(pos);
+  const h = pos - lo;
+  return arr[lo] * (1 - h) + arr[hi] * h;
+}
+
+landauMedian = quantileLandau(landauSorted, 0.50)
+landauQ16 = quantileLandau(landauSorted, 0.16)
+landauQ84 = quantileLandau(landauSorted, 0.84)
+landauRobustSigma = 0.5 * (landauQ84 - landauQ16)
+
+histLandau = histogramLandau(landauValues, 120, -8, 25)
+
+normalForComparison = Array.from({length: 501}, (_, i) => {
+  const x = -8 + 33 * i / 500;
+  const z = (x - landauMedian) / landauRobustSigma;
+  return {
+    x,
+    y: Math.exp(-0.5 * z * z) / (landauRobustSigma * Math.sqrt(2 * Math.PI))
+  };
+})
+
+landauPlot = Plot.plot({
+  width: 760,
+  height: 390,
+  marginLeft: 55,
+  x: {label: "energy loss variable", domain: [-8, 25]},
+  y: {label: "density", domain: [0, 0.42]},
+  grid: true,
+  marks: [
+    Plot.rectY(histLandau, {
+      x1: "x0",
+      x2: "x1",
+      y: "density",
+      fill: "#4ea1ff",
+      fillOpacity: 0.70,
+      stroke: "white"
+    }),
+    Plot.line(normalForComparison, {
+      x: "x",
+      y: "y",
+      stroke: "#ffb347",
+      strokeWidth: 2.8
+    })
+  ]
+})
+
+html`
+<div class="clt-panel">
+  ${landauPlot}
+  <div class="clt-summary">
+    <span>blue: Landau-like stable law</span>
+    <span>orange: Gaussian with the same median and central width</span>
+    <span>median = ${landauMedian.toFixed(2)}</span>
+    <span>central sigma = ${landauRobustSigma.toFixed(2)}</span>
+  </div>
+</div>
+`
+```
+:::
+
+## Physical examples
+
+- $dE/dx$ in thin silicon sensors.
+- Energy loss in gaseous tracking detectors.
+- TPC: the truncated mean is used precisely to suppress the long tail.
+- Calorimetric fluctuations with rare large local losses.
+
+::: {.callout-important .thmbox appearance="simple"}
+## Conclusion
+
+The Landau distribution arises because the sum of energy losses is not determined by a sum of small contributions.
+:::
+
+## Important remarks
+::: incremental
+- The Landau distribution is not the exact energy loss distribution in every detector.
+
+- It is an asymptotic model for a thin layer of matter, where the total energy loss is built up from many independent Coulomb collisions, and the spectrum of single transfers has a long tail $\propto1/\varepsilon^2$.
+
+- In real matter the tail is cut off by kinematics and atomic structure. 
+- A more accurate description gives the Vavilov distribution, and in the limit of large thickness, a Gaussian again.
+
+:::
+
+
+
+# Correlated terms
+
+## Variance of a sum in the presence of correlations
+::: incremental
+- For the sum
+$$
+S_n=\sum_{i=1}^n X_i
+$$
+
+- the variance is:
+$$
+\mathrm{Var}(S_n)
+= \sum_i\sigma_i^2 + 2\sum_{i<j}\mathrm{cov}(X_i,X_j).
+$$
+
+- If the terms are independent, then
+$$
+\mathrm{cov}(X_i,X_j)=0.
+$$
+
+- If not, the variance may scale differently.
+:::
+
+## Averaging correlated quantities
+
+::: incremental
+
+- Let
+$$
+\mathrm{Var}(X_i)=\sigma^2,
+\qquad
+\mathrm{corr}(X_i,X_j)=\rho
+\quad (i\ne j).
+$$
+
+- For the mean
+$$
+\langle X\rangle=\frac{1}{n}\sum_{i=1}^n X_i
+$$
+we obtain
+$$
+\begin{aligned}
+\mathrm{Var}(\langle X\rangle)
+&= \frac{1}{n^2}\left(\sum_i\sigma^2 + 2\sum_{i<j}\mathrm{cov}(X_i,X_j)\right)\\
+&= \frac{1}{n^2}\left(n\sigma^2 + 2\frac{n(n-1)}{2}\rho\sigma^2\right)\\
+&= \frac{\sigma^2}{n}\left[1+(n-1)\rho\right]
+\xrightarrow[n\to\infty]{}
+\rho\sigma^2.
+\end{aligned}
+$$
+- The correlated part of the variation remains in the limit $n\to\infty$.
+
+:::
+
+
+## Correlated error: a common shift. A first example of a systematic error
+
+Let
+$$
+X_i=\mu+C+\epsilon_i,
+$$
+where
+$$
+C\sim \mathrm{N}(0,\sigma_C^2),
+\qquad
+\epsilon_i\sim \mathrm{N}(0,\sigma_\epsilon^2).
+$$
+
+Then
+$$
+\langle X\rangle=\mu+C+\frac{1}{n}\sum_i\epsilon_i.
+$$
+
+Variance of the mean:
+$$
+\boxed{\mathrm{Var}(\langle X\rangle)=\sigma_C^2+\frac{\sigma_\epsilon^2}{n}}.
+$$
+
+## Physical examples:
+
+::: incremental
+- a common shift of the detector energy scale;
+- a common gain calibration error;
+- uncertainty of the light yield or of the ADC-to-energy conversion factor;
+- a common normalization error of the flux, luminosity or source activity;
+- a common drift of temperature, pressure, high voltage or gain during data taking;
+- a common background whose normalization is known with an uncertainty;
+- a common time offset in time-of-flight measurements.
+
+- In all these cases, increasing the number of measurements reduces only the independent part of the error.
+:::
+
+## Interactive: a correlated error does not vanish {#applet-correlated-error}
+
+::: {.clt-widget}
+```{ojs}
+//| echo: false
+
+viewof nCorr = Inputs.range([1, 500], {value: 10, step: 1, label: "n"})
+viewof sigmaCommon = Inputs.range([0, 2.0], {value: 0.6, step: 0.05, label: "sigma common"})
+viewof sigmaStat = Inputs.range([0.1, 2.0], {value: 1.0, step: 0.05, label: "sigma stat"})
+viewof sampleCorr = Inputs.range([1000, 30000], {value: 12000, step: 1000, label: "N"})
+viewof regenerateCorr = Inputs.button("New sample")
+
+corrMeans = {
+  regenerateCorr;
+  const values = new Array(sampleCorr);
+  for (let i = 0; i < sampleCorr; ++i) {
+    const c = sigmaCommon * randnCauchy();
+    let sum = 0;
+    for (let j = 0; j < nCorr; ++j) sum += c + sigmaStat * randnCauchy();
+    values[i] = sum / nCorr;
+  }
+  return values;
+}
+
+corrTheorySigma = Math.sqrt(sigmaCommon * sigmaCommon + sigmaStat * sigmaStat / nCorr)
+
+histCorr = histogramCauchy(corrMeans, 90, -4, 4)
+normalCorr = Array.from({length: 401}, (_, i) => {
+  const z = -4 + 8 * i / 400;
+  return {z, density: Math.exp(-0.5 * z * z / (corrTheorySigma * corrTheorySigma)) / (corrTheorySigma * Math.sqrt(2 * Math.PI))};
+})
+
+corrPlot = Plot.plot({
+  width: 760,
+  height: 390,
+  marginLeft: 55,
+  x: {label: "mean", domain: [-4, 4]},
+  y: {label: "density", domain: [0, 1.4]},
+  grid: true,
+  marks: [
+    Plot.rectY(histCorr, {x1: "x0", x2: "x1", y: "density", fill: "#4ea1ff", fillOpacity: 0.70, stroke: "white"}),
+    Plot.line(normalCorr, {x: "z", y: "density", stroke: "#ffb347", strokeWidth: 2.8})
+  ]
+})
+
+html`
+<div class="clt-panel">
+  ${corrPlot}
+  <div class="clt-summary">
+    <span>Var(mean) = sigma_common² + sigma_stat²/n</span>
+    <span>sigma(mean) = ${corrTheorySigma.toFixed(3)}</span>
+    <span>n = ${nCorr}</span>
+  </div>
+</div>
+`
+```
+:::
+
+
+# Mixtures of distributions
+
+## A sum and a mixture are different things
+
+::: incremental
+- **Sum:** in each event both contributions arise simultaneously:
+  $$
+  N=N_1+N_2.
+  $$
+- If they are independent
+  $$
+  N_1\sim\mathrm{Pois}(1000),\qquad
+  N_2\sim\mathrm{Pois}(100).
+  $$
+- then
+  $$
+  N\sim\mathrm{Pois}(1100).
+  $$
+- **Mixture:** each event belongs to only one of several classes.
+- A sum describes the addition of contributions within an event; a mixture describes the combination of different types of events in one sample.
+:::
+
+## Mixture: the hidden class of an event
+
+Let a hidden variable $\theta$ select the mechanism:
+$$
+\theta=
+\begin{cases}
+1, & \text{first class},\\
+2, & \text{second class}.
+\end{cases}
+$$
+
+::: incremental
+- Conditionally on the class:
+  $$
+  N|\theta=1\sim\mathrm{Pois}(1000),
+  \qquad
+  N|\theta=2\sim\mathrm{Pois}(100).
+  $$
+- We observe only $N$, but we do not observe $\theta$.
+:::
+
+## A conditional Gaussian does not mean an unconditional Gaussian
+
+Let, for a fixed hidden parameter $\theta$,
+$$
+X|\theta\sim \mathrm{N}(\mu_\theta,\sigma_\theta^2).
+$$
+
+If $\theta$ is not observed, the total density is
+$$
+p(x)=\int p(\theta)\,
+\mathrm{N}(x;\mu_\theta,\sigma_\theta^2)\,d\theta.
+$$
+
+This is a mixture of Gaussian distributions.
+
+## Variance of a mixture: two sources of spread
+
+By the law of total variance
+$$
+\boxed{
+\mathrm{Var}(X)
+=
+\mathbb{E}_\theta\!\left[\mathrm{Var}(X|\theta)\right]
++
+\mathrm{Var}_\theta\!\left(\mathbb{E}[X|\theta]\right)
+}
+$$
+
+For a conditional Gaussian:
+$$
+\boxed{
+\mathrm{Var}(X)
+=
+\mathbb{E}_\theta[\sigma_\theta^2]
++
+\mathrm{Var}_\theta(\mu_\theta).
+}
+$$
+
+::: incremental
+- The first term is the mean width of the distributions within the classes.
+- The second term is the spread of the means between the classes.
+:::
+
+## Numerical example: a mixture of two Poisson classes
+
+Let the classes be equally probable:
+$$
+N|\theta=1\sim\mathrm{Pois}(1000),\qquad
+N|\theta=2\sim\mathrm{Pois}(100).
+$$
+
+::: incremental
+- Mean within-class variance:
+  $$
+  \mathbb{E}_\theta[\mathrm{Var}(N|\theta)]
+  =\frac{1000+100}{2}=550.
+  $$
+- Spread of the class means:
+  $$
+  \mathrm{Var}_\theta(\mathbb{E}[N|\theta])
+  =\frac{(1000-550)^2+(100-550)^2}{2}=202500.
+  $$
+- Total variance:
+  $$
+  \mathrm{Var}(N)=550+202500=203050.
+  $$
+:::
+
+::: {.callout-important .thmbox appearance="simple"}
+## Conclusion
+
+Even if each class is nearly Gaussian and narrow, the mixture of classes can be broad,
+asymmetric or multi-peaked.
+:::
+
+## Interactive: a mixture of two Gaussians {#applet-gaussian-mixture}
+
+::: {.clt-widget}
+```{ojs}
+//| echo: false
+
+viewof mixWeight = Inputs.range([0.0, 1.0], {value: 0.5, step: 0.02, label: "weight"})
+viewof mixSeparation = Inputs.range([0.0, 6.0], {value: 2.5, step: 0.1, label: "separation"})
+viewof mixSigma2 = Inputs.range([0.2, 2.5], {value: 1.0, step: 0.05, label: "sigma 2"})
+viewof sampleMix = Inputs.range([1000, 40000], {value: 15000, step: 1000, label: "N"})
+viewof regenerateMix = Inputs.button("New sample")
+
+mixValues = {
+  regenerateMix;
+  const values = new Array(sampleMix);
+  const mu1 = -mixSeparation / 2;
+  const mu2 = mixSeparation / 2;
+  for (let i = 0; i < sampleMix; ++i) {
+    if (Math.random() < mixWeight) values[i] = mu1 + randnCauchy();
+    else values[i] = mu2 + mixSigma2 * randnCauchy();
+  }
+  return values;
+}
+
+mixMean = mixValues.reduce((s, x) => s + x, 0) / mixValues.length
+mixVar = mixValues.reduce((s, x) => s + (x - mixMean) ** 2, 0) / mixValues.length
+mixSigma = Math.sqrt(mixVar)
+
+histMix = histogramCauchy(mixValues, 100, -8, 8)
+normalMix = Array.from({length: 401}, (_, i) => {
+  const x = -8 + 16 * i / 400;
+  return {x, y: Math.exp(-0.5 * (x - mixMean) ** 2 / mixVar) / (mixSigma * Math.sqrt(2 * Math.PI))};
+})
+
+mixPlot = Plot.plot({
+  width: 760,
+  height: 390,
+  marginLeft: 55,
+  x: {label: "x", domain: [-8, 8]},
+  y: {label: "density", domain: [0, 0.55]},
+  grid: true,
+  marks: [
+    Plot.rectY(histMix, {x1: "x0", x2: "x1", y: "density", fill: "#4ea1ff", fillOpacity: 0.70, stroke: "white"}),
+    Plot.line(normalMix, {x: "x", y: "y", stroke: "#ffb347", strokeWidth: 2.8})
+  ]
+})
+
+html`
+<div class="clt-panel">
+  ${mixPlot}
+  <div class="clt-summary">
+    <span>blue: mixture</span>
+    <span>orange: Gaussian with the same mean and variance</span>
+    <span>mean = ${mixMean.toFixed(2)}</span>
+    <span>sigma = ${mixSigma.toFixed(2)}</span>
+  </div>
+</div>
+`
+```
+:::
+
+## Example: liquid scintillator
+
+In a liquid scintillator the measured quantity can be written schematically as
+$$
+Q=Q(E,\theta)+\text{photon statistics}+\text{electronics},
+$$
+where $\theta$ describes the hidden details of the event:
+$$
+\theta=\{
+\text{particle type},
+\text{topology},
+\text{position},
+\text{Cherenkov radiation contribution},
+\text{quenching},
+\text{optical path}
+\}.
+$$
+
+## The same $E$, different events
+
+For a $\gamma$-ray, the energy is first transferred to secondary electrons:
+$$
+\gamma \to e_1+e_2+\dots+e_m.
+$$
+
+The total energy may be the same, but the light yield is nonlinear:
+$$
+E_\gamma=\sum_{a=1}^m E_a.
+$$
+$$
+Q\simeq \sum_a L(E_a),
+\qquad
+Q\ne C\sum_aE_a,
+$$
+where $L(E)$ is a nonlinear function.
+
+Consequently, the response depends not only on $E_\gamma$, but also on how the energy is distributed among the secondary particles.
+
+# Ratio of random variables
+
+## Ratio of two Gaussian variables
+
+::: incremental
+- Let
+$$
+X,Y\sim \mathrm{N}(0,1)
+$$
+be independent.
+
+- Then
+$$
+R=\frac{X}{Y}
+$$
+has the standard Cauchy distribution:
+$$
+f_R(r)=\frac{1}{\pi(1+r^2)}.
+$$
+
+:::
+
+## Where this occurs
+
+::: incremental
+- The ratio of two count rates.
+- Normalization to a control region.
+- Efficiency correction.
+- An asymmetry of the form $(N_1-N_2)/(N_1+N_2)$.
+- Reconstructing a quantity by dividing by a small or noisy estimate.
+:::
+
+## Interactive: ratio of Gaussian variables {#applet-gaussian-ratio}
+
+::: {.clt-widget}
+```{ojs}
+//| echo: false
+
+viewof muDenom = Inputs.range([0.0, 5.0], {value: 0.0, step: 0.1, label: "mean denominator"})
+viewof sigmaDenom = Inputs.range([0.1, 2.0], {value: 1.0, step: 0.05, label: "sigma denominator"})
+viewof sampleRatio = Inputs.range([1000, 40000], {value: 15000, step: 1000, label: "N"})
+viewof regenerateRatio = Inputs.button("New sample")
+
+ratioValues = {
+  regenerateRatio;
+  const values = [];
+  for (let i = 0; i < sampleRatio; ++i) {
+    const x = randnCauchy();
+    const y = muDenom + sigmaDenom * randnCauchy();
+    const r = x / y;
+    if (Number.isFinite(r)) values.push(r);
+  }
+  return values;
+}
+
+histRatio = histogramCauchy(ratioValues, 120, -20, 20)
+cauchyRatio = Array.from({length: 501}, (_, i) => {
+  const x = -20 + 40 * i / 500;
+  return {x, y: 1 / (Math.PI * (1 + x * x))};
+})
+
+ratioPlot = Plot.plot({
+  width: 760,
+  height: 390,
+  marginLeft: 55,
+  x: {label: "R = X/Y", domain: [-20, 20]},
+  y: {label: "density", domain: [0, 0.35]},
+  grid: true,
+  marks: [
+    Plot.rectY(histRatio, {x1: "x0", x2: "x1", y: "density", fill: "#4ea1ff", fillOpacity: 0.70, stroke: "white"}),
+    Plot.line(cauchyRatio, {x: "x", y: "y", stroke: "#ffb347", strokeWidth: 2.6})
+  ]
+})
+
+html`
+<div class="clt-panel">
+  ${ratioPlot}
+  <div class="clt-summary">
+    <span>X ~ N(0,1)</span>
+    <span>Y ~ N(${muDenom.toFixed(1)}, ${sigmaDenom.toFixed(2)})</span>
+    <span>orange: Cauchy for Y ~ N(0,1)</span>
+  </div>
+</div>
+`
+```
+:::
+
+
+
+
+# Summary map of causes
+
+## When a Gaussian should not be expected
+
+| Mechanism | What is violated | Typical symptom |
+|---|---|---|
+| Cauchy | no finite variance | the mean does not stabilize |
+| heavy tails | slow asymptotics | rare large outliers |
+| dominant contribution | contributions are not small | the tail is set by a single mechanism |
+| correlations | no independence | the error does not fall as $1/\sqrt n$ |
+| mixture of classes | different $\mu_\theta,\sigma_\theta$ | asymmetry, tails, two peaks |
+| nonlinearity | not a sum but $f(X)$ | asymmetry, boundaries |
+
+## Practical algorithm
+
+::: incremental
+- First ask: which random variable is actually being summed?
+- Check: are the contributions independent?
+- Check: is the variance finite, and are there no heavy tails?
+- Check: are there no hidden classes of events?
+- Check: are we not applying a nonlinear transformation?
+- If in doubt, build the likelihood function or a Monte Carlo to find out the shape of the distribution, rather than always assuming it is Gaussian.
+:::

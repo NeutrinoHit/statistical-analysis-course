@@ -1,0 +1,482 @@
+---
+title: "Lecture 9. Likelihood and maximum likelihood estimators"
+subtitle: "Statistical Data Analysis"
+author: "Dmitry V. Naumov (JINR)"
+format:
+  revealjs:
+    slide-number: true
+    preview-links: auto
+    chalkboard:
+      buttons: false
+    logo: shared/figures/dvnlogo.png
+    css: styles.css
+    transition: fade
+    center: true
+---
+
+# From Data to Parameters
+
+## What Needs to Be Determined
+
+::: incremental
+
+- A probabilistic model connects the observed data $X$ with the unknown parameters $\boldsymbol\theta$:
+$$
+X\sim f(x\mid\boldsymbol\theta).
+$$
+- The parameter $\boldsymbol\theta$ is regarded as fixed but unknown.
+- The data $X$ are random before the experiment is performed.
+- From the observed data $x_{\mathrm{obs}}$ an estimate of the parameter $\widehat{\theta}$ is constructed.
+
+- Examples of parameters: mean, width of a distribution, signal intensity, cross section of a process, detection efficiency.
+:::
+
+
+## Estimator and Estimate
+
+An **estimator** is a rule applied to random data:
+$$
+\widehat\theta=T(X_1,\ldots,X_N).
+$$
+
+An **estimate** is the result of applying the rule to a specific sample:
+$$
+\widehat\theta_{\mathrm{obs}}=T(x_1,\ldots,x_N).
+$$
+
+::: {.fragment .callout-note .thmbox appearance="simple"}
+Before the experiment, $\widehat\theta$ is a random variable. After the experiment, $\widehat\theta_{\mathrm{obs}}$ is a number.
+:::
+
+## One Parameter, Different Estimators
+
+Let
+$$
+X_1,\ldots,X_N\sim\mathrm N(\mu,\sigma^2).
+$$
+
+The parameter $\mu$ can be estimated in different ways:
+$$
+\langle X\rangle,
+\qquad
+\operatorname{median}(X_1,\ldots,X_N),
+\qquad
+\frac{X_1+X_N}{2}.
+$$
+
+::: incremental
+- All three rules use the same data.
+- They have different bias, variance and robustness to outliers.
+- One must choose a rule and check its properties.
+:::
+
+## Point and Interval Estimation
+
+::::: {.columns}
+
+::: {.column width="48%"}
+
+**Point estimate**
+
+A single most preferred value:
+$$
+\widehat\theta_{\mathrm{obs}}.
+$$
+
+:::
+
+::: {.column width="52%"}
+
+**Interval estimation**
+
+A set of parameter values compatible with the data according to a chosen rule:
+$$
+[\theta_{\mathrm{low}},\theta_{\mathrm{high}}].
+$$
+
+:::
+
+:::::
+
+In this lecture we construct point estimates and study the shape of the likelihood function. The rigorous construction of intervals will be considered separately.
+
+
+# The Likelihood Function
+
+## The Same Model, a Different Question
+
+The density or probability
+$$
+f(x\mid\theta)
+$$
+answers the question:
+
+> How probable are different data $x$ if the parameter $\theta$ is known?
+
+After observing $x_{\mathrm{obs}}$ we regard the same function as a function of the parameter:
+$$
+\boxed{
+L(\theta;x_{\mathrm{obs}})=f(x_{\mathrm{obs}}\mid\theta).
+}
+$$
+
+It answers the question: which values of $\theta$ better explain the observed data?
+
+## Likelihood Is Not a Probability of the Parameter
+
+::: incremental
+- In the frequentist approach, the parameter $\theta$ is not regarded as a random variable.
+- Therefore $L(\theta;x)$ need not be normalized over $\theta$:
+  $$
+  \int L(\theta;x)\,d\theta\ne1.
+  $$
+- The likelihood compares different values of the parameter for the same data.
+- Multiplying $L$ by a positive constant independent of $\theta$ does not change the conclusions.
+:::
+
+::: {.fragment .callout-important .remarkbox appearance="simple"}
+Probability describes possible data for a given parameter. Likelihood compares parameters after the data have been observed.
+:::
+
+## Independent Sample
+
+For independent observations
+$$
+X_i\sim f(x_i\mid\theta)
+$$
+the joint likelihood is
+$$
+\boxed{
+L(\theta)
+=
+\prod_{i=1}^{N}f(x_i\mid\theta).
+}
+$$
+
+The logarithm turns the product into a sum:
+$$
+\boxed{
+\ell(\theta)
+=
+\ln L(\theta)
+=
+\sum_{i=1}^{N}\ln f(x_i\mid\theta).
+}
+$$
+
+## Why We Work with the Log-Likelihood
+
+::: incremental
+- A product of many small probabilities quickly causes numerical underflow.
+- A sum of logarithms is more stable to compute.
+- The maxima of $L(\theta)$ and $\ell(\theta)$ are located at the same point.
+- Derivatives of a sum are simpler than derivatives of a product.
+- Independent data sets add their log-likelihoods:
+  $$
+  \ell_{\mathrm{total}}=\ell_1+\ell_2+\cdots.
+  $$
+:::
+
+---
+
+# The Method of Maximum Likelihood
+
+## Definition
+
+The maximum likelihood estimator is the parameter value for which the observed data are most likely:
+$$
+\boxed{
+\widehat\theta_{\mathrm{ml}}
+=
+\underset{\theta}{\operatorname{arg\,max}}\ L(\theta)
+=
+\underset{\theta}{\operatorname{arg\,max}}\ \ell(\theta).
+}
+$$
+
+For an interior smooth maximum:
+$$
+\left.
+\frac{\partial\ell}{\partial\theta}
+\right|_{\theta=\widehat\theta_{\mathrm{ml}}}
+=0,
+\qquad
+\left.
+\frac{\partial^2\ell}{\partial\theta^2}
+\right|_{\theta=\widehat\theta_{\mathrm{ml}}}
+<0.
+$$
+
+## Example: Bernoulli
+
+Let $k$ successes be observed in $N$ independent trials:
+$$
+K\sim\operatorname{Bin}(N,p).
+$$
+
+Up to a factor independent of $p$:
+$$
+L(p)\propto p^k(1-p)^{N-k}.
+$$
+
+Therefore
+$$
+\ell(p)=k\ln p+(N-k)\ln(1-p)+\mathrm{const}.
+$$
+
+## Estimating the Probability of Success
+
+Condition for the maximum:
+$$
+\frac{d\ell}{dp}
+=
+\frac{k}{p}
+-
+\frac{N-k}{1-p}
+=0.
+$$
+
+Hence
+$$
+\boxed{
+\widehat p_{\mathrm{ml}}
+=
+\frac{k}{N}.
+}
+$$
+
+As a random variable before the experiment:
+$$
+\widehat p_{\mathrm{ml}}
+=
+\frac{K}{N},
+\qquad
+\mathbb E[\widehat p_{\mathrm{ml}}]
+=
+\frac{\mathbb E[K]}{N}
+=
+\frac{Np}{N}
+=
+p.
+$$
+
+::: incremental
+- The result coincides with the intuitive frequency of successes.
+- Here the maximum likelihood estimator is unbiased.
+- As $N$ increases, the maximum becomes narrower.
+- For $k=0$ or $k=N$ the maximum lies on the physical boundary.
+:::
+
+## Interactive: Binomial Likelihood {#applet-binomial-likelihood}
+
+::: {.clt-widget}
+```{ojs}
+//| echo: false
+
+viewof likeN = Inputs.range([1, 200], {value: 20, step: 1, label: "N"})
+viewof likeK = Inputs.range([0, likeN], {value: Math.round(0.35 * likeN), step: 1, label: "k"})
+
+likePGrid = Array.from({length: 499}, (_, i) => 0.002 + 0.996 * i / 498)
+likePhat = likeK / likeN
+likeLog = p => likeK * Math.log(p) + (likeN - likeK) * Math.log(1 - p)
+likeLogMax = likeK === 0
+  ? 0
+  : likeK === likeN
+    ? 0
+    : likeLog(likePhat)
+likeCurve = likePGrid.map(p => ({
+  p,
+  relative: Math.exp(likeLog(p) - likeLogMax),
+  q: -2 * (likeLog(p) - likeLogMax)
+}))
+
+likePlot = Plot.plot({
+  width: 940,
+  height: 430,
+  marginLeft: 70,
+  x: {label: "p", domain: [0, 1], grid: true},
+  y: {label: "L(p) / L(p̂)", domain: [0, 1.05], grid: true},
+  marks: [
+    Plot.line(likeCurve, {x: "p", y: "relative", stroke: "#4ea1ff", strokeWidth: 4}),
+    Plot.ruleX([likePhat], {stroke: "#ffb347", strokeWidth: 4}),
+    Plot.ruleY([Math.exp(-0.5)], {stroke: "#999", strokeDasharray: "6,5"})
+  ]
+})
+
+html`
+<div class="clt-panel">
+  ${likePlot}
+  <div class="clt-summary">
+    <span>N is the number of trials, k is the number of successes</span>
+    <span>p̂ = k/N = ${likePhat.toFixed(3)}</span>
+    <span>standard error ≈ ${Math.sqrt(likePhat * (1 - likePhat) / likeN).toFixed(3)}</span>
+    <span>increasing N narrows the maximum</span>
+  </div>
+</div>
+`
+```
+:::
+
+## Example: Poisson Counting
+
+Let us observe a number of events:
+$$
+N\sim\operatorname{Pois}(\mu).
+$$
+
+Likelihood function:
+$$
+L(\mu)
+=
+\frac{\mu^n e^{-\mu}}{n!}.
+$$
+
+Then
+$$
+\ell(\mu)=n\ln\mu-\mu-\ln n!,
+\qquad
+\frac{d\ell}{d\mu}=\frac n\mu-1.
+$$
+
+Consequently,
+$$
+\boxed{\widehat\mu_{\mathrm{ml}}=n.}
+$$
+
+## Example: Poisson Counting
+
+Before the experiment, the estimator is a random variable:
+$$
+\widehat\mu_{\mathrm{ml}}=N,
+\qquad
+\mathbb E[\widehat\mu_{\mathrm{ml}}]
+=
+\mathbb E[N]
+=
+\mu.
+$$
+
+In Poisson counting this estimator is also unbiased.
+
+## Example: Mean of a Gaussian
+
+Let
+$$
+X_i\sim\mathrm N(\mu,\sigma^2),
+$$
+where $\sigma$ is known.
+
+Then
+$$
+\ell(\mu)
+=
+-\frac{1}{2\sigma^2}
+\sum_{i=1}^{N}(x_i-\mu)^2
++\mathrm{const}.
+$$
+
+$$
+\frac{\partial\ell}{\partial\mu}
+=
+\frac{1}{\sigma^2}\sum_{i=1}^{N}(x_i-\mu)
+=0
+\quad\Longrightarrow\quad
+\widehat\mu_{\mathrm{ml}}
+=
+\frac1N\sum_{i=1}^{N}x_i
+=
+\langle x\rangle.
+$$
+
+Maximizing $\ell$ is equivalent to minimizing the sum of squares:
+$$
+\boxed{
+\widehat\mu_{\mathrm{ml}}
+=
+\langle x\rangle.
+}
+$$
+
+## Unknown Mean and Variance
+::: incremental
+
+- If both $\mu$ and $\sigma^2$ are unknown, then
+$$
+\ell(\mu,v)
+=
+-\frac{N}{2}\ln v
+-\frac{1}{2v}\sum_{i=1}^{N}(x_i-\mu)^2
++\mathrm{const},
+\qquad
+v=\sigma^2.
+$$
+
+- Here the normalization cannot be dropped: the term $-\frac{N}{2}\ln v$ depends on $v$.
+$$
+\frac{\partial\ell}{\partial\mu}=0
+\quad\Longrightarrow\quad
+\widehat\mu_{\mathrm{ml}}=\langle x\rangle,
+\qquad
+\frac{\partial\ell}{\partial v}=0
+\quad\Longrightarrow\quad
+\widehat v_{\mathrm{ml}}
+=
+\frac1N\sum_{i=1}^{N}(x_i-\langle x\rangle)^2.
+$$
+
+- We obtain:
+$$
+\boxed{
+\widehat\mu_{\mathrm{ml}}=\langle x\rangle,
+\qquad
+\widehat{\sigma^2}_{\mathrm{ml}}
+=
+\frac1N\sum_{i=1}^{N}(x_i-\langle x\rangle)^2.
+}
+$$
+:::
+
+## Expectation Values of the Estimators
+::: incremental
+- For the mean:
+$$
+\mathbb E[\widehat\mu_{\mathrm{ml}}]
+=
+\mathbb E\!\left[\frac1N\sum_{i=1}^{N}X_i\right]
+=
+\frac1N\sum_{i=1}^{N}\mathbb E[X_i]
+=
+\mu.
+$$
+
+- Hence $\widehat\mu_{\mathrm{ml}}$ is unbiased.
+
+- But
+$$
+\mathbb E[\widehat{\sigma^2}_{\mathrm{ml}}]
+=
+\frac{N-1}{N}\sigma^2.
+$$
+
+- Hence $\widehat{\sigma^2}_{\mathrm{ml}}$ is biased downward.
+
+- The unbiased estimator uses the divisor $N-1$:
+$$
+s^2
+=
+\frac1{N-1}\sum_{i=1}^{N}(x_i-\langle x\rangle)^2.
+$$
+
+- The ML method need not yield an unbiased estimator: unbiasedness is a separate property of the procedure that must be checked.
+:::
+
+# Key Takeaways
+
+## Summary
+
+::: incremental
+- An estimator is a random function of the data; an estimate is its realization.
+- The likelihood is the model as a function of the parameters for fixed data.
+- The maximum likelihood estimator maximizes the likelihood.
+- The ML method often yields natural estimators but does not guarantee unbiasedness: the properties of the procedure are checked separately.
+:::

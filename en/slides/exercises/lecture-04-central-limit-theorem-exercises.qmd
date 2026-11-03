@@ -1,0 +1,14 @@
+---
+title: "Exercises: the central limit theorem"
+subtitle: "Statistical Data Analysis"
+author: "Dmitry V. Naumov"
+format:
+  html:
+    toc: false
+---
+
+[← Back to the course](../index.html){.exercise-back-link}
+
+# Exercises
+
+{{< include ../../../_includes/exercises/04_central_limit_theorem-en.qmd >}}

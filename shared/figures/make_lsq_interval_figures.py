@@ -12,6 +12,21 @@ from matplotlib.colors import LightSource
 
 OUT = Path(__file__).resolve().parent / "static"
 
+TEXT = {
+    "ru": {
+        "title": r"Квадратичная форма: сечение $\Delta\chi^2=5.99$ даёт эллипс",
+        "caption": "красная линия — пересечение поверхности с плоскостью; зелёная — проекция на плоскость параметров",
+        "generated": "генерация",
+        "minimum": "минимум",
+    },
+    "en": {
+        "title": r"Quadratic form: the section $\Delta\chi^2=5.99$ gives an ellipse",
+        "caption": "red line: intersection of the surface with the plane; green: projection onto the parameter plane",
+        "generated": "generated",
+        "minimum": "minimum",
+    },
+}
+
 
 def setup_dark_3d(ax):
     ax.set_facecolor("#050505")
@@ -26,7 +41,9 @@ def setup_dark_3d(ax):
     ax.title.set_color("#f2f2f2")
 
 
-def make_quadratic_surface():
+def make_quadratic_surface(lang="ru"):
+    txt = TEXT[lang]
+    suffix = "" if lang == "ru" else f"_{lang}"
     rho = 0.45
     sx = 1.35
     sy = 1.05
@@ -107,7 +124,7 @@ def make_quadratic_surface():
     ax.set_zlabel(r"$\Delta\chi^2$", labelpad=8)
     ax.view_init(elev=27, azim=-58)
     ax.set_title(
-        r"Квадратичная форма: сечение $\Delta\chi^2=5.99$ даёт эллипс",
+        txt["title"],
         pad=14,
         fontsize=15,
         fontweight="bold",
@@ -116,18 +133,20 @@ def make_quadratic_surface():
     fig.text(
         0.52,
         0.045,
-        "красная линия — пересечение поверхности с плоскостью; зелёная — проекция на плоскость параметров",
+        txt["caption"],
         ha="center",
         va="center",
         color="#f2f2f2",
         fontsize=13,
     )
     fig.subplots_adjust(left=0.02, right=0.98, bottom=0.10, top=0.92)
-    fig.savefig(OUT / "lsq_quadratic_chi2_surface.png", facecolor=fig.get_facecolor())
+    fig.savefig(OUT / f"lsq_quadratic_chi2_surface{suffix}.png", facecolor=fig.get_facecolor())
     plt.close(fig)
 
 
-def make_oscillatory_surface():
+def make_oscillatory_surface(lang="ru"):
+    txt = TEXT[lang]
+    suffix = "" if lang == "ru" else f"_{lang}"
     times = np.array([0.92, 1.28, 1.84])
     a0 = 0.54
     w0 = 2.45
@@ -185,8 +204,8 @@ def make_oscillatory_surface():
         colors=["white", "#ffb347", "#66d9ff"],
         linewidths=[3.0, 2.2, 1.8],
     )
-    ax3.scatter([w0], [a0], [0], color="#1dd386", s=70, edgecolors="#111111", label="генерация")
-    ax3.scatter([best_w], [best_a], [0], color="#ffb347", s=70, edgecolors="#111111", label="минимум")
+    ax3.scatter([w0], [a0], [0], color="#1dd386", s=70, edgecolors="#111111", label=txt["generated"])
+    ax3.scatter([best_w], [best_a], [0], color="#ffb347", s=70, edgecolors="#111111", label=txt["minimum"])
     ax3.set_xlim(0.35, 8.55)
     ax3.set_ylim(0.0, 1.0)
     ax3.set_zlim(0.0, zmax)
@@ -207,11 +226,14 @@ def make_oscillatory_surface():
     #     fontsize=13,
     # )
     fig.subplots_adjust(left=0.02, right=0.98, bottom=0.12, top=0.90)
-    fig.savefig(OUT / "lsq_oscillatory_chi2_surface.png", facecolor=fig.get_facecolor())
+    fig.savefig(OUT / f"lsq_oscillatory_chi2_surface{suffix}.png", facecolor=fig.get_facecolor())
     plt.close(fig)
 
 
 if __name__ == "__main__":
     OUT.mkdir(parents=True, exist_ok=True)
-    make_quadratic_surface()
-    make_oscillatory_surface()
+    import sys
+
+    for lang in sys.argv[1:] or ["ru", "en"]:
+        make_quadratic_surface(lang)
+        make_oscillatory_surface(lang)

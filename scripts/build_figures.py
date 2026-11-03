@@ -257,7 +257,8 @@ def build_numpy_sampling_demos(out_dir: Path) -> None:
     plt.close(fig)
 
 
-def build_clt_uniform_sums(out_dir: Path) -> None:
+def build_clt_uniform_sums(out_dir: Path, lang: str = "ru") -> None:
+    suffix = "" if lang == "ru" else f"_{lang}"
     rng = np.random.default_rng(20260424)
     sample_size = 80_000
     grid = np.linspace(-4.2, 4.2, 500)
@@ -287,7 +288,10 @@ def build_clt_uniform_sums(out_dir: Path) -> None:
         ax.set_ylim(0, 0.55)
         ax.set_xlabel(r"$z$")
         ax.set_ylabel("density")
-        ax.set_title(rf"ЦПТ: сумма {m} равномерных случайных величин")
+        if lang == "ru":
+            ax.set_title(rf"ЦПТ: сумма {m} равномерных случайных величин")
+        else:
+            ax.set_title(rf"CLT: sum of {m} uniform random variables")
         ax.text(
             0.03,
             0.92,
@@ -299,7 +303,7 @@ def build_clt_uniform_sums(out_dir: Path) -> None:
         ax.grid(axis="y", alpha=0.25)
         ax.legend(loc="upper right", framealpha=1.0, edgecolor="black")
         fig.tight_layout()
-        fig.savefig(out_dir / f"clt_uniform_sum_m{m}.png", dpi=180)
+        fig.savefig(out_dir / f"clt_uniform_sum_m{m}{suffix}.png", dpi=180)
         plt.close(fig)
 
 
@@ -1688,6 +1692,7 @@ def main() -> None:
     build_normal_density_profiles(out_dir)
     build_numpy_sampling_demos(out_dir)
     build_clt_uniform_sums(out_dir)
+    build_clt_uniform_sums(out_dir, lang="en")
     build_chapter05_fallbacks(ensure_dir(root / "ru" / "book" / "assets" / "figures"))
     build_chapter06_fallbacks(ensure_dir(root / "ru" / "book" / "assets" / "figures"))
     build_chapter07_fallbacks(ensure_dir(root / "ru" / "book" / "assets" / "figures"))

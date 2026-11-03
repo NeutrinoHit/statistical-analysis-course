@@ -1,6 +1,10 @@
 project:
   type: website
-  post-render: ../../scripts/strip_notebook_paths.py
+  # Shared films: media.lock.json and _extensions/ link to the repository root
+  # (python3 ../neutrinohit-map/scripts/nh_media.py lock . from the root).
+  post-render:
+    - ../../scripts/strip_notebook_paths.py
+    - _extensions/neutrinohit-media/prune.py
   output-dir: ../../_site/en/slides
   resources:
     - applets.html
@@ -10,20 +14,33 @@ project:
     - index.qmd
     - bertrand_paradox.qmd
     - lecture-01-introduction.qmd
-    - lecture-02-probability-bayes.qmd
-    - lecture-03-random-variables-and-densities.qmd
-    - lecture-04-expectation-and-error-propagation.qmd
-    - lecture-05-common-probability-distributions.qmd
-    - lecture-06-monte-carlo-method.qmd
-    - lecture-07-statistical-tests-basics.qmd
-    - lecture-08-test-statistics-and-multivariate-methods.qmd
-    - lecture-09-goodness-of-fit-and-significance.qmd
-    - lecture-10-feldman-cousins-and-cls.qmd
-    - lecture-11-parameter-estimation-and-maximum-likelihood.qmd
-    - lecture-12-method-of-least-squares.qmd
-    - lecture-13-interval-estimation-and-limits.qmd
-    - lecture-14-nuisance-parameters-and-systematics.qmd
-    - lecture-15-bayesian-examples.qmd
+    - lecture-02-random-distributions.qmd
+    - lecture-03-characteristic-functions.qmd
+    - lecture-04-central-limit-theorem.qmd
+    - lecture-05-non-gaussian-clt-violations.qmd
+    - lecture-06-error-propagation.qmd
+    - lecture-07-two-dimensional-gaussian.qmd
+    - lecture-08-monte-carlo-method.qmd
+    - lecture-09-maximum-likelihood.qmd
+    - lecture-10-estimator-properties-profile-likelihood.qmd
+    - lecture-11-least-squares-linear-fit.qmd
+    - lecture-12-least-squares-systematics.qmd
+    - lecture-13-goodness-of-fit-and-significance.qmd
+    - notebooks/mc_vegas_notebook.qmd
+    - exercises/index.qmd
+    - exercises/lecture-01-introduction-exercises.qmd
+    - exercises/lecture-02-random-distributions-exercises.qmd
+    - exercises/lecture-03-characteristic-functions-exercises.qmd
+    - exercises/lecture-04-central-limit-theorem-exercises.qmd
+    - exercises/lecture-05-non-gaussian-clt-violations-exercises.qmd
+    - exercises/lecture-06-error-propagation-exercises.qmd
+    - exercises/lecture-07-two-dimensional-gaussian-exercises.qmd
+    - exercises/lecture-08-monte-carlo-method-exercises.qmd
+    - exercises/lecture-09-maximum-likelihood-exercises.qmd
+    - exercises/lecture-10-estimator-properties-profile-likelihood-exercises.qmd
+    - exercises/lecture-11-least-squares-linear-fit-exercises.qmd
+    - exercises/lecture-12-least-squares-systematics-exercises.qmd
+    - exercises/lecture-13-goodness-of-fit-and-significance-exercises.qmd
 
 website:
   title: "Statistical Data Analysis: Slides (EN)"
@@ -51,38 +68,39 @@ website:
         contents:
           - text: "Lecture 1. Motivation"
             href: lecture-01-introduction.qmd
-          - text: "Lecture 2. Probability and Bayes"
-            href: lecture-02-probability-bayes.qmd
-          - text: "Lecture 3. Random Variables and Densities"
-            href: lecture-03-random-variables-and-densities.qmd
-          - text: "Lecture 4. Expectation and Error Propagation"
-            href: lecture-04-expectation-and-error-propagation.qmd
-          - text: "Lecture 5. Common Probability Distributions"
-            href: lecture-05-common-probability-distributions.qmd
-          - text: "Lecture 6. Monte Carlo Method"
-            href: lecture-06-monte-carlo-method.qmd
-          - text: "Lecture 7. Statistical Tests: Basics"
-            href: lecture-07-statistical-tests-basics.qmd
-          - text: "Lecture 8. Test Statistics and Multivariate Methods"
-            href: lecture-08-test-statistics-and-multivariate-methods.qmd
-          - text: "Lecture 9. Goodness-of-Fit and Significance"
-            href: lecture-09-goodness-of-fit-and-significance.qmd
-          - text: "Lecture 10. Feldman-Cousins and CLs"
-            href: lecture-10-feldman-cousins-and-cls.qmd
-          - text: "Lecture 11. Parameter Estimation and Likelihood"
-            href: lecture-11-parameter-estimation-and-maximum-likelihood.qmd
-          - text: "Lecture 12. Least Squares"
-            href: lecture-12-method-of-least-squares.qmd
-          - text: "Lecture 13. Interval Estimation and Limits"
-            href: lecture-13-interval-estimation-and-limits.qmd
-          - text: "Lecture 14. Nuisance Parameters and Systematics"
-            href: lecture-14-nuisance-parameters-and-systematics.qmd
-          - text: "Lecture 15. Bayesian Examples"
-            href: lecture-15-bayesian-examples.qmd
+          - text: "Lecture 2. Random Variables and Distributions"
+            href: lecture-02-random-distributions.qmd
+          - text: "Lecture 3. Characteristic Functions"
+            href: lecture-03-characteristic-functions.qmd
+          - text: "Lecture 4. Central Limit Theorem"
+            href: lecture-04-central-limit-theorem.qmd
+          - text: "Lecture 5. When Gaussians Do Not Arise"
+            href: lecture-05-non-gaussian-clt-violations.qmd
+          - text: "Lecture 6. Error Propagation"
+            href: lecture-06-error-propagation.qmd
+          - text: "Lecture 7. Two-Dimensional Gaussian"
+            href: lecture-07-two-dimensional-gaussian.qmd
+          - text: "Lecture 8. Monte Carlo and Pseudo-Experiments"
+            href: lecture-08-monte-carlo-method.qmd
+          - text: "Lecture 9. Maximum Likelihood"
+            href: lecture-09-maximum-likelihood.qmd
+          - text: "Lecture 10. Estimators and Profile Likelihood"
+            href: lecture-10-estimator-properties-profile-likelihood.qmd
+          - text: "Lecture 11. Least Squares and Linear Fit"
+            href: lecture-11-least-squares-linear-fit.qmd
+          - text: "Lecture 12. Least Squares and Systematics"
+            href: lecture-12-least-squares-systematics.qmd
+          - text: "Lecture 13. Goodness of Fit and Significance"
+            href: lecture-13-goodness-of-fit-and-significance.qmd
+      - section: "Exercises"
+        contents:
+          - text: "All exercises"
+            href: exercises/index.qmd
 
 format:
   html:
     theme: flatly
+    css: styles.css
     toc: true
     include-after-body: analytics/cloudflare-web-analytics.html
   revealjs:
